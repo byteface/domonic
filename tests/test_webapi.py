@@ -1,20 +1,95 @@
 """
-    test_webapi
-    ~~~~~~~~~~~~~~~~
+test_webapi
+~~~~~~~~~~~~~~~~
 """
 
 import unittest
+from unittest.mock import patch
 
 from domonic.dom import *
 from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
+from domonic.webapi.console import Console, console
 from domonic.webapi.urlpattern import URLPattern
 
 # from domonic.decorators import silence
 
 
 class TestCase(unittest.TestCase):
+    def test_console_api_surface(self):
+        Console.reset()
+        self.assertIs(console, Console)
+
+        with patch("builtins.print"):
+            self.assertEqual(Console.log("Hello %s", "World"), "Hello World")
+            self.assertEqual(Console.log("Hello %s", substitute="again"), "Hello again")
+            self.assertEqual(Console.log("value", 1, {"x": 2}), "value 1 {'x': 2}")
+            self.assertEqual(
+                Console.log(
+                    "num=%d float=%f obj=%o %% %cstyled",
+                    "4",
+                    "2.5",
+                    {"ok": True},
+                    "color:red",
+                ),
+                "num=4 float=2.5 obj={'ok': True} % styled",
+            )
+            self.assertEqual(Console.info("info"), "info")
+            self.assertEqual(Console.debug("debug"), "debug")
+            self.assertEqual(Console.warn("warn"), "warn")
+            self.assertEqual(Console.error(ValueError("bad")), "ValueError: bad")
+            self.assertEqual(Console.exception("boom"), "boom")
+
+            self.assertIsNone(Console.assert_(True, "hidden"))
+            self.assertEqual(
+                Console.assert_(False, "no %d", 4), "Assertion failed: no 4"
+            )
+            self.assertEqual(
+                getattr(Console, "assert")(False, "alias"), "Assertion failed: alias"
+            )
+
+            self.assertEqual(Console.count(), 1)
+            self.assertEqual(Console.count(), 2)
+            self.assertEqual(Console.count("route"), 1)
+            self.assertEqual(Console.countReset(), 0)
+            self.assertEqual(Console.count(), 1)
+
+            Console.time("load")
+            self.assertIn("load:", Console.timeLog("load", "halfway"))
+            self.assertIn("halfway", Console.timeLog("load", "halfway"))
+            self.assertIn("load:", Console.timeEnd("load"))
+            self.assertEqual(Console.timeLog("load"), "Timer 'load' does not exist")
+
+            self.assertEqual(Console.group("outer"), "outer")
+            self.assertEqual(Console.log("inside"), "  inside")
+            self.assertEqual(Console.groupCollapsed("inner"), "inner")
+            self.assertEqual(Console.log("deep"), "    deep")
+            Console.groupEnd()
+            self.assertEqual(Console.log("inside again"), "  inside again")
+            Console.groupEnd()
+            self.assertEqual(Console.log("outside"), "outside")
+
+            self.assertIn("'a': 1", Console.dir({"a": 1}))
+            self.assertIn("<div>hello</div>", Console.dirxml(div("hello")))
+
+            table = Console.table(
+                [{"name": "Ada", "lang": "Python"}, {"name": "Grace", "lang": "COBOL"}],
+                ["name"],
+            )
+            self.assertIn("(index)", table)
+            self.assertIn("Ada", table)
+            self.assertIn("Grace", table)
+            self.assertNotIn("Python", table)
+
+            self.assertIn("Trace label", Console.trace("Trace %s", "label"))
+            self.assertEqual(Console.timeStamp("paint"), "Timestamp: paint")
+            Console.profile("render")
+            self.assertIn("Profile 'render':", Console.profileEnd("render"))
+            self.assertEqual(
+                Console.profileEnd("render"), "Profile 'render' does not exist"
+            )
+
     def test_encodingAPI(self):
         # utf8decoder = TextDecoder()  # default 'utf-8' or 'utf8'
 
@@ -155,6 +230,7 @@ class TestCase(unittest.TestCase):
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
+
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")
@@ -209,9 +285,13 @@ class TestCase(unittest.TestCase):
         <div>Number of &lt;div&gt;s: <output></output></div>
         """
         try:
-            page = domonic.parseString(somehtml)  # NOTE - probably requries html5lib install
+            page = domonic.parseString(
+                somehtml
+            )  # NOTE - probably requries html5lib install
         except Exception as exc:
-            self.skipTest(f"domonic.parseString requires optional HTML parsing support: {exc}")
+            self.skipTest(
+                f"domonic.parseString requires optional HTML parsing support: {exc}"
+            )
         if page is None:
             self.skipTest("domonic.parseString requires optional HTML parsing support")
         evaluator = XPathEvaluator()
@@ -311,7 +391,9 @@ class TestCase(unittest.TestCase):
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         print(str(result.nodes[0]))
 
-        somepage = html(head(), body(h1("some title"), p("some text"), div("some more text")))
+        somepage = html(
+            head(), body(h1("some title"), p("some text"), div("some more text"))
+        )
 
         expression = evaluator.createExpression("//div/text()")
         result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
