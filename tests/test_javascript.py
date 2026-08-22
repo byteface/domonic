@@ -469,6 +469,22 @@ class TestCase(unittest.TestCase):
         assert url.port == 8983
         # print(url.toString())
 
+    def test_javascript_url_setter_edge_cases(self):
+        url = URL("https://somesite.com/blog/article-one?x=1#some-hash")
+
+        url.protocol = "http:"
+        self.assertEqual(url.href, "http://somesite.com/blog/article-one?x=1#some-hash")
+
+        url.pathname = "next"
+        self.assertEqual(url.href, "http://somesite.com/next?x=1#some-hash")
+
+        url.hash = "updated"
+        self.assertEqual(url.href, "http://somesite.com/next?x=1#updated")
+        self.assertEqual(url.hash, "#updated")
+
+        url.hash = ""
+        self.assertEqual(url.href, "http://somesite.com/next?x=1")
+
     # def test_javascript_window(self):
     # print('asdf')
     # print(window)
@@ -859,6 +875,14 @@ class TestCase(unittest.TestCase):
         assert searchParams.toString() == "q=test&topic=More+webdev"
         searchParams.delete("topic")
         assert searchParams.toString() == "q=test"
+        searchParams.delete("missing")
+        assert searchParams.toString() == "q=test"
+        assert searchParams.getAll("missing") == []
+
+        emptyParams = URLSearchParams("empty=&flag")
+        assert emptyParams.get("empty") == ""
+        assert emptyParams.get("flag") == ""
+        assert emptyParams.toString() == "empty=&flag="
 
         # GOTCHAS
 

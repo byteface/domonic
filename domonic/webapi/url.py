@@ -1,12 +1,13 @@
 """
-    domonic.webapi.url
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/URL
+domonic.webapi.url
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/URL
 
-    # TODO - move the unit tests for this class from javascript to webapi
-    # TODO - untested
+# TODO - move the unit tests for this class from javascript to webapi
+# TODO - untested
 
 """
+
 from __future__ import annotations
 
 import urllib.parse
@@ -42,7 +43,9 @@ class URL:
         object.__setattr__(self, "_URL__port", parsed.port)
         object.__setattr__(self, "_URL__pathname", parsed.path)
         object.__setattr__(self, "_URL__search", parsed.query)
-        object.__setattr__(self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else "")
+        object.__setattr__(
+            self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else ""
+        )
         object.__setattr__(self, "_searchParams", URLSearchParams(parsed.query))
         object.__setattr__(self, "_url_state_source", href)
 
@@ -71,7 +74,12 @@ class URL:
             if query and not query.startswith("?"):
                 query = "?" + query
             self.url = urllib.parse.urlsplit(
-                new["protocol"] + "://" + new["host"] + new["pathname"] + query + new["hash"]
+                new["protocol"]
+                + "://"
+                + new["host"]
+                + new["pathname"]
+                + query
+                + new["hash"]
             )
 
             self._set_href_value(self.url.geturl())
@@ -82,7 +90,9 @@ class URL:
             # print(e)
             pass
 
-    def __init__(self, url: str = "", *args: Any, **kwargs: Any) -> None:  # TODO - relative to
+    def __init__(
+        self, url: str = "", *args: Any, **kwargs: Any
+    ) -> None:  # TODO - relative to
         """URL
 
         builds a url
@@ -135,7 +145,7 @@ class URL:
 
     @protocol.setter
     def protocol(self, p: str):
-        self.__protocol = p
+        self.__protocol = (p or "").rstrip(":")
         # if self.ready : self.__update__() # TODO - this instead of silent err?
         self.__update__()
 
@@ -193,6 +203,10 @@ class URL:
 
     @pathname.setter
     def pathname(self, p: str):
+        if p is None:
+            p = ""
+        elif p and not str(p).startswith("/"):
+            p = "/" + str(p)
         self.__pathname = p
         self.__update__()
 
@@ -215,14 +229,14 @@ class URL:
     def hash(self) -> str:
         """ " hash Sets or returns the anchor part (#) of a URL"""
         self._ensure_url_state()
-        if "#" in self.href:
-            return "#" + self.href.split("#")[1]
-        # return ''
         return self.__hash
 
     @hash.setter
     def hash(self, h: str):
-        self.__hash = h
+        if h is None or h == "":
+            self.__hash = ""
+        else:
+            self.__hash = h if str(h).startswith("#") else "#" + str(h)
         self.__update__()
 
         # @property
@@ -311,12 +325,15 @@ class URLSearchParams:
             if paramString.startswith("?"):
                 paramString = paramString[1 : len(paramString)]
 
-            import urllib
-
-            self.params: dict[str, list[str]] = urllib.parse.parse_qs(paramString)
+            self.params: dict[str, list[str]] = {}
+            for key, value in urllib.parse.parse_qsl(
+                paramString, keep_blank_values=True
+            ):
+                self.params.setdefault(key, []).append(value)
         elif isinstance(paramString, dict):
             self.params = {
-                str(key): value if isinstance(value, list) else [str(value)] for key, value in paramString.items()
+                str(key): value if isinstance(value, list) else [str(value)]
+                for key, value in paramString.items()
             }
         elif hasattr(paramString, "__iter__"):
             self.params = {}
@@ -339,7 +356,7 @@ class URLSearchParams:
 
     def delete(self, key: str) -> None:
         """Deletes the given search parameter, and its associated value, from the list of all search parameters."""
-        del self.params[key]
+        self.params.pop(key, None)
 
     def has(self, key: str) -> bool:
         """Returns a Boolean indicating if such a given parameter exists."""
@@ -385,9 +402,9 @@ class URLSearchParams:
         If there are several values, the others are deleted."""
         self.params[key] = [value]
 
-    def getAll(self, key: str) -> list[str] | None:
+    def getAll(self, key: str) -> list[str]:
         """Returns all the values associated with a given search parameter."""
-        return self.params.get(key)
+        return self.params.get(key, [])
 
     def __str__(self) -> str:
         return urllib.parse.urlencode(self.params, doseq=True)
