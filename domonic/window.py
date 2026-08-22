@@ -28,6 +28,7 @@ from domonic.javascript import Window as JavaScriptWindow
 from domonic.javascript import performance
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
+from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
 from domonic.webapi.netinfo import NetworkInformation
@@ -397,6 +398,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._location: Location = Location(url or "https://eventual.technology")
         self._document.URL = self._location.href
         self._console: Console = Console()
+        self.crypto: Crypto = Crypto()
         self._history: History = History(self)
         self._closed: bool = False
         self._focused: bool = True

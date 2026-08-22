@@ -30,6 +30,23 @@ fetch
 	from domonic.webapi.fetch import fetch
 
 
+Web Crypto
+----------------
+
+``Crypto`` provides secure random values, UUIDs, and digest hashes through a
+browser-like ``crypto`` object.
+
+.. code-block :: python
+
+	from domonic.javascript import Uint8Array
+	from domonic.webapi.crypto import crypto
+
+	token = Uint8Array(16)
+	crypto.getRandomValues(token)
+	print(crypto.randomUUID())
+	print(crypto.subtle.digest("SHA-256", b"domonic").data.hex())
+
+
 File API
 ----------------
 
@@ -127,6 +144,10 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.fetch
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.crypto
     :members:
     :noindex:
 

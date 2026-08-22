@@ -64,6 +64,9 @@
 .. automodule:: domonic.webapi.fetch
     :members:
 
+.. automodule:: domonic.webapi.crypto
+    :members:
+
 .. automodule:: domonic.webapi.file
     :members:
 

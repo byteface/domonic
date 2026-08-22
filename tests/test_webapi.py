@@ -31,6 +31,7 @@ from domonic.webapi.fetch import (
     fetch_set,
     fetch_threaded,
 )
+from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.sanitizer import Sanitizer
@@ -287,7 +288,76 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_crypto(self):
-        pass
+        with patch(
+            "domonic.webapi.crypto.secrets.token_bytes",
+            side_effect=lambda size: bytes(range(size)),
+        ):
+            random_bytes = Uint8Array(16)
+            result = crypto.getRandomValues(random_bytes)
+            self.assertIs(result, random_bytes)
+            self.assertEqual(random_bytes.byteLength, 16)
+            self.assertEqual(
+                [random_bytes[i] for i in range(random_bytes.length)],
+                list(range(16)),
+            )
+
+            random_words = Uint32Array(4)
+            Crypto.getRandomValues(random_words)
+            self.assertEqual(random_words.byteLength, 16)
+            self.assertEqual(bytes(random_words.buffer.buffer), bytes(range(16)))
+
+            raw = bytearray(8)
+            Crypto.getRandomValues(raw)
+            self.assertEqual(raw, bytearray(range(8)))
+
+        with self.assertRaises(TypeError):
+            Crypto.getRandomValues(Float32Array(2))
+        with self.assertRaises(DOMException):
+            Crypto.getRandomValues(Uint8Array(65537))
+
+        uuid_value = crypto.randomUUID()
+        self.assertRegex(
+            uuid_value,
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+        )
+
+        digest = crypto.subtle.digest("SHA-256", b"hello")
+        self.assertEqual(digest.state, "fulfilled")
+        self.assertEqual(
+            digest.data.hex(),
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e"
+            "1b161e5c1fa7425e73043362938b9824",
+        )
+
+        buffer = ArrayBuffer(5)
+        Uint8Array(buffer).set([104, 101, 108, 108, 111], 0)
+        self.assertEqual(
+            SubtleCrypto.digestSync({"name": "SHA-1"}, buffer).hex(),
+            "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d",
+        )
+        self.assertEqual(
+            crypto.subtle.digest("SHA-512", Uint8Array(buffer)).data,
+            SubtleCrypto.digestSync("SHA-512", b"hello"),
+        )
+        self.assertEqual(
+            crypto.subtle.digest("SHA-384", DataView(buffer, 1, 3)).data,
+            SubtleCrypto.digestSync("SHA-384", b"ell"),
+        )
+
+        rejected = crypto.subtle.digest("MD5", b"nope")
+        self.assertEqual(rejected.state, "rejected")
+        self.assertIsInstance(rejected.data, DOMException)
+
+        key = CryptoKey(
+            "secret",
+            True,
+            {"name": "HMAC", "hash": "SHA-256"},
+            ["sign", "verify"],
+        )
+        self.assertEqual(key.type, "secret")
+        self.assertTrue(key.extractable)
+        self.assertEqual(key.algorithm["name"], "HMAC")
+        self.assertEqual(key.usages, ("sign", "verify"))
 
     def test_cssfontloading(self):
         pass
