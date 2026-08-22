@@ -6,7 +6,7 @@ Python DOM, HTML, SVG, XML, Web API, and JavaScript-like runtime toolkit.
 
 """
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 __license__ = "MIT"
 __author__ = "@byteface"
 
