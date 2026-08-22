@@ -3948,6 +3948,27 @@ class Element(Node):
         except Exception:
             return [value]
 
+    def setHTML(self, input: Any, options: Any = None):
+        """Replace children with sanitized HTML.
+
+        Mirrors the browser ``Element.setHTML()`` method. It always applies
+        unsafe-element and unsafe-attribute removal before inserting the
+        resulting fragment.
+        """
+        from domonic.webapi.sanitizer import sanitize_html_fragment
+
+        fragment = sanitize_html_fragment(input, options, safe=True)
+        self.replaceChildren(*fragment.args)
+        return self
+
+    def setHTMLUnsafe(self, input: Any, options: Any = None):
+        """Replace children from HTML, optionally using a Sanitizer config."""
+        from domonic.webapi.sanitizer import sanitize_html_fragment
+
+        fragment = sanitize_html_fragment(input, options, safe=False)
+        self.replaceChildren(*fragment.args)
+        return self
+
     def blur(self):
         """Removes focus from an element"""
         from domonic.events import FocusEvent
@@ -6019,6 +6040,20 @@ class Document(Element):
     def createDocumentFragment(*args: Any) -> "DocumentFragment":
         """Creates an empty DocumentFragment node if not content passed. I added args as optional to pass content"""
         return DocumentFragment(*args)
+
+    @staticmethod
+    def parseHTML(input: Any, options: Any = None) -> "Document":
+        """Parse HTML into an ``HTMLDocument`` using safe Sanitizer defaults."""
+        from domonic.webapi.sanitizer import parse_html_document
+
+        return parse_html_document(input, options, safe=True)
+
+    @staticmethod
+    def parseHTMLUnsafe(input: Any, options: Any = None) -> "Document":
+        """Parse HTML into an ``HTMLDocument``, optionally using a Sanitizer."""
+        from domonic.webapi.sanitizer import parse_html_document
+
+        return parse_html_document(input, options, safe=False)
 
     @staticmethod
     def createExpression(xpath: str, nsResolver: Any) -> XPathExpression:
@@ -8409,479 +8444,18 @@ class TreeWalker:
 
 
 class Sanitizer:
-    def __init__(self, rules=None, *args, **kwargs):
-        """Creates and returns a Sanitizer object."""
+    """Backward-compatible proxy for ``domonic.webapi.sanitizer.Sanitizer``."""
 
-        # casting as object gives us . notation
-        from domonic.javascript import Object
+    def __new__(cls, *args, **kwargs):
+        from domonic.webapi.sanitizer import Sanitizer as WebSanitizer
 
-        self._default_configuration = Object(
-            {
-                "allowCustomElements": False,
-                # "allowElements": [],  # elements that the sanitizer should retain in the input.
-                "blockElements": [],  # elements where the sanitizer should remove the elements from the input, but retain their children.
-                "dropElements": [],  # elements that the sanitizer should remove from the input, including its children.
-                # "allowAttributes": [],  # determines whether an attribute (on a given element) should be allowed.
-                "dropAttributes": [],  # determines whether an attribute (on a given element) should be dropped.
-                "allowCustomElements": False,  # determines whether custom elements are to be considered. The default is to drop them. If this option is true, custom elements will still be checked against all other built-in or configured configured checks.
-                "allowComments": False,  # determines whether HTML comments are allowed.
-                "allowElements": [
-                    "a",
-                    "abbr",
-                    "acronym",
-                    "address",
-                    "area",
-                    "article",
-                    "aside",
-                    "audio",
-                    "b",
-                    "bdi",
-                    "bdo",
-                    "bgsound",
-                    "big",
-                    "blockquote",
-                    "body",
-                    "br",
-                    "button",
-                    "canvas",
-                    "caption",
-                    "center",
-                    "cite",
-                    "code",
-                    "col",
-                    "colgroup",
-                    "datalist",
-                    "dd",
-                    "del",
-                    "details",
-                    "dfn",
-                    "dialog",
-                    "dir",
-                    "div",
-                    "dl",
-                    "dt",
-                    "em",
-                    "fieldset",
-                    "figcaption",
-                    "figure",
-                    "font",
-                    "footer",
-                    "form",
-                    "h1",
-                    "h2",
-                    "h3",
-                    "h4",
-                    "h5",
-                    "h6",
-                    "head",
-                    "header",
-                    "hgroup",
-                    "hr",
-                    "html",
-                    "i",
-                    "img",
-                    "input",
-                    "ins",
-                    "kbd",
-                    "keygen",
-                    "label",
-                    "layer",
-                    "legend",
-                    "li",
-                    "link",
-                    "listing",
-                    "main",
-                    "map",
-                    "mark",
-                    "marquee",
-                    "menu",
-                    "meta",
-                    "meter",
-                    "nav",
-                    "nobr",
-                    "ol",
-                    "optgroup",
-                    "option",
-                    "output",
-                    "p",
-                    "picture",
-                    "popup",
-                    "pre",
-                    "progress",
-                    "q",
-                    "rb",
-                    "rp",
-                    "rt",
-                    "rtc",
-                    "ruby",
-                    "s",
-                    "samp",
-                    "section",
-                    "select",
-                    "selectedcontent",
-                    "selectmenu",
-                    "small",
-                    "source",
-                    "span",
-                    "strike",
-                    "strong",
-                    "style",
-                    "sub",
-                    "summary",
-                    "sup",
-                    "table",
-                    "tbody",
-                    "td",
-                    "tfoot",
-                    "th",
-                    "thead",
-                    "time",
-                    "tr",
-                    "track",
-                    "tt",
-                    "u",
-                    "ul",
-                    "var",
-                    "video",
-                    "wbr",
-                ],
-                "allowAttributes": {
-                    "abbr": ["*"],
-                    "accept": ["*"],
-                    "accept-charset": ["*"],
-                    "accesskey": ["*"],
-                    "action": ["*"],
-                    "align": ["*"],
-                    "alink": ["*"],
-                    "alpha": ["*"],
-                    "allow": ["*"],
-                    "allowfullscreen": ["*"],
-                    "alt": ["*"],
-                    "anchor": ["*"],
-                    "archive": ["*"],
-                    "as": ["*"],
-                    "async": ["*"],
-                    "autocapitalize": ["*"],
-                    "autocomplete": ["*"],
-                    "autocorrect": ["*"],
-                    "autofocus": ["*"],
-                    "autopictureinpicture": ["*"],
-                    "autoplay": ["*"],
-                    "axis": ["*"],
-                    "background": ["*"],
-                    "behavior": ["*"],
-                    "bgcolor": ["*"],
-                    "border": ["*"],
-                    "bordercolor": ["*"],
-                    "blocking": ["*"],
-                    "browsingtopics": ["*"],
-                    "capture": ["*"],
-                    "cellpadding": ["*"],
-                    "cellspacing": ["*"],
-                    "challenge": ["*"],
-                    "char": ["*"],
-                    "charoff": ["*"],
-                    "charset": ["*"],
-                    "checked": ["*"],
-                    "cite": ["*"],
-                    "class": ["*"],
-                    "classid": ["*"],
-                    "clear": ["*"],
-                    "code": ["*"],
-                    "codebase": ["*"],
-                    "codetype": ["*"],
-                    "color": ["*"],
-                    "cols": ["*"],
-                    "colspan": ["*"],
-                    "colorspace": ["*"],
-                    "compact": ["*"],
-                    "closedby": ["*"],
-                    "command": ["*"],
-                    "commandfor": ["*"],
-                    "content": ["*"],
-                    "contenteditable": ["*"],
-                    "controls": ["*"],
-                    "controlslist": ["*"],
-                    "conversiondestination": ["*"],
-                    "coords": ["*"],
-                    "credentialless": ["*"],
-                    "crossorigin": ["*"],
-                    "csp": ["*"],
-                    "data": ["*"],
-                    "datetime": ["*"],
-                    "declare": ["*"],
-                    "decoding": ["*"],
-                    "default": ["*"],
-                    "defer": ["*"],
-                    "dir": ["*"],
-                    "direction": ["*"],
-                    "dirname": ["*"],
-                    "disabled": ["*"],
-                    "disablepictureinpicture": ["*"],
-                    "disableremoteplayback": ["*"],
-                    "disallowdocumentaccess": ["*"],
-                    "download": ["*"],
-                    "draggable": ["*"],
-                    "elementtiming": ["*"],
-                    "enctype": ["*"],
-                    "end": ["*"],
-                    "enterkeyhint": ["*"],
-                    "event": ["*"],
-                    "exportparts": ["*"],
-                    "face": ["*"],
-                    "fetchpriority": ["*"],
-                    "for": ["*"],
-                    "form": ["*"],
-                    "formaction": ["*"],
-                    "formenctype": ["*"],
-                    "formmethod": ["*"],
-                    "formnovalidate": ["*"],
-                    "formtarget": ["*"],
-                    "frame": ["*"],
-                    "frameborder": ["*"],
-                    "headers": ["*"],
-                    "headingoffset": ["*"],
-                    "headingreset": ["*"],
-                    "height": ["*"],
-                    "hidden": ["*"],
-                    "high": ["*"],
-                    "href": ["*"],
-                    "hreflang": ["*"],
-                    "hreftranslate": ["*"],
-                    "hspace": ["*"],
-                    "http-equiv": ["*"],
-                    "id": ["*"],
-                    "imagesizes": ["*"],
-                    "imagesrcset": ["*"],
-                    "importance": ["*"],
-                    "impressiondata": ["*"],
-                    "impressionexpiry": ["*"],
-                    "incremental": ["*"],
-                    "inert": ["*"],
-                    "interestfor": ["*"],
-                    "inputmode": ["*"],
-                    "integrity": ["*"],
-                    "invisible": ["*"],
-                    "is": ["*"],
-                    "ismap": ["*"],
-                    "keytype": ["*"],
-                    "kind": ["*"],
-                    "label": ["*"],
-                    "lang": ["*"],
-                    "language": ["*"],
-                    "latencyhint": ["*"],
-                    "leftmargin": ["*"],
-                    "link": ["*"],
-                    "list": ["*"],
-                    "loading": ["*"],
-                    "longdesc": ["*"],
-                    "loop": ["*"],
-                    "low": ["*"],
-                    "lowsrc": ["*"],
-                    "manifest": ["*"],
-                    "marginheight": ["*"],
-                    "marginwidth": ["*"],
-                    "max": ["*"],
-                    "maxlength": ["*"],
-                    "mayscript": ["*"],
-                    "media": ["*"],
-                    "method": ["*"],
-                    "min": ["*"],
-                    "minlength": ["*"],
-                    "multiple": ["*"],
-                    "muted": ["*"],
-                    "name": ["*"],
-                    "nohref": ["*"],
-                    "nomodule": ["*"],
-                    "nonce": ["*"],
-                    "noresize": ["*"],
-                    "noshade": ["*"],
-                    "novalidate": ["*"],
-                    "nowrap": ["*"],
-                    "object": ["*"],
-                    "open": ["*"],
-                    "optimum": ["*"],
-                    "part": ["*"],
-                    "pattern": ["*"],
-                    "ping": ["*"],
-                    "placeholder": ["*"],
-                    "playsinline": ["*"],
-                    "policy": ["*"],
-                    "popover": ["*"],
-                    "popovertarget": ["*"],
-                    "popovertargetaction": ["*"],
-                    "poster": ["*"],
-                    "preload": ["*"],
-                    "pseudo": ["*"],
-                    "readonly": ["*"],
-                    "referrerpolicy": ["*"],
-                    "rel": ["*"],
-                    "reportingorigin": ["*"],
-                    "required": ["*"],
-                    "resources": ["*"],
-                    "rev": ["*"],
-                    "reversed": ["*"],
-                    "role": ["*"],
-                    "rows": ["*"],
-                    "rowspan": ["*"],
-                    "rules": ["*"],
-                    "sandbox": ["*"],
-                    "scheme": ["*"],
-                    "scope": ["*"],
-                    "scopes": ["*"],
-                    "scrollamount": ["*"],
-                    "scrolldelay": ["*"],
-                    "scrolling": ["*"],
-                    "select": ["*"],
-                    "selected": ["*"],
-                    "shadowroot": ["*"],
-                    "shadowrootclonable": ["*"],
-                    "shadowrootcustomelementregistry": ["*"],
-                    "shadowrootdelegatesfocus": ["*"],
-                    "shadowrootmode": ["*"],
-                    "shadowrootserializable": ["*"],
-                    "shadowrootslotassignment": ["*"],
-                    "shape": ["*"],
-                    "size": ["*"],
-                    "sizes": ["*"],
-                    "slot": ["*"],
-                    "span": ["*"],
-                    "spellcheck": ["*"],
-                    "src": ["*"],
-                    "srcdoc": ["*"],
-                    "srclang": ["*"],
-                    "srcset": ["*"],
-                    "standby": ["*"],
-                    "start": ["*"],
-                    "step": ["*"],
-                    "style": ["*"],
-                    "summary": ["*"],
-                    "tabindex": ["*"],
-                    "target": ["*"],
-                    "text": ["*"],
-                    "title": ["*"],
-                    "topmargin": ["*"],
-                    "translate": ["*"],
-                    "truespeed": ["*"],
-                    "trusttoken": ["*"],
-                    "type": ["*"],
-                    "usemap": ["*"],
-                    "valign": ["*"],
-                    "value": ["*"],
-                    "valuetype": ["*"],
-                    "version": ["*"],
-                    "virtualkeyboardpolicy": ["*"],
-                    "vlink": ["*"],
-                    "vspace": ["*"],
-                    "webkitdirectory": ["*"],
-                    "width": ["*"],
-                    "writingsuggestions": ["*"],
-                    "wrap": ["*"],
-                },
-            }
-        )
+        return WebSanitizer(*args, **kwargs)
 
-        self.config = None
-        if isinstance(rules, dict):
-            self.rules = rules
-            # create a new configuration which is a copy of the default but change it based on the rules object
-            import copy
+    @staticmethod
+    def getDefaultConfiguration():
+        from domonic.webapi.sanitizer import Sanitizer as WebSanitizer
 
-            self.config = copy.deepcopy(self._default_configuration)
-            for key, value in self.rules.items():
-                # print('ADDING RULES', key, value)
-                self.config[key] = value
-        else:
-            self.rules = None
-            self.config = self._default_configuration
-
-    def getDefaultConfiguration(self):
-        return self._default_configuration
-
-    def getConfiguration(self):
-        """[return the configuration object]
-
-        Returns:
-            [Object]: [an Object with the users configuration]
-        """
-        return self.config
-
-    def sanitize(self, frag):
-        """Returns a sanitized DocumentFragment from an input, removing any offending elements or attributes."""
-        if isinstance(frag, str):
-            # parse to html then remove all the bad stuff?? - is a really bad idea. as it goes through eval.
-            from domonic import domonic
-
-            frag = domonic.load(frag)
-
-        isDomNode = False
-        if isinstance(frag, Document):
-            isDomNode = True
-
-        if not isDomNode:
-            newfrag = Document.createDocumentFragment()
-            if isinstance(frag, (tuple, list)):
-                for f in frag:
-                    newfrag.appendChild(f)
-            else:
-                newfrag.appendChild(frag)
-            frag = newfrag
-
-        # TODO "allowCustomElements": # "allowElements": [], # "blockElements": [], # "dropElements": [],  # "allowAttributes": [],
-        # TODO "dropAttributes": # "allowCustomElements": # "allowComments": # "allowElements" # allowAttributes
-
-        for t in self.config["dropElements"]:
-            el = frag.getElementsByTagName(t)
-            el.parentNode.removeChild(el)
-
-        for t in self.config["dropAttributes"]:
-            for e in self.config["allowElements"]:
-                els = frag.getElementsByTagName(e)
-                if els != False and len(els) > 0:
-                    for el in els:
-                        for each in el.attributes:
-                            if each.name == t:
-                                el.removeAttribute(each.name)
-
-        # print("test" frag.querySelectorAll('span'))
-        # print("test2", frag.getElementsByTagName('span'))
-
-        for e in self.config["allowElements"]:
-            els = frag.getElementsByTagName(e)
-            if els != False and len(els) > 0:
-                for el in els:
-                    # print(el, el.kwargs, el.attributes, el.__attributes__, type(el.attributes))
-                    for each in el.attributes:
-                        # print(each)
-                        key = each.name
-                        val = each.value
-                        # print(key, val)
-                        allowed_on = self.config["allowAttributes"].get(key)
-                        # print("ALLOWED ON:", key, allowed_on)
-                        if allowed_on == None:
-                            el.removeAttribute(key)
-                            continue
-                        if "*" in allowed_on:
-                            continue
-                        if e not in allowed_on:
-                            el.removeAttribute(key)
-                        # else:
-                        #     print(key + ' is allowed')
-
-        for t in self.config["blockElements"]:
-            el = frag.getElementsByTagName(str(t))
-            # keep the children of the element and add them back to the parent
-            for c in el.childNodes:
-                frag.parentNode.appendChild(c)
-            # remove the element
-            frag.parentNode.removeChild(el)
-
-        # print(type(frag))
-        return frag
-
-    def sanitizeToString(self, frag) -> str:
-        """Returns a sanitized String from an input, removing any offending elements or attributes."""
-        return str(self.sanitize(frag))
+        return WebSanitizer.getDefaultConfiguration()
 
 
 def _resolve_id_reference(element: "Element", attribute: str) -> "Element | None":

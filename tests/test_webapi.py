@@ -33,6 +33,7 @@ from domonic.webapi.fetch import (
 )
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
+from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
 from domonic.webapi.xhr import FormData, XMLHttpRequest
@@ -45,6 +46,89 @@ def _debug_print(*args, **kwargs):
 
 
 class TestCase(unittest.TestCase):
+    def test_sanitizer_api(self):
+        dirty = (
+            '<p onclick="evil()">Hello <script>alert(1)</script>'
+            '<a href="javascript:alert(1)" data-id="7">link</a></p>'
+        )
+        self.assertEqual(Sanitizer().sanitizeToString(dirty), "<p>Hello <a>link</a></p>")
+
+        empty = Sanitizer({})
+        self.assertIn("<script>alert(1)</script>", empty.sanitizeToString(dirty))
+        self.assertIn('onclick="evil()"', empty.sanitizeToString(dirty))
+
+        configured = (
+            Sanitizer({"elements": ["div", "span", "b"], "attributes": ["id"]})
+            .replaceElementWithChildren("b")
+            .allowElement("em")
+            .setComments(True)
+        )
+        self.assertEqual(
+            configured.sanitizeToString(
+                '<div><span id="ok" class="drop">safe</span><b>bold</b>'
+                "<em>yes</em><!--kept--><script>bad</script></div>"
+            ),
+            '<div><span id="ok">safe</span>bold<em>yes</em><!--kept--></div>',
+        )
+
+        remover = Sanitizer({"removeElements": ["span"]}).removeAttribute("lang")
+        self.assertEqual(
+            remover.sanitizeToString('<p lang="en">a<span>b</span><i lang="fr">c</i></p>'),
+            "<p>a<i>c</i></p>",
+        )
+
+        data_attrs = Sanitizer().setDataAttributes(True)
+        self.assertEqual(
+            data_attrs.sanitizeToString('<div data-id="1" onclick="x()">ok</div>'),
+            '<div data-id="1">ok</div>',
+        )
+
+        legacy = Sanitizer({"allowAttributes": {"style": ["span"]}})
+        self.assertEqual(
+            legacy.sanitizeToString(
+                "<div style='cool'><span id='x' style='font-weight: bold'>ok</span></div>"
+            ),
+            '<div><span style="font-weight: bold">ok</span></div>',
+        )
+
+        with self.assertRaises(TypeError):
+            Sanitizer({"elements": ["p"], "removeElements": ["script"]})
+
+        with self.assertRaises(TypeError):
+            Sanitizer({"attributes": ["id"], "removeAttributes": ["class"]})
+
+    def test_sanitizer_dom_integration(self):
+        target = div()
+        target.setHTML('<p onclick="evil()">ok<script>bad</script></p>')
+        self.assertEqual(str(target), "<div><p>ok</p></div>")
+
+        target.setHTMLUnsafe('<p onclick="evil()">ok<script>bad</script></p>')
+        self.assertEqual(
+            str(target), '<div><p onclick="evil()">ok<script>bad</script></p></div>'
+        )
+
+        target.setHTMLUnsafe(
+            '<p onclick="evil()">ok<script>bad</script></p>',
+            {"sanitizer": {"removeElements": ["script"], "removeAttributes": ["onclick"]}},
+        )
+        self.assertEqual(str(target), "<div><p>ok</p></div>")
+
+        document = Document.parseHTML(
+            '<main onclick="evil()">ok<script>bad</script>'
+            '<a href="javascript:bad()">x</a></main>'
+        )
+        self.assertEqual(
+            str(document),
+            '<html><head></head><body><main>ok<a>x</a></main></body></html>',
+        )
+        self.assertEqual(document.body.querySelector("main").textContent, "okx")
+
+        unsafe_document = Document.parseHTMLUnsafe("<section><script>bad</script></section>")
+        self.assertEqual(
+            str(unsafe_document),
+            "<html><head></head><body><section><script>bad</script></section></body></html>",
+        )
+
     def test_console_api_surface(self):
         Console.reset()
         self.assertIs(console, Console)

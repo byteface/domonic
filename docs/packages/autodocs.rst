@@ -66,3 +66,6 @@
 
 .. automodule:: domonic.webapi.file
     :members:
+
+.. automodule:: domonic.webapi.sanitizer
+    :members:

@@ -49,6 +49,29 @@ work with ``fetch``, ``FormData`` and drag-and-drop helpers.
 	object_url = URL.createObjectURL(file)
 
 
+Sanitizer API
+----------------
+
+``Sanitizer`` cleans HTML fragments into domonic nodes without evaluating the
+input. It supports the current ``elements``/``removeElements`` and
+``attributes``/``removeAttributes`` configuration names, plus the older domonic
+aliases.
+
+.. code-block :: python
+
+	from domonic.html import div
+	from domonic.webapi.sanitizer import Sanitizer
+
+	clean = Sanitizer().sanitizeToString(
+		'<p onclick="evil()">Hello <script>bad()</script></p>'
+	)
+	assert clean == "<p>Hello </p>"
+
+	target = div()
+	target.setHTML('<a href="javascript:evil()">link</a>')
+	assert str(target) == "<div><a>link</a></div>"
+
+
 URL
 ----------------
 
@@ -108,6 +131,10 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.file
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.sanitizer
     :members:
     :noindex:
 
