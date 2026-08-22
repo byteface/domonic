@@ -25,26 +25,26 @@ RowsLike = str | bytes | bytearray | Mapping[str, Any] | Iterable[Mapping[str, A
 
 
 def parse_file(filepath: str | Path, **kwargs) -> Any:
-    """[loads a json file and returns a python object]
+    """Load a JSON file and return the decoded Python object.
 
     Args:
-        filepath (str): [path to json file]
+        filepath: Path to the JSON file.
 
     Returns:
-        [type]: [a python object]
+        The decoded JSON value.
     """
     with open(filepath, encoding="utf-8") as json_file:
         return json.load(json_file, **kwargs)
 
 
 def parse(json_string: str | bytes | bytearray, **kwargs) -> Any:
-    """[take a json string and return a python object]
+    """Parse a JSON string or bytes object.
 
     Args:
-        json_string (str): [a json string]
+        json_string: JSON data as text or UTF-8 bytes.
 
     Returns:
-        [type]: [a python object]
+        The decoded JSON value.
     """
     if isinstance(json_string, (bytes, bytearray)):
         json_string = json_string.decode("utf-8")
@@ -52,16 +52,14 @@ def parse(json_string: str | bytes | bytearray, **kwargs) -> Any:
 
 
 def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
-    """[stringify a python object]
+    """Serialize a Python object to JSON.
 
     Args:
-        data ([type]): [the python object]
-        filepath (str, optional): [optional filepath to save the stringified
-            object]
-            [default: None]
+        data: Python value to encode.
+        filepath: Optional path to write the JSON payload to.
 
     Returns:
-        [type]: [the stringified object]
+        The JSON string.
     """
     payload = json.dumps(data, **kwargs)
     if filepath is not None:

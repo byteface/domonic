@@ -24,7 +24,7 @@ def _invoke_before(before, function):
 
 
 def el(element="div", string: bool = False):
-    """[wraps the results of a function in an element]"""
+    """Wrap the return value of a function in a domonic element."""
 
     return_string = string or isinstance(element, str)
 

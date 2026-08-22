@@ -92,13 +92,13 @@ class Cmdcommand:
 
     @staticmethod
     def run(cmd: str, **kwargs) -> str:
-        """[runs any command on the cmd]
+        """Run a command through the platform shell and return stdout.
 
         Args:
-            cmd (str): The command you want to run on cmd
+            cmd: Command string to execute.
 
         Returns:
-            str: the response as a string
+            The command stdout as text.
         """
         return Cmdcommand._execute(cmd, **kwargs).stdout
 

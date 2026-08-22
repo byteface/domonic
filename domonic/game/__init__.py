@@ -12,22 +12,22 @@ _random = random.SystemRandom()
 class Game:
     @staticmethod
     def roll_dice(sides=6) -> int:
-        """[rolls a dice]
+        """Roll a die with the requested number of sides.
 
         Args:
-            sides (int, optional): [number of sides on the dice]. Defaults to 6.
+            sides: Number of sides on the die. Defaults to ``6``.
 
         Returns:
-            [int]: [number rolled]
+            A random integer between ``1`` and ``sides``.
         """
         return _random.randint(1, sides)
 
     @staticmethod
     def pick_a_card() -> str:
-        """[selects a random suit and card]
+        """Select a random card label from a standard deck.
 
         Returns:
-            [str]: [a card from the deck in the form of a string. i.e '♥A']
+            A card string such as ``"A♠"``.
         """
         suits = ["♠", "♥", "♦", "♣"]
         cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
@@ -35,13 +35,13 @@ class Game:
 
     @staticmethod
     def deal_cards(n: int = 1) -> list:
-        """[deals n cards]
+        """Deal a list of random card labels.
 
         Args:
-            n (int, optional): [number of cards to deal]. Defaults to 1.
+            n: Number of cards to deal. Defaults to ``1``.
 
         Returns:
-            [list]: [list of cards]
+            A list of card strings.
         """
         return [
             Game.pick_a_card() for _ in range(n)

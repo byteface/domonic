@@ -27,10 +27,10 @@ class Color:
 
     @staticmethod
     def random_hex() -> str:
-        """[returns a random hex color i.e. #000000]
+        """Return a random CSS hex color.
 
         Returns:
-            [str]: [random hex color i.e. #000000]
+            A color string in ``#RRGGBB`` format.
         """
         from random import SystemRandom
 
@@ -46,13 +46,13 @@ class Color:
 
     @staticmethod
     def hex2rgb(h: str) -> tuple[int, int, int]:
-        """[takes a hex color in the form of #RRGGBB and returns the rgb values as a tuple i.e (r, g, b)]
+        """Convert a ``#RRGGBB`` hex color to an RGB tuple.
 
         Args:
-            h ([str]): [hex string i.e #ffffff]
+            h: Hex color string.
 
         Returns:
-            [tuple]: [rgb tuple i.e. (255, 255, 255)]
+            An ``(r, g, b)`` tuple.
         """
         if h[0] == "#":
             h = h.lstrip("#")
@@ -104,15 +104,15 @@ class Color:
 
     @staticmethod
     def rgb2hex(r: int, g: int, b: int) -> str:
-        """[ takes 3 rgb values and returns a hex string i.e. #000000]
+        """Convert RGB channel values to a CSS hex color.
 
         Args:
-            r ([int]): [a value between 0 and 255]
-            g ([int]): [a value between 0 and 255]
-            b ([int]): [a value between 0 and 255]
+            r: Red channel value between ``0`` and ``255``.
+            g: Green channel value between ``0`` and ``255``.
+            b: Blue channel value between ``0`` and ``255``.
 
         Returns:
-            [str]: [retuns a hex string i.e #ffffff]
+            A color string in ``#rrggbb`` format.
         """
         #  TODO - pass tuples or
         # if isinstance(a, (int, float)):
@@ -122,16 +122,16 @@ class Color:
     # deprecated
     @staticmethod
     def fromRGBA(r: int, g: int, b: int, a: int = 255) -> "Color":
-        """[creates a Color from rgba values]
+        """Create a ``Color`` from RGBA channel values.
 
         Args:
-            r ([int]): [a value between 0 and 255]
-            g ([int]): [a value between 0 and 255]
-            b ([int]): [a value between 0 and 255]
-            a ([int]): [a value between 0 and 255]
+            r: Red channel value.
+            g: Green channel value.
+            b: Blue channel value.
+            a: Alpha channel value. Defaults to ``255``.
 
         Returns:
-            [type]: [a Color object]
+            A ``Color`` instance.
         """
         return Color(r, g, b, a)
 
@@ -239,10 +239,10 @@ class Color:
         self.b = value
 
     def toRGB(self) -> tuple[float, float, float]:  # : -> vec3:
-        """[returns the color as RGB]
+        """Return the color as an RGB tuple.
 
         Returns:
-            [tuple]: [ (r, g, b) ]
+            An ``(r, g, b)`` tuple.
         """
         return (self.r, self.g, self.b)
 
@@ -276,10 +276,11 @@ class Color:
     def toSVG(
         self, shape: Literal["circle", "square"] = "circle", size: int = 10
     ) -> str | None:
-        """returns the color as an svg string
+        """Return a small SVG shape filled with this color.
+
         Args:
-            shape ([str]): [can be circle or square]
-            size ([int]): [size in pixels]
+            shape: Shape to render, either ``"circle"`` or ``"square"``.
+            size: Shape size in pixels.
         """
         if shape == "circle":
             return '<circle cx="0" cy="0" r="%d" fill="%s" />' % (size, self.toHex())
@@ -301,10 +302,10 @@ class Color:
     #     return img
 
     def convert(self, to: str) -> tuple[float, ...] | str | None:
-        """convert the color to a different color space
+        """Convert the color to another color representation.
 
         Args:
-            to ([str]): [can be one of the following: 'rgb', 'hsl', 'hsv', 'hex']
+            to: Target representation: ``"rgb"``, ``"hsl"``, ``"hsv"``, ``"hex"``, or ``"css"``.
         """
         if to == "rgb":
             return self.toRGB()
@@ -320,10 +321,10 @@ class Color:
     # set(*args)
 
     def hasAlpha(self) -> bool:
-        """[does the color have an alpha channel]
+        """Return whether the color has a positive alpha value.
 
         Returns:
-            [bool]: [True if alpha channel exists else False]
+            ``True`` when alpha is greater than zero.
         """
         return self.a > 0
 

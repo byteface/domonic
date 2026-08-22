@@ -251,19 +251,17 @@ class NumberUtils:
 
 
 class Utils:
-    """Utils"""
+    """General-purpose helpers used across domonic."""
 
     @staticmethod
     def case_camel(s: str) -> str:
-        """case_camel('camel-case') > 'camelCase'"""
+        """Convert a snake-case or kebab-case string to camelCase."""
         s = sub(r"(_|-)+", " ", s).title().replace(" ", "")
         return s[0].lower() + s[1:]
 
     @staticmethod
     def case_snake(s: str) -> str:
-        """
-        snake('camelCase') # 'camel_case'
-        """
+        """Convert a camelCase or kebab-case string to snake_case."""
         return "_".join(
             sub(
                 "([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))
@@ -272,9 +270,7 @@ class Utils:
 
     @staticmethod
     def case_kebab(s: str) -> str:
-        """
-        kebab('camelCase') # 'camel-case'
-        """
+        """Convert a camelCase or snake_case string to kebab-case."""
         return "-".join(
             sub(
                 r"(\s|_|-)+",
@@ -289,52 +285,53 @@ class Utils:
 
     @staticmethod
     def squash(the_list: Iterable[Iterable[T]]) -> list[T]:
-        """[turns a 2d array into a flat one]
+        """Flatten a two-dimensional iterable into a list.
 
         Args:
-            the_list ([list]): [a 2d array]
+            the_list: Iterable containing other iterables.
 
         Returns:
-            [list]: [a flattened 1d array]
+            A flat list containing every inner item in iteration order.
         """
         return [inner for outer in the_list for inner in outer]
 
     @staticmethod
     def chunk(values: Sequence[T], size: int) -> list[Sequence[T]]:
-        """chunk a list into batches"""
+        """Split a sequence into batches of up to ``size`` items."""
         return [values[i : i + size] for i in range(0, len(values), size)]
 
     @staticmethod
     def dictify(arr: Iterable[T]) -> dict[T, int]:
-        """[turns a list into a dictionary where the list items are the keys]
+        """Build a dictionary using iterable values as keys.
 
         Args:
-            arr ([list]): [list to change]
+            arr: Values to use as dictionary keys.
 
         Returns:
-            [dict]: [a new dict where the list items are now the keys]
+            A dictionary where every key maps to ``0``.
         """
         return {}.fromkeys(arr, 0)
 
     @staticmethod
     def is_empty(some_str: str) -> bool:
+        """Return whether a string is empty or contains only whitespace."""
         return not some_str.strip()
 
     @staticmethod
     def unique(some_arr: Iterable[T]) -> list[T]:
-        """[removes duplicates from a list]
+        """Return a list containing the unique values from an iterable.
 
         Args:
-            some_arr ([list]): [list containing duplicates]
+            some_arr: Iterable that may contain duplicate values.
 
         Returns:
-            [list]: [a list containing no duplicates]
+            A list with duplicates removed.
         """
         return list(set(some_arr))
 
     @staticmethod
     def chunks(iterable: Iterable[T], size: int, format: Any = iter) -> Iterator[Any]:
-        """Iterate over any iterable (list, set, file, stream, strings, whatever), of ANY size"""
+        """Yield fixed-size chunks from any iterable."""
         it = iter(iterable)
         while True:
             try:
@@ -349,87 +346,90 @@ class Utils:
 
     @staticmethod
     def clean(lst: Iterable[T]) -> list[T]:
-        """[removes falsy values (False, None, 0 and “”) from a list ]
+        """Remove falsy values from an iterable.
 
         Args:
-            lst ([list]): [lst to operate on]
+            lst: Iterable that may contain falsy values.
 
         Returns:
-            [list]: [a new list with falsy values removed]
+            A list containing only truthy values.
         """
         return list(filter(None, lst))
 
     @staticmethod
     def get_vowels(string: str) -> list[str]:
-        """[get a list of vowels from the word]
+        """Return the lowercase vowels present in a string.
 
         Args:
-            string ([str]): [the word to check]
+            string: Text to scan for vowels.
 
         Returns:
-            [list]: [a list of vowels]
+            A list of matching vowels in their original order.
         """
         return [each for each in string if each in "aeiou"]
 
     @staticmethod
     def untitle(string: str) -> str:
-        """[the opposite of title]
+        """Lowercase the first character of a string.
 
         Args:
-            str ([str]): [the string to change]
+            string: Text to transform.
 
         Returns:
-            [str]: [a string with the first character set to lowercase]
+            The text with its first character lowercased.
         """
         return string[:1].lower() + string[1:]
 
     @staticmethod
     def merge_dictionaries(a: dict[Any, Any], b: dict[Any, Any]) -> dict[Any, Any]:
-        """[merges 2 dicts]
+        """Merge two dictionaries into a new dictionary.
 
         Args:
-            a ([dict]): [dict a]
-            b ([dict]): [dict b]
+            a: First dictionary.
+            b: Second dictionary. Values in this dictionary win on key collisions.
 
         Returns:
-            [dict]: [a new dict]
+            A new merged dictionary.
         """
         return {**a, **b}
 
     @staticmethod
     def to_dictionary(keys: Iterable[T], values: Iterable[Any]) -> dict[T, Any]:
-        """[take a list of keys and values and returns a dict]
+        """Build a dictionary by zipping keys and values.
 
         Args:
-            keys ([list]): [a list of keys]
-            values ([list]): [a list of value]
+            keys: Iterable of dictionary keys.
+            values: Iterable of dictionary values.
 
         Returns:
-            [dict]: [a dictionary]
+            A dictionary containing paired keys and values.
         """
         return dict(zip(keys, values))
 
     @staticmethod
     def most_frequent(lst: Sequence[T]) -> T:
+        """Return the most frequent value in a sequence."""
         return max(set(lst), key=lst.count)
 
     @staticmethod
     def is_anagram(first: str, second: str) -> bool:
+        """Return whether two strings contain the same characters."""
         return Counter(first) == Counter(second)
 
     @staticmethod
     def is_palindrome(word: str) -> bool:
+        """Return whether a word reads the same forwards and backwards."""
         return word == word[::-1]
 
     @staticmethod
     def acronym(sentence: str) -> str:
-        """[pass a sentence, returns the acronym]
+        """Create an acronym from the first character of each word.
 
         Args:
-            sentence ([str]): [typically 3 words]
+            sentence: Sentence or phrase to abbreviate.
 
         Returns:
-            [str]: [a TLA (three letter acronym)]
+            An uppercase acronym.
         """
         text = sentence.split()
         a = ""
@@ -439,13 +439,13 @@ class Utils:
 
     @staticmethod
     def frequency(data: Iterable[T]) -> dict[T, int]:
-        """[check the frequency of elements in the data]
+        """Count how often each value appears in an iterable.
 
         Args:
-            data ([type]): [the data to check]
+            data: Iterable of values to count.
 
         Returns:
-            [dict]: [a dict of elements and their frequency]
+            A dictionary mapping each value to its count.
         """
         freq = {}
         for elem in data:
@@ -457,10 +457,10 @@ class Utils:
 
     @staticmethod
     def init_assets(dir: str = "assets") -> None:
-        """[creates an assets directory with nested js/css/img dirs]
+        """Create a starter asset directory structure.
 
         Args:
-            dir (str, optional): [default directory name]. Defaults to 'assets'.
+            dir: Root directory to create. Defaults to ``"assets"``.
         """
         from domonic.terminal import mkdir, touch
 
@@ -474,13 +474,13 @@ class Utils:
 
     @staticmethod
     def url2file(url: str) -> str:
-        """[gen a safe filename from a url. by replacing '/' for '_' and ':' for '__' ]
+        """Convert a URL into a filesystem-safe filename.
 
         Args:
-            url ([str]): [the url to turn into a filename]
+            url: URL to encode.
 
         Returns:
-            [str]: [description]
+            A quoted filename-safe representation of the URL.
         """
         import urllib
 
@@ -491,13 +491,13 @@ class Utils:
 
     @staticmethod
     def permutations(word: str) -> list:
-        """[provides all the possible permutations of a given word]
+        """Return all permutations of a word.
 
         Args:
-            word ([str]): [the word to get permutations for]
+            word: Text to permute.
 
         Returns:
-            [list]: [a list of permutations]
+            A list of permutation strings.
         """
         from itertools import permutations
 
@@ -505,31 +505,32 @@ class Utils:
 
     @staticmethod  # TODO - remove as we have color class. (might be getting used in examples)
     def random_color(self):
+        """Return a random hex color string."""
         r = lambda: _random.randint(0, 255)
         return str("#%02X%02X%02X" % (r(), r(), r()))
 
     @staticmethod
     def escape(s: str) -> str:
-        """[escape a string]
+        """Escape XML/HTML special characters in a string.
 
         Args:
-            s ([str]): [the string to escape]
+            s: Text to escape.
 
         Returns:
-            [str]: [the escaped string]
+            Escaped text.
         """
         chars = {"&": "&amp;", '"': "&quot;", "'": "&apos;", ">": "&gt;", "<": "&lt;"}
         return "".join(chars.get(c, c) for c in s)
 
     @staticmethod
     def unescape(s: str) -> str:
-        """[unescape a string]
+        """Unescape XML/HTML entities in a string.
 
         Args:
-            s ([str]): [the string to unescape]
+            s: Escaped text.
 
         Returns:
-            [str]: [the unescaped string]
+            Unescaped text.
         """
         s = s.replace("&lt;", "<")
         s = s.replace("&gt;", ">")
@@ -542,17 +543,17 @@ class Utils:
     def replace_between(
         content: str, match: str, replacement: str, start: int = 0, end: int = 0
     ):
-        """[replace some text but only between certain indexes]
+        """Replace text only inside a selected slice of a string.
 
         Args:
-            content (str): [the content whos text you will be replacing]
-            match (str): [the string to find]
-            replacement (str): [the string to replace it with]
-            start (int, optional): [start index]. Defaults to 0.
-            end (int, optional): [end index]. Defaults to 0.
+            content: Text to update.
+            match: Text to find inside the selected slice.
+            replacement: Text to insert in place of each match.
+            start: Start index of the slice to search. Defaults to ``0``.
+            end: End index of the slice to search. Defaults to ``0``.
 
         Returns:
-            [str]: [the new string]
+            The updated string.
         """
         front = content[0:start]
         mid = content[start:end]
@@ -562,14 +563,14 @@ class Utils:
 
     @staticmethod
     def truncate(text: str = "", length: int = 0) -> str:
-        """[truncates a string and appends 3 dots]
+        """Truncate a string to a maximum length and append an ellipsis.
 
         Args:
-            text (str, optional): [the text to truncate]. Defaults to ''.
-            length (int, optional): [the max length]. Defaults to 0.
+            text: Text to truncate.
+            length: Maximum number of characters to keep before the ellipsis.
 
         Returns:
-            [str]: [the truncated string]
+            Truncated text followed by ``"..."``.
         """
         if len(text) > length:
             return text[0:length] + "..."
@@ -578,13 +579,13 @@ class Utils:
 
     @staticmethod
     def digits(text: str = "") -> str:
-        """[takes a string of mix of digits and letters and returns a string of digits]
+        """Extract digits from a value.
 
         Args:
-            text (str, optional): [the text to change]. Defaults to ''.
+            text: Value to convert to digit text.
 
         Returns:
-            [str]: [a string of digits]
+            Digits found in a string, or a stringified numeric value.
         """
         if isinstance(text, int):
             return str(text)
@@ -600,14 +601,14 @@ class Utils:
 
     @staticmethod
     def has_internet(url: str = "http://www.google.com/", timeout: int = 5) -> bool:
-        """[check if you have internet connection]
+        """Check whether a URL can be reached with an HTTP HEAD request.
 
         Args:
-            url (str, optional): [the url to check]. Defaults to 'http://www.google.com/'.
-            timeout (int, optional): [the timeout]. Defaults to 5.
+            url: URL to check.
+            timeout: Request timeout in seconds.
 
         Returns:
-            [bool]: [True if you have internet]
+            ``True`` when the request succeeds, otherwise ``False``.
         """
         import requests
 
@@ -620,10 +621,10 @@ class Utils:
 
     @staticmethod
     def is_nix() -> bool:
-        """[check if the system is a nix based system]
+        """Return whether the current OS is POSIX-like.
 
         Returns:
-            [bool]: [True if it is a nix based system]
+            ``True`` on POSIX systems.
         """
         import os
 
@@ -631,10 +632,10 @@ class Utils:
 
     @staticmethod
     def is_mac() -> bool:
-        """[check if the system is a mac]
+        """Return whether the current platform is macOS.
 
         Returns:
-            [bool]: [True if the system is a mac]
+            ``True`` on macOS.
         """
         import sys
 
@@ -642,10 +643,10 @@ class Utils:
 
     @staticmethod
     def is_windows() -> bool:
-        """[check if the system is a windows]
+        """Return whether the current OS is Windows.
 
         Returns:
-            [bool]: [True if windows]
+            ``True`` on Windows.
         """
         import os
 
@@ -653,10 +654,10 @@ class Utils:
 
     @staticmethod
     def is_linux() -> bool:
-        """[check if the system is a linux]
+        """Return whether the current platform is Linux.
 
         Returns:
-            [bool]: [description]
+            ``True`` on Linux.
         """
         import sys
 
@@ -760,6 +761,7 @@ class Utils:
 
     @staticmethod
     def numberToBase(n, b):
+        """Convert an integer to a list of digits in the given base."""
         if n == 0:
             return [0]
         digits = []

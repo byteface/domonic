@@ -17,14 +17,14 @@ from domonic.html import *
 
 
 class Websocket:
-    """[Creates a websocket with listeners for particular events]
+    """Render a browser websocket helper with optional event listeners.
 
     # TODO - collect other or all Window data and pass to a window object
 
     Args:
-        str ([reference]): [the javascript variable name given to the socket]
-        str ([address]): [where you want to connect to]
-        str ([target]): [the dom element to attach the listeners to]
+        reference: JavaScript variable name assigned to the socket.
+        address: Websocket URL to connect to.
+        target: DOM selector or element reference used for event listeners.
     """
 
     @staticmethod
