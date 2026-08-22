@@ -1,9 +1,9 @@
 cmd
 =================
 
-There is a cmd package for calling windows commands within python3
+The ``cmd`` package calls Windows commands from Python.
 
-This package only works on windows systems as it effectively just passes stuff off to subprocess.
+This package only works on Windows systems because it delegates to ``subprocess``.
 
 .. code-block :: python
 
@@ -18,7 +18,7 @@ This package only works on windows systems as it effectively just passes stuff o
 	    print("Line : ", file)
 
 
-run arbitrary commands...
+Run Arbitrary Commands
 --------------------------------
 
 .. code-block :: python

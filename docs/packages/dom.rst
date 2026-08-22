@@ -1,25 +1,25 @@
 dom
 ============
 
-Domonic's DOM aims to be useful as an actual platform surface, not just a tree of helper objects.
+domonic's DOM aims to be useful as an actual platform surface, not just a tree of helper objects.
 
-To use the DOM either reference your root 'html' node or import the dom modules global 'document'
+To use the DOM, either reference your own root ``html`` node or import the global ``document`` from ``domonic.dom``.
 
 .. code-block :: python
 
-	# access the document via the html tag
+	# Access the document via the html tag.
 	mydom = html()
 	# mydom.getElementbyID...
 
-	# or by importing the document global
+	# Or import the document global.
 	from domonic.dom import document
 	# document.createElement...
 	print(document)
 
 
-The last 'html()' created will always be the 'document'. You can set it manually but it needs to be a Document instance. Before a 'html' class is created it is just an empty document so that static methods can be available.
+The last ``html()`` created becomes the active ``document``. You can also set it manually, but it must be a ``Document`` instance. Before an ``html`` class is created, domonic keeps an empty document around so static methods are available.
 
-Remember python globals are only to that module (unlike other langs). so you will have to import document explicitly when you need it (per method call after setting it). i.e
+Remember that Python globals are module-local. Import ``document`` again after creating an ``html`` root if another module or function needs the updated document:
 
 .. code-block :: python
 
@@ -29,17 +29,17 @@ Remember python globals are only to that module (unlike other langs). so you wil
 	print('body1', d.doctype)
 	print('body2', domonic.dom.document.doctype)
 	print('body3', document.doctype)
-	from domonic.dom import document  # re-import to get the updated document
+	from domonic.dom import document  # Re-import to get the updated document.
 	print('body4', document.doctype)
 
-notice how before it was imported it was still just a class not an instance.
+Notice that before re-importing it was still the previous object.
 
-So in most cases just use your own root node and not document as it will be the only one that will be updated unless you import after any html node creation. The global is for when you need to access the document from a different module(file)
+In most cases, use your own root node directly. The global ``document`` is useful when you need access from a different module.
 
 
 createElement
 ----------------
-Here's an exmaple of creating your own elements using the DOM API
+Here's an example of creating your own elements using the DOM API:
 
 .. code-block :: python
 
@@ -55,7 +55,7 @@ Here's an exmaple of creating your own elements using the DOM API
 querySelectorAll
 ----------------
 
-querySelectorAll and querySelector are useful for finding elements in the DOM.
+``querySelectorAll`` and ``querySelector`` are useful for finding elements in the DOM.
 
 .. code-block :: python
 
@@ -69,37 +69,16 @@ querySelectorAll and querySelector are useful for finding elements in the DOM.
 	for l in somelinks:
 		print(l.href)
 
-
-To use the DOM either reference your root 'html' node or import the dom modules global 'document'
-
-.. code-block :: python
-
-	# access the document via the html tag
-	mydom = html()
-	# mydom.getElementbyID...
-
-	# or by importing the document global
-	from domonic.dom import document
-	# document.createElement...
-	print(document)
-
-
-The last 'html()' you created will always be the 'document'. You can also set it manually but it needs to ne a Document instance. 
-Before a 'html' class is created there is an empty document so that static methods can be available.
-
-*a note on globals*
-Remember python globals are only to that module (unlike other langs). So you will have to import document explicitly when you need it (per method call)
-
-See the examples folder for other uses of a python virtual DOM.
+See the examples folder for other uses of the Python virtual DOM.
 
 
 
 DOMConfig
 ----------------
 
-DOMConfig is for setting some render options on the dom.
+``DOMConfig`` controls rendering options on the DOM.
 
-i.e. here's we set all the current flags to be opposite their default...
+For example, here we set several flags away from their defaults:
 
 .. code-block :: python
 

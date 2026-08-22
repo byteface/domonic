@@ -1,13 +1,13 @@
 x3d
 =================
 
-If using x3d you must use 'append' rather than 'html' when adding children 'inline' when templating.
+When using X3D, use ``append`` rather than ``html`` when adding children inline while templating.
 
-This is because they are 'Nodes' not 'Elements' so won't inherit that custom innerHTML shortcut.
+This is because they are nodes, not HTML elements, so they do not inherit the custom ``innerHTML`` shortcut.
 
-Instead they currently Mixin the 'ParentNode' which grants them 'append' and 'prepend' methods 
+Instead they currently mix in ``ParentNode``, which provides ``append`` and ``prepend`` methods.
 
-See below...
+For example:
 
 .. code-block :: python
 
@@ -30,12 +30,13 @@ See below...
 	    )
 	)
 
-Alternatively you can just put them directly in the first parameter and move your kwargs to the end.
+Alternatively, put them directly in the first parameter and move keyword arguments to the end.
 
 
-### aframe
+A-Frame
+----------------
 
-aframe is a simliar library and its tags can be used if you import the js
+A-Frame is similar, and its tags can be used if you import the JavaScript runtime.
 
 
 .. code-block :: python

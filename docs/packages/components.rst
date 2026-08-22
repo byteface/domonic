@@ -1,30 +1,30 @@
 Templates and Components
 ======================================
 
-With all these pieces you can now build templates or components...
+With all these pieces you can build templates and components.
 
 
 Templates
 ----------------
 **Some notes on templates**
 
-domonic mixed with lambdas can create templates without needing to make a class...
+domonic mixed with lambdas can create templates without needing to make a class.
 
 .. code-block :: python
 
-	# create a template
+	# Create a template.
 	some_tmpl = lambda somevar: div( _style=f"display:inline;margin:{MARGIN}px;").html(
 	    button(somevar, _style="background-color:white;color:black;")
 	)
 
-then you can us it like this...
+Then you can use it like this:
 
 .. code-block :: python
 
 	some_tmpl("some content")
 
 
-Here is another template. This one is larger and uses a Class. It can take content as input.
+Here is a larger template that uses a class and takes content as input.
 
 .. code-block :: python
 
@@ -48,7 +48,7 @@ Here is another template. This one is larger and uses a Class. It can take conte
 	                $('#'+_id).css("display","block");
 	            });
 
-	            // pass an ElementID and an endpoint to redraw that div with the endpoints response
+	            // Pass an element ID and an endpoint to redraw that div with the endpoint response.
 	            window.redraw = function( _id, endpoint ){
 	                $.get( endpoint, function( data ) {
 	                window.console.log(data)
@@ -103,7 +103,7 @@ Here is another template. This one is larger and uses a Class. It can take conte
 	            )
 
 
-You can now render your template. Which can take content as input.
+You can now render your template with content as input.
 
 .. code-block :: python
 
@@ -119,33 +119,33 @@ You can now render your template. Which can take content as input.
 Important notes on templating
 --------------------------------
 
-while you can create a div with content like :
+You can create a ``div`` with content like this:
 
 .. code-block :: python
 
     div("some content")
 
-python doesn't allow named params before unamed ones. So you can't do this:
+Python does not allow keyword arguments before positional arguments, so this will not work:
 
 .. code-block :: python
 
     div(_class="container", p("Some content") )
 
-or it will complain the params are in the wrong order. You have to instead put content before attributes:
+Python will complain that the parameters are in the wrong order. Put content before attributes:
 
 .. code-block :: python
 
     div( p("Some content"), _class="container")
 
-which is annoying when a div gets long.
+That can get awkward when a ``div`` gets long.
 
-You can get around this by using 'html' which is available on every Element:
+You can get around this by using ``html``, which is available on every ``Element``:
 
 .. code-block :: python
 
 	div( _class="container" ).html("Some content")
 
-This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
+This is not like jQuery's ``html`` function, which returns only inner content. Use ``innerHTML`` for that.
 
 It is used specifically for rendering.
 
@@ -158,22 +158,22 @@ When you first start templating this way you can make a lot of common mistakes. 
 
 Refer back to this page for a few days until you get used to it.
 
-Here are the 4 most common ones I experienced when creating large templates...
+Here are four common mistakes from larger templates:
 
-( i.e. bootstrap5 examples in test_domonic.py )
+(for example, the bootstrap examples in ``test_domonic.py``)
 
 IndexError: list index out of range
-    - You most likely didn't put a underscore on an attribute.
+    - You most likely forgot an underscore on an attribute.
     - THIS ALSO APPLIES TO ``{"_data-tags":"x"}``
 
 SyntaxError: invalid syntax
-    - You are Missing a comma between attributes
+    - You are missing a comma between attributes.
 
 SyntaxError: positional argument follows keyword argument
-    - You have to pass attributes LAST. and strings and objects first. *see docs*
+    - Pass strings and child nodes first, then attributes.
 
 TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-    - You are Missing a comma between attributes before ``**{}``
+    - You are missing a comma before ``**{}``.
 
 
 
@@ -181,7 +181,7 @@ Components
 ----------------
 **Some notes on components**
 
-A component 'might' look something like this...
+A component might look something like this:
 
 .. code-block :: python
 
@@ -208,11 +208,11 @@ A component 'might' look something like this...
 		    )
 
 
-Now you will need a server as domonic only provides a view.
+Now you need a server, because domonic only provides the view.
 
-These example use Sanic. But it could be Flask or any other that can provide routing.
+These examples use Sanic, but it could be Flask or any other framework that provides routing.
 
-A component could, for example, take a request directly as input and returns html
+A component could take a request directly as input and return HTML:
 
 .. code-block :: python
 
@@ -226,15 +226,14 @@ A component could, for example, take a request directly as input and returns htm
 	        print(e)
 	        return response.html( str( div("COMPONENT NOT FOUND!") ) )
 
-for this to work the component would need to be in a file called:
-app/components/my_component.py
+For this to work, the component would need to be in ``app/components/my_component.py``.
 
 
-Then a given component or template can just return html and render directly into your page using a bit of javascript.
+Then a component or template can return HTML and render directly into your page using a little JavaScript.
 
 .. code-block :: javascript
 
-	// pass an ElementID and an endpoint to redraw that div with the endpoints response
+	// Pass an element ID and an endpoint to redraw that div with the endpoint response.
 	window.redraw = function( _id, endpoint ){
 	    $.get( endpoint, function( data ) {
 	    window.console.log(data)
@@ -245,19 +244,19 @@ Then a given component or template can just return html and render directly into
 
 *built-in components*
 
-There is a built in components package but its use is discouraged as they may change or be buggy and untested.
+There is a built-in components package, but its use is discouraged because the components may change and are not all fully tested.
 
 You should use domonic to make your own components.
 
-Some that may kick around a while due to being used in examples are listed here...
+Some components used in examples are listed here.
 
 
 SpriteCSS
 ----------------
 
-For a working example see... /examples/ken/sf2.py
+For a working example, see ``examples/ken/sf2.py``.
 
-pass a UID. w, h, path, duration, steps, looping, y_offset
+Pass a UID, width, height, path, duration, steps, looping flag, and y-offset.
 
 .. code-block :: javascript
 

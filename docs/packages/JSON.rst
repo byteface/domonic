@@ -1,7 +1,7 @@
 JSON
 =============
 
-Domonic includes practical helpers for moving between Python objects, JSON, CSV, and simple HTML tables.
+domonic includes practical helpers for moving between Python objects, JSON, CSV, and simple HTML tables.
 
 Decorate any function that returns Python objects to return JSON instead:
 
@@ -18,20 +18,21 @@ Decorate any function that returns Python objects to return JSON instead:
 	print( is_json(somefunc()) )
 
 
-convert json arrays into html tables...
+Convert JSON arrays into HTML tables:
 
 .. code-block :: python
 
 	import domonic.JSON as JSON
 
-	# i.e. containting flat json array of dicts... [{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]
+	# A flat JSON array of dicts, for example:
+	# [{"id": "01", "name": "some item"}, {"id": "02", "name": "some other item"}]
 
 	json_data = JSON.parse_file('somefile.json')
 	mytable = JSON.tablify(json_data)
 	print(mytable)
 
 
-convert json arrays into csv files...
+Convert JSON arrays into CSV files:
 
 .. code-block :: python
 
@@ -41,13 +42,13 @@ convert json arrays into csv files...
 	JSON.csvify(json_data, 'data.csv')
 
 
-convert csv files to json...
+Convert CSV files to JSON:
 
 .. code-block :: python
 
 	import domonic.JSON as JSON
 
-	json_data =JSON.csv2json("data.csv")
+	json_data = JSON.csv2json("data.csv")
 	print(json_data)
 
 

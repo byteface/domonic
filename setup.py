@@ -53,7 +53,6 @@ setup(
         "Tracker": "https://github.com/byteface/domonic/issues",
         "Examples": "https://github.com/byteface/domonic/tree/master/examples",
         "Releases": "https://github.com/byteface/domonic/releases",
-        "Changelog": "https://github.com/byteface/domonic/blob/master/CHANGELOG.md",
         "Contributing": "https://github.com/byteface/domonic/blob/master/CONTRIBUTING.md",
         "Security": "https://github.com/byteface/domonic/blob/master/SECURITY.md",
     },

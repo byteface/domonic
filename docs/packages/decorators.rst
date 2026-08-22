@@ -1,9 +1,9 @@
 decorators
 ======================
 
-Everyone loves python decorators
+Everyone loves Python decorators.
 
-We have a few in domonic to make life more fun!
+domonic includes a few decorators to make rendering and debugging more convenient.
 
 
 el
@@ -11,7 +11,7 @@ el
 
 You can use the el decorator to wrap elements around function results.
 
-.. code-block :: bash
+.. code-block :: python
 
     from domonic.decorators import el
 
@@ -24,43 +24,43 @@ You can use the el decorator to wrap elements around function results.
     print(test())
     # <html><body><div>hi!</div></body></html>
 
-    # returns pyml objects so call str to render
+    # Returns PyML objects, so call str to render.
     assert str(test()) == '<html><body><div>hi!</div></body></html>'
 
 
-It returns the tag object by default. 
+It returns the tag object by default.
 
-You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
+Pass ``True`` as the second parameter to return a rendered string instead. The first parameter can also be a string for custom tags.
 
 
 silence
 --------------------------------
 
-Want that unit test to stfu?
+Want to silence a noisy function while testing?
 
-.. code-block :: bash
+.. code-block :: python
 
     from domonic.decorators import silence
 
     @silence
     def test_that_wont_pass():
-        assert True == False
+        assert True is False
 
 
 called
 --------------------------------
 
-Python's lambda restrictions may force you to create anonymous success methods above calling functions.
+Python's lambda restrictions can force you to define success callbacks above the functions that use them.
 
-domonic uses a unique type of decorator to call anonymouse methods immediately after calling the passed method.
+domonic has a decorator that calls a setup function first, then passes that result into the decorated callback.
 
-To use it, pass 2 functions, something to call BEFORE hand, and an error method
+To use it, pass two functions: a setup function and an error handler.
 
-Then your decorated anonymous function will recieve the data of the first function you passed in as a parameter.
+The decorated function receives the setup function's result as its first argument.
 
-Let me show you...
+For example:
 
-.. code-block :: bash
+.. code-block :: python
 
     from domonic.decorators import called
 
@@ -72,11 +72,11 @@ Let me show you...
         print(data.text)
 
 
-It's meant for anonymous functions and calls immediately. So don't go using it on class methods.
+It is intended for immediate callbacks, not class methods.
 
-It's also called iffe. (so you can know when ur just passing nothing)
+It is also aliased as ``iife`` for immediately invoked function expressions.
 
-.. code-block :: bash
+.. code-block :: python
 
     @iife()
     def sup():
@@ -87,9 +87,9 @@ It's also called iffe. (so you can know when ur just passing nothing)
 check
 --------------------------------
 
-logs the entry and exit of a function and is useful for debugging. i.e.
+``check`` logs the entry and exit of a function and is useful for debugging.
 
-.. code-block :: bash
+.. code-block :: python
 
     @check
     def somefunc():

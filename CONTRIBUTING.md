@@ -11,7 +11,7 @@ I'd encourage you to download and play. If you do manage to improve it
 in even the smallest way, please feel free to send a pull request.
 
 Small commits are good. You can even fork, edit and submit a pull request
-all within github without even downloading the repo. In just 3 or 4 simple steps.
+all within GitHub without even downloading the repo. In just 3 or 4 simple steps.
 
 But for a full setup keep reading.
 
@@ -56,7 +56,7 @@ make test
 
 or you can run tests just for a single module.
 
-```python
+```bash
 python3 -m unittest tests.test_html
 python3 -m unittest tests.test_dom
 python3 -m unittest tests.test_style
@@ -77,7 +77,7 @@ python3 -m unittest tests.test_templates
 
 To install from source and use domonic with your changes do:
 
-```python
+```bash
 python3 setup.py install
 ```
 
@@ -111,12 +111,12 @@ cd docs
 make html
 ```
 
-* Unit Test - These are severely lacking and writing them uncovers bugs. Try to start everthing you are doing with tests.
+* Unit tests - These are always useful, and writing them often uncovers bugs. Try to start everything you are doing with tests.
 
 Submitting Changes
 ------------------
 
-Ideally you can make a fork and submit a pull request and I'll try to review it and add the udpates as soon as possible to a release.
+Ideally you can make a fork and submit a pull request. I'll try to review it and add the updates as soon as possible to a release.
 
 Try to do unit tests if you can and add new ones to the test files if you need to. There is usually a test file for each class or package.
 
@@ -131,9 +131,9 @@ what you want to do.  That lets a conversation happen early in case
 other contributors disagree with what you'd like to do or have ideas
 that will help you do it.
 
-I'd like to get the conventions as good as possbile but it's a big project with a lot to do.
+I'd like to get the conventions as good as possible, but it's a big project with a lot to do.
 
-I'm severly behind on unit tests and documentation.
+I'm behind on unit tests and documentation.
 
 If you want you can also raise a bug and suggest a fix as a comment. If you have patched something locally and just want to suggest the change but don't feel confident setting everything up just put a message dicussion board.
 

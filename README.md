@@ -83,7 +83,7 @@ window.location = "https://example.com"
 print(window.document.title)
 ```
 
-html5lib is bundled as the default parser as it's pure python. However see the `Parsers` section below as other parser backends are supported and are much faster.
+html5lib is bundled as the default parser because it is pure Python. See the `Parsers` section below for other parser backends, many of which are much faster.
 
 
 ### xpath or css
@@ -105,7 +105,7 @@ domonic -x https://google.com '//a' | uniq | sort
 
 See the [docs/code](https://domonic.readthedocs.io/) for more features or examples in the [repo](https://github.com/byteface/domonic/tree/master/examples)
 
-Project links: [Changelog](CHANGELOG.md) | [Security](SECURITY.md) | [Contributing](CONTRIBUTING.md) | [Examples](examples/README.md)
+Project links: [Release notes](https://github.com/byteface/domonic/releases) | [Security](SECURITY.md) | [Contributing](CONTRIBUTING.md) | [Examples](examples/README.md)
 
 
 ### Namespace
@@ -230,9 +230,9 @@ The aim is to track the real platform as closely as possible :
 Check the [code/docs](https://domonic.readthedocs.io/) to see what's currently implemented.
 
 
-### Javascript
+### JavaScript
 
-There is a Javascript package that mirrors a large, practical slice of the JS API:
+There is a JavaScript package that mirrors a large, practical slice of the JS API:
 
 ```python
 from domonic.javascript import Math
@@ -316,7 +316,7 @@ print(atag)
 # <a href="http://somesite.com:8983/blog/article-one#some-hash">
 ```
 
-For writing and using regular Javascript, load from a src...
+For writing and using regular JavaScript, load from a source:
 
 ```python
 script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
@@ -382,7 +382,7 @@ print(test())
 assert str(test()) == '<html><body><div>hi!</div></body></html>'
 ```
 
-It returns the tag object by default. You can pass True as a second param to the decorator to return a rendered string instead. Also accepts strings as first param i.e. custom tags.
+It returns the tag object by default. You can pass ``True`` as a second parameter to return a rendered string instead. It also accepts strings as the first parameter for custom tags.
 
 ### data-tags
 
@@ -403,7 +403,7 @@ str(t)
 
 ### JSON (utils)
 
-Decorate any function that returns Python objects to return json instead
+Decorate any function that returns Python objects to return JSON instead.
 
 ```python
 from domonic.decorators import as_json
@@ -420,19 +420,19 @@ print( JSON.is_json(somefunc()) )
 # True
 ```
 
-convert json arrays into html tables...
+Convert JSON arrays into HTML tables:
 
 ```python
 import domonic.JSON as JSON
 
-# i.e. containting flat json array of dicts... [{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]
+# i.e. containing a flat JSON array of dicts... [{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]
 
 json_data = JSON.parse_file('somefile.json')
 mytable = JSON.tablify(json_data)
 print(mytable)
 ```
 
-convert json arrays into csv files...
+Convert JSON arrays into CSV files:
 
 ```python
 import domonic.JSON as JSON
@@ -441,12 +441,12 @@ json_data = JSON.parse_file('somefile.json')
 JSON.csvify(json_data, 'data.csv')
 ```
 
-convert csv files to json...
+Convert CSV files to JSON:
 
 ```python
 import domonic.JSON as JSON
 
-json_data =JSON.csv2json("data.csv")
+json_data = JSON.csv2json("data.csv")
 print(json_data)
 ```
 
@@ -531,7 +531,7 @@ dQuery is included here because it is useful for proving out the DOM against a d
 
 There is a command line package that can call bash/unix/posix and other apps on the command line:
 
-This package only works on nix systems as it effectively just passes stuff off to subprocess.
+This package only works on Unix-like systems because it delegates to subprocess.
 
 ```python
 from domonic.terminal import *
@@ -566,7 +566,7 @@ for thing in du():
     print(thing)
 
 print(find('.'))
-# print(ping('eventual.technology'))# < TODO - need to strean output
+# print(ping('eventual.technology'))  # TODO: stream output
 print(cowsay('moo'))
 # print(wget('eventual.technology'))
 print(date())
@@ -672,7 +672,7 @@ domonic -p myproject --server fastapi
 
 [htmlx](https://github.com/byteface/htmlx/tree/master/htmlx) : A low dependency lightweight (DOM only) version of domonic
 
-Checkout [the docs](https://domonic.readthedocs.io/) for more examples i.e. generating sitemaps or using domonic with server frameworks like Flask, Django, Sanic, FastAPI and others.
+Check out [the docs](https://domonic.readthedocs.io/) for more examples, including generating sitemaps and using domonic with server frameworks like Flask, Django, Sanic, FastAPI, and others.
 
 There are also several usage examples in the repo, so pull it and have a look.
 
@@ -755,8 +755,8 @@ Parser install notes (listed in order of speed when used with domonic):
 - `markupever`: `pip install markupever` 🚀 Rust
 - `html5_parser`: `pip install html5-parser lxml` 🚀 c++
 - `selectolax`: `pip install selectolax lxml` 🚀 c++
-- `justhtml`: `pip install justhtml` 🐢 python
-- `html5lib`: `pip install html5lib` 🐢 python
+- `justhtml`: `pip install justhtml` 🐢 Python
+- `html5lib`: `pip install html5lib` 🐢 Python
 - `expat`: 🐌 built into Python. (chokes on html5 or malformed content)
 
 `html5lib` has a direct treebuilder integration.
@@ -764,7 +764,7 @@ Parser install notes (listed in order of speed when used with domonic):
 `html5_parser` and `selectolax` have to use an lxml adapter as there's no hooks
 `justhtml` uses html5lib adapter-backed parser (parse + conversion == slower).
 
-*html5parser was a hidden feature on older version of domonic
+*html5_parser was a hidden feature in older versions of domonic.
 
 ## Contributing
 Contributions are welcome! If you'd like to contribute, please follow these steps:

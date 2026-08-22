@@ -1,7 +1,7 @@
 tween
 =================
 
-For tweening there's now a port of the penner equations and function to use them.
+For tweening, domonic includes a port of Robert Penner's easing equations and helpers to use them.
 
 .. code-block :: python
 
@@ -32,11 +32,11 @@ For tweening there's now a port of the penner equations and function to use them
     print(someObj)
 
 
- equations can be an array with different tweens per property
- # twn.equations = [ Expo.easeOut, Expo.easeIn, { ease:Back.easeOut, a:0.5, b:1.5 } ]
+``equations`` can be an array with different tweens per property::
 
+    # twn.equations = [Expo.easeOut, Expo.easeIn, {ease: Back.easeOut, a: 0.5, b: 1.5}]
 
-Note* Tweens use a domonic 'setInterval' which runs on a thread so won't be affected by sleep.
+Note: tweens use domonic's ``setInterval``, which runs on a thread and is not affected by ``sleep``.
 
 
 
@@ -83,7 +83,7 @@ Sine.easeInOut
 get_timer
 ---------------------------------
 
-The tween engine makes use of timer method which shows how long the game has been running.
+The tween engine uses a timer method that shows how long the game has been running.
 
 .. code-block :: python
 

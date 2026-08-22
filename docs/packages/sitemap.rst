@@ -1,20 +1,20 @@
 sitemap
 =================
 
-domonic can help create a sitemap or sitemapindex for your website.
+domonic can help create a sitemap or sitemap index for your website.
 
-A sitemap contains a list of urls for your website. Whereas a sitemap index contains a list of sitemaps.
+A sitemap contains URLs for your website. A sitemap index contains a list of sitemap files.
 
-You can see below How to make sitemaps with python and domonic.
+Below are examples of creating sitemaps with Python and domonic.
 
-creating a sitemapindex
+Creating a sitemap index
 --------------------------------
 
 A sitemap index contains a list of sitemaps. A minimal one might look something like this:
 
 .. code-block :: xml
 
-	'<?xml version="1.0" encoding="UTF-8"?>'
+	<?xml version="1.0" encoding="UTF-8"?>
 	<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<sitemap>
 		<loc>http://www.example.com/sitemap1.xml.gz</loc>
@@ -22,32 +22,33 @@ A sitemap index contains a list of sitemaps. A minimal one might look something 
 	</sitemap>
 	</sitemapindex>
 
-With domonic we can create one in a number ways depending on our needs.
+With domonic, we can create one in a few different ways depending on our needs.
 
 .. code-block :: python
 
-	from domonic.xml.sitemap import sitemapindex, sitemap, url, loc, lastmod, changefreq, priority
+	from domonic.html import render
+	from domonic.xml.sitemap import lastmod, loc, sitemap, sitemapindex
 
 	doc = sitemapindex(
  		sitemap(
-			loc(https://xyz.net/sitemap1.xml)
-			lastmod('2021-07-08T13:12:16+00:00')  # pass a date as string. if no data is passed the current date is used
+			loc("https://xyz.net/sitemap1.xml"),
+			lastmod("2021-07-08T13:12:16+00:00"),
      	)
 	)
 
-	render(f"{doc}", 'sitemap.xml')
+	render(f"{doc}", "sitemap.xml")
 
 
-Create a sitemap
+Creating a sitemap
 --------------------------------
 
-A sitemap contains a list of urls for your website and is limited to 50,000 urls.
+A sitemap contains URLs for your website and is limited to 50,000 URLs.
 
 A minimal one might look something like this:
 
  .. code-block :: xml
 
-	'<?xml version="1.0" encoding="UTF-8"?>'
+	<?xml version="1.0" encoding="UTF-8"?>
 	<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://xyz.net/</loc>
@@ -57,29 +58,30 @@ A minimal one might look something like this:
 	</url>
 	</urlset>
 
-With domonic we can create one in a number ways depending on our needs.
+With domonic, we can create one in a few different ways depending on our needs.
 
 .. code-block :: python
 
-	from domonic.xml.sitemap import sitemapindex, sitemap, url, loc, lastmod, changefreq, priority
+	from domonic.html import render
+	from domonic.xml.sitemap import changefreq, lastmod, loc, priority, url, urlset
 
 	doc = urlset(
 		url(
-			loc('https://xyz.net')
-			lastmod('2021-07-08T13:12:16+00:00')  # pass a date as string. if no data is passed the current date is used
-			changefreq('weekly')
-			priority(0.5)
+			loc("https://xyz.net"),
+			lastmod("2021-07-08T13:12:16+00:00"),
+			changefreq("weekly"),
+			priority(0.5),
 		)
 	)
 
-	# use f-string to call format on the doc to prettify
-	render(f"{doc}", 'sitemap1.xml')
+	# Use an f-string to prettify the document.
+	render(f"{doc}", "sitemap1.xml")
 
 
 utils
 ----------------
 
-domonic also has some utils for quickly creating sitemaps with default values.
+domonic also has helpers for quickly creating sitemaps with default values.
 
 .. code-block :: python
 
@@ -88,12 +90,13 @@ domonic also has some utils for quickly creating sitemaps with default values.
 	print(sm)
 
 
-but you will likely want a little more control. So use any dom manipulating methods you like.
+You will often want a little more control, so use any DOM manipulation methods you like.
 
 Here's some more examples.
 
 
-## creating a sitemap from scratch
+Creating a sitemap from scratch
+-------------------------------
 
 .. code-block :: python
 
@@ -106,49 +109,49 @@ Here's some more examples.
 Namespaced tags
 ----------------
 
-There's a few options for creating the namespaced tags i.e. `image:image`, `image:loc`, `<image:caption>` etc
+There are a few options for creating namespaced tags such as ``image:image``, ``image:loc``, and ``image:caption``.
 
-Call globals to get them by a name string due to colon not being valid in python variable names . i.e.
+Use ``globals()`` to get them by name, because ``:`` is not valid in Python variable names:
 
 .. code-block :: python
 
 	str(globals()["image:license"]())  # returns '<image:license></image:license>'
 
-or there is a utility method to create them called create_ns_element:
+Or use ``create_ns_element``:
 
 .. code-block :: python
 
 	from domonic.xml.sitemap import create_ns_element
 
-    vt = create_ns_element("video:title")
+	vt = create_ns_element("video:title")
 	print(str(vt))
 
-or you can use an underscore instead of a colon.
+You can also use an underscore instead of a colon.
 
 .. code-block :: python
 
 	from domonic.xml.sitemap import *
-    print(geo_placename())
+	print(geo_placename())
 
 
-formatting
+Formatting
 ----------------
 
-You can format with following normal python methods which are regonised by domonic:
+You can format with the normal Python methods recognized by domonic:
 
 .. code-block :: python
 
-	print(f"{sm}") # f string will call __format__ and run through a prettify
-	print(f"{sm!s}") # str will not be prettified
-	print(f"{sm!r}") # r show the object as a repr
+	print(f"{sm}")    # Calls __format__ and prettifies the XML.
+	print(f"{sm!s}")  # Calls str without prettifying.
+	print(f"{sm!r}")  # Shows the object repr.
 	# print(f"{sm!a}")
 	
 
 
-more
+More
 ----------------
 
-For more info on sitemaps see...
+For more information on sitemaps, see:
 
 https://www.sitemaps.org/protocol.html
 

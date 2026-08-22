@@ -1,11 +1,11 @@
 utils
 =================
 
-The utils libray attempts to be relevant to dom related things.
+The utils package contains helpers used across DOM-related workflows.
 
-It's currently mostly string utils but there's some other bits and bobs in there.
+It is mostly string utilities, with a few convenience functions used by other modules.
 
-If you can think of any missing that would be good then get in touch.
+If you notice a missing helper that would fit here, please open an issue or pull request.
 
 .. automodule:: domonic.utils
     :members:

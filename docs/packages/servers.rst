@@ -1,38 +1,38 @@
-🚀 servers
+Servers
 =================
 
-Generating static html files with domonic is fun.
+Generating static HTML files with domonic is fun.
 
-Python has a built-in server allowing you to view your generated files:
+Python has a built-in server for viewing generated files locally:
 
 
-Running a python server to view static pages
+Running a Python Server to View Static Pages
 --------------------------------------------------------
 
-.. code-block :: python
+.. code-block :: bash
     
     cd Desktop/yourproject
     python3 -m http.server 8080
 
 
-now go to localhost:8080 and view your website.
+Now go to http://localhost:8080 and view your website.
 
 
 Serving dynamic content
 ----------------------------
 
-For dynamic content you will need a better webserver.
+For dynamic content, you will need a web server.
 
-Domonic does not come with a webserver but there are plenty of great ones in the python community to choose from. 
+domonic does not come with a web server, but the Python community has plenty of great ones to choose from.
 
-Below are some examples of how to use domonic with some popular webservers
+Below are examples of using domonic with popular web servers.
 
-WARNING: When generating dynamic content make sure to escape any user generated content to avoid `XSS attacks. <https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html>`_.
+WARNING: When generating dynamic content, escape user-generated content to avoid `XSS attacks <https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html>`_.
 
 CLI project scaffolds
 --------------------------------
 
-The project command can generate a one-file hello world for a pinned server/framework:
+The project command can generate a one-file hello world for a pinned server or framework:
 
 .. code-block :: bash
 
@@ -85,7 +85,7 @@ Using domonic with Cherrypy
     pip install cherrypy
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
                 
@@ -108,15 +108,15 @@ now create a file called app.py
     cherrypy.quickstart(HelloWorld())
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit localhost:8080 in your browser
+Then visit http://localhost:8080 in your browser.
 
-`Find out more about Cherrypy here... <https://pypi.org/project/CherryPy/>`_.
+`Find out more about CherryPy <https://pypi.org/project/CherryPy/>`_.
 
 
 Using domonic with Pyramid
@@ -129,7 +129,7 @@ Using domonic with Pyramid
     pip install pyramid
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
 
@@ -158,15 +158,15 @@ now create a file called app.py
         server.serve_forever()
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit localhost:8080 in your browser
+Then visit http://localhost:8080 in your browser.
 
-`Find out more about Pyramid here... <https://trypyramid.com/>`_.
+`Find out more about Pyramid <https://trypyramid.com/>`_.
 
 
 Using domonic with Bottle
@@ -179,7 +179,7 @@ Using domonic with Bottle
     pip install bottle
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
 
@@ -199,22 +199,22 @@ now create a file called app.py
 
     run(host='localhost', port=8080)
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:8080/hello/yourname in your browser
+Then visit http://localhost:8080/hello/yourname in your browser.
 
 
-`Find out more about Bottle here... <https://bottlepy.org/docs/dev/>`_.
+`Find out more about Bottle <https://bottlepy.org/docs/dev/>`_.
 
 
 Using domonic with Sanic
 --------------------------------
 
-A lot of the examples in the repo use Sanic. It's like Flask and is async
+A lot of the examples in the repo use Sanic. It feels Flask-like and is async.
 
 .. code-block :: bash
 
@@ -223,7 +223,7 @@ A lot of the examples in the repo use Sanic. It's like Flask and is async
     pip install sanic
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
         
@@ -248,21 +248,21 @@ now create a file called app.py
         app.run()
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:8000 in your browser
+Then visit http://localhost:8000 in your browser.
 
-`Find out more about Sanic here... <https://sanic.readthedocs.io/en/stable/>`_.
+`Find out more about Sanic <https://sanic.readthedocs.io/en/stable/>`_.
 
 
 Using domonic with Flask
 --------------------------------
 
-Flask comes with Jinja already but it's still possible...
+Flask already comes with Jinja, but using domonic is still possible.
 
 .. code-block :: bash
 
@@ -271,7 +271,7 @@ Flask comes with Jinja already but it's still possible...
     pip install flask
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
     
@@ -294,15 +294,15 @@ now create a file called app.py
         app.run()
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:5000 in your browser
+Then visit http://localhost:5000 in your browser.
 
-`Find out more about Flask here... <https://flask.palletsprojects.com/en/2.0.x/>`_.
+`Find out more about Flask <https://flask.palletsprojects.com/>`_.
 
 
 Using domonic with FastAPI
@@ -316,7 +316,7 @@ Using domonic with FastAPI
     pip install uvicorn
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
             
@@ -337,15 +337,15 @@ now create a file called app.py
         ))
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     uvicorn app:app --reload
 
-and visit http://localhost:8000 in your browser
+Then visit http://localhost:8000 in your browser.
 
-`Find out more about FastAPI here... <https://fastapi.tiangolo.com/>`_.
+`Find out more about FastAPI <https://fastapi.tiangolo.com/>`_.
 
 
 Using domonic with Werkzeug
@@ -358,7 +358,7 @@ Using domonic with Werkzeug
     pip install werkzeug
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
             
@@ -380,15 +380,15 @@ now create a file called app.py
         run_simple('localhost', 4000, application)
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:4000/ in your browser
+Then visit http://localhost:4000/ in your browser.
 
-`Find out more about Werkzeug here... <https://werkzeug.palletsprojects.com/en/2.0.x/>`_.
+`Find out more about Werkzeug <https://werkzeug.palletsprojects.com/>`_.
 
 
 Using domonic with Starlette
@@ -402,7 +402,7 @@ Using domonic with Starlette
     pip install uvicorn
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
         
@@ -428,15 +428,15 @@ now create a file called app.py
     app = Starlette(debug=True, routes=routes)
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     uvicorn app:app --reload
 
-and visit http://localhost:8000 in your browser
+Then visit http://localhost:8000 in your browser.
 
-`Find out more about Starlette here... <https://www.starlette.io/>`_.
+`Find out more about Starlette <https://www.starlette.io/>`_.
 
 
 Using domonic with Tornado
@@ -449,7 +449,7 @@ Using domonic with Tornado
     pip install tornado
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
             
@@ -478,21 +478,21 @@ now create a file called app.py
         tornado.ioloop.IOLoop.current().start()
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:8888/ in your browser
+Then visit http://localhost:8888/ in your browser.
 
-`Find out more about Tornado here... <https://www.tornadoweb.org/en/stable/>`_.
+`Find out more about Tornado <https://www.tornadoweb.org/en/stable/>`_.
 
 
 Using domonic with Django
 --------------------------------
 
-Django already has some kind of Jinja but more restrictive.
+Django already has a template system, but you can still return domonic-rendered HTML from a view.
 
 .. code-block :: bash
 
@@ -502,7 +502,7 @@ Django already has some kind of Jinja but more restrictive.
     pip install domonic
     django-admin startproject mysite
 
-now cd into mysite and edit urls.py
+Now cd into ``mysite`` and edit ``urls.py``:
 
 .. code-block :: python
 
@@ -523,17 +523,17 @@ now cd into mysite and edit urls.py
     ]
 
 
-to run it do this from within mysite folder:
+Run it from inside the ``mysite`` folder:
 
 .. code-block :: bash
 
     python manage.py runserver
 
-and visit http://localhost:8000/ in your browser
+Then visit http://localhost:8000/ in your browser.
 
-Note: Django didn't allow import * so there's a conflict somewhere. I resolved by importing what I needed.
+Note: avoid ``import *`` in Django examples and import the tags you need.
 
-`Find out more about Django here... <https://www.djangoproject.com/>`_.
+`Find out more about Django <https://www.djangoproject.com/>`_.
 
 
 
@@ -547,7 +547,7 @@ Using domonic with aiohttp
     pip install aiohttp
     pip install domonic
 
-now create a file called app.py
+Create a file called ``app.py``:
 
 .. code-block :: python
 
@@ -567,26 +567,26 @@ now create a file called app.py
         web.run_app(app)
 
 
-to run it do this:
+Run it with:
 
 .. code-block :: bash
 
     python app.py
 
-and visit http://localhost:8080/ in your browser
+Then visit http://localhost:8080/ in your browser.
 
-`Find out more about aiohttp here... <https://docs.aiohttp.org/en/stable/>`_.
-
-
-
-and if that wasn't enough webservers to try out this isn't even `a more complete list!!! <https://github.com/tbicr/web-framework-rank>`_.
+`Find out more about aiohttp <https://docs.aiohttp.org/en/stable/>`_.
 
 
 
-SPA's
+For a broader list of Python web frameworks, see `web-framework-rank <https://github.com/tbicr/web-framework-rank>`_.
+
+
+
+SPAs
 --------------------------------
 
-Now you have a framework you can use some simple javascript to call on endpoints to redraw parts of the dom.
+Once you have a framework, you can use simple JavaScript to call endpoints and redraw parts of the DOM.
 
 .. code-block :: javascript
 
@@ -599,37 +599,36 @@ Now you have a framework you can use some simple javascript to call on endpoints
         )
     }
 
-Checkout the 'templates and components' section to see how you can take your templating skills to the next level.
+Check out the templates and components section to take your templating further.
 
-Another alternative to running a webserver is running a serverless function. See below for more details.
+Another alternative to running a web server is running a serverless function.
 
 
-Using domonic with AWS lambda
+Using domonic with AWS Lambda
 --------------------------------
 
-The original version of domonic was tags only and written to be used in an aws lambda function.
+The original version of domonic was tags-only and written for an AWS Lambda function.
 
-the original POC code for that is `here in the archive <https://github.com/byteface/domonic/blob/master/archive/poc.py>`_.
+The original proof-of-concept code is `in the archive <https://github.com/byteface/domonic/blob/master/archive/poc.py>`_.
 
-You can just create a file called tags.py alongside your lambda with the AWS GUI and paste in the tags then import and use them.
+You can create a ``tags.py`` file alongside your Lambda in the AWS GUI, paste in the tags, then import and use them.
 
-Alternatively to upload entire packages people tend to drop their lambda_function.py into the /site-packages folder of their virtualenv. 
+To upload entire packages, people often drop ``lambda_function.py`` into the ``site-packages`` folder of their virtual environment.
 
 Then zip and upload the whole thing.
 
-`Find out more about AWS Lambda here... <https://aws.amazon.com/lambda/>`_.
+`Find out more about AWS Lambda <https://aws.amazon.com/lambda/>`_.
 
-or even try an ASGI adapter on your lambda with magnum!... <https://mangum.io/>`_.
+You can also try an ASGI adapter on Lambda with `Mangum <https://mangum.io/>`_.
 
 
 Using domonic with Google Cloud Functions
 ----------------------------------------------
 
-Google have 'cloud functions'.
+Google has Cloud Functions.
 
-Dealing with Package dependencies is here in their documentation.
+Their documentation explains how to handle package dependencies.
 
 https://cloud.google.com/functions/docs/writing/specifying-dependencies-python
 
-`Find out more about Google Cloud Functions here... <https://cloud.google.com/functions>`_.
-
+`Find out more about Google Cloud Functions <https://cloud.google.com/functions>`_.

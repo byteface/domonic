@@ -1,9 +1,9 @@
-javascript
+JavaScript
 ===================
 
-Domonic includes a JavaScript-like runtime surface for practical scripting and porting.
+domonic includes a JavaScript-like runtime surface for practical scripting and porting.
 
-It's useful for quickly porting familiar JS code to Python while staying close to web-platform concepts:
+It is useful for quickly porting familiar JS code to Python while staying close to web-platform concepts:
 
 .. code-block :: python
 
@@ -11,7 +11,7 @@ It's useful for quickly porting familiar JS code to Python while staying close t
 	print(Math.random())
 
 	from domonic.javascript import Array
-	myArr=Array(1,2,3)
+	myArr = Array(1, 2, 3)
 	print(myArr.splice(1))
 
 	from domonic.javascript import URL
@@ -35,7 +35,7 @@ Alongside the global helpers, there are familiar ``String``, ``Number``, ``Array
 Date class
 ----------------
 
-The Date class is available...
+The ``Date`` class is available:
 
 .. code-block :: python
 
@@ -94,7 +94,7 @@ Many of the familiar JavaScript array methods are available in Python form:
 String methods
 ----------------
 
-A whole bunch of familiar string methods for you to enjoy...
+A wide set of familiar string methods is available:
 
 .. code-block :: python
 
@@ -108,10 +108,10 @@ A whole bunch of familiar string methods for you to enjoy...
 	print(mystr.startsWith('S'))
 	# mystr.endsWith('g'))
 	
-	# javascript substr in python
+	# JavaScript substr in Python.
 	mystr.substr(1) # 'ome String'
 
-	# javascript slice in python
+	# JavaScript slice in Python.
 	# print(mystr.slice(1, 3))
 	mystr.slice(1, 3) # 'om')
 
@@ -170,11 +170,11 @@ A whole bunch of familiar string methods for you to enjoy...
 	mystr.includes('Some') # True
 
 
-Plus some obsolete friends to do fancy tricks with!!... i.e
+Some obsolete JavaScript string helpers are also available:
 
 .. code-block :: python
 
-	>>> test = String("Hello Wolrd!")
+	>>> test = String("Hello World!")
 	>>> test.blink()
 	>>> test.sub()
 	>>> test.sup()
@@ -184,7 +184,7 @@ Plus some obsolete friends to do fancy tricks with!!... i.e
 
 You can actually transform a type String into any tag.
 
-Simply call ```()``` on a stringvar to transform it into a Node
+Call ``()`` on a string value to transform it into a node:
 
 .. code-block :: python
 
@@ -192,13 +192,13 @@ Simply call ```()``` on a stringvar to transform it into a Node
 	>>> test('div', _style="font-color:red;")
 	>>> str(test('div', _style="font-color:red;"))
 
-passing it the tag and attributes...
+Pass the tag name and attributes.
 
 
 Object methods
 ----------------
 
-Object is useful for making dicts a bit more js-like...
+``Object`` is useful for making dictionaries a bit more JS-like:
 
 .. code-block :: python
 
@@ -207,13 +207,13 @@ Object is useful for making dicts a bit more js-like...
 	str(o)
 
 
-But also contains a growing list of methods you may know from javascript.
+It also contains a growing list of methods you may know from JavaScript.
 
 
 setInterval
 ----------------
 
-You can use setInterval and clearInterval with params
+You can use ``setInterval`` and ``clearInterval`` with parameters:
 
 .. code-block :: python
 
@@ -235,7 +235,7 @@ You can use setInterval and clearInterval with params
 fetch
 ----------------
 
-There's a fetch implementation that uses promises. With additional mulithreaded and pooled versions.
+There is a fetch implementation that uses promises, with threaded and pooled variants.
 
 .. code-block :: python
 
@@ -289,13 +289,13 @@ There's a fetch implementation that uses promises. With additional mulithreaded 
 	results.then(lambda r: print(r.text) if r is not None else None)
 
 
-All fetch methods use requests and will pass all the kwargs along should you need to modify
+All fetch methods use ``requests`` and pass keyword arguments through when you need to modify behaviour.
 
 
-keywords
+Keywords
 ----------------
 
-If you ```import *``` you will get the js keywords... i.e.
+If you ``import *``, you get the JS-style keywords:
 
 .. code-block :: python
 
@@ -305,7 +305,7 @@ If you ```import *``` you will get the js keywords... i.e.
 	print(null) # None
 
 
-As well as a function which evaluates python strings...
+You also get a function that evaluates Python strings:
 
 .. code-block :: python
 
@@ -316,7 +316,7 @@ As well as a function which evaluates python strings...
 Typed arrays
 ----------------
 
-js style typed arrays are even available
+JS-style typed arrays are also available.
 
 
 
@@ -334,7 +334,7 @@ Styling gets passed to the style tag on render.
 	# <div id="test" style="background-color:black;font-size:12px;">hi</div>
 
 
-Many other undocumented features. Take a look at the code.
+There are many other features. Take a look at the module docs below.
 
 
 .. automodule:: domonic.javascript

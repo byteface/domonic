@@ -1,7 +1,7 @@
 html
 =============
 
-with domonic you can create beautiful, clean <html> straight out of the box.
+With domonic, you can create clean ``<html>`` straight out of the box.
 
 .. code-block :: python
     
@@ -22,7 +22,7 @@ with domonic you can create beautiful, clean <html> straight out of the box.
 rendering
 ----------------
 
-you can cast str() on any element to render it.
+Cast ``str()`` on any element to render it.
 
 .. code-block :: python
 
@@ -30,13 +30,14 @@ you can cast str() on any element to render it.
     print(el_string)
 
 
-there's also a render method that takes 2 parameters, some pyml and an optional output file.
+There is also a ``render`` method that takes PyML and an optional output file.
 
 .. code-block :: python
     
     from domonic.html import *
-	page = div(span('Hello World'))
-	render(page, 'index.html')
+
+    page = div(span('Hello World'))
+    render(page, 'index.html')
 
 
 templating
@@ -83,7 +84,7 @@ usage
 
 attributes
 ----------------
-prepend attributes with an underscore ( avoids clashing with python keywords )
+Prepend attributes with an underscore to avoid clashing with Python keywords.
 
 .. code-block :: python
 
@@ -97,7 +98,7 @@ prepend attributes with an underscore ( avoids clashing with python keywords )
 
 lists
 ----------------
-just do list comprehension and join it to strip the square brackets
+Use a list comprehension and join it to strip the square brackets.
 
 .. code-block :: python
 
@@ -110,25 +111,25 @@ just do list comprehension and join it to strip the square brackets
 
 data-tags
 ----------------
-python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
+Python does not allow hyphens in parameter names, so use variable keyword argument syntax for custom data attributes.
 
 .. code-block :: python
 
 	div("test", **{"_data-test":"test"} )
 
-DONT FORGET TO PREPEND THE UNDERSCORE.
+Remember to prepend the underscore.
 
 
 script tags
 ----------------
 
-load from a source...
+Load from a source:
 
 .. code-block :: python
 
 	script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
 
-or do inline js...
+Or use inline JavaScript:
 
 .. code-block :: python
 
@@ -140,13 +141,13 @@ or do inline js...
 style tags
 ----------------
 
-load from a source...
+Load from a source:
 
 .. code-block :: python
 
 	link(_href="/docs/5.0/dist/css/bootstrap.min.css", _rel="stylesheet", __integrity="sha384-12345", __crossorigin="anonymous"),
 
-or do inline css...
+Or use inline CSS:
 
 .. code-block :: python
 
@@ -170,7 +171,7 @@ or do inline css...
 Create Elements
 ----------------
 
-to create your own custom elements you can use create_element
+To create your own custom elements, use ``create_element``.
 
 .. code-block :: python
 
@@ -178,7 +179,7 @@ to create your own custom elements you can use create_element
     create_element('custom_el', div('some content'), _id="test")
 
 
-or you could use the DOM API...
+You can also use the DOM API:
 
 .. code-block :: python
 
@@ -191,13 +192,13 @@ or you could use the DOM API...
 	print(site)
 
 
-For more info about the DOM API navigate to that section...
+For more information about the DOM API, navigate to the DOM section.
 
 
 Decorators
 --------------------------------
 
-You can use decorators to wrap elements around function results
+You can use decorators to wrap elements around function results.
 
 .. code-block :: python
 
@@ -225,7 +226,7 @@ You can quickly clone nodes with a multiplier which will return a list...
 	from domonic.html import *
 	mydivs = div()*100
 
-but you will have to render them yourself by interating and calling string...
+You need to render them yourself by iterating and calling ``str``:
 
 .. code-block :: python
 
@@ -241,9 +242,9 @@ A divisor also creates more but will instead call render and give a list of stri
 	from domonic.html import *
 	print(div()/100)
 
-but this means they are now rendered and can't be edited.
+This means they are rendered strings and cannot be edited as nodes.
 
-Although you could convert them back by calling parser then domonify. i.e.
+You can convert them back by parsing and then calling ``domonify``:
 
 .. code-block :: python
 
@@ -254,7 +255,7 @@ Although you could convert them back by calling parser then domonify. i.e.
 
 **OR**
 
-If other is anything, it is returned. Otherwise it returns self
+If the other value is truthy, it is returned. Otherwise, the element returns itself.
 
 .. code-block :: python
 
@@ -263,11 +264,11 @@ If other is anything, it is returned. Otherwise it returns self
     print(div() | True)
 
 
-Another way is to use ternary i.e.
+Another way is to use a ternary expression:
 
 .. code-block :: python
 
-	mything = div() if True else span(class-'warning')
+	mything = div() if True else span(_class="warning")
 
 
 **In place add/minus**
@@ -294,8 +295,7 @@ This also works for text nodes but be aware they will be irreversibly flattened 
     print(a1)
 
 
-Pass a dictionary to the right shift operator to add/update an attribute...
-(don't forget underscore or it will error)
+Pass a dictionary to the right shift operator to add or update an attribute. Remember the leading underscore on attribute names.
 
 .. code-block :: python
 
@@ -304,7 +304,7 @@ Pass a dictionary to the right shift operator to add/update an attribute...
         print(a1)
 
 
-Access an elements children as if it were a list...
+Access an element's children as if it were a list:
 
 .. code-block :: python
 
@@ -312,7 +312,7 @@ Access an elements children as if it were a list...
         print(mylist[1])
 
 
-unpack children...
+Unpack children:
 
 .. code-block :: python
 
@@ -328,7 +328,7 @@ unpack children...
 f-strings
 ----------------
 
-To pretty print a domonic dom you can use a f-string...
+To pretty-print a domonic DOM, use an f-string:
 
 .. code-block :: python
     
@@ -343,9 +343,9 @@ To pretty print a domonic dom you can use a f-string...
         </body>
     </html>
 
-which basically calls the format dunder on the tag. (if look at the code)
+This calls the tag's ``__format__`` method.
 
-This is useful as it means use different ways to get output from domonic.
+This gives you a few ways to control output from domonic.
 
 .. code-block :: python
     
@@ -362,7 +362,7 @@ This is useful as it means use different ways to get output from domonic.
     print(mydom.__format__(''))
 
 
-If the built in formatter is not up to your needs. You can also use other libraries that leverage beautifulsoup i.e.
+If the built-in formatter is not enough, you can also use libraries that work with Beautiful Soup:
 
 .. code-block :: python
 
@@ -371,9 +371,9 @@ If the built in formatter is not up to your needs. You can also use other librar
 	print(HTMLBeautifier.beautify(output, 4))
 
 
-For outputting pyml to a string there is a method in production called __pyml__() which may become repr. (but i'd been saving repr for logging)
+For outputting PyML to a string, use ``__pyml__()``.
 
-You can also use this vscode plugin on .pyml and it does a nice job. (inpsiration for the 'dentage' method)
+You can also use this VS Code plugin on ``.pyml`` files:
 
 https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dictionary
 
@@ -382,13 +382,13 @@ https://marketplace.visualstudio.com/items?itemName=mgesbert.indent-nested-dicti
 Quotes around attributes
 --------------------------------
 
-The quotes around attributes can be finely controlled using the DOMConfig.ATTRIBUTE_QUOTES flag
+The quotes around attributes can be controlled with the ``DOMConfig.ATTRIBUTE_QUOTES`` flag.
 
-By default everything is double quoted on render.
+By default, everything is double quoted on render.
 
-However a flag can be set to None which will not render quotes if the passed value is not a string.
+Set the flag to ``None`` to skip quotes when the value is not a string.
 
-Alternatively it can be set to use a single quotation mark or even False to use None at all and control it yourself.
+Alternatively, set it to a single quotation mark or to ``False`` to control quoting yourself.
 
 Examples provided below.
 
@@ -421,7 +421,7 @@ Examples provided below.
 
 
 
-loading .pyml templates
+Loading .pyml templates
 --------------------------------
 
 .. code-block:: python
@@ -430,26 +430,26 @@ loading .pyml templates
     #<div>Hello tabs</div>
 
 
-'loads' imports a pyml file and turns it into a program
+``loads`` imports a PyML file and turns it into a program.
 
-this example loads a template and passing params for rendering
+This example loads a template and passes parameters for rendering:
 
 .. code-block :: python
 
     from domonic import loads
     from domonic.html import *
 
-    # create some vars. you will see these referenced in the template file
+    # Create some variables. These are referenced in the template file.
     brand = "MyBrand"
     links = ['one', 'two', 'three']
 
-    # load a template and pass it some data
+    # Load a template and pass it some data.
     webpage = domonic.loads('templates/webpage.com.pyml', links=links, brand=brand)
 
     render(webpage, 'webpage.html')
 
 
-# 'load' is different to 'loads', it takes html strings and converts to a program
+``load`` is different from ``loads``: it takes HTML strings and converts them to a program.
 
 .. code-block :: python
 
@@ -461,39 +461,39 @@ this example loads a template and passing params for rendering
     render(webpage, 'webpage2.html')
 
 
-* warning loads also is very basic and can only convert simple html as the parser is still in development
+``loads`` is intentionally basic and works best with simple HTML.
 
 
 Notes on templating
 --------------------------------
 
-while you can create a div with content like :
+You can create a ``div`` with content like this:
 
 .. code-block :: python
 
     div("some content")
 
-python doesn't allow named params before unamed ones. So you can't do this:
+Python does not allow keyword arguments before positional arguments, so this will not work:
 
 .. code-block :: python
 
     div(_class="container", p("Some content") )
 
-or it will complain the params are in the wrong order. You have to instead put content before attributes:
+Python will complain that the parameters are in the wrong order. Put content before attributes:
 
 .. code-block :: python
 
     div( p("Some content"), _class="container")
 
-which is annoying when a div gets long.
+That can get awkward when a ``div`` gets long.
 
-You can get around this by using 'html' which is available on every Element:
+You can get around this by using ``html``, which is available on every ``Element``:
 
 .. code-block :: python
 
     div( _class="container" ).html("Some content")
 
-This is NOT like jQuery html func that returns just the inner content. use innerHTML for that.
+This is not like jQuery's ``html`` function, which returns only inner content. Use ``innerHTML`` for that.
 
 It is used specifically for rendering.
 
@@ -501,39 +501,39 @@ It is used specifically for rendering.
 Common Errors
 --------------------------------
 
-If a templates syntax is incorrect it will not work.
+If a template's syntax is incorrect, it will not work.
 
-There's a small learning curve in getting .pyml templates correct. Usually...
+There is a small learning curve in getting ``.pyml`` templates correct. Usually the issue is one of these:
 
-- (1) a missing comma between tags, 
-- (2) an underscore missing on an attribute or 
-- (3) params in the wrong order.
+- a missing comma between tags
+- a missing underscore on an attribute
+- parameters in the wrong order
 
-Use this reference when starting out to help when you get an error.
+Use this reference when starting out:
 
 
 .. code-block :: python
 
     IndexError: list index out of range
-    # You most likely didn't put a underscore on an attribute.
+    # You most likely forgot an underscore on an attribute.
 
     SyntaxError: invalid syntax
-    # You are Missing a comma between attributes
+    # You are missing a comma between attributes.
 
     SyntaxError: positional argument follows keyword argument
-    # You have to pass attributes LAST. and strings and objects first. *see notes on templating above*
+    # Pass strings and child nodes first, then attributes.
 
     TypeError: unsupported operand type(s) for ** or pow(): 'str' and 'dict'
-    # You are Missing a comma between attributes. before the **{}
+    # You are missing a comma before **{}.
 
 
-parsing
+Parsing
 --------------------------------
 
 https://github.com/byteface/domonic/issues/28
 
 
-Basic useage...
+Basic usage:
 
 .. code-block:: python
 
@@ -541,7 +541,7 @@ Basic useage...
    domonic.parseString('<somehtml...')
 
 
-An examples of using the parser...
+An example using ``html5lib`` directly:
 
 .. code-block :: python
 
@@ -550,7 +550,7 @@ An examples of using the parser...
     from domonic.ext.html5lib_ import getTreeBuilder
 
 
-    r = requests.get("https://google.com")
+    r = requests.get("https://google.com", timeout=30)
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
     page = parser.parse(r.content.decode("utf-8"))
 
@@ -570,7 +570,7 @@ An examples of using the parser...
     # turn the downloaded site into .pyml ;)
     print(page.__pyml__())
 
-You can also choose the parser directly through ``domonic.parseString()``:
+You can also choose a parser directly through ``domonic.parseString()``:
 
 .. code-block:: python
 
@@ -582,7 +582,7 @@ You can also choose the parser directly through ``domonic.parseString()``:
 Supported parser names are ``auto``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, and ``expat``.
 
 
-For a quick parse try the window module...
+For a quick parse, try the window module:
 
 .. code-block :: python
 

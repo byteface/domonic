@@ -40,7 +40,6 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     # "sphinx_tabs.tabs",
-    # "sphinx_github_changelog",  # TODO - requires API key and env var.
 ]
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
@@ -113,7 +112,8 @@ intersphinx_mapping = {
 }
 
 
-# dynamically created namespaced tags cause issues when documenting i.e sitemap.py image:image, image:loc etc
+# Dynamically created namespaced tags cause issues when documenting sitemap.py,
+# for example image:image and image:loc.
 # The below code is required to skip them
 
 def skip_dynamic_classes(app, what, name, obj, would_skip, options):

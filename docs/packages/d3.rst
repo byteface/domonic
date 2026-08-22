@@ -22,7 +22,7 @@ d3's selection API is very powerful.
 format
 ----------------
 
-d3's has a library for formatting numbers to avoid things like floating precision
+d3 includes helpers for formatting numbers and avoiding floating-point display noise.
 
 .. code-block :: python
 
@@ -35,7 +35,7 @@ d3's has a library for formatting numbers to avoid things like floating precisio
 dispatch
 ----------------
 
-d3 has an event system
+d3 has an event system.
 
 .. code-block :: python
 
@@ -47,7 +47,7 @@ d3 has an event system
 path
 ----------------
 
-d3's path API converts SVG paths to a d3.path object which is compatible with canvas.
+d3's path API converts SVG paths to a ``d3.path`` object compatible with canvas.
 
 .. code-block :: python
 
@@ -58,16 +58,16 @@ d3's path API converts SVG paths to a d3.path object which is compatible with ca
 polygon
 ----------------
 
-d3's has shape API
+d3 has a shape API.
 
 .. code-block :: python
 
 	from domonic.d3.polygon import *
 
-D3 expects a "polygon" is a 2D array of integers listed counterclockwise (clockwise works too). 
-This does not work with the polygon as defined by SVG, SVG polygons have a points method you can parse into a 2D array and use here.
+D3 expects a polygon to be a 2D array of integers listed counterclockwise, though clockwise works too.
+This is not the same as SVG's polygon element. SVG polygons have a points method that you can parse into a 2D array and use here.
 
-polygonArea() finds the area of a given polygon. It returns a float/int.
+``polygonArea()`` finds the area of a given polygon. It returns a float or int.
 
 .. code-block :: python
 
@@ -84,7 +84,7 @@ polygonArea() finds the area of a given polygon. It returns a float/int.
         self.assertEqual(polygonArea(square), 16)
         self.assertEqual(polygonArea(triangle), 12)
 
-polygonCentroid() finds the center of mass of a given polygon. It returns 2 ints in an array, representing the point of the polygons center of mass.
+``polygonCentroid()`` finds the center of mass of a polygon. It returns two ints in an array, representing the polygon's center point.
 
 .. code-block :: python
 
@@ -97,7 +97,7 @@ polygonCentroid() finds the center of mass of a given polygon. It returns 2 ints
         self.assertEqual(polygonCentroid(square), [2, 2])
         self.assertEqual(polygonCentroid(triangle), [0, 2])
 
-polygonHull() takes a 2D array of points and determines the polygon hull using andrew's monotone chain algorithm. It returns the polygon hull as a 2D array of points.
+``polygonHull()`` takes a 2D array of points and determines the hull using Andrew's monotone chain algorithm. It returns the hull as a 2D array of points.
 
 .. code-block :: python
 
@@ -111,7 +111,7 @@ polygonHull() takes a 2D array of points and determines the polygon hull using a
         self.assertEqual(polygonHull(points_0), hull_0)
         self.assertEqual(polygonHull(points_1), hull_1)
 
-polygonContains() takes a polygon and a point, it returns true if the point is inside the polygon, false otherwise.
+``polygonContains()`` takes a polygon and a point. It returns ``True`` if the point is inside the polygon and ``False`` otherwise.
 
 .. code-block :: python
 
@@ -127,7 +127,7 @@ polygonContains() takes a polygon and a point, it returns true if the point is i
         self.assertTrue(polygonContains(triangle, [0,1]))
         self.assertFalse(polygonContains(triangle, [0,-1]))
 
-polygonLength() takes a polygon and returns the sum of the length of the polygon's sides.
+``polygonLength()`` takes a polygon and returns the sum of its side lengths.
 
 .. code-block :: python
 

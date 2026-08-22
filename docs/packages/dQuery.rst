@@ -1,7 +1,7 @@
 dQuery
 =================
 
-dQuery is for querying and manipulating your server-side dom.
+dQuery is for querying and manipulating your server-side DOM.
 
 
 querying
@@ -29,7 +29,7 @@ dQuery uses the º symbol (alt+0).
 
 
 
-You can quickly access returned elements as if it were a list...
+You can quickly access returned elements as if they were a list:
 
 .. code-block :: python
 
@@ -38,7 +38,7 @@ You can quickly access returned elements as if it were a list...
 
 
 
-But you don't need a DOM fragment to use dquery. It also contains useful static methods. i.e.
+You do not need a DOM fragment to use dQuery. It also contains useful static methods:
 
 
 .. code-block :: python
@@ -60,4 +60,3 @@ But you don't need a DOM fragment to use dquery. It also contains useful static 
 .. automodule:: domonic.dQuery
     :members:
     :noindex:
-

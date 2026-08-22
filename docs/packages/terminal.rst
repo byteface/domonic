@@ -1,9 +1,9 @@
 terminal
 =================
 
-There is a command line package that can call bash/unix/posix and other apps on the command line.
+The terminal package can call Bash, Unix, POSIX, and other command-line tools.
 
-This package only works on nix systems as it effectively just passes stuff off to subprocess.
+This package only works on Unix-like systems because it delegates to ``subprocess``.
 
 .. code-block :: python
 
@@ -41,14 +41,14 @@ This package only works on nix systems as it effectively just passes stuff off t
 	    print(thing)
 
 	print(find('.'))
-	# print(ping('eventual.technology'))# < TODO - need to strean output
+	# print(ping('eventual.technology'))  # TODO: stream output
 	print(cowsay('moo'))
 	print(wget('eventual.technology'))
 	print(date())
 	print(cal())
 
 
-run arbitrary commands...
+Run Arbitrary Commands
 --------------------------------
 
 .. code-block :: python
