@@ -126,10 +126,10 @@ sites = [
 for SITE in sites:
     # try:
     r = requests.get("https://" + SITE)
-    # page = domonic.parseString(r.content.decode("utf-8"))
+    # page = domonic.parseString(r.text)
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
     # page = parser.parse("<p>Hello World!")
-    page = parser.parse(r.content.decode("utf-8"))
+    page = parser.parse(r.text)
     # print(f"{page}")
     print(page.getElementsByTagName("a"))
     links = page.getElementsByTagName("a")

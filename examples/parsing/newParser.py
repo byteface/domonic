@@ -122,7 +122,7 @@ from traceback import format_exception
 for SITE in sites:
     try:
         r = requests.get("https://" + SITE)
-        page = domonic.parseString(r.content.decode("utf-8"))
+        page = domonic.parseString(r.text)
         print(page)
     except Exception as e:
         print("Failed to dl page", e)

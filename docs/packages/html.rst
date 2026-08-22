@@ -578,7 +578,7 @@ An example using ``html5lib`` directly:
 
     r = requests.get("https://google.com", timeout=30)
     parser = html5lib.HTMLParser(tree=getTreeBuilder())
-    page = parser.parse(r.content.decode("utf-8"))
+    page = parser.parse(r.text)
 
     # print the page with formatting
     # print(f'{page}')

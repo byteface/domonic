@@ -1140,7 +1140,7 @@ onmessage = handle
             r = requests.get("http://eventual.technology")
         except requests.exceptions.RequestException as exc:
             self.skipTest(f"external network is unavailable: {exc}")
-        page = domonic.parseString(r.content.decode("utf-8"))
+        page = domonic.parseString(r.text)
 
         # Selectors
 

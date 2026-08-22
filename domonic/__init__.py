@@ -89,7 +89,7 @@ class domonic:
         import requests
 
         r = requests.get(url, timeout=30)
-        return domonic.parse(r.content.decode("utf-8"))
+        return domonic.parse(r.text)
         # TODO - param to eval
 
     @staticmethod

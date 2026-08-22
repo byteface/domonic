@@ -246,7 +246,7 @@ for SITE in sites:
     try:
         r = requests.get("https://" + SITE)
         # print(r.text.decode("utf-8"))
-        page = domonic.parse(r.content.decode("utf-8"), remove_broken_lines=True)
+        page = domonic.parse(r.text, remove_broken_lines=True)
     except Exception as e:
         print("Failed to dl page")
 
