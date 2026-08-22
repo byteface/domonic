@@ -35,7 +35,8 @@ class CDN_JS:
     X3DOM: str = "https://www.x3dom.org/download/x3dom.js"
     AFRAME: str = "https://cdn.jsdelivr.net/npm/aframe@1.8.0/dist/aframe-v1.8.0.min.js"
     BRYTHON: str = "https://cdn.jsdelivr.net/npm/brython@3.14.3/brython.min.js"
-    MATHML: str = "https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-mml-chtml.min.js"
+    MATHML: str = "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
+    MATHJAX: str = MATHML
     HTMX: str = "https://unpkg.com/htmx.org@2.0.10"
     LODASH: str = "https://cdn.jsdelivr.net/npm/lodash@4.18.1/lodash.min.js"
     AXIOS: str = "https://cdn.jsdelivr.net/npm/axios@1.19.0/dist/axios.min.js"

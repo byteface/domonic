@@ -7,6 +7,7 @@ test_domonic
 
 import unittest
 
+from domonic.CDN import CDN_JS
 from domonic.xml.mathml import *
 
 
@@ -59,7 +60,21 @@ class TestCase(unittest.TestCase):
             none("x"),
         )
 
-        _debug_print(somemath)
+        rendered = str(somemath)
+        self.assertIn("<math>", rendered)
+        self.assertIn("<mfrac>x</mfrac>", rendered)
+        self.assertIn("<msup>x</msup>", rendered)
+
+    def test_mathml_example_with_shim(self):
+        from examples.mathml import build_page
+
+        rendered = str(build_page())
+
+        self.assertIn(CDN_JS.MATHML, rendered)
+        self.assertIn('<script id="MathJax-script" defer', rendered)
+        self.assertIn('xmlns="http://www.w3.org/1998/Math/MathML"', rendered)
+        self.assertIn("<mfrac>", rendered)
+        self.assertIn("<msqrt>", rendered)
 
 
 if __name__ == "__main__":

@@ -18,6 +18,11 @@ class TestCase(unittest.TestCase):
         assert str(mycss) == '<link href="https://cdn.jsdelivr.net/npm/marx-css@5.3.0/css/marx.min.css"/>'
         myimg = img(_src=CDN_IMG.PLACEHOLDER(100, 100))
         assert str(myimg) == '<img src="//loremflickr.com/100/100"/>'
+        assert (
+            CDN_JS.MATHML
+            == "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
+        )
+        assert CDN_JS.MATHJAX == CDN_JS.MATHML
         assert CDN_IMG.PLACEHOLDER(100, 100, HTTP="https") == "https://loremflickr.com/100/100"
         assert CDN_IMG.PLACEHOLDER(100, 100, separator="x") == "//loremflickr.com/100x100"
         assert CDN_FONT.google("Open Sans") == "https://fonts.googleapis.com/css?family=Open+Sans"

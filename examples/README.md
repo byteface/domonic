@@ -81,6 +81,7 @@ Pure examples:
 . venv/bin/activate
 cd examples
 python alltags.py
+python mathml.py
 ```
 
 Nested examples:
