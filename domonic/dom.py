@@ -59,6 +59,78 @@ class DOMConfig:
     ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
 
 
+HTMX_ATTRIBUTES: frozenset[str] = frozenset(
+    {
+        "boost",
+        "confirm",
+        "delete",
+        "disable",
+        "disabled_elt",
+        "disinherit",
+        "encoding",
+        "ext",
+        "get",
+        "headers",
+        "history",
+        "history_elt",
+        "include",
+        "indicator",
+        "inherit",
+        "params",
+        "patch",
+        "post",
+        "preserve",
+        "prompt",
+        "push_url",
+        "put",
+        "replace_url",
+        "request",
+        "select",
+        "select_oob",
+        "swap",
+        "swap_oob",
+        "sync",
+        "target",
+        "trigger",
+        "validate",
+        "vals",
+        "vars",
+    }
+)
+"""Stable HTMX shortcut attributes supported by ``DOMConfig.HTMX_ENABLED``.
+
+These are supplied without the ``hx`` prefix, for example ``_get="/items"`` or
+``_swap_oob=True``. They render as ``data-hx-*`` attributes, because HTMX 2
+recognises that secondary prefix by default.
+"""
+
+HTMX_LEGACY_ATTRIBUTES: frozenset[str] = frozenset({"sse", "ws"})
+"""Legacy HTMX 1 shortcuts retained for backwards-compatible rendering."""
+
+HTMX_EXTENSION_ATTRIBUTES: dict[str, str] = {
+    "sse_close": "sse-close",
+    "sse_connect": "sse-connect",
+    "sse_swap": "sse-swap",
+    "ws_connect": "ws-connect",
+    "ws_send": "ws-send",
+}
+"""HTMX 2 extension attributes that are not prefixed with ``hx-``."""
+
+
+def _normalize_htmx_attribute(key: str) -> str | None:
+    if key.startswith("hx_"):
+        suffix = key[3:].replace("_", "-")
+        if suffix:
+            return f"data-hx-{suffix}"
+    if key in HTMX_EXTENSION_ATTRIBUTES:
+        return HTMX_EXTENSION_ATTRIBUTES[key]
+    if key == "on" or key.startswith(("on:", "on-", "on_")):
+        return f"data-hx-{key.replace('_', '-')}"
+    if key in HTMX_ATTRIBUTES or key in HTMX_LEGACY_ATTRIBUTES:
+        return f"data-hx-{key.replace('_', '-')}"
+    return None
+
+
 def _attribute_quote_mark() -> str:
     if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
         return ""
@@ -752,45 +824,10 @@ class Node(EventTarget):
                 "http_equiv": "http-equiv",
             }.get(key, key)
 
-            # note - consider making this an attributes handler for any custom attributes
-            # so on config user can add a handler function for the attribute
             if DOMConfig.HTMX_ENABLED:
-                # if htmx is enabld
-                htmx_attributes = [
-                    "boost",
-                    "confirm",
-                    "delete",
-                    "disable",
-                    "disinherit",
-                    "encoding",
-                    "ext",
-                    "get",
-                    "headers",
-                    "history_elt",
-                    "include",
-                    "indicator",
-                    "params",
-                    "patch",
-                    "post",
-                    "preserve",
-                    "prompt",
-                    "push_url",
-                    "put",
-                    "request",
-                    "select",
-                    "sse",
-                    "swap",
-                    "swap_oob",
-                    "sync",
-                    "target",
-                    "trigger",
-                    "vals",
-                    "vars",
-                    "ws",
-                ]
-
-                if key in htmx_attributes:
-                    return f""" data-hx-{key}={_render_attribute_value(value)}"""
+                htmx_attribute = _normalize_htmx_attribute(key)
+                if htmx_attribute is not None:
+                    return f""" {htmx_attribute}={_render_attribute_value(value)}"""
 
             # lets us have boolean attributes
             if key in [

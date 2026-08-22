@@ -90,6 +90,34 @@ For example, here we set several flags away from their defaults:
 	print(html(head(),body(div(h1('heading'),div(button('hi & hack',_get='/get_hi'))))))
 	# <html><head></head><body><div><h1>heading</h1><div><button data-hx-get="/get_hi">hi & hack</button></div></div></body></html>
 
+When ``HTMX_ENABLED`` is set, domonic maps HTMX-style shortcut attributes to
+the ``data-hx-`` prefix recognised by HTMX 2:
+
+.. code-block :: python
+
+	button(
+	    "Save",
+	    _post="/items",
+	    _target="#items",
+	    _swap_oob=True,
+	    **{"_on:click": "this.classList.add('busy')"},
+	)
+	# <button data-hx-post="/items" data-hx-target="#items" data-hx-swap-oob="true" data-hx-on:click="this.classList.add('busy')">Save</button>
+
+Raw HTMX attributes can still be emitted by spelling the attribute explicitly:
+
+.. code-block :: python
+
+	button("Load", **{"_hx-get": "/items"})
+	# <button hx-get="/items">Load</button>
+
+The HTMX 2 SSE and WebSocket extensions use their own attribute names:
+
+.. code-block :: python
+
+	div(_ext="sse", _sse_connect="/events", _sse_swap="message")
+	# <div data-hx-ext="sse" sse-connect="/events" sse-swap="message"></div>
+
 
 The full list of available DOM methods are listed below...
 

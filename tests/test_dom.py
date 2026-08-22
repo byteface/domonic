@@ -2317,9 +2317,68 @@ class DOMTest(unittest.TestCase):
             self.assertIn(" muted", media_rendered)
             self.assertIn(" playsinline", media_rendered)
 
+            DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = True
             htmx_rendered = button_node.__attributes__
             self.assertIn(" data-hx-get=", htmx_rendered)
+
+            htmx_node = div(
+                _get="/api/items",
+                _swap_oob=True,
+                _select_oob="#toast",
+                _replace_url="true",
+                _disabled_elt="this",
+                _history="false",
+                _inherit="*",
+                _validate="true",
+                _sse_connect="/events",
+                _sse_swap="message",
+                _sse_close="done",
+                _ws_connect="/chat",
+                _ws_send=True,
+                _hx_action="/items",
+                _hx_method="delete",
+                _hx_config="timeout:1000",
+                **{
+                    "_on:click": "this.classList.toggle('active')",
+                    "_on__after_request": "this.reset()",
+                    "_hx-get": "/raw",
+                },
+            )
+            htmx_rendered = htmx_node.__attributes__
+            self.assertIn(' data-hx-get="/api/items"', htmx_rendered)
+            self.assertIn(' data-hx-swap-oob="true"', htmx_rendered)
+            self.assertIn(' data-hx-select-oob="#toast"', htmx_rendered)
+            self.assertIn(' data-hx-replace-url="true"', htmx_rendered)
+            self.assertIn(' data-hx-disabled-elt="this"', htmx_rendered)
+            self.assertIn(' data-hx-history="false"', htmx_rendered)
+            self.assertIn(' data-hx-inherit="*"', htmx_rendered)
+            self.assertIn(' data-hx-validate="true"', htmx_rendered)
+            self.assertIn(' sse-connect="/events"', htmx_rendered)
+            self.assertIn(' sse-swap="message"', htmx_rendered)
+            self.assertIn(' sse-close="done"', htmx_rendered)
+            self.assertIn(' ws-connect="/chat"', htmx_rendered)
+            self.assertIn(' ws-send="true"', htmx_rendered)
+            self.assertIn(' data-hx-action="/items"', htmx_rendered)
+            self.assertIn(' data-hx-method="delete"', htmx_rendered)
+            self.assertIn(' data-hx-config="timeout:1000"', htmx_rendered)
+            self.assertIn(
+                " data-hx-on:click=\"this.classList.toggle('active')\"",
+                htmx_rendered,
+            )
+            self.assertIn(' data-hx-on--after-request="this.reset()"', htmx_rendered)
+            self.assertIn(' hx-get="/raw"', htmx_rendered)
+
+            form_rendered = form(
+                button("Save", _formaction="/button", _formmethod="dialog"),
+                _action="/native",
+                _method="post",
+            ).__attributes__
+            self.assertIn(' action="/native"', form_rendered)
+            self.assertIn(' method="post"', form_rendered)
+            self.assertIn(
+                ' preload="metadata"', video(_preload="metadata").__attributes__
+            )
 
             DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = False
