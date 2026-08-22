@@ -5,32 +5,85 @@ domonic.cmd
 """
 
 import os
+import shlex
 import subprocess  # nosec B404
+from os import PathLike
+from typing import Any, Iterable, Sequence
 
-from domonic.javascript import window
-
-# create a mapping of equivelent commands to call on terminal if user OS is not windows
-equivelents_map = {
+# create a mapping of equivalent commands to call when the host OS is not Windows.
+equivalents_map = {
     "dir": "ls",
     "move": "mv",
     "copy": "cp",
+    "del": "rm",
     "erase": "rm",
     "comp": "diff",
-    # "type_":"cat",
-    # "open":"open",
-    # "edit":"vim",
-    # "view":"less",
-    # "search":"grep",
-    # "replace":"sed"
+    "fc": "diff",
+    "rename": "mv",
+    "ren": "mv",
+    "type": "cat",
+    "chdir": "pwd",
 }
+
+# Backwards-compatible misspelling for anyone importing it directly.
+equivelents_map = equivalents_map
+
+
+def _is_windows() -> bool:
+    return os.name == "nt"
+
+
+def _decode_output(value: Any, encoding: str = "utf-8") -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode(encoding, errors="replace")
+    if isinstance(value, list):
+        return "".join(_decode_output(item, encoding) for item in value)
+    return str(value)
+
+
+def _stringify_arg(arg: Any) -> str:
+    if isinstance(arg, PathLike):
+        return os.fspath(arg)
+    return str(arg)
+
+
+def _quote_arg(arg: Any) -> str:
+    value = _stringify_arg(arg)
+    if _is_windows():
+        return subprocess.list2cmdline([value])
+    return shlex.quote(value)
+
+
+def _format_params(args: Iterable[Any]) -> str:
+    args = tuple(args)
+    if not args:
+        return ""
+    if len(args) == 1:
+        if isinstance(args[0], PathLike):
+            return _quote_arg(args[0])
+        return _stringify_arg(args[0])
+    return " ".join(_quote_arg(arg) for arg in args)
+
+
+def _resolve_command_name(name: str) -> str:
+    if _is_windows():
+        return name
+    return equivalents_map.get(name.lower(), name)
 
 
 class CmdException(Exception):
     """raised if cmd throws an exception"""
 
-    def __init__(self, error, message: str = "An error message was recieved from cmd"):
-        print(error, message)
-        self.message = message
+    def __init__(
+        self, error=None, message: str = "An error message was received from cmd"
+    ):
+        self.error = error
+        self.output = _decode_output(message)
+        self.returncode = getattr(error, "returncode", None)
+        self.cmd = getattr(error, "cmd", None)
+        self.message = self.output or str(error) or message
         super().__init__(self.message)
 
 
@@ -38,7 +91,7 @@ class Cmdcommand:
     """wrapper class for all cmd commands"""
 
     @staticmethod
-    def run(cmd: str) -> str:
+    def run(cmd: str, **kwargs) -> str:
         """[runs any command on the cmd]
 
         Args:
@@ -47,30 +100,62 @@ class Cmdcommand:
         Returns:
             str: the response as a string
         """
-        returned_output = subprocess.check_output(
-            cmd, shell=True, stderr=subprocess.STDOUT  # nosec B602
-        )
-        return returned_output.decode("utf-8")
+        return Cmdcommand._execute(cmd, **kwargs).stdout
+
+    @staticmethod
+    def run_args(args: Sequence[Any], **kwargs) -> str:
+        """Run a command without shell parsing and return stdout."""
+        if isinstance(args, (str, bytes)):
+            raise TypeError("run_args expects a sequence of command arguments")
+        kwargs = {**kwargs, "shell": False}
+        command_args = [_stringify_arg(arg) for arg in args]
+        return Cmdcommand._execute(command_args, **kwargs).stdout
+
+    @staticmethod
+    def _execute(cmd: str | Sequence[str], **kwargs):
+        encoding = kwargs.get("encoding", "utf-8")
+        shell = kwargs.get("shell", True)
+        check = kwargs.get("check", True)
+        env = kwargs.get("env")
+        if env is not None:
+            env = {**os.environ, **{str(key): str(value) for key, value in env.items()}}
+        try:
+            completed = subprocess.run(
+                cmd if shell or not isinstance(cmd, str) else shlex.split(cmd),
+                shell=shell,  # nosec B602
+                cwd=kwargs.get("cwd"),
+                env=env,
+                input=kwargs.get("input"),
+                timeout=kwargs.get("timeout"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                encoding=encoding,
+                errors="replace",
+            )
+        except subprocess.TimeoutExpired as exc:
+            exc.output = _decode_output(exc.output, encoding)
+            raise CmdException(exc, exc.output) from exc
+
+        completed.stdout = _decode_output(completed.stdout, encoding)
+        if check and completed.returncode != 0:
+            error = subprocess.CalledProcessError(
+                completed.returncode, cmd, output=completed.stdout
+            )
+            raise CmdException(error, completed.stdout) from error
+        return completed
 
     def __init__(self, *args, **kwargs):
         self.args = args
         self.kwargs = kwargs
-        self.params = "".join([each.__str__() for each in args])
+        self.params = _format_params(args)
         self.result = ""
+        self.returncode = None
 
         if not hasattr(self, "first_run"):
             self.first_run = True
         else:
             self.first_run = False
-
-        # TODO - call terminal equiv command if not on windows
-        # from sys import platform
-        # if platform == "linux" or platform == "linux2":
-        #     print("This is linux")
-        # elif platform == "darwin":
-        #    print("This is mac")
-        # elif platform == "win32":
-        #    print("This is windows")
 
         self.run_command()
 
@@ -93,7 +178,7 @@ class Cmdcommand:
                 return
 
         try:
-            cmd = f"{self.name} {self.params}"
+            cmd = f"{_resolve_command_name(self.name)} {self.params}"
             cmd = cmd.strip()
 
             """
@@ -103,32 +188,29 @@ class Cmdcommand:
             # for now this behaves how i want despite the _new_ hack and double call on this command
             """
             if self.has_wait is not True:
-                returned_output = subprocess.check_output(
-                    cmd, shell=True, stderr=subprocess.STDOUT  # nosec B602
-                )
-                self.result = returned_output.decode("utf-8")
+                completed = self._execute(cmd, **self.kwargs)
+                self.result = completed.stdout
+                self.returncode = completed.returncode
             else:
-                self.result = "PING FAIL"
+                kwargs = {**self.kwargs}
+                kwargs.setdefault("timeout", 3)
+                kwargs.setdefault("check", False)
+                try:
+                    completed = self._execute(cmd, **kwargs)
+                    self.result = completed.stdout
+                    self.returncode = completed.returncode
+                except CmdException as exc:
+                    if isinstance(exc.error, subprocess.TimeoutExpired):
+                        self.result = exc.output
+                        self.returncode = None
+                    else:
+                        self.result = exc.output
+                        raise
 
-                def kill_switch(proc):
-                    proc.kill()
-                    return
-
-                # try:
-                proc = subprocess.Popen(
-                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True  # nosec B602
-                )
-                intId = window.setInterval(3000, kill_switch, proc)
-                self.result = proc.stdout.readlines()
-                window.clearInterval(intId)
-                # except subprocess.TimeoutExpired as e:
-                # self.result = returned_output.decode("utf-8")
-                # print('process ran too long')
-
-        except subprocess.CalledProcessError as e:
-            print(e.output)
+        except CmdException as e:
             self.result = e.output
-            raise CmdException(e, self.result)
+            self.returncode = e.returncode
+            raise
 
         return
 
@@ -146,13 +228,19 @@ class Cmdcommand:
         return str(self.result)
 
     def __getitem__(self, index):
-        return self.result.splitlines()[index]
+        return str(self.result).splitlines()[index]
 
     # def __repr__(self):
     #     return f"{self.__class__.__name__}({self.params})"
 
     def __iter__(self):
-        return iter(self.result.splitlines())
+        return iter(str(self.result).splitlines())
+
+    def __len__(self):
+        return len(str(self.result).splitlines())
+
+    def __contains__(self, value):
+        return value in str(self.result).splitlines() or str(value) in str(self.result)
 
     # def __add__(self, other):
     #     return str(self.result) + str(other)
@@ -181,7 +269,11 @@ class cd(Cmdcommand):
     """
 
     def run_command(self):
-        os.chdir(self.params)
+        if not self.args:
+            self.result = os.getcwd()
+            return
+        os.chdir(os.fspath(self.args[0]))
+        self.result = os.getcwd()
 
 
 # tested --
@@ -193,6 +285,8 @@ erase = type("erase", (Cmdcommand,), {"name": "erase"})
 mkdir = type("mkdir", (Cmdcommand,), {"name": "mkdir"})  #: create a new directory
 rmdir = type("rmdir", (Cmdcommand,), {"name": "rmdir"})  #: delete directory
 copy = type("copy", (Cmdcommand,), {"name": "copy"})  #: copy files
+md = mkdir  #: Windows alias for mkdir
+rd = rmdir  #: Windows alias for rmdir
 
 fsutil = type("fsutil", (Cmdcommand,), {"name": "fsutil"})
 fc = type(
@@ -202,13 +296,11 @@ fc = type(
 
 class touch(Cmdcommand):
     def run_command(self):
-        self.iterable = True
-        try:
-            cmd = f"fsutil file createnew {self.params} 0"
-            Cmdcommand.run(cmd)
-        except Exception as e:
-            # print('failed to touch:', e)
-            self.result = ""
+        for arg in self.args:
+            path = os.fspath(arg)
+            with open(path, "a", encoding="utf-8"):
+                os.utime(path, None)
+        self.result = ""
 
 
 getmac = type("getmac", (Cmdcommand,), {"name": "getmac"})  #: display MAC address
@@ -231,6 +323,7 @@ ping = type("ping", (Cmdcommand,), {"name": "ping"})  #: pings the network
 
 move = type("move", (Cmdcommand,), {"name": "move"})  #: move/rename files
 rename = type("rename", (Cmdcommand,), {"name": "rename"})  #: rename files
+ren = rename  #: Windows alias for rename
 replace = type("replace", (Cmdcommand,), {"name": "replace"})  #: replace files
 
 systeminfo = type(
@@ -241,6 +334,7 @@ attrib = type("attrib", (Cmdcommand,), {"name": "attrib"})  #: display file attr
 # tree = type('tree', (Cmdcommand,), {'name': 'tree'})  #: display folder structure graphically - TODO - return not utf-8
 type_ = type("type_", (Cmdcommand,), {"name": "type"})  #: display content of text files
 comp = type("comp", (Cmdcommand,), {"name": "comp"})  #: compare file contents
+del_ = type("del_", (Cmdcommand,), {"name": "del"})  #: delete files
 
 chkdsk = type("chkdsk", (Cmdcommand,), {"name": "chkdsk"})  #: check volumes
 driverquery = type(
@@ -255,9 +349,11 @@ gpresult = type(
 
 # ssh = type('ssh', (Cmdcommand,), {'name': 'ssh'})
 
-chdir = type(
-    "chdir", (Cmdcommand,), {"name": "chdir"}
-)  # : show current dir or can switch dir
+
+class chdir(cd):
+    """Windows alias for cd."""
+
+
 # clip = type('clip', (Cmdcommand,), {'name': 'clip'})  # : Forwards the result of a command to the clipboard
 
 # find = type('find', (Cmdcommand,), {'name': 'find'})

@@ -1,9 +1,12 @@
 cmd
 =================
 
-The ``cmd`` package calls Windows commands from Python.
+The ``cmd`` package calls Windows-style commands from Python.
 
-This package only works on Windows systems because it delegates to ``subprocess``.
+On Windows it delegates to the native command names. On other platforms,
+common commands such as ``dir``, ``copy``, ``move``, ``erase``, ``type_``, and
+``comp`` are translated to their Unix equivalents so examples and tests remain
+portable.
 
 .. code-block :: python
 
@@ -25,6 +28,7 @@ Run Arbitrary Commands
 
 	from domonic.cmd import Cmdcommand
 	Cmdcommand.run("echo hi")
+	Cmdcommand.run_args(["echo", "hi"])
 
 
 Take a look at the code in `cmd.py` to see the available command wrappers.
