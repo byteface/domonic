@@ -42,7 +42,7 @@ class TestCase(unittest.TestCase):
         # print(str(a))
         a.addClass("one").addClass("two").addClass("three")
         assert (
-            str(a) == '<div id="test2" class="one one two three"></div><div id="test3" class="one one two three"></div>'
+            str(a) == '<div id="test2" class="one two three"></div><div id="test3" class="one two three"></div>'
         )
         # for el in a.elements:
         # print(el.getAttribute("class"))
@@ -87,7 +87,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(d), "<div>some text</div>")
 
     def test_appendTo(self):
-        pass
+        page = html(body(div(_id="target")))
+        º(page)
+        º("<span>last</span>").appendTo("#target")
+        º("<b>first</b>").prependTo("#target")
+        assert str(º("#target")) == '<div id="target"><b>first</b><span>last</span></div>'
 
     def test_attr(self):
         a = º('<div id="test2"></div>')
@@ -97,10 +101,18 @@ class TestCase(unittest.TestCase):
         assert a.attr("class") == "one"
         a.attr("id", "somethingelse")
         assert str(a) == '<div id="somethingelse" class="one"></div>'
+        a.attr({"role": "button", "data-count": "3"})
+        assert a.attr("role") == "button"
+        assert a.data("count") == 3
+        a.attr("role", None)
+        assert a.attr("role") is None
         # print(a.elements[0])
 
     def test_before(self):
-        pass
+        page = html(body(div("middle", _id="target")))
+        º(page)
+        º("#target").before("<p>before</p>").after("<p>after</p>")
+        assert str(page) == '<html><body><p>before</p><div id="target">middle</div><p>after</p></body></html>'
 
     def test_bind(self):
         pass
@@ -151,9 +163,12 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_data(self):
-        el = º('<div id="test"></div>')
+        el = º('<div id="test" data-enabled="true"></div>')
         el.data("answer", 42)
         assert el.data("answer") == 42
+        assert el.data("enabled") is True
+        el.data({"one": 1, "two": 2})
+        assert el.data() == {"answer": 42, "enabled": True, "one": 1, "two": 2}
 
     def test_dblclick(self):
         pass
@@ -180,16 +195,25 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_each(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        seen = []
+        things.each(lambda index, el: seen.append((index, el.textContent)))
+        assert seen == [(0, "a"), (1, "b")]
 
     def test_empty(self):
-        pass
+        page = html(body(div(span("x"), _id="target")))
+        º(page)
+        º("#target").empty()
+        assert str(º("#target")) == '<div id="target"></div>'
 
     def test_end(self):
         pass
 
     def test_eq(self):
-        pass
+        things = º("<li>a</li><li>b</li><li>c</li>")
+        assert str(things.eq(1)) == "<li>b</li>"
+        assert things.eq(99).length == 0
+        assert things.eq(1).end().length == 3
 
     def test_error(self):
         pass
@@ -249,10 +273,14 @@ class TestCase(unittest.TestCase):
         assert called == ["focusout"]
 
     def test_get(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        assert [el.textContent for el in things.get()] == ["a", "b"]
+        assert things.get(-1).textContent == "b"
+        assert things.get(99) is None
 
     def test_has(self):
-        pass
+        things = º('<div><span class="hit">x</span></div><div><b>y</b></div>')
+        assert str(things.has(".hit")) == '<div><span class="hit">x</span></div>'
 
     def test_hasClass(self):
         a = º('<div id="test2"></div>')
@@ -278,7 +306,9 @@ class TestCase(unittest.TestCase):
         assert calls == ["in", "out"]
 
     def test_html(self):
-        pass
+        el = º("<div></div>")
+        el.html("<span>x</span>")
+        assert el.html() == "<span>x</span>"
 
     def test_index(self):
         pass
@@ -297,6 +327,26 @@ class TestCase(unittest.TestCase):
 
     # def test_is(self):
     # pass
+
+    def test_is_and_not(self):
+        things = º('<li class="keep"></li><li class="drop"></li>')
+        assert things.is_(".keep") is True
+        assert str(things.not_(".drop")) == '<li class="keep"></li>'
+
+    def test_input_and_keyboard_events(self):
+        page = html(body(input(_id="field")))
+        º(page)
+        calls = []
+        field = º("#field")
+        field.input(lambda e: calls.append((e.type, e.data)))
+        field.change(lambda e: calls.append((e.type, None)))
+        field.keydown(lambda e: calls.append((e.type, e.key)))
+        field.val("quiet")
+        assert calls == []
+        field.trigger("input", {"data": "x"})
+        field.change()
+        field.trigger("keydown", {"key": "Enter"})
+        assert calls == [("input", "x"), ("change", None), ("keydown", "Enter")]
 
     def test_keydown(self):
         pass
@@ -382,6 +432,50 @@ class TestCase(unittest.TestCase):
     def on(self, event, callback):
         pass
 
+    def test_on_multiple_handlers_namespaces_and_off_callback(self):
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        calls = []
+
+        def first(e):
+            calls.append("first")
+
+        def second(e):
+            calls.append("second")
+
+        btn = º("#btn")
+        btn.on("click.release keyup", first)
+        btn.on("click", second)
+        btn.trigger("click")
+        assert calls == ["first", "second"]
+        btn.off(".release")
+        btn.trigger("click")
+        assert calls == ["first", "second", "second"]
+        btn.off("click", second)
+        btn.trigger("click")
+        assert calls == ["first", "second", "second"]
+
+    def test_on_delegated_event_with_data(self):
+        page = html(body(ul(li("x", _id="child", _class="item"), _id="list")))
+        º(page)
+        calls = []
+
+        º("#list").on(
+            "click",
+            ".item",
+            {"source": "delegated"},
+            lambda e: calls.append(
+                (
+                    e.target.getAttribute("id"),
+                    e.currentTarget.getAttribute("id"),
+                    e.delegateTarget.getAttribute("id"),
+                    e.data["source"],
+                )
+            ),
+        )
+        º("#child").trigger("click")
+        assert calls == [("child", "child", "list", "delegated")]
+
     def test_one(self):
         page = html(body(button("go", _id="btn")))
         º(page)
@@ -443,7 +537,10 @@ class TestCase(unittest.TestCase):
         assert el.promise()["state"] == "resolved"
 
     def test_prop(self):
-        pass
+        el = º('<input id="field" value="old"></input>')
+        assert el.prop("value") == "old"
+        el.prop("value", "new")
+        assert el.val() == "new"
 
     def test_pushStack(self):
         pass
@@ -459,7 +556,10 @@ class TestCase(unittest.TestCase):
         assert calls == ["ready"]
 
     def test_remove(self):
-        pass
+        page = html(body(div("keep", _id="keep"), div("drop", _id="drop")))
+        º(page)
+        º("div").remove("#drop")
+        assert str(page) == '<html><body><div id="keep">keep</div></body></html>'
 
     def test_removeAttr(self):
         pass
@@ -470,6 +570,8 @@ class TestCase(unittest.TestCase):
         assert a.hasClass("one") == True
         a.removeClass("one")
         assert a.hasClass("one") == False
+        a.removeClass()
+        assert a.attr("class") is None
 
     def test_removeData(self):
         el = º('<div id="test"></div>')
@@ -532,13 +634,21 @@ class TestCase(unittest.TestCase):
                     option("Multiple3", _selected="selected"),
                 ),
                 input(_type="text", _id="lname", _name="lname"),
+                input(_type="checkbox", _name="agree", _value="yes", _checked=True),
+                input(_type="checkbox", _name="skip", _value="no"),
+                input(_type="submit", _name="submitter", _value="send"),
             )
         )
         º(page)
-        assert º("form").serialize() == "single=Single&multiple=Multiple&multiple=Multiple3&lname="
+        assert º("form").serialize() == "single=Single&multiple=Multiple&multiple=Multiple3&lname=&agree=yes"
 
     def test_serializeArray(self):
-        page = html(form(input(_type="text", _name="lname", _value="smith")))
+        page = html(
+            form(
+                input(_type="text", _name="lname", _value="smith"),
+                input(_type="checkbox", _name="unchecked", _value="no"),
+            )
+        )
         º(page)
         assert º("form").serializeArray() == [{"name": "lname", "value": "smith"}]
 
@@ -597,7 +707,8 @@ class TestCase(unittest.TestCase):
         )
 
     def test_toArray(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        assert [el.textContent for el in things.toArray()] == ["a", "b"]
 
     def test_toggle(self):
         pass
@@ -610,7 +721,12 @@ class TestCase(unittest.TestCase):
         assert str(a) == '<div id="test2"></div>'
 
     def test_trigger(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        details = []
+        º("#btn").on("build", lambda e: details.append(e.detail["id"]))
+        º("#btn").trigger("build", {"detail": {"id": 7}})
+        assert details == [7]
 
     def test_triggerHandler(self):
         page = html(body(button("go", _id="btn")))
@@ -645,7 +761,16 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_val(self):
-        pass
+        el = º('<input id="field" value="old"></input>')
+        assert el.val() == "old"
+        assert str(el.val("new")) == '<input id="field" value="new"/>'
+
+    def test_wrap_dom_node_keeps_selector_context(self):
+        page = html(body(div(_id="target")))
+        º(page)
+        target = º("#target")[0]
+        º(target).append("<span>x</span>")
+        assert str(º("#target")) == '<div id="target"><span>x</span></div>'
 
     def test_width(self):
         el = º('<div id="test"></div>')
@@ -758,6 +883,8 @@ class TestCase(unittest.TestCase):
 
         assert º.parseJSON('{"a":1}') == {"a": 1}
         assert º.htmlPrefilter("<div></div>") == "<div></div>"
+        assert º.param({"a": 1, "b": ["x", "y"]}) == "a=1&b=x&b=y"
+        assert º.param([{"name": "q", "value": "hello world"}]) == "q=hello%20world"
 
         # º.param()
         # º.parseHTML()
