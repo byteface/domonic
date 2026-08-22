@@ -481,45 +481,66 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_history(self):
-        try:
-            import requests  # noqa: F401
-        except ModuleNotFoundError:
-            self.skipTest("requests is not installed")
+        from domonic.window import Window
 
-        from domonic.window import window
+        win = Window(url="https://example.com/start")
+        events = []
+        win.addEventListener(
+            "popstate", lambda event: events.append((event.type, event.state))
+        )
 
-        try:
-            window.location = "https://www.google.com"
-            window.location = "https://www.facebook.com"
-            window.location = "https://www.linkedin.com"
-        except Exception as exc:
-            self.skipTest(f"network-dependent history test unavailable: {exc}")
+        with patch.object(win, "_fetch_document", return_value=None):
+            win.location = "https://example.com/one"
+            win.location = "https://example.com/two"
+            win.location = "https://example.com/three"
 
-        # print(window.history.length)
-        # print(window.history.state)
-        window.history.back()
-        # print(window.history.state, window.location.href)
-        assert window.location.href == "https://www.facebook.com"
-        # print(window.history.length)
-        # print(window.history.state)
-        window.history.back()
-        # print(window.history.state)
-        assert window.location.href == "https://www.google.com"
-        title = window.document.querySelector("title")
-        if title is None:
-            self.skipTest("history test requires fetched remote HTML content")
-        assert "Google" in title.text
-        # print(window.history.length)
-        # print(window.history.state)
-        window.history.forward()
-        assert window.location.href == "https://www.facebook.com"
-        assert "Facebook" in window.document.querySelector("title").text
-        # print(window.history.state)
-        window.history.forward()
-        # print(window.document.querySelector('title').text)
-        assert "LinkedIn" in window.document.querySelector("title").text
+            self.assertEqual(win.history.length, 4)
+            self.assertEqual(win.history.state, "https://example.com/three")
 
-        print(window.history)
+            self.assertEqual(win.history.back(), 2)
+            self.assertEqual(win.location.href, "https://example.com/two")
+            self.assertEqual(win.history.state, "https://example.com/two")
+
+            self.assertEqual(win.history.forward(), 3)
+            self.assertEqual(win.location.href, "https://example.com/three")
+
+            self.assertEqual(win.history.go(-99), 3)
+            self.assertEqual(win.location.href, "https://example.com/three")
+
+            win.history.back()
+            win.location = "https://example.com/four"
+            self.assertEqual(win.history.states[-1], "https://example.com/four")
+            self.assertNotIn("https://example.com/three", win.history.states)
+
+            original_state = {"page": 1, "items": ["a"]}
+            win.history.pushState(original_state, "Page 1", "/page-1")
+            original_state["page"] = 99
+
+            self.assertEqual(win.location.href, "https://example.com/page-1")
+            self.assertEqual(win.history.state, {"page": 1, "items": ["a"]})
+            self.assertEqual(win.history.entries[-1]["title"], "Page 1")
+
+            win.history.state["items"].append("mutated")
+            self.assertEqual(win.history.state, {"page": 1, "items": ["a"]})
+
+            before_replace = win.history.length
+            win.history.replaceState({"page": 2}, "Page 2", "?page=2")
+            self.assertEqual(win.history.length, before_replace)
+            self.assertEqual(win.location.href, "https://example.com/page-1?page=2")
+            self.assertEqual(win.history.state, {"page": 2})
+
+            win.history.scrollRestoration = "manual"
+            self.assertEqual(win.history.scrollRestoration, "manual")
+            with self.assertRaises(ValueError):
+                win.history.scrollRestoration = "sometimes"
+
+            win.history.back()
+            self.assertEqual(win.location.href, "https://example.com/four")
+            win.history.forward()
+            self.assertEqual(win.history.state, {"page": 2})
+
+        self.assertIn(("popstate", "https://example.com/two"), events)
+        self.assertIn(("popstate", {"page": 2}), events)
 
     def test_gl(self):
         pass
