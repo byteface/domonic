@@ -73,10 +73,8 @@ class Websocket:
             "drop",
         ]:
             evt = DragEvent(event_string)
-            try:
+            if "dataTransfer" in dom_event:
                 evt.dataTransfer = dom_event["dataTransfer"]
-            except Exception as e:
-                pass
 
         elif event_string == "hashchange":
             # print(dom_event)
@@ -560,7 +558,7 @@ class Input:
     IMAGE = "image"
     MONTH = "month"
     NUMBER = "number"
-    PASSWORD = "password"
+    PASSWORD = "password"  # nosec B105
     RADIO = "radio"
     RANGE = "range"
     RESET = "reset"

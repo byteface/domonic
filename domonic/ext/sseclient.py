@@ -140,7 +140,8 @@ class Event(object):
     sse_line_pattern = re.compile("(?P<name>[^:]*):?( ?(?P<value>.*))?")
 
     def __init__(self, data="", event="message", id=None, retry=None):
-        assert isinstance(data, six.string_types), "Data must be text"
+        if not isinstance(data, six.string_types):
+            raise TypeError("Data must be text")
         self.data = data
         self.event = event
         self.id = id

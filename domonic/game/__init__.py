@@ -6,6 +6,8 @@ domonic.game
 
 import random
 
+_random = random.SystemRandom()
+
 
 class Game:
     @staticmethod
@@ -18,7 +20,7 @@ class Game:
         Returns:
             [int]: [number rolled]
         """
-        return random.randint(1, sides)
+        return _random.randint(1, sides)
 
     @staticmethod
     def pick_a_card() -> str:
@@ -29,7 +31,7 @@ class Game:
         """
         suits = ["♠", "♥", "♦", "♣"]
         cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-        return random.choice(cards) + random.choice(suits)
+        return _random.choice(cards) + _random.choice(suits)
 
     @staticmethod
     def deal_cards(n: int = 1) -> list:
@@ -48,15 +50,11 @@ class Game:
     @staticmethod
     def random_bool() -> bool:
         #  (https://6b.eleuther.ai/) TODO - test
-        rv = random.Random()
-        if rv.uniform(0.0, 1.0):
-            return True
-        else:
-            return False
+        return bool(_random.getrandbits(1))
 
     @staticmethod
     def random_char() -> str:
-        return chr(random.choice(range(ord("A"), ord("Z") + 1)))
+        return chr(_random.choice(range(ord("A"), ord("Z") + 1)))
 
     # @staticmethod
     # def bingo():

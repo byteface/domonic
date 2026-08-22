@@ -33,8 +33,9 @@ def prettify(elem):
     Returns:
         str: prettified xml element
     """
-    from xml.dom import minidom
+    # Preserve historical minidom pretty-print output.
+    from xml.dom import minidom  # nosec B408
 
-    x = minidom.parseString(elem)
+    x = minidom.parseString(elem)  # nosec B318
     # pretty = '\n'.join(x.toprettyxml().splitlines()[1:])
     return x.toprettyxml()

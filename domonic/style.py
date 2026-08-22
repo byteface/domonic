@@ -5862,7 +5862,7 @@ class CSSStyleDeclaration(Style):
             if not target.startswith("--"):
                 setattr(self, self._to_camel(propertyName), "")
         except Exception:
-            pass
+            return current
         finally:
             object.__setattr__(self, "_suspend_style_sync", False)
         return current

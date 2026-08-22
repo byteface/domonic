@@ -5,7 +5,7 @@ domonic.cmd
 """
 
 import os
-import subprocess
+import subprocess  # nosec B404
 
 from domonic.javascript import window
 
@@ -48,7 +48,7 @@ class Cmdcommand:
             str: the response as a string
         """
         returned_output = subprocess.check_output(
-            cmd, shell=True, stderr=subprocess.STDOUT
+            cmd, shell=True, stderr=subprocess.STDOUT  # nosec B602
         )
         return returned_output.decode("utf-8")
 
@@ -104,7 +104,7 @@ class Cmdcommand:
             """
             if self.has_wait is not True:
                 returned_output = subprocess.check_output(
-                    cmd, shell=True, stderr=subprocess.STDOUT
+                    cmd, shell=True, stderr=subprocess.STDOUT  # nosec B602
                 )
                 self.result = returned_output.decode("utf-8")
             else:
@@ -116,7 +116,7 @@ class Cmdcommand:
 
                 # try:
                 proc = subprocess.Popen(
-                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True  # nosec B602
                 )
                 intId = window.setInterval(3000, kill_switch, proc)
                 self.result = proc.stdout.readlines()

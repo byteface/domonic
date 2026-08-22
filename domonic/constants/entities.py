@@ -346,8 +346,8 @@ class Char:
     #     &thinsp;    &#8201; Thin space
     # ‌   &zwnj;  &#8204; Zero width non-joiner
     # ‍   &zwj;   &#8205; Zero width joiner
-    # ‎   &lrm;   &#8206; Left-to-right mark
-    # ‏   &rlm;   &#8207; Right-to-left mark
+    # U+200E &lrm;   &#8206; Left-to-right mark
+    # U+200F &rlm;   &#8207; Right-to-left mark
 
     NDASH: str = "&ndash;"  #: –
     MDASH: str = "&mdash;"  #: —

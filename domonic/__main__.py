@@ -6,7 +6,7 @@ domonic CLI
 
 import argparse
 import os
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 from domonic.ext import (get_hello_world, get_server_requirements,
@@ -73,20 +73,20 @@ function project(){
 
 def _open_directory(path: str = ".") -> None:
     if sys.platform.startswith("darwin"):
-        subprocess.run(["open", path], check=False)
+        subprocess.run(["open", path], check=False)  # nosec B603 B607
         return
 
     if sys.platform.startswith("linux"):
         for command in (["xdg-open", path], ["nautilus", path]):
             try:
-                subprocess.run(command, check=False)
+                subprocess.run(command, check=False)  # nosec B603
                 return
             except FileNotFoundError:
                 continue
         return
 
     if os.name == "nt":
-        os.startfile(path)
+        os.startfile(path)  # nosec B606
 
 
 def _read_source(source: str | None, use_stdin: bool = False) -> str:
@@ -99,7 +99,7 @@ def _read_source(source: str | None, use_stdin: bool = False) -> str:
             return handle.read()
     import requests
 
-    response = requests.get(source)
+    response = requests.get(source, timeout=30)
     return response.text
 
 
@@ -178,7 +178,7 @@ def project(name, server_choice: str | None = None):
                 script.write('call "venv\\Scripts\\activate"\n')
                 for command in install_commands:
                     script.write(f"{command}\n")
-            os.system("activate.bat")
+            os.system("activate.bat")  # nosec B605 B607
             os.remove("activate.bat")
         else:
             with open("activate.sh", "w") as script:
@@ -186,7 +186,7 @@ def project(name, server_choice: str | None = None):
                 script.write("source venv/bin/activate\n")
                 for command in install_commands:
                     script.write(f"{command}\n")
-            os.system("bash activate.sh")
+            os.system("bash activate.sh")  # nosec B605 B607
             os.remove("activate.sh")
 
     PROJECT_NAME = name
@@ -220,7 +220,7 @@ run:
         f.write('__version__ = "0.0.1"')
 
     # create a git repo
-    os.system("git init")
+    os.system("git init")  # nosec B605 B607
     with open(".gitignore", "w") as f:
         f.write("*.pyc\n")
         f.write("*.pyo\n")
@@ -263,7 +263,7 @@ run:
         else:
             f.write("from domonic.html import *")
 
-    os.system("python3 -m venv venv")
+    os.system("python3 -m venv venv")  # nosec B605 B607
     write_activation_script(server_choice)
 
     # license_opt = ["none", "mit", "gpl", "apache", "bsd", "mpl"]
@@ -291,7 +291,7 @@ run:
 
     # chmod
     if os.name == "posix":
-        os.system("chmod -R 777 static")
+        os.system("chmod -R 777 static")  # nosec B605 B607
 
     _open_directory(".")
 

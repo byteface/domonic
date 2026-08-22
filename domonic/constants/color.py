@@ -32,10 +32,12 @@ class Color:
         Returns:
             [str]: [random hex color i.e. #000000]
         """
-        import random
+        from random import SystemRandom
+
+        random_color = SystemRandom()
 
         def r():
-            return random.randint(0, 255)
+            return random_color.randint(0, 255)
 
         # r = lambda: random.randint(0, 255)
         return "#%02X%02X%02X" % (r(), r(), r())

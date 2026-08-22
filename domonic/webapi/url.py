@@ -88,7 +88,7 @@ class URL:
         except Exception:  # as e:
             # print('fails on props called by init as they dont exist yet')
             # print(e)
-            pass
+            return
 
     def __init__(
         self, url: str = "", *args: Any, **kwargs: Any

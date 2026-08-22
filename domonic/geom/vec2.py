@@ -5,8 +5,11 @@ domonic.geom.vec2
 """
 
 import math
+import random
 
 # import operator
+
+_random = random.SystemRandom()
 
 
 class vec2:
@@ -260,9 +263,7 @@ class vec2:
     @staticmethod
     def random(min_x, max_x, min_y, max_y):
         """returns a random vector"""
-        import random
-
-        return vec2(random.uniform(min_x, max_x), random.uniform(min_y, max_y))
+        return vec2(_random.uniform(min_x, max_x), _random.uniform(min_y, max_y))
 
     @staticmethod
     def random_unit_vector(min_x, max_x, min_y, max_y):

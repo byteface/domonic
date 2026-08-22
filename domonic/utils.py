@@ -13,6 +13,7 @@ from typing import Any, Iterable, Iterator, Sequence, TypeVar
 from domonic.decorators import deprecated
 
 T = TypeVar("T")
+_random = random.SystemRandom()
 
 
 class Utils:
@@ -270,7 +271,7 @@ class Utils:
 
     @staticmethod  # TODO - remove as we have color class. (might be getting used in examples)
     def random_color(self):
-        r = lambda: random.randint(0, 255)
+        r = lambda: _random.randint(0, 255)
         return str("#%02X%02X%02X" % (r(), r(), r()))
 
     @staticmethod

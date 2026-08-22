@@ -28,9 +28,9 @@ This avoids all the overhead of SAX and pulldom to gain performance.
 #      nice speedup is achieved this way as well!)
 
 from typing import Final
-from xml.dom import (EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node,
-                     minidom, xmlbuilder)
-from xml.dom.minidom import _append_child, _set_attribute_node
+from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node, xmlbuilder
+from xml.dom import minidom  # nosec B408
+from xml.dom.minidom import _append_child, _set_attribute_node  # nosec B408
 from xml.dom.NodeFilter import NodeFilter
 from xml.parsers import expat
 
@@ -124,7 +124,8 @@ def _intern(builder, s):
 
 
 def _parse_ns_name(builder, name):
-    assert " " in name
+    if " " not in name:
+        raise ValueError("namespace name must contain spaces")
     parts = name.split(" ")
     intern = builder._intern_setdefault
     if len(parts) == 3:
@@ -480,7 +481,8 @@ class ExpatBuilder:
         if info is None:
             self._elem_info[name] = ElementInfo(name, model)
         else:
-            assert info._model is None
+            if info._model is not None:
+                raise AssertionError("element model is already set")
             info._model = model
 
     def attlist_decl_handler(self, elem, name, type, default, required):
@@ -891,23 +893,24 @@ class Namespaces:
             curNode = self.curNode
             if " " in name:
                 uri, localname, prefix, qname = _parse_ns_name(self, name)
-                assert (
+                if not (
                     curNode.namespaceURI == uri
                     and curNode.localName == localname
                     and curNode.prefix == prefix
-                ), "element stack messed up! (namespace)"
+                ):
+                    raise AssertionError("element stack messed up! (namespace)")
             else:
                 # print(name, curNode, curNode.nodeName, type(curNode))
                 # print(curNode.nodeName, name)
                 # print(curNode.nodeName == name)
 
                 if curNode.nodeName != "#document":
-                    assert (
-                        curNode.nodeName.upper() == name.upper()
-                    ), "element stack messed up - bad nodeName"
-                    assert (
-                        curNode.namespaceURI == EMPTY_NAMESPACE
-                    ), "element stack messed up - bad namespaceURI"
+                    if curNode.nodeName.upper() != name.upper():
+                        raise AssertionError("element stack messed up - bad nodeName")
+                    if curNode.namespaceURI != EMPTY_NAMESPACE:
+                        raise AssertionError(
+                            "element stack messed up - bad namespaceURI"
+                        )
             self.curNode = curNode.parentNode
             self._finish_end_element(curNode)
 

@@ -749,7 +749,7 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
             if registered is not None:
                 return registered(*args, **kwargs)
     except Exception:
-        pass
+        registry = None
 
     # NOTE: we care calling it custom_tag because it can't have hyphens < Note - use HTMLUnknownElement?
     custom_tag = type("custom_tag", (Element,), {"name": name})

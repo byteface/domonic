@@ -568,21 +568,22 @@ class Node(EventTarget):
 
         # attempt to set init namespaceURI based on the tag name
         try:
-            n = self.rootNode
-            nm = n.tagName
-            # print(n)
-            if nm == "html":
-                self.namespaceURI = "http://www.w3.org/1999/xhtml"
-            elif nm == "svg":
-                self.namespaceURI = "http://www.w3.org/2000/svg"
-            elif nm == "xhtml":
-                self.namespaceURI = "http://www.w3.org/1999/xhtml"
-            elif nm == "xml":
-                self.namespaceURI = "http://www.w3.org/XML/1998/namespace"
-            elif nm == "xlink":
-                self.namespaceURI = "http://www.w3.org/1999/xlink"
-            elif nm == "math":
-                self.namespaceURI = "http://www.w3.org/1998/Math/MathML"
+            nm = self.rootNode.tagName
+        except AttributeError:
+            nm = None
+        # print(n)
+        if nm == "html":
+            self.namespaceURI = "http://www.w3.org/1999/xhtml"
+        elif nm == "svg":
+            self.namespaceURI = "http://www.w3.org/2000/svg"
+        elif nm == "xhtml":
+            self.namespaceURI = "http://www.w3.org/1999/xhtml"
+        elif nm == "xml":
+            self.namespaceURI = "http://www.w3.org/XML/1998/namespace"
+        elif nm == "xlink":
+            self.namespaceURI = "http://www.w3.org/1999/xlink"
+        elif nm == "math":
+            self.namespaceURI = "http://www.w3.org/1998/Math/MathML"
             # elif nm == "rdf":
             #     self.namespaceURI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
             # elif nm == "rdfs":
@@ -623,8 +624,6 @@ class Node(EventTarget):
             #     self.namespaceURI = "http://www.w3.org/2003/01/geo/wgs84_pos#"
             # elif nm == "xhv":
             #     self.namespaceURI = "http://www.w3.org/1999/xhtml/vocab#"
-        except Exception as e:
-            pass
 
         # this is for using 'with'
         if Node.__context is not None:
@@ -2570,7 +2569,7 @@ class DOMTokenList(list):
     @staticmethod
     def _validate_token(token) -> str:
         token = str(token)
-        if token == "":
+        if len(token) == 0:
             raise ValueError("DOMTokenList token must not be empty")
         if any(char.isspace() for char in token):
             raise ValueError("DOMTokenList token must not contain whitespace")
@@ -3466,13 +3465,13 @@ class Element(Node):
         # for now I'm going using recursion so this is a bit of a hack to do a few levels
         if self.getAttribute(attr) == val:
             return self
-        try:
-            for child in self.childNodes:
-                match = child._getElementByAttrVal(attr, val)
-                if match:
-                    return match
-        except Exception as e:
-            pass  # TODO - dont iterate strings
+        for child in self.childNodes:
+            get_by_attr = getattr(child, "_getElementByAttrVal", None)
+            if not callable(get_by_attr):
+                continue
+            match = get_by_attr(attr, val)
+            if match:
+                return match
         return False
 
     def _matchElement(self, element, query):
@@ -5546,7 +5545,7 @@ class Range(AbastractRange):
                 if body is not None:
                     return DocumentFragment(*list(body.childNodes))
         except Exception:
-            pass
+            return DocumentFragment(fragment)
         return DocumentFragment(fragment)
 
     def toString(self) -> str:
@@ -7266,7 +7265,8 @@ class PerformanceObserver:
                 for entry in js_performance.getEntries():
                     self._enqueue(entry)
             except Exception:
-                pass
+                self._flush()
+                return
         self._flush()
 
     def disconnect(self) -> None:

@@ -119,11 +119,15 @@ iife = called  # pass None for an iife
 # https://stackoverflow.com/questions/15299878/how-to-use-python-decorators-to-check-function-arguments
 def accepts(*types):
     def check_accepts(f):
-        assert len(types) == f.__code__.co_argcount
+        if len(types) != f.__code__.co_argcount:
+            raise AssertionError(
+                "accepts decorator argument count must match function argument count"
+            )
 
         def new_f(*args, **kwds):
             for a, t in zip(args, types):
-                assert isinstance(a, t), "arg %r does not match %s" % (a, t)
+                if not isinstance(a, t):
+                    raise AssertionError("arg %r does not match %s" % (a, t))
             return f(*args, **kwds)
 
         new_f.__name__ = f.__name__

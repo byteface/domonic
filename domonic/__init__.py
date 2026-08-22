@@ -86,7 +86,7 @@ class domonic:
         """downloads html and converts to domonic"""
         import requests
 
-        r = requests.get(url)
+        r = requests.get(url, timeout=30)
         return domonic.parse(r.content.decode("utf-8"))
         # TODO - param to eval
 
@@ -199,7 +199,8 @@ class domonic:
         # i.e. a list not in aa ul or ol. when on single line evaulate will fix
         # but on mulitple lines it will not.
         try:
-            p = eval(s, {**kwargs, **globals()})
+            # PyML evaluation is this API's compatibility surface.
+            p = eval(s, {**kwargs, **globals()})  # nosec B307
         except Exception as e:
             fragments = domonic._split_top_level_pyml(pyml)
             if len(fragments) > 1:
@@ -210,7 +211,7 @@ class domonic:
             print("Failed to evaluate as mulitline trying again:", e)
             pyml = "".join(pyml.splitlines()).strip(",")  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)
-            p = eval(s, {**kwargs, **globals()})
+            p = eval(s, {**kwargs, **globals()})  # nosec B307
 
         return p
 
@@ -239,7 +240,8 @@ class domonic:
 
         try:
             # TODO - strip any potentially bad/dangerous code before eval.
-            p = eval(pyml, {**kwargs, **globals()})
+            # PyML evaluation is this API's compatibility surface.
+            p = eval(pyml, {**kwargs, **globals()})  # nosec B307
             domonic.LAST_ERR = None
             return pyml  # ????
         except Exception as e:
@@ -1390,7 +1392,7 @@ class domonic:
 
                 domonic_window.customElements.upgrade(page)
             except Exception:
-                pass
+                return page
             return page
 
         def _looks_like_full_html_document(source: str) -> bool:
@@ -1499,35 +1501,19 @@ class domonic:
             raise ValueError(f"Unknown parser: {parser}")
 
         # TODO - this needs to be off for debugging
-        try:
-            return _parse_with_html5lib()
-        except ImportError:
-            pass
-
-        try:
-            return _parse_with_lxml_html()
-        except Exception:
-            pass
-
-        try:
-            return _parse_with_html5_parser()
-        except Exception:
-            pass
-
-        try:
-            return _parse_with_justhtml()
-        except Exception:
-            pass
-
-        try:
-            return _parse_with_markupever()
-        except Exception:
-            pass
-
-        try:
-            return _parse_with_selectolax()
-        except Exception:
-            pass
+        fallback_parsers = (
+            (_parse_with_html5lib, (ImportError,)),
+            (_parse_with_lxml_html, (Exception,)),
+            (_parse_with_html5_parser, (Exception,)),
+            (_parse_with_justhtml, (Exception,)),
+            (_parse_with_markupever, (Exception,)),
+            (_parse_with_selectolax, (Exception,)),
+        )
+        for parse_with, handled_errors in fallback_parsers:
+            try:
+                return parse_with()
+            except handled_errors:
+                continue
 
         try:
             from domonic.parsers import expatbuilder

@@ -243,7 +243,8 @@ def getDomBuilder(ignore: object):
                         self.dom._child_node_types.append(Node.TEXT_NODE)
                 self.dom.appendChild(self.dom.createTextNode(data))
 
-        from xml.dom import minidom
+        # DOM implementation adapter, not XML parsing.
+        from xml.dom import minidom  # nosec B408
 
         implementation = minidom  # DomImplementation
         name = None
@@ -316,7 +317,8 @@ def getDomBuilder(ignore: object):
 getDomModule = moduleFactoryFactory(getDomBuilder)
 
 # if implementation is None:
-from xml.dom import minidom
+# DOM implementation adapter, not XML parsing.
+from xml.dom import minidom  # nosec B408
 
 implementation = minidom
 

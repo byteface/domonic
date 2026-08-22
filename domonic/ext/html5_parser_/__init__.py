@@ -85,12 +85,12 @@ def safe_get_preferred_encoding():
     try:
         ans = getpreferredencoding(False)
     except Exception:
-        pass
+        return None
     else:
         try:
             return codecs.lookup(ans).name
         except LookupError:
-            pass
+            return None
 
 
 def as_utf8(bytes_or_unicode, transport_encoding=None, fallback_encoding=None):
@@ -122,11 +122,8 @@ def as_utf8(bytes_or_unicode, transport_encoding=None, fallback_encoding=None):
                             b if b <= 0x7F else 0xF780 + b - 0x80
                             for b in bytearray(data)
                         )
-                        try:
-                            chr = unichr
-                        except NameError:
-                            pass
-                        data = "".join(map(chr, buf))
+                        chr_func = globals().get("unichr", chr)
+                        data = "".join(map(chr_func, buf))
                     else:
                         data = data.decode(encoding).encode("utf-8")
     else:

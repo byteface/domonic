@@ -6,7 +6,7 @@ domonic.terminal
 
 import os
 import shlex
-import subprocess
+import subprocess  # nosec B404
 from os import PathLike
 from typing import Any, Iterable, Sequence
 
@@ -86,7 +86,7 @@ class command:
         try:
             completed = subprocess.run(
                 cmd if shell or not isinstance(cmd, str) else shlex.split(cmd),
-                shell=shell,
+                shell=shell,  # nosec B602
                 cwd=kwargs.get("cwd"),
                 env=env,
                 input=kwargs.get("input"),

@@ -120,14 +120,14 @@ class FormData:
                     )
             elif el.nodeName.lower() == "button":
                 if el.type in ["reset", "submit", "button"]:
-                    try:
+                    name = el.getAttribute("name")
+                    value = el.nodeValue
+                    if name is not None and value is not None:
                         q.append(
-                            el.getAttribute("name")
+                            name
                             + "="
-                            + Global.encodeURIComponent(el.nodeValue)
+                            + Global.encodeURIComponent(value)
                         )
-                    except:
-                        pass  # ? we dont pass submit button do we?
 
         # return "&".join(q)
         self._data = "&".join(q)

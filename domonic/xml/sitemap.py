@@ -153,15 +153,16 @@ def get_sitemap(path: str, *args, **kwargs):
 
     sitemap_text = _get_sitemap_text(path)
 
-    try:
-        return domonic.domonic.parseString(sitemap_text, parser="expat")
-    except Exception:
-        pass
+    def _try_parse(parser):
+        try:
+            return domonic.domonic.parseString(sitemap_text, parser=parser)
+        except Exception:
+            return None
 
-    try:
-        return domonic.domonic.parseString(sitemap_text, parser="html5_parser")
-    except Exception:
-        pass
+    for parser in ("expat", "html5_parser"):
+        parsed = _try_parse(parser)
+        if parsed is not None:
+            return parsed
 
     return domonic.domonic.parseString(sitemap_text)
 
@@ -169,7 +170,7 @@ def get_sitemap(path: str, *args, **kwargs):
 def _get_sitemap_text(path: str) -> str:
     import requests
 
-    r = requests.get(path)
+    r = requests.get(path, timeout=30)
     return r.text
 
 

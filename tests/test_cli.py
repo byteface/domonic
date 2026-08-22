@@ -53,7 +53,7 @@ class TestCLI(unittest.TestCase):
         ):
             do_things(self._base_args(xpath=["https://example.com", "//a"]))
 
-        fake_requests.get.assert_called_once_with("https://example.com")
+        fake_requests.get.assert_called_once_with("https://example.com", timeout=30)
         mock_parse.assert_called_once()
         mocked_evaluator.createExpression.assert_called_once_with("//a")
         self.assertIn("Example", stdout.getvalue())

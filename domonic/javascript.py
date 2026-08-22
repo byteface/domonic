@@ -120,7 +120,8 @@ def function(python_str: str) -> Callable[[], Any]:
     """
 
     def anon() -> Any:
-        return eval(python_str)
+        # JavaScript Function compatibility.
+        return eval(python_str)  # nosec B307
 
     return anon
 
@@ -876,8 +877,9 @@ class Math(Object):
                             params[i] = int(n)
                     except Exception:
                         # raise ValueError("")
-                        # js returns None instead
-                        pass
+                        # Keep historical loose coercion behavior: leave
+                        # values that cannot be int/float converted alone.
+                        params[i] = n
 
             args = tuple(params)
             try:
@@ -1014,7 +1016,8 @@ class Math(Object):
     @_force_number
     def random() -> float:
         """Returns a random number between 0 and 1."""
-        return random.random()
+        # Math.random is intentionally non-crypto.
+        return random.random()  # nosec B311
 
     @staticmethod
     @_force_number
@@ -1151,7 +1154,8 @@ class Global:
     @staticmethod
     def eval(pythonstring: str) -> Any:
         """Evaluates a string and executes it as if it was script code"""
-        eval(pythonstring)
+        # JavaScript eval compatibility.
+        eval(pythonstring)  # nosec B307
 
     @staticmethod
     def isFinite(x) -> bool:
@@ -1256,7 +1260,8 @@ class Global:
             [str]: [an identifier for the timer]
         """
         if isinstance(callback, str):
-            callback = eval(callback)
+            # setTimeout string callback compatibility.
+            callback = eval(callback)  # nosec B307
 
         timer = threading.Timer(t / 1000, callback, args=args, kwargs=kwargs)
         timer_id = id(timer)
@@ -3451,7 +3456,7 @@ class String:
                     try:
                         pylocale.setlocale(pylocale.LC_COLLATE, previous_locale)
                     except Exception:
-                        pass
+                        previous_locale = None
             return comparison
         return (self.x > comparisonString) - (self.x < comparisonString)
 

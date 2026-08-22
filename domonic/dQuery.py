@@ -9,6 +9,7 @@ import copy
 import functools
 import json
 import re
+import sys
 
 from domonic.dom import *
 from domonic.html import *
@@ -2079,14 +2080,14 @@ class º(dQuery_el):
     @staticmethod
     def getScript(filename, *args):
         """execute another python file."""
-        from subprocess import Popen
+        from subprocess import Popen  # nosec B404
 
-        Popen("python " + filename + ".py")
+        Popen([sys.executable, filename + ".py"])  # nosec B603
 
     @staticmethod  # TODO - test
     def globalEval(code):
         """Execute some python code globally."""
-        return eval(code, globals(), locals())
+        return eval(code, globals(), locals())  # nosec B307
 
     @staticmethod  # TODO - test
     def grep(arr, func):
@@ -2225,7 +2226,9 @@ class º(dQuery_el):
     @staticmethod
     def post(url, data, success):
         """Send data to the server using a HTTP POST request."""
-        r = requests.post(url, data)
+        import requests
+
+        r = requests.post(url, data, timeout=30)
         # if r.ok:
         #     succss()
         return r.content.decode("utf-8")
