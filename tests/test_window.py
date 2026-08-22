@@ -12,6 +12,7 @@ from domonic.html import body, div
 from domonic.webapi.crypto import Crypto
 from domonic.window import IdleDeadline, MediaQueryList, Window
 
+from unittest.mock import patch
 
 class TestCase(unittest.TestCase):
     def test_window_core_properties(self):
@@ -67,16 +68,17 @@ class TestCase(unittest.TestCase):
         win.moveBy(3, 4)
         self.assertEqual((win.screenLeft, win.screenTop), (8, 14))
 
-    def test_location_assignment_without_network(self):
-        win = Window()
+        def test_location_assignment_without_network(self):
+            win = Window()
 
-        win.location = "example.com"
+            with patch.object(win, "_fetch_document", return_value=None):
+                win.location = "example.com"
 
-        self.assertEqual(win.location.href, "https://example.com")
-        self.assertEqual(win.document.URL, "https://example.com")
-        self.assertEqual(win.document.referrer, "https://eventual.technology")
-        self.assertEqual(win.history.state, "https://example.com")
-
+            self.assertEqual(win.location.href, "https://example.com")
+            self.assertEqual(win.document.URL, "https://example.com")
+            self.assertEqual(win.document.referrer, "https://eventual.technology")
+            self.assertEqual(win.history.state, "https://example.com")
+            
     def test_document_metadata_properties_are_window_backed(self):
         win = Window()
 

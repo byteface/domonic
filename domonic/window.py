@@ -431,13 +431,17 @@ class Window(JavaScriptWindow, EventTarget):
             href = "https://" + href
         return href
 
-    def _set_document(self, doc: Document) -> Document:
+    def _set_document(self, doc: Document, referrer: str | None = None) -> Document:
         previous_document = getattr(self, "_document", None)
         self._document = doc
         self._document.defaultView = self
         self._document.URL = self._location.href
-        if previous_document is not None:
+
+        if referrer is not None:
+            self._document.referrer = referrer
+        elif previous_document is not None:
             self._document.referrer = getattr(previous_document, "URL", "") or ""
+
         return self._document
 
     def _fetch_document(self, url: str) -> Document | None:
@@ -559,7 +563,7 @@ class Window(JavaScriptWindow, EventTarget):
 
         loaded_document = self._fetch_document(href)
         if loaded_document is not None:
-            self._set_document(loaded_document)
+            self._set_document(loaded_document, referrer=previous_href)
 
     def blur(self):
         self._focused = False
