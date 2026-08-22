@@ -81,7 +81,10 @@ Pure examples:
 . venv/bin/activate
 cd examples
 python alltags.py
+python atom_feed.py
 python mathml.py
+python odf_content.py
+python rss_feed.py
 ```
 
 Nested examples:

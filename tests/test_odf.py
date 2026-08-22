@@ -55,6 +55,20 @@ class TestCase(unittest.TestCase):
         self.assertIn('manifest:version="1.2"', str(manifest_doc))
         self.assertIn('manifest:full-path="/"', str(manifest_doc))
 
+    def test_odf_content_example(self):
+        from examples.odf_content import build_content, build_manifest, render_xml
+
+        rendered = render_xml(build_content())
+        manifest = render_xml(build_manifest())
+
+        self.assertIn('<?xml version="1.0" encoding="UTF-8"?>', rendered)
+        self.assertIn("<office:document-content", rendered)
+        self.assertIn('office:version="1.2"', rendered)
+        self.assertIn('<table:table table:name="Release notes">', rendered)
+        self.assertIn("<text:p>Namespaced constructors</text:p>", rendered)
+        self.assertIn("<manifest:manifest", manifest)
+        self.assertIn('manifest:full-path="content.xml"', manifest)
+
 
 if __name__ == "__main__":
     unittest.main()
