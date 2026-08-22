@@ -158,6 +158,18 @@ class URL:
     def parse(url: str, base: str | None = None) -> URL | None:
         return URL(url, base) if URL.canParse(url, base) else None
 
+    @staticmethod
+    def createObjectURL(obj: Any) -> str:
+        from domonic.webapi.file import createObjectURL
+
+        return createObjectURL(obj)
+
+    @staticmethod
+    def revokeObjectURL(url: str) -> None:
+        from domonic.webapi.file import revokeObjectURL
+
+        revokeObjectURL(url)
+
     @property
     def protocol(self) -> str:
         self._ensure_url_state()

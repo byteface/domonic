@@ -9985,6 +9985,24 @@ class HTMLInputElement(HTMLElement):
     def value(self, new_value: Any) -> None:
         self.setAttribute("value", new_value)
 
+    @property
+    def files(self):
+        from domonic.webapi.file import FileList
+
+        if self.type != "file":
+            return None
+        selected_files = getattr(self, "_files", None)
+        if selected_files is None:
+            selected_files = FileList()
+            self._files = selected_files
+        return selected_files
+
+    @files.setter
+    def files(self, new_files: Any) -> None:
+        from domonic.webapi.file import FileList
+
+        self._files = new_files if isinstance(new_files, FileList) else FileList(new_files)
+
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
         if dispatch_events and not _dispatch_before_input_event(self, new_value):
             return self.value

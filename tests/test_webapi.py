@@ -5,6 +5,7 @@ test_webapi
 
 import json
 import os
+import tempfile
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -30,6 +31,8 @@ from domonic.webapi.fetch import (
     fetch_set,
     fetch_threaded,
 )
+from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
+from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
 from domonic.webapi.xhr import FormData, XMLHttpRequest
@@ -206,10 +209,84 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_dragndrop(self):
-        pass
+        transfer = DataTransfer()
+        file = File([b"hello"], "hello.txt")
+
+        item = transfer.items.add(file)
+        transfer.setData("text/plain", "dragged")
+
+        self.assertEqual(item.kind, "file")
+        self.assertIs(item.getAsFile(), file)
+        self.assertEqual(transfer.files.length, 1)
+        self.assertIs(transfer.files.item(0), file)
+        self.assertEqual(transfer.items.item(1).getAsString(), "dragged")
+        self.assertIn("text/plain", transfer.types)
+
+        transfer.clearData("text/plain")
+        self.assertNotIn("text/plain", transfer.types)
+        self.assertEqual(transfer.files.length, 1)
+
+        transfer.items.remove(0)
+        self.assertEqual(transfer.files.length, 0)
 
     def test_filereader(self):
-        pass
+        blob = Blob(["hello", b" ", bytearray(b"world")], {"type": "text/plain"})
+        self.assertEqual(blob.size, 11)
+        self.assertEqual(blob.type, "text/plain")
+        self.assertEqual(blob.text(), "hello world")
+        self.assertEqual(blob.slice(6, None).text(), "world")
+        self.assertEqual(blob.slice(-5, -1).text(), "worl")
+
+        file = File([blob, "!"], "greeting.txt", {"lastModified": 1234})
+        self.assertIsInstance(file, Blob)
+        self.assertEqual(file.name, "greeting.txt")
+        self.assertEqual(file.type, "text/plain")
+        self.assertEqual(file.lastModified, 1234)
+        self.assertEqual(file.text(), "hello world!")
+
+        with tempfile.NamedTemporaryFile("wb", suffix=".txt") as handle:
+            handle.write(b"from disk")
+            handle.flush()
+            disk_file = File.fromPath(handle.name)
+        self.assertEqual(disk_file.name, os.path.basename(handle.name))
+        self.assertEqual(disk_file.text(), "from disk")
+
+        files = FileList([file])
+        self.assertEqual(files.length, 1)
+        self.assertIs(files.item(0), file)
+        self.assertIsNone(files.item(99))
+
+        reader = FileReader()
+        events = []
+        reader.addEventListener("loadstart", lambda event: events.append(event.type))
+        reader.onprogress = lambda event: events.append((event.type, event.loaded))
+        reader.onload = lambda event: events.append((event.type, reader.result))
+        reader.onloadend = lambda event: events.append(event.type)
+        reader.readAsText(file)
+
+        self.assertEqual(reader.readyState, FileReader.DONE)
+        self.assertEqual(reader.result, "hello world!")
+        self.assertEqual(events[0], "loadstart")
+        self.assertIn(("progress", file.size), events)
+        self.assertIn(("load", "hello world!"), events)
+        self.assertEqual(events[-1], "loadend")
+
+        reader.readAsArrayBuffer(file)
+        self.assertEqual(reader.result, b"hello world!")
+        reader.readAsDataURL(Blob([b"ok"], {"type": "text/plain"}))
+        self.assertEqual(reader.result, "data:text/plain;base64,b2s=")
+
+        sync = FileReaderSync()
+        self.assertEqual(sync.readAsBinaryString(Blob([b"\xff"])), "ÿ")
+
+        object_url = URL.createObjectURL(file)
+        fetched = fetch(object_url).data
+        self.assertEqual(fetched.blob().text(), "hello world!")
+        URL.revokeObjectURL(object_url)
+        self.assertEqual(fetch(object_url).state, "rejected")
+
+        data_response = fetch("data:text/plain,hello%20data").data
+        self.assertEqual(data_response.text(), "hello data")
 
     def test_filesysmte(self):
         pass
@@ -430,6 +507,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(data), "subscribe=yes&bio=hello&name=Lin")
         data.delete("bio")
         self.assertFalse(data.has("bio"))
+
+        upload = File([b"report"], "report.txt", {"type": "text/plain"})
+        file_form = form(input(type="file", name="upload"))
+        file_form.querySelector("input").files = FileList([upload])
+        file_data = FormData(file_form)
+        self.assertIs(file_data.get("upload"), upload)
+        self.assertEqual(str(file_data), "upload=report.txt")
+        self.assertEqual(list(file_data.entryDetails()), [("upload", upload, "report.txt")])
 
         events = []
 

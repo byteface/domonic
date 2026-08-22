@@ -30,6 +30,25 @@ fetch
 	from domonic.webapi.fetch import fetch
 
 
+File API
+----------------
+
+``Blob``, ``File``, ``FileList`` and ``FileReader`` mirror the browser File API and
+work with ``fetch``, ``FormData`` and drag-and-drop helpers.
+
+.. code-block :: python
+
+	from domonic.webapi.file import Blob, File, FileReader
+	from domonic.webapi.url import URL
+
+	file = File([b"hello"], "hello.txt", {"type": "text/plain"})
+	reader = FileReader()
+	reader.onload = lambda event: print(reader.result)
+	reader.readAsText(file)
+
+	object_url = URL.createObjectURL(file)
+
+
 URL
 ----------------
 
@@ -85,6 +104,10 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.fetch
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.file
     :members:
     :noindex:
 

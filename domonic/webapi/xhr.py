@@ -312,6 +312,10 @@ class FormData:
 
             control_type = self._control_type(control)
             if node_name == "input":
+                if control_type == "file":
+                    for file in getattr(control, "files", []) or []:
+                        self.append(name, file)
+                    continue
                 if control_type in ("checkbox", "radio") and not self._is_checked(
                     control
                 ):
@@ -348,14 +352,21 @@ class FormData:
 
     def toString(self) -> str:
         """Returns a URL-encoded string representing the FormData object."""
-        pairs = [
-            (name, "" if value is None else str(value))
-            for name, value, _ in self._entries
-        ]
+        pairs = []
+        for name, value, filename in self._entries:
+            if filename is not None:
+                value = filename
+            pairs.append((name, "" if value is None else str(value)))
         return urllib.parse.urlencode(pairs)
 
     def append(self, name: str, value: Any, filename: str | None = None) -> None:
         """Append a new value onto an existing key, or add the key."""
+        from domonic.webapi.file import Blob, File
+
+        if filename is None and isinstance(value, File):
+            filename = value.name
+        elif filename is None and isinstance(value, Blob):
+            filename = "blob"
         self._entries.append((str(name), value, filename))
 
     def delete(self, name: str) -> None:
@@ -366,6 +377,10 @@ class FormData:
     def entries(self) -> Iterable[tuple[str, Any]]:
         """Return all key/value pairs."""
         return iter((name, value) for name, value, _ in self._entries)
+
+    def entryDetails(self) -> Iterable[tuple[str, Any, str | None]]:
+        """Return key/value/filename triples for integrations that need file metadata."""
+        return iter(self._entries)
 
     def get(self, name: str) -> Any:
         """Return the first value associated with ``name``."""

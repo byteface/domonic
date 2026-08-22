@@ -212,6 +212,8 @@ class _BodyMixin:
             return bytes(body)
         if isinstance(body, memoryview):
             return body.tobytes()
+        if hasattr(body, "arrayBuffer") and callable(body.arrayBuffer):
+            return body.arrayBuffer()
         if isinstance(body, str):
             return body.encode("utf-8")
         return jsonlib.dumps(body).encode("utf-8")
@@ -223,13 +225,23 @@ class _BodyMixin:
         return self._body_as_bytes()
 
     def blob(self) -> Any:
-        self.bodyUsed = True
-        return self.body
+        body = self._consume_body()
+        from domonic.webapi.file import Blob
+
+        return body if isinstance(body, Blob) else Blob([body])
 
     def formData(self) -> Any:
         body = self._consume_body()
         if isinstance(body, Mapping):
             return dict(body)
+        if hasattr(body, "text") and callable(body.text):
+            text = body.text()
+            return {
+                key: values[0] if len(values) == 1 else values
+                for key, values in urllib.parse.parse_qs(
+                    text, keep_blank_values=True
+                ).items()
+            }
         text = self.text()
         return {
             key: values[0] if len(values) == 1 else values
@@ -244,6 +256,8 @@ class _BodyMixin:
             return None
         if isinstance(body, (Mapping, list, tuple)):
             return body
+        if hasattr(body, "text") and callable(body.text):
+            body = body.text()
         if isinstance(body, (bytes, bytearray, memoryview)):
             body = bytes(body).decode("utf-8")
         return jsonlib.loads(str(body))
@@ -258,6 +272,8 @@ class _BodyMixin:
             return bytes(body).decode("utf-8")
         if isinstance(body, memoryview):
             return body.tobytes().decode("utf-8")
+        if hasattr(body, "text") and callable(body.text):
+            return body.text()
         if isinstance(body, (Mapping, list, tuple)):
             return jsonlib.dumps(body)
         return str(body)
@@ -521,7 +537,10 @@ def _requests_kwargs(request: Request, kwargs: Mapping[str, Any]) -> dict[str, A
     request_kwargs = dict(kwargs)
     request_kwargs.setdefault("headers", request.headers.toObject())
     if request.method not in ("GET", "HEAD") and request.body is not None:
-        request_kwargs.setdefault("data", request.body)
+        body = request.body
+        if hasattr(body, "arrayBuffer") and callable(body.arrayBuffer):
+            body = body.arrayBuffer()
+        request_kwargs.setdefault("data", body)
     if request.redirect == "manual":
         request_kwargs.setdefault("allow_redirects", False)
     elif request.redirect == "follow":
@@ -546,6 +565,38 @@ def fetch(
     """Fetch a resource and return a domonic ``Promise`` fulfilled with ``Response``."""
     promise = Promise()
     request = input if isinstance(input, Request) else Request(input, init=init)
+
+    if str(request.url).startswith("blob:"):
+        from domonic.webapi.file import resolveObjectURL
+
+        blob = resolveObjectURL(request.url)
+        if blob is None:
+            return promise.reject(FileNotFoundError(request.url))
+        return promise.resolve(
+            Response(
+                url=request.url,
+                status=200,
+                statusText="OK",
+                headers={"Content-Type": blob.type},
+                body=blob,
+            )
+        )
+
+    if str(request.url).startswith("data:"):
+        from domonic.webapi.file import parse_data_url
+
+        blob = parse_data_url(request.url)
+        if blob is None:
+            return promise.reject(ValueError("Invalid data URL"))
+        return promise.resolve(
+            Response(
+                url=request.url,
+                status=200,
+                statusText="OK",
+                headers={"Content-Type": blob.type},
+                body=blob,
+            )
+        )
 
     signal = request.signal
     if signal is not None and getattr(signal, "aborted", False):
