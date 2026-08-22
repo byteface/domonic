@@ -26,6 +26,11 @@ class TestHTMLRendering(unittest.TestCase):
         tag = a()
         self.assertEqual(str(tag), '<a></a>')
 
+    def test_html_void_tags(self):
+        for factory in (area, base, br, col, embed, hr, img, input, link, meta, source, track, wbr):
+            with self.subTest(tag=factory.name):
+                self.assertEqual(str(factory()), f"<{factory.name}/>")
+
 
 class TestHTML(unittest.TestCase):
     def test_every_tag(self):

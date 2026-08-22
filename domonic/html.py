@@ -1,10 +1,11 @@
 """
-    domonic.html
-    ====================================
+domonic.html
+====================================
 
-    Generate HTML using python.
+Generate HTML using python.
 
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -29,21 +30,20 @@ from domonic.dom import (Comment, DocumentType, DOMConfig, Element,
                          HTMLObjectElement, HTMLOListElement,
                          HTMLOptGroupElement, HTMLOptionElement,
                          HTMLOutputElement, HTMLParagraphElement,
-                         HTMLParamElement, HTMLPictureElement, HTMLPreElement,
-                         HTMLPortalElement,
+                         HTMLParamElement, HTMLPictureElement,
+                         HTMLPortalElement, HTMLPreElement,
                          HTMLProgressElement, HTMLQuoteElement,
-                         HTMLScriptElement, HTMLSelectElement,
-                         HTMLSelectedContentElement, HTMLShadowElement,
-                         HTMLSourceElement, HTMLSpanElement,
-                         HTMLStyleElement, HTMLTableCaptionElement,
-                         HTMLTableCellElement, HTMLTableColElement,
-                         HTMLTableDataCellElement, HTMLTableElement,
-                         HTMLTableHeaderCellElement, HTMLTableRowElement,
-                         HTMLTableSectionElement, HTMLSlotElement,
-                         HTMLTemplateElement,
-                         HTMLTextAreaElement, HTMLTimeElement,
-                         HTMLTitleElement, HTMLTrackElement, HTMLUListElement,
-                         HTMLUnknownElement, HTMLVideoElement, Node, Text)
+                         HTMLScriptElement, HTMLSelectedContentElement,
+                         HTMLSelectElement, HTMLShadowElement, HTMLSlotElement,
+                         HTMLSourceElement, HTMLSpanElement, HTMLStyleElement,
+                         HTMLTableCaptionElement, HTMLTableCellElement,
+                         HTMLTableColElement, HTMLTableDataCellElement,
+                         HTMLTableElement, HTMLTableHeaderCellElement,
+                         HTMLTableRowElement, HTMLTableSectionElement,
+                         HTMLTemplateElement, HTMLTextAreaElement,
+                         HTMLTimeElement, HTMLTitleElement, HTMLTrackElement,
+                         HTMLUListElement, HTMLUnknownElement,
+                         HTMLVideoElement, Node, Text)
 from domonic.webapi.url import URL
 
 html_tags = [
@@ -459,6 +459,7 @@ html_attributes = [
     "disableremoteplayback",  # video
 ]
 
+
 def render(inp: Node, outp: str = "", to: str | None = None) -> str:
     """
     Render an HTML element or document to a string or file.
@@ -470,9 +471,9 @@ def render(inp: Node, outp: str = "", to: str | None = None) -> str:
 
     Returns:
         str: The rendered HTML string (or PyML if specified).
-    
+
     Examples:
-        >>> div()  
+        >>> div()
         '<div></div>'
         >>> render(div(), outp='output.html')
     """
@@ -631,12 +632,12 @@ canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
 caption = type("caption", (HTMLTableCaptionElement,), {"name": "caption"})
 colgroup = type("colgroup", (Element,), {"name": "colgroup"})
 tbody = type("tbody", (HTMLTableSectionElement,), {"name": "tbody"})
-thead = type("thead", (Element,), {"name": "thead"})  # Note - also should extend HTMLTableSectionElement
+thead = type(
+    "thead", (Element,), {"name": "thead"}
+)  # Note - also should extend HTMLTableSectionElement
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
 th = type("th", (HTMLTableHeaderCellElement,), {"name": "th"})
-fieldset = type(
-    "fieldset", (HTMLFieldSetElement,), {"name": "fieldset"}
-)
+fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})
 legend = type("legend", (HTMLLegendElement,), {"name": "legend"})
 button = type("button", (HTMLButtonElement,), {"name": "button"})
 select = type("select", (HTMLSelectElement,), {"name": "select"})
@@ -665,9 +666,13 @@ mod = type("mod", (HTMLModElement,), {"name": "mod"})
 time = type("time", (HTMLTimeElement,), {"name": "time"})
 data = type("data", (HTMLDataElement,), {"name": "data"})
 
-base = type("base", (HTMLBaseElement,), {"name": "base"})
-link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})  # HTMLLinkElement TODO - closed tags
-meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})  # HTMLMetaElement TODO - closed tags
+base = type("base", (closed_tag, HTMLBaseElement), {"name": "base"})
+link = type(
+    "link", (closed_tag, HTMLLinkElement), {"name": "link"}
+)  # HTMLLinkElement TODO - closed tags
+meta = type(
+    "meta", (closed_tag, HTMLMetaElement), {"name": "meta"}
+)  # HTMLMetaElement TODO - closed tags
 hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
 br = type(
     "br",
@@ -682,7 +687,7 @@ img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})
 param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})
 source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})
 track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})
-area = type("area", (HTMLAreaElement,), {"name": "area"})
+area = type("area", (closed_tag, HTMLAreaElement), {"name": "area"})
 col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})
 input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})
 keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
@@ -697,7 +702,7 @@ applet = type("applet", (Element,), {"name": "applet"})
 basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
 center = type("center", (Element,), {"name": "center"})
 dir = type("dir", (Element,), {"name": "dir"})
-embed = type("embed", (HTMLEmbedElement,), {"name": "embed"})
+embed = type("embed", (closed_tag, HTMLEmbedElement), {"name": "embed"})
 frame = type("frame", (Element,), {"name": "frame"})
 frameset = type("frameset", (HTMLFrameSetElement,), {"name": "frameset"})
 isindex = type("isindex", (Element,), {"name": "isindex"})
