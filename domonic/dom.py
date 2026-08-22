@@ -10,15 +10,16 @@ observers, and the document-facing APIs that the rest of the package builds on.
 It is intended to feel like a practical Python surface for the DOM and related
 web-platform concepts rather than a small HTML helper tree.
 """
+
 from __future__ import annotations
 
 import copy
-from html import escape as _escape_html
 import os
 import re
 import time
 from collections.abc import Iterable as IterableABC
 from email.utils import formatdate
+from html import escape as _escape_html
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic.events import Event, EventTarget, MouseEvent
@@ -43,7 +44,9 @@ class DOMConfig:
 
     GLOBAL_AUTOESCAPE: bool = False  # Default is False
     RENDER_OPTIONAL_CLOSING_TAGS: bool = True  # Default is True
-    RENDER_OPTIONAL_CLOSING_SLASH: bool = True  # on emtpy nodes should the last slash be rendered
+    RENDER_OPTIONAL_CLOSING_SLASH: bool = (
+        True  # on emtpy nodes should the last slash be rendered
+    )
     SPACE_BEFORE_OPTIONAL_CLOSING_SLASH: bool = (
         False  # on emtpy nodes should there be a space before the closing slash?
     )
@@ -63,7 +66,9 @@ def _attribute_quote_mark() -> str:
 def _render_attribute_value(value: Any) -> str:
     quote = _attribute_quote_mark()
     should_quote = DOMConfig.ATTRIBUTE_QUOTES is not None or type(value) == str
-    rendered_value = _escape_html(str(value), quote=True) if DOMConfig.GLOBAL_AUTOESCAPE else value
+    rendered_value = (
+        _escape_html(str(value), quote=True) if DOMConfig.GLOBAL_AUTOESCAPE else value
+    )
     quote = quote if should_quote else ""
     return f"{quote}{rendered_value}{quote}"
 
@@ -92,7 +97,9 @@ def _node_is_connected(node: "Node") -> bool:
         return False
 
 
-def _notify_attribute_changed(element: "Element", attribute: str, old_value: Any, new_value: Any) -> None:
+def _notify_attribute_changed(
+    element: "Element", attribute: str, old_value: Any, new_value: Any
+) -> None:
     callback = getattr(element, "attributeChangedCallback", None)
     if not callable(callback) or old_value == new_value:
         return
@@ -118,13 +125,21 @@ def _run_disconnected_callback(element: "Element") -> None:
         callback()
 
 
-def _run_adopted_callback(element: "Element", old_document: "Document | None", new_document: "Document | None") -> None:
+def _run_adopted_callback(
+    element: "Element", old_document: "Document | None", new_document: "Document | None"
+) -> None:
     callback = getattr(element, "adoptedCallback", None)
-    if callable(callback) and old_document is not None and old_document is not new_document:
+    if (
+        callable(callback)
+        and old_document is not None
+        and old_document is not new_document
+    ):
         callback(old_document, new_document)
 
 
-def _adopt_tree(node: "Node", old_document: "Document | None", new_document: "Document | None") -> None:
+def _adopt_tree(
+    node: "Node", old_document: "Document | None", new_document: "Document | None"
+) -> None:
     for current in _iter_dom_nodes(node):
         current._ownerDocument = new_document
         if isinstance(current, Element):
@@ -152,7 +167,14 @@ def _coerce_insertion_nodes(*nodes: Any) -> tuple[Any, ...]:
             prepared.extend(_drain_document_fragment(node))
         else:
             prepared.append(node)
-    return tuple(prepared)
+    last_node_positions = {
+        id(node): index for index, node in enumerate(prepared) if isinstance(node, Node)
+    }
+    return tuple(
+        node
+        for index, node in enumerate(prepared)
+        if not isinstance(node, Node) or last_node_positions[id(node)] == index
+    )
 
 
 def _coerce_replacement_nodes(*nodes: Any) -> tuple[Any, ...]:
@@ -191,6 +213,27 @@ def _connect_inserted_node(
     _connect_tree(node)
 
 
+def _prepare_detached_clone(
+    node: "Node",
+    owner_document: "Document | None",
+    old_document: "Document | None" = None,
+    *,
+    run_adopted: bool = False,
+    upgrade_custom_elements: bool = False,
+) -> "Node":
+    node.parentNode = None
+    node._update_parents()
+    for current in _iter_dom_nodes(node):
+        current._ownerDocument = owner_document
+        current.isConnected = False
+        if isinstance(current, Element):
+            if upgrade_custom_elements:
+                _upgrade_custom_element_instance(current)
+            if run_adopted:
+                _run_adopted_callback(current, old_document, owner_document)
+    return node
+
+
 def _upgrade_custom_element_instance(element: "Element") -> "Element":
     registry = _get_custom_element_registry()
     if registry is None:
@@ -200,7 +243,11 @@ def _upgrade_custom_element_instance(element: "Element") -> "Element":
 
 def _connect_tree(node: "Node") -> None:
     for current in _iter_dom_nodes(node):
-        current._ownerDocument = current.rootNode if isinstance(current.rootNode, Document) else getattr(current, "_ownerDocument", None)
+        current._ownerDocument = (
+            current.rootNode
+            if isinstance(current.rootNode, Document)
+            else getattr(current, "_ownerDocument", None)
+        )
         current.isConnected = _node_is_connected(current)
         if isinstance(current, Element):
             _upgrade_custom_element_instance(current)
@@ -239,9 +286,17 @@ def _assigned_slot_for_node(node: "Node") -> "HTMLSlotElement | None":
 def _notify_slot_change(target: "Node") -> None:
     slots: list[HTMLSlotElement] = []
     if isinstance(target, ShadowRoot):
-        slots = [child for child in target.childNodes if isinstance(child, HTMLSlotElement)]
-    elif isinstance(target, Element) and isinstance(getattr(target, "shadowRoot", None), ShadowRoot):
-        slots = [child for child in target.shadowRoot.childNodes if isinstance(child, HTMLSlotElement)]
+        slots = [
+            child for child in target.childNodes if isinstance(child, HTMLSlotElement)
+        ]
+    elif isinstance(target, Element) and isinstance(
+        getattr(target, "shadowRoot", None), ShadowRoot
+    ):
+        slots = [
+            child
+            for child in target.shadowRoot.childNodes
+            if isinstance(child, HTMLSlotElement)
+        ]
     for slot in slots:
         slot.dispatchEvent(Event("slotchange"))
 
@@ -279,7 +334,9 @@ def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, A
             normalized["characterData"],
         )
     ):
-        raise TypeError("MutationObserver options must enable childList, attributes, or characterData")
+        raise TypeError(
+            "MutationObserver options must enable childList, attributes, or characterData"
+        )
     return normalized
 
 
@@ -334,7 +391,9 @@ def _intersect_rects(first: DOMRectReadOnly, second: DOMRectReadOnly) -> DOMRect
     return DOMRect(left, top, right - left, bottom - top)
 
 
-def _default_intersection_root_rect(target: "Element", target_rect: DOMRectReadOnly) -> DOMRectReadOnly:
+def _default_intersection_root_rect(
+    target: "Element", target_rect: DOMRectReadOnly
+) -> DOMRectReadOnly:
     doc = target.ownerDocument if isinstance(target.ownerDocument, Document) else None
     root = None
     if doc is not None:
@@ -344,7 +403,9 @@ def _default_intersection_root_rect(target: "Element", target_rect: DOMRectReadO
     return DOMRectReadOnly.fromRect(target_rect)
 
 
-def _process_observer_notifications(target: "Node | None" = None, target_rect: DOMRectReadOnly | None = None) -> None:
+def _process_observer_notifications(
+    target: "Node | None" = None, target_rect: DOMRectReadOnly | None = None
+) -> None:
     global _observer_processing
     if _observer_processing:
         return
@@ -368,7 +429,9 @@ def _process_observer_notifications(target: "Node | None" = None, target_rect: D
 
 
 def _form_owner(control: "Element") -> "HTMLFormElement | None":
-    owner_document = control.ownerDocument if isinstance(control.ownerDocument, Document) else None
+    owner_document = (
+        control.ownerDocument if isinstance(control.ownerDocument, Document) else None
+    )
     form_id = control.getAttribute("form") if isinstance(control, Element) else None
     if form_id and owner_document is not None:
         form = owner_document.getElementById(form_id)
@@ -387,7 +450,9 @@ def _dispatch_value_change_events(control: "Element") -> None:
     control.dispatchEvent(Event("change", {"bubbles": True, "cancelable": False}))
 
 
-def _radio_group_members(control: "Element", *, include_disabled: bool = True) -> list["HTMLInputElement"]:
+def _radio_group_members(
+    control: "Element", *, include_disabled: bool = True
+) -> list["HTMLInputElement"]:
     if not isinstance(control, Element):
         return []
     name = control.getAttribute("name")
@@ -419,7 +484,10 @@ def _is_control_valid(control: "Element") -> bool:
             if input_type == "checkbox":
                 return control.checked
             if input_type == "radio":
-                return any(radio.checked for radio in _radio_group_members(control, include_disabled=False))
+                return any(
+                    radio.checked
+                    for radio in _radio_group_members(control, include_disabled=False)
+                )
             return control.value != ""
         if tag_name == "textarea":
             return control.value != ""
@@ -453,8 +521,12 @@ class Node(EventTarget):
     ENTITY_NODE: int = 6
     NOTATION_NODE: int = 12
 
-    __isempty: bool = False  # tells us if the node is empty i.e. has no content aka 'self closing'. in html that would be: area, base, br, col, embed, hr, img, input, link, meta, param, source, track, True
-    __context: ClassVar[list["Node"] | None] = None  # private. tags will append to last item in context on creation.
+    __isempty: bool = (
+        False  # tells us if the node is empty i.e. has no content aka 'self closing'. in html that would be: area, base, br, col, embed, hr, img, input, link, meta, param, source, track, True
+    )
+    __context: ClassVar[list["Node"] | None] = (
+        None  # private. tags will append to last item in context on creation.
+    )
 
     # __slots__ = ['____attributes__',
     #              '__content',
@@ -662,15 +734,15 @@ class Node(EventTarget):
                 "draggable",
                 "spellcheck",
                 "translate",
-                "autoplay",       # Added
-                "controls",       # Added
-                "loop",           # Added
-                "muted",          # Added
-                "default",        # Added
-                "allowfullscreen",# Added
-                "playsinline",    # Added
-                "value",          # Added
-                "defer",          # Added
+                "autoplay",  # Added
+                "controls",  # Added
+                "loop",  # Added
+                "muted",  # Added
+                "default",  # Added
+                "allowfullscreen",  # Added
+                "playsinline",  # Added
+                "value",  # Added
+                "defer",  # Added
                 # "compact",        # Added
                 # "ismap",          # Added
                 # "sandbox",        # Added
@@ -685,15 +757,15 @@ class Node(EventTarget):
                 # "open",           # Added
                 # "readonly",       # Added
                 # "required",       # Added
-                
-
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
             return f""" {key}={_render_attribute_value(value)}"""
 
         try:
-            return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
+            return "".join(
+                [format_attr(key, value) for key, value in self.kwargs.items()]
+            )
         except IndexError as e:
             from domonic.html import TemplateError
 
@@ -896,7 +968,9 @@ class Node(EventTarget):
             # return getattr(super(), attr)
             # return getattr(self, attr)
             # return getattr(Node, attr)  # means overrideing for style etc in element?
-            return getattr(self.__class__, attr)  # means overrideing for style etc in element?
+            return getattr(
+                self.__class__, attr
+            )  # means overrideing for style etc in element?
             # return getattr(Element, attr)
         except AttributeError as e:
             # print(e) # TODO - careful. better on for debugging.
@@ -992,17 +1066,14 @@ class Node(EventTarget):
 
         self._update_parents()
 
-        if DOMConfig.GLOBAL_AUTOESCAPE:  # TODO - unit tests
-            import html as fix
+        render_args = self.args
+        if DOMConfig.GLOBAL_AUTOESCAPE:
+            render_args = tuple(
+                _escape_html(str(child)) if isinstance(child, (str, Text)) else child
+                for child in self.args
+            )
 
-            self.args = list(self.args)
-            for each, child in enumerate(self.args):
-                if isinstance(child, str) or isinstance(child, Text):
-                    child = fix.escape(str(child))
-                    self.args[each] = child
-            self.args = tuple(self.args)
-
-        content = "".join([each.__format__(format_spec) for each in self.args])
+        content = "".join([each.__format__(format_spec) for each in render_args])
         # from concurrent.futures import ThreadPoolExecutor
         # content = ''
         # with ThreadPoolExecutor(10) as executor:
@@ -1031,7 +1102,9 @@ class Node(EventTarget):
 
         if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
             if size < 150 and wrap:
-                return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+                return (
+                    f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
+                )
             else:
                 return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
         else:
@@ -1055,7 +1128,9 @@ class Node(EventTarget):
                 if size < 150 and wrap:
                     return f"\n{dent}<{self.name}{self.__attributes__}>{content}"
                 else:
-                    return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n"
+                    return (
+                        f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n"
+                    )
             else:
                 if size < 150 and wrap:
                     return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
@@ -1158,9 +1233,20 @@ class Node(EventTarget):
                 if type(el) not in [str, list, dict, int, float, tuple, object, set]:
                     # callback(el)
                     el._iterate(el, callback)
-                elif isinstance(el, list):  # if someone is incorrectly using a list as a child
+                elif isinstance(
+                    el, list
+                ):  # if someone is incorrectly using a list as a child
                     for e in el:
-                        if type(e) not in (str, list, dict, int, float, tuple, object, set):
+                        if type(e) not in (
+                            str,
+                            list,
+                            dict,
+                            int,
+                            float,
+                            tuple,
+                            object,
+                            set,
+                        ):
                             e._iterate(e, callback)
         except Exception:
             return
@@ -1190,9 +1276,7 @@ class Node(EventTarget):
             item (Node): The Node to add.
         """
         items = _coerce_insertion_nodes(aChild)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
         self.args = self.args + items
         for item, old_document in old_documents:
@@ -1216,12 +1300,12 @@ class Node(EventTarget):
     @property
     def childNodes(self) -> "NodeList":
         """Returns a live NodeList containing all the children of this node"""
-        return LiveNodeList(self)
+        return _LiveNodeList(self)
 
     @property
     def children(self) -> list[Node]:
         """Returns a live collection of child nodes, excluding string content."""
-        return LiveNodeList(self, lambda child: not isinstance(child, str))
+        return _LiveNodeList(self, lambda child: not isinstance(child, str))
 
     def compareDocumentPosition(self, otherElement: "Node") -> int:
         """
@@ -1280,10 +1364,14 @@ class Node(EventTarget):
 
         ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(other, p))
         if ret:
-            return Node.DOCUMENT_POSITION_CONTAINED_BY  # + Node.DOCUMENT_POSITION_FOLLOWING
+            return (
+                Node.DOCUMENT_POSITION_CONTAINED_BY
+            )  # + Node.DOCUMENT_POSITION_FOLLOWING
 
         children = other.childNodes
-        ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(reference, p))
+        ret = recursivelyWalk(
+            children, lambda p: testNodeForComparePosition(reference, p)
+        )
         if ret:
             return Node.DOCUMENT_POSITION_CONTAINS  # + Node.DOCUMENT_POSITION_PRECEDING
         ret = recursivelyWalk([referenceTop], identifyWhichIsFirst)
@@ -1340,7 +1428,9 @@ class Node(EventTarget):
         # return '#comment'
         # elif isinstance(self, DocumentType):
         #     return '#doctype'
-        if isinstance(self, Document):  # NOTE - having this one on breaks parser. as it expects 'html'?
+        if isinstance(
+            self, Document
+        ):  # NOTE - having this one on breaks parser. as it expects 'html'?
             return "#document"
         if isinstance(self, CDATASection):
             return "#cdata-section"
@@ -1385,9 +1475,15 @@ class Node(EventTarget):
     def nodeValue(self, content: Any):
         """Sets or returns the value of a node"""
         old_value = self.nodeValue
+        removed_nodes = [node for node in self.args if isinstance(node, Node)]
+        for node in removed_nodes:
+            _disconnect_tree(node)
+            node.parentNode = None
         self.args = (content,)
         if isinstance(self, CharacterData):
             _queue_mutation_record("characterData", self, old_value=old_value)
+        elif removed_nodes:
+            _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return content
 
     @property
@@ -1403,7 +1499,11 @@ class Node(EventTarget):
         """Sets the root element (document object) for an element"""
         if newOwner is None:
             return
-        self._ownerDocument = newOwner if isinstance(newOwner, Document) else getattr(newOwner, "ownerDocument", None)
+        self._ownerDocument = (
+            newOwner
+            if isinstance(newOwner, Document)
+            else getattr(newOwner, "ownerDocument", None)
+        )
 
     @property
     def rootNode(self) -> "Node":
@@ -1435,9 +1535,7 @@ class Node(EventTarget):
             return new_node
 
         items = _coerce_insertion_nodes(new_node)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         index = self.args.index(reference_node)
         previous_sibling = (
             self.args[index - 1]
@@ -1467,14 +1565,14 @@ class Node(EventTarget):
             if type(each) == str:
                 continue
 
-            if each == node:
+            if each is node:
                 n = node
                 previous_sibling = n.previousSibling
                 next_sibling = n.nextSibling
                 _disconnect_tree(n)
                 n.parentNode = None
                 replace_args = list(self.args)
-                replace_args.remove(node)
+                replace_args.pop(count)
                 self.args = tuple(replace_args)
                 _queue_mutation_record(
                     "childList",
@@ -1486,9 +1584,6 @@ class Node(EventTarget):
                 _notify_slot_change(self)
 
                 return n
-            r = each.removeChild(node)
-            if r:
-                return r
 
         return None
 
@@ -1506,9 +1601,7 @@ class Node(EventTarget):
             return oldChild
 
         items = _coerce_insertion_nodes(newChild)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         try:
             count = list(self.args).index(oldChild)
         except ValueError:
@@ -1563,12 +1656,14 @@ class Node(EventTarget):
         import copy
 
         if deep:
-            return copy.deepcopy(self)
+            clone = copy.deepcopy(self)
         else:
             clone = copy.copy(self)  # shallow copy
             clone.args = ()
-            clone.parentNode = None
-            return clone
+        owner_document = (
+            self.ownerDocument if isinstance(self.ownerDocument, Document) else None
+        )
+        return _prepare_detached_clone(clone, owner_document)
 
     def isSameNode(self, node):
         """Checks if two elements are the same node"""
@@ -1737,10 +1832,9 @@ class Node(EventTarget):
         """
         if name and name != self.tagName:
             return False
-        if default_namespace and getattr(self, 'namespace', None) != default_namespace:
+        if default_namespace and getattr(self, "namespace", None) != default_namespace:
             return False
         return True
-
 
 
 class ParentNode:
@@ -1756,7 +1850,7 @@ class ParentNode:
     @property
     def children(self) -> "NodeList":
         """Return list of child nodes."""
-        return LiveNodeList(self, lambda child: isinstance(child, Element))
+        return _LiveNodeList(self, lambda child: isinstance(child, Element))
 
     @property
     def firstElementChild(self):
@@ -1875,6 +1969,7 @@ class Attr(Node):
                 return True
         return False
 
+
 class NamedNodeMap:
     """Live attribute collection exposed by ``Element.attributes``.
 
@@ -1883,7 +1978,9 @@ class NamedNodeMap:
     in sync with the owning element's current attributes.
     """
 
-    def __init__(self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None):
+    def __init__(
+        self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None
+    ):
         self.parentNode = parentNode
         self.ownerDocument = ownerDocument
         self._attrs = list(args or [])
@@ -1897,7 +1994,10 @@ class NamedNodeMap:
 
     def _current_attrs(self) -> list[Attr]:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
-            return [Attr(key.lstrip("_"), value) for key, value in self.parentNode.kwargs.items()]
+            return [
+                Attr(key.lstrip("_"), value)
+                for key, value in self.parentNode.kwargs.items()
+            ]
         return list(self._attrs)
 
     def _attribute_namespace(self, attr: Attr) -> str | None:
@@ -1966,7 +2066,9 @@ class NamedNodeMap:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
             self.parentNode.setAttribute(normalized, attr.value)
         else:
-            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
+            self._attrs = [
+                existing for existing in self._attrs if existing.name != normalized
+            ]
             self._attrs.append(Attr(normalized, attr.value))
         return old_attr
 
@@ -1978,14 +2080,19 @@ class NamedNodeMap:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
             self.parentNode.removeAttribute(normalized)
         else:
-            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
+            self._attrs = [
+                existing for existing in self._attrs if existing.name != normalized
+            ]
         return old_attr
 
     def getNamedItemNS(self, namespaceURI: str, localName: str) -> Attr | None:
         normalized = self._normalize_name(localName)
         for item in self._current_attrs():
             item_local_name = item.name.split(":", 1)[-1]
-            if item_local_name == normalized and self._attribute_namespace(item) == namespaceURI:
+            if (
+                item_local_name == normalized
+                and self._attribute_namespace(item) == namespaceURI
+            ):
                 return item
         return None
 
@@ -2288,7 +2395,9 @@ class Selection:
 
     @property
     def isCollapsed(self) -> bool:
-        return self.rangeCount == 0 or all(range_obj.collapsed for range_obj in self._ranges)
+        return self.rangeCount == 0 or all(
+            range_obj.collapsed for range_obj in self._ranges
+        )
 
     @property
     def anchorNode(self) -> Node | None:
@@ -2319,7 +2428,9 @@ class Selection:
                 self._sync_anchor_focus_from_range(range_obj)
 
     def removeRange(self, range_obj: "Range") -> None:
-        self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
+        self._ranges = [
+            candidate for candidate in self._ranges if candidate is not range_obj
+        ]
         self._sync_anchor_focus_from_range(self._ranges[0] if self._ranges else None)
 
     def removeAllRanges(self) -> None:
@@ -2362,7 +2473,9 @@ class Selection:
         active_range = self._ranges[-1]
         if anchor_node is None:
             active_range.setEnd(node, offset)
-            self._set_anchor_focus(active_range.startContainer, active_range.startOffset, node, offset)
+            self._set_anchor_focus(
+                active_range.startContainer, active_range.startOffset, node, offset
+            )
             return
         if Range._compare_points(anchor_node, anchor_offset, node, offset) <= 0:
             active_range.setStart(anchor_node, anchor_offset)
@@ -2403,7 +2516,9 @@ class Selection:
             range_obj.deleteContents()
         self.removeAllRanges()
 
-    def containsNode(self, node: Node | None, allowPartialContainment: bool = False) -> bool:
+    def containsNode(
+        self, node: Node | None, allowPartialContainment: bool = False
+    ) -> bool:
         if node is None:
             return False
 
@@ -2469,6 +2584,21 @@ class DOMTokenList(list):
     def length(self) -> int:
         self._reload()
         return list.__len__(self)
+
+    @property
+    def value(self) -> str:
+        return self.toString()
+
+    @value.setter
+    def value(self, new_value: str) -> None:
+        tokens: list[str] = []
+        for item in str(new_value or "").split():
+            token = self._validate_token(item)
+            if token not in tokens:
+                tokens.append(token)
+        list.clear(self)
+        list.extend(self, tokens)
+        self._sync()
 
     def __len__(self) -> int:
         return self.length
@@ -2557,7 +2687,9 @@ class DOMTokenList(list):
     def item(self, index: int):
         """Returns the token at the specified index"""
         self._reload()
-        return list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
+        return (
+            list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
+        )
 
     def toString(self) -> str:
         """Returns a string containing all tokens in the list, with spaces separating each token"""
@@ -2570,7 +2702,9 @@ class DOMTokenList(list):
         for i in range(len(self)):
             yield i, list.__getitem__(self, i)
 
-    def forEach(self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None) -> None:
+    def forEach(
+        self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None
+    ) -> None:
         """Calls a function for each token in the list."""
         self._reload()
         for i in range(len(self)):
@@ -2590,7 +2724,9 @@ class DOMTokenList(list):
         return self.toString()
 
 
-class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the args/kwargs
+class ShadowRoot(
+    Node
+):  # TODO - this may need to extend tag also to get the args/kwargs
     """property on element that has hidden DOM"""
 
     def __init__(self, host, mode="open"):
@@ -2630,7 +2766,9 @@ class ShadowRoot(Node):  # TODO - this may need to extend tag also to get the ar
             walk(child)
         return matches
 
-    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> CaretPosition | None:
+    def caretPositionFromPoint(
+        self, x: float = 0, y: float = 0
+    ) -> CaretPosition | None:
         """
         Returns a CaretPosition object containing the DOM node containing the caret,
         and caret's character offset within that node.
@@ -2654,10 +2792,16 @@ class DocumentType(Node):
     nodeType = Node.DOCUMENT_TYPE_NODE
     __slots__ = ("name", "publicId", "systemId")
 
-    def __init__(self, name: str = "html", publicId: str = "", systemId: str = "") -> None:
+    def __init__(
+        self, name: str = "html", publicId: str = "", systemId: str = ""
+    ) -> None:
         self.name: str = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
-        self.publicId: str = publicId  # eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
-        self.systemId: str = systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+        self.publicId: str = (
+            publicId  # eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
+        )
+        self.systemId: str = (
+            systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
+        )
         super().__init__()
 
     def internalSubset(self):
@@ -3070,7 +3214,9 @@ class NodeList(list):
         for i in range(len(self)):
             yield i, self[i]
 
-    def forEach(self, func: Callable[[Node, int, "NodeList"], Any], thisArg: Any = None) -> None:
+    def forEach(
+        self, func: Callable[[Node, int, "NodeList"], Any], thisArg: Any = None
+    ) -> None:
         """Calls a function for each item in the NodeList."""
         # thisArg = thisArg or self
         for i in range(len(self)):
@@ -3087,10 +3233,12 @@ class NodeList(list):
         return iter(self)
 
 
-class LiveNodeList(NodeList):
+class _LiveNodeList(NodeList):
     """List-like live view over a node's current children."""
 
-    def __init__(self, owner: Node, predicate: Callable[[Any], bool] | None = None) -> None:
+    def __init__(
+        self, owner: Node, predicate: Callable[[Any], bool] | None = None
+    ) -> None:
         self._owner = owner
         self._predicate = predicate
         super().__init__()
@@ -3121,7 +3269,7 @@ class LiveNodeList(NodeList):
         return item in self._nodes()
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, LiveNodeList):
+        if isinstance(other, _LiveNodeList):
             other = other._nodes()
         return self._nodes() == list(other) if isinstance(other, IterableABC) else False
 
@@ -3198,7 +3346,12 @@ class LiveNodeList(NodeList):
 class RadioNodeList(NodeList):
     """A live collection of form controls sharing an id or name."""
 
-    def __init__(self, nodes: Iterable[Node] | str | None = None, name: str | None = None, owner=None) -> None:
+    def __init__(
+        self,
+        nodes: Iterable[Node] | str | None = None,
+        name: str | None = None,
+        owner=None,
+    ) -> None:
         if isinstance(nodes, str) and name is None:
             name = nodes
             nodes = None
@@ -3211,7 +3364,8 @@ class RadioNodeList(NodeList):
             return [
                 control
                 for control in self._owner._controls()
-                if control.getAttribute("id") == self.name or control.getAttribute("name") == self.name
+                if control.getAttribute("id") == self.name
+                or control.getAttribute("name") == self.name
             ]
         return list(list.__iter__(self))
 
@@ -3233,7 +3387,11 @@ class RadioNodeList(NodeList):
         """Returns the value of the first element in the collection,
         or null if there are no elements in the collection."""
         for node in self._nodes():
-            if isinstance(node, HTMLInputElement) and (node.getAttribute("type") or "").lower() == "radio" and node.checked:
+            if (
+                isinstance(node, HTMLInputElement)
+                and (node.getAttribute("type") or "").lower() == "radio"
+                and node.checked
+            ):
                 return node.value
         return ""
 
@@ -3251,7 +3409,10 @@ class RadioNodeList(NodeList):
         if matching_radio is None:
             return
         for node in self._nodes():
-            if isinstance(node, HTMLInputElement) and (node.getAttribute("type") or "").lower() == "radio":
+            if (
+                isinstance(node, HTMLInputElement)
+                and (node.getAttribute("type") or "").lower() == "radio"
+            ):
                 node.checked = node is matching_radio
 
 
@@ -3290,7 +3451,7 @@ class Element(Node):
     @property
     def children(self) -> list[Node]:
         """Returns child elements, excluding text, comments, and strings."""
-        return LiveNodeList(self, lambda child: isinstance(child, Element))
+        return _LiveNodeList(self, lambda child: isinstance(child, Element))
 
     def _getElementById(self, _id: str):
         if self.getAttribute("id") == _id:
@@ -3327,12 +3488,18 @@ class Element(Node):
             return False
 
         if "." in query and not query.startswith(".") and "[" not in query:
-            tag_name, class_name = query.split(".", 1)
-            return element.tagName.lower() == tag_name.lower() and class_name in element.classList
+            tag_name, class_names = query.split(".", 1)
+            required_classes = [token for token in class_names.split(".") if token]
+            return element.tagName.lower() == tag_name.lower() and all(
+                class_name in element.classList for class_name in required_classes
+            )
 
         if "#" in query and not query.startswith("#") and "[" not in query:
             tag_name, element_id = query.split("#", 1)
-            return element.tagName.lower() == tag_name.lower() and element.getAttribute("id") == element_id
+            return (
+                element.tagName.lower() == tag_name.lower()
+                and element.getAttribute("id") == element_id
+            )
 
         if query[0] == "#":
             if element.getAttribute("id") == query.split("#")[1]:
@@ -3345,7 +3512,8 @@ class Element(Node):
             return True
 
         if query[0] == ".":
-            if query.split(".")[1] in element.classList:
+            required_classes = [token for token in query.split(".") if token]
+            if all(class_name in element.classList for class_name in required_classes):
                 return True
 
         return False
@@ -3361,7 +3529,9 @@ class Element(Node):
         Returns:
             [bool]: [True if selector maches Element otherwise False]
         """
-        selectors = [selector.strip() for selector in str(s).split(",") if selector.strip()]
+        selectors = [
+            selector.strip() for selector in str(s).split(",") if selector.strip()
+        ]
         for selector in selectors:
             if self._matchElement(self, selector):
                 return True
@@ -3410,7 +3580,11 @@ class Element(Node):
             return []
 
         selected = []
-        selectors = [selector.strip() for selector in str(all_selectors).split(",") if selector.strip()]
+        selectors = [
+            selector.strip()
+            for selector in str(all_selectors).split(",")
+            if selector.strip()
+        ]
         if len(selectors) > 1:
             seen = []
             for selector in selectors:
@@ -3507,7 +3681,10 @@ class Element(Node):
                     continue
                 for fnd in found:
                     class_attribute = fnd.getAttribute("class")
-                    if class_attribute and all(class_name in class_attribute.split() for class_name in class_names):
+                    if class_attribute and all(
+                        class_name in class_attribute.split()
+                        for class_name in class_names
+                    ):
                         context.append(fnd)
 
                 continue
@@ -3515,7 +3692,10 @@ class Element(Node):
             # If the char '[' appears, that means it needs CSS 3 parsing
             if str.find(element, "[") + 1:
                 # Code to deal with attribute selectors
-                m = re.match(r"^([\w\*-]*)\[([\w-]+)([=~\|\^\$\*]?)=?['\"]?([^\]'\"]*)['\"]?\]$", element)
+                m = re.match(
+                    r"^([\w\*-]*)\[([\w-]+)([=~\|\^\$\*]?)=?['\"]?([^\]'\"]*)['\"]?\]$",
+                    element,
+                )
                 if m:
                     tag = m.group(1)
                     attr = m.group(2)
@@ -3534,11 +3714,17 @@ class Element(Node):
                         continue  # WORKING
                     if operator == "~" and value not in str(attr_value).split():
                         continue  # NOT WORKING?
-                    if operator == "|" and attr_value != value and not str(attr_value).startswith(value + "-"):
+                    if (
+                        operator == "|"
+                        and attr_value != value
+                        and not str(attr_value).startswith(value + "-")
+                    ):
                         continue
                     if operator == "^" and str.find(attr_value, value) != 0:
                         continue  # WORKING
-                    if operator == "$" and str.rfind(attr_value, value) != (len(attr_value) - len(value)):
+                    if operator == "$" and str.rfind(attr_value, value) != (
+                        len(attr_value) - len(value)
+                    ):
                         continue  # kinda WORKING
                     if operator == "*" and not (str.find(attr_value, value) + 1):
                         continue  # WORKING
@@ -3558,9 +3744,7 @@ class Element(Node):
     def append(self, *args):
         """Inserts a set of Node objects or DOMString objects after the last child of the Element."""
         items = _coerce_insertion_nodes(*args)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
         self.args += items
         for item, old_document in old_documents:
@@ -3659,8 +3843,22 @@ class Element(Node):
         if doc is not None and getattr(doc, "_activeElement", None) is self:
             doc._activeElement = None
             related_target = getattr(doc, "body", None)
-        result = self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": related_target}))
-        self.dispatchEvent(FocusEvent("focusout", {"bubbles": True, "cancelable": False, "relatedTarget": related_target}))
+        result = self.dispatchEvent(
+            FocusEvent(
+                "blur",
+                {
+                    "bubbles": False,
+                    "cancelable": False,
+                    "relatedTarget": related_target,
+                },
+            )
+        )
+        self.dispatchEvent(
+            FocusEvent(
+                "focusout",
+                {"bubbles": True, "cancelable": False, "relatedTarget": related_target},
+            )
+        )
         return result
 
     @property
@@ -3690,15 +3888,29 @@ class Element(Node):
 
     def click(self):
         """Simulates a mouse-click on an element"""
-        view = getattr(self.ownerDocument, "defaultView", None) if isinstance(self.ownerDocument, Document) else None
-        evt = MouseEvent("click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1})
+        view = (
+            getattr(self.ownerDocument, "defaultView", None)
+            if isinstance(self.ownerDocument, Document)
+            else None
+        )
+        evt = MouseEvent(
+            "click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1}
+        )
         return self.dispatchEvent(evt)
 
-    def animate(self, keyframes: list[dict[str, Any]] | dict[str, Any], options: Any = None):
+    def animate(
+        self, keyframes: list[dict[str, Any]] | dict[str, Any], options: Any = None
+    ):
         from domonic.animation import Animation, KeyframeEffect
 
-        owner_document = self.ownerDocument if isinstance(self.ownerDocument, Document) else globals().get("document")
-        timeline = owner_document.timeline if isinstance(owner_document, Document) else None
+        owner_document = (
+            self.ownerDocument
+            if isinstance(self.ownerDocument, Document)
+            else globals().get("document")
+        )
+        timeline = (
+            owner_document.timeline if isinstance(owner_document, Document) else None
+        )
         effect = KeyframeEffect(self, keyframes, options)
         animation = Animation(effect, timeline)
         animation.play()
@@ -3791,12 +4003,32 @@ class Element(Node):
             if current is not None and current is not self:
                 previous = current
                 current._focused = False
-                current.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": self}))
-                current.dispatchEvent(FocusEvent("focusout", {"bubbles": True, "cancelable": False, "relatedTarget": self}))
+                current.dispatchEvent(
+                    FocusEvent(
+                        "blur",
+                        {"bubbles": False, "cancelable": False, "relatedTarget": self},
+                    )
+                )
+                current.dispatchEvent(
+                    FocusEvent(
+                        "focusout",
+                        {"bubbles": True, "cancelable": False, "relatedTarget": self},
+                    )
+                )
             doc._activeElement = self
         self._focused = True
-        result = self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": previous}))
-        self.dispatchEvent(FocusEvent("focusin", {"bubbles": True, "cancelable": False, "relatedTarget": previous}))
+        result = self.dispatchEvent(
+            FocusEvent(
+                "focus",
+                {"bubbles": False, "cancelable": False, "relatedTarget": previous},
+            )
+        )
+        self.dispatchEvent(
+            FocusEvent(
+                "focusin",
+                {"bubbles": True, "cancelable": False, "relatedTarget": previous},
+            )
+        )
         return result
 
     def setAttributeNodeNS(self, attr):
@@ -4018,9 +4250,7 @@ class Element(Node):
         if not nodes:
             return
         parent = self.parentNode
-        old_documents = [
-            (node, _detach_node_for_insertion(node)) for node in nodes
-        ]
+        old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
         index = parent.args.index(self)
         previous_sibling = (
             parent.args[index - 1]
@@ -4051,9 +4281,7 @@ class Element(Node):
         if not nodes:
             return
         parent = self.parentNode
-        old_documents = [
-            (node, _detach_node_for_insertion(node)) for node in nodes
-        ]
+        old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
         index = parent.args.index(self) + 1
         next_sibling = (
             parent.args[index]
@@ -4184,26 +4412,34 @@ class Element(Node):
                     previous = el
         return None
 
-    def normalize(self) -> list[Any]:
+    def normalize(self) -> tuple[Any, ...]:
         """Joins adjacent text nodes and removes empty text nodes in an element"""
-        content = []
+        content: list[Any] = []
         nodestr = ""
+        removed_nodes: list[Node] = []
         for s in self.args:
             if type(s) == Text:
-                # content.append(s.textContent)
                 nodestr += s.textContent
+                removed_nodes.append(s)
                 continue
             elif type(s) == str:
                 nodestr += s
                 continue
-            elif nodestr != "":
+            if nodestr != "":
                 content.append(nodestr)
                 nodestr = ""
-            elif type(s) != str:
-                content.append(s)
+            if isinstance(s, Element):
+                s.normalize()
+            content.append(s)
         if nodestr != "":
             content.append(nodestr)
-        self.args = content
+        for node in removed_nodes:
+            _disconnect_tree(node)
+            node.parentNode = None
+        self.args = tuple(content)
+        self._update_parents()
+        if removed_nodes:
+            _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return self.args
 
     def offsetHeight(self) -> float:
@@ -4251,20 +4487,18 @@ class Element(Node):
     def prepend(self, *args: Any) -> None:
         """Prepends a node to the current element"""
         items = _coerce_insertion_nodes(*args)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         next_sibling = (
-            self.args[0]
-            if len(self.args) and isinstance(self.args[0], Node)
-            else None
+            self.args[0] if len(self.args) and isinstance(self.args[0], Node) else None
         )
         self.args = items + tuple(self.args)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
         if added_nodes:
-            _queue_mutation_record("childList", self, added_nodes=added_nodes, next_sibling=next_sibling)
+            _queue_mutation_record(
+                "childList", self, added_nodes=added_nodes, next_sibling=next_sibling
+            )
         _notify_slot_change(self)
         self._update_parents()
 
@@ -4275,9 +4509,7 @@ class Element(Node):
         for node in removed_nodes:
             _disconnect_tree(node)
             node.parentNode = None
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.args = items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
@@ -4346,7 +4578,9 @@ class Element(Node):
 
                 evaluator = XPathEvaluator()
                 expression = evaluator.createExpression(expression)
-                result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+                result = expression.evaluate(
+                    self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+                )
                 if result.nodes:
                     return result.nodes
                 return _fallback_selector_results()
@@ -4429,7 +4663,9 @@ class Element(Node):
 
     def scrollHeight(self):
         """Returns the entire height of an element, including padding"""
-        return max(self.clientHeight, getattr(self, "_scroll_height", self.clientHeight))
+        return max(
+            self.clientHeight, getattr(self, "_scroll_height", self.clientHeight)
+        )
 
     def scrollIntoView(self):
         """Scrolls the specified element into the visible area of the browser window"""
@@ -4459,12 +4695,25 @@ class Element(Node):
             _queue_mutation_record(
                 "attributes",
                 self,
-                attribute_name=attribute[1:] if attribute.startswith("_") else attribute,
+                attribute_name=(
+                    attribute[1:] if attribute.startswith("_") else attribute
+                ),
                 old_value=str(old_value) if old_value is not None else None,
             )
         except Exception as e:
             # print('failed to set attribute', e)
             return None
+
+    def toggleAttribute(self, attribute: str, force: bool | None = None) -> bool:
+        """Adds or removes an attribute and returns whether it is present afterwards."""
+        should_add = (
+            bool(force) if force is not None else not self.hasAttribute(attribute)
+        )
+        if should_add:
+            self.setAttribute(attribute, "")
+            return True
+        self.removeAttribute(attribute)
+        return False
 
     def setAttributeNode(self, attr):
         """[Sets or changes the specified attribute node]
@@ -4542,7 +4791,9 @@ class DOMImplementation:
         d.doctype = doctype
         return d
 
-    def createDocumentType(self, qualifiedName: str, publicId: str, systemId: str) -> DocumentType:
+    def createDocumentType(
+        self, qualifiedName: str, publicId: str, systemId: str
+    ) -> DocumentType:
         """[creates a DocumentType node]
 
         Args:
@@ -4617,8 +4868,8 @@ class Comment(Node):
 
 
 class CDATASection(Node):
-    """The CDATASection interface represents a CDATA section that can be used within XML 
-    to include extended portions of unescaped text, such that the symbols < and & do not 
+    """The CDATASection interface represents a CDATA section that can be used within XML
+    to include extended portions of unescaped text, such that the symbols < and & do not
     need escaping as they normally do within XML when used as text."""
 
     nodeType: int = Node.CDATA_SECTION_NODE
@@ -4689,7 +4940,10 @@ class AbastractRange:
         if unit in ("all", "document", "container"):
             self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
             return
-        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+        if (
+            not isinstance(self.startContainer, Text)
+            or self.startContainer is not self.endContainer
+        ):
             self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
             return
 
@@ -4745,10 +4999,14 @@ class AbastractRange:
         self._update_state()
 
     def setEndAfter(self, refNode: "Node") -> None:
-        self.setEnd(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1)
+        self.setEnd(
+            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1
+        )
 
     def setEndBefore(self, refNode: "Node") -> None:
-        self.setEnd(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode))
+        self.setEnd(
+            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode)
+        )
 
     def setStart(self, refNode: "Node", offset: int) -> None:
         self.startContainer = refNode
@@ -4759,10 +5017,14 @@ class AbastractRange:
         self._update_state()
 
     def setStartAfter(self, refNode: "Node") -> None:
-        self.setStart(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1)
+        self.setStart(
+            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1
+        )
 
     def setStartBefore(self, refNode: "Node") -> None:
-        self.setStart(refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode))
+        self.setStart(
+            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode)
+        )
 
     def surroundContents(self, newParent: "Node") -> None:
         self.cloneRange().surroundContents(newParent)
@@ -4774,7 +5036,10 @@ class AbastractRange:
         return self.cloneRange().comparePoint(refNode, offset)
 
     def deleteData(self, offset, count):
-        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+        if (
+            not isinstance(self.startContainer, Text)
+            or self.startContainer is not self.endContainer
+        ):
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.deleteData(offset, count)
         self.endOffset = min(self.endOffset, len(self.startContainer.textContent))
@@ -4788,7 +5053,10 @@ class AbastractRange:
         return data
 
     def getData(self, offset, count):
-        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+        if (
+            not isinstance(self.startContainer, Text)
+            or self.startContainer is not self.endContainer
+        ):
             raise ValueError("Range data helpers require a single Text container")
         return self.startContainer.textContent[offset : offset + count]
 
@@ -4799,15 +5067,23 @@ class AbastractRange:
         return (self.startContainer, self.startOffset)
 
     def replaceData(self, offset, count, data):
-        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+        if (
+            not isinstance(self.startContainer, Text)
+            or self.startContainer is not self.endContainer
+        ):
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.replaceData(offset, count, data)
-        self.endOffset = min(len(self.startContainer.textContent), max(self.startOffset, self.endOffset))
+        self.endOffset = min(
+            len(self.startContainer.textContent), max(self.startOffset, self.endOffset)
+        )
         self._update_state()
         return self.startContainer.textContent
 
     def setData(self, data):
-        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
+        if (
+            not isinstance(self.startContainer, Text)
+            or self.startContainer is not self.endContainer
+        ):
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.data = data
         self.startOffset = min(self.startOffset, len(data))
@@ -4817,7 +5093,8 @@ class AbastractRange:
 
     def _update_state(self) -> None:
         self.collapsed = (
-            self.startContainer is self.endContainer and self.startOffset == self.endOffset
+            self.startContainer is self.endContainer
+            and self.startOffset == self.endOffset
         )
         if self.startContainer is None or self.endContainer is None:
             self.commonAncestorContainer = None
@@ -4868,7 +5145,9 @@ class Range(AbastractRange):
         return path
 
     @staticmethod
-    def _compare_points(node_a: Node, offset_a: int, node_b: Node, offset_b: int) -> int:
+    def _compare_points(
+        node_a: Node, offset_a: int, node_b: Node, offset_b: int
+    ) -> int:
         if node_a is node_b:
             if offset_a < offset_b:
                 return -1
@@ -4900,7 +5179,8 @@ class Range(AbastractRange):
 
     def _update_state(self) -> None:
         self.collapsed = (
-            self.startContainer is self.endContainer and self.startOffset == self.endOffset
+            self.startContainer is self.endContainer
+            and self.startOffset == self.endOffset
         )
         if self.startContainer is None or self.endContainer is None:
             self.commonAncestorContainer = None
@@ -4920,7 +5200,9 @@ class Range(AbastractRange):
 
         children = list(getattr(ancestor, "childNodes", []))
 
-        def resolve_index(node: Node | None, offset: int, *, is_end: bool) -> int | None:
+        def resolve_index(
+            node: Node | None, offset: int, *, is_end: bool
+        ) -> int | None:
             if node is None:
                 return None
             if node is ancestor:
@@ -4928,7 +5210,10 @@ class Range(AbastractRange):
                 return bounded
 
             current = node
-            while current is not None and getattr(current, "parentNode", None) is not ancestor:
+            while (
+                current is not None
+                and getattr(current, "parentNode", None) is not ancestor
+            ):
                 current = getattr(current, "parentNode", None)
 
             if current is None:
@@ -4981,7 +5266,10 @@ class Range(AbastractRange):
         if self.startContainer is None:
             self.startContainer = node
             self.startOffset = offset
-        elif self._compare_points(node, offset, self.startContainer, self.startOffset) < 0:
+        elif (
+            self._compare_points(node, offset, self.startContainer, self.startOffset)
+            < 0
+        ):
             self.startContainer = node
             self.startOffset = offset
         self._update_state()
@@ -5017,10 +5305,30 @@ class Range(AbastractRange):
 
     def compareBoundaryPoints(self, how: int, sourceRange: "Range") -> int:
         comparisons = {
-            self.START_TO_START: (self.startContainer, self.startOffset, sourceRange.startContainer, sourceRange.startOffset),
-            self.START_TO_END: (self.startContainer, self.startOffset, sourceRange.endContainer, sourceRange.endOffset),
-            self.END_TO_END: (self.endContainer, self.endOffset, sourceRange.endContainer, sourceRange.endOffset),
-            self.END_TO_START: (self.endContainer, self.endOffset, sourceRange.startContainer, sourceRange.startOffset),
+            self.START_TO_START: (
+                self.startContainer,
+                self.startOffset,
+                sourceRange.startContainer,
+                sourceRange.startOffset,
+            ),
+            self.START_TO_END: (
+                self.startContainer,
+                self.startOffset,
+                sourceRange.endContainer,
+                sourceRange.endOffset,
+            ),
+            self.END_TO_END: (
+                self.endContainer,
+                self.endOffset,
+                sourceRange.endContainer,
+                sourceRange.endOffset,
+            ),
+            self.END_TO_START: (
+                self.endContainer,
+                self.endOffset,
+                sourceRange.startContainer,
+                sourceRange.startOffset,
+            ),
         }
         if how not in comparisons:
             raise ValueError("Invalid Range comparison type")
@@ -5032,10 +5340,15 @@ class Range(AbastractRange):
     def extractContents(self) -> "DocumentFragment":
         if self.startContainer is None:
             return DocumentFragment()
-        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+        if (
+            isinstance(self.startContainer, Text)
+            and self.startContainer == self.endContainer
+        ):
             text = self.startContainer.textContent
             extracted = text[self.startOffset : self.endOffset]
-            self.startContainer.textContent = text[: self.startOffset] + text[self.endOffset :]
+            self.startContainer.textContent = (
+                text[: self.startOffset] + text[self.endOffset :]
+            )
             self.endContainer = self.startContainer
             self.endOffset = self.startOffset
             self._update_state()
@@ -5078,12 +5391,20 @@ class Range(AbastractRange):
 
         if self.startContainer is None:
             return DocumentFragment()
-        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
-            return DocumentFragment(Text(self.startContainer.textContent[self.startOffset : self.endOffset]))
+        if (
+            isinstance(self.startContainer, Text)
+            and self.startContainer == self.endContainer
+        ):
+            return DocumentFragment(
+                Text(self.startContainer.textContent[self.startOffset : self.endOffset])
+            )
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
-            cloned = [copy.deepcopy(child) for child in children[self.startOffset : self.endOffset]]
+            cloned = [
+                copy.deepcopy(child)
+                for child in children[self.startOffset : self.endOffset]
+            ]
             return DocumentFragment(*cloned)
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
@@ -5106,12 +5427,21 @@ class Range(AbastractRange):
     def getClientRects(self) -> DOMRectList:
         if self.startContainer is None:
             return DOMRectList()
-        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+        if (
+            isinstance(self.startContainer, Text)
+            and self.startContainer == self.endContainer
+        ):
             parent = getattr(self.startContainer, "parentNode", None)
-            return DOMRectList([parent.getBoundingClientRect()]) if hasattr(parent, "getBoundingClientRect") else DOMRectList()
+            return (
+                DOMRectList([parent.getBoundingClientRect()])
+                if hasattr(parent, "getBoundingClientRect")
+                else DOMRectList()
+            )
         if self.startContainer == self.endContainer:
             rects = []
-            for child in list(self.startContainer.childNodes)[self.startOffset : self.endOffset]:
+            for child in list(self.startContainer.childNodes)[
+                self.startOffset : self.endOffset
+            ]:
                 if hasattr(child, "getBoundingClientRect"):
                     rects.append(child.getBoundingClientRect())
             return DOMRectList(rects)
@@ -5138,7 +5468,16 @@ class Range(AbastractRange):
                 return
             children = list(parent.childNodes)
             index = children.index(container)
-            replacement = [part for part in (before, node, after) if part.textContent != "" if isinstance(part, Text)] if False else None
+            replacement = (
+                [
+                    part
+                    for part in (before, node, after)
+                    if part.textContent != ""
+                    if isinstance(part, Text)
+                ]
+                if False
+                else None
+            )
             new_children = children[:index]
             if before.textContent != "":
                 new_children.append(before)
@@ -5158,7 +5497,9 @@ class Range(AbastractRange):
             return
         if hasattr(container, "insertBefore"):
             children = list(container.childNodes)
-            ref = children[self.startOffset] if self.startOffset < len(children) else None
+            ref = (
+                children[self.startOffset] if self.startOffset < len(children) else None
+            )
             container.insertBefore(node, ref)
             self.startOffset += 1
             self.endOffset = max(self.endOffset, self.startOffset)
@@ -5211,12 +5552,17 @@ class Range(AbastractRange):
     def toString(self) -> str:
         if self.startContainer is None:
             return ""
-        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+        if (
+            isinstance(self.startContainer, Text)
+            and self.startContainer == self.endContainer
+        ):
             return self.startContainer.textContent[self.startOffset : self.endOffset]
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
-            return "".join(str(child) for child in children[self.startOffset : self.endOffset])
+            return "".join(
+                str(child) for child in children[self.startOffset : self.endOffset]
+            )
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
             container, start_index, end_index = child_slice
@@ -5228,7 +5574,10 @@ class Range(AbastractRange):
         if self.startContainer is None or self.endContainer is None:
             raise Exception("Range has no boundaries")
         offset = self._validate_boundary_point(refNode, offset)
-        if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
+        if (
+            self._compare_points(refNode, offset, self.startContainer, self.startOffset)
+            < 0
+        ):
             return -1
         if self._compare_points(refNode, offset, self.endContainer, self.endOffset) > 0:
             return 1
@@ -5255,8 +5604,14 @@ class Range(AbastractRange):
             end_node, end_offset = parent, index + 1
 
         return not (
-            self._compare_points(end_node, end_offset, self.startContainer, self.startOffset) <= 0
-            or self._compare_points(start_node, start_offset, self.endContainer, self.endOffset) >= 0
+            self._compare_points(
+                end_node, end_offset, self.startContainer, self.startOffset
+            )
+            <= 0
+            or self._compare_points(
+                start_node, start_offset, self.endContainer, self.endOffset
+            )
+            >= 0
         )
 
 
@@ -5495,7 +5850,9 @@ class Document(Element):
         if not isinstance(el, HTMLBodyElement):
             raise DOMException(
                 DOMException.TYPE_MISMATCH_ERR,
-                "The new body element is of type '" + str(type(el)) + "'. It must be a 'HTMLBodyElement'",
+                "The new body element is of type '"
+                + str(type(el))
+                + "'. It must be a 'HTMLBodyElement'",
             )
         else:
             if self.body is not None:
@@ -5508,7 +5865,9 @@ class Document(Element):
 
     @property
     def cookie(self) -> str:
-        return "; ".join(f"{name}={value}" for name, value in self._cookie_store.items())
+        return "; ".join(
+            f"{name}={value}" for name, value in self._cookie_store.items()
+        )
 
     @cookie.setter
     def cookie(self, value: str) -> None:
@@ -5562,7 +5921,9 @@ class Document(Element):
         return el
 
     @staticmethod
-    def createElementNS(namespaceURI: str, qualifiedName: str, options: Any = None) -> "Element":
+    def createElementNS(
+        namespaceURI: str, qualifiedName: str, options: Any = None
+    ) -> "Element":
         """Creates an element with the specified namespace URI and qualified name."""
         # el = type(qualifiedName, (Element,), {'name': qualifiedName})
         from domonic.html import create_element
@@ -5671,7 +6032,10 @@ class Document(Element):
 
     @staticmethod
     def createTreeWalker(
-        root: Node, whatToShow: int | None = None, filter: Any = None, entityReferenceExpansion: Any = None
+        root: Node,
+        whatToShow: int | None = None,
+        filter: Any = None,
+        entityReferenceExpansion: Any = None,
     ) -> "TreeWalker":
         """[creates a TreeWalker object]
 
@@ -5717,7 +6081,9 @@ class Document(Element):
         return Range()
 
     @staticmethod
-    def createNodeIterator(root: Node, whatToShow: int | None = None, filter: Any = None) -> NodeIterator:
+    def createNodeIterator(
+        root: Node, whatToShow: int | None = None, filter: Any = None
+    ) -> NodeIterator:
         """Creates a NodeIterator that can be used to traverse the document tree or subtree under root."""
         whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
         return NodeIterator(root, whatToShow, filter)
@@ -5786,7 +6152,9 @@ class Document(Element):
             contextNode = self
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpathExpression)
-        result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        result = expression.evaluate(
+            contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        )
         return result.nodes
 
     def elementsFromPoint(self, x: float, y: float) -> list[Element]:
@@ -5928,30 +6296,30 @@ class Document(Element):
     def importNode(self, node, deep=False):
         """Imports a node from another document to this document."""
         old_document = node.ownerDocument if isinstance(node, Node) else None
-        if isinstance(node, Element):
+        if isinstance(node, (Element, DocumentFragment)):
             cloned = copy.deepcopy(node)
             if not deep:
                 cloned.args = ()
-            cloned.ownerDocument = self
-            cloned._update_parents()
-            cloned._iterate(cloned, lambda current: setattr(current, "ownerDocument", self))
-            for current in _iter_dom_nodes(cloned):
-                if isinstance(current, Element):
-                    _upgrade_custom_element_instance(current)
-                    _run_adopted_callback(current, old_document, self)
-            return cloned
+            return _prepare_detached_clone(
+                cloned,
+                self,
+                old_document,
+                run_adopted=True,
+                upgrade_custom_elements=True,
+            )
         elif isinstance(node, Comment):
-            return Comment(node.data)
+            cloned = Comment(node.data)
         elif isinstance(node, Text):
-            return Text(node.data)
+            cloned = Text(node.data)
         elif isinstance(node, ProcessingInstruction):
-            return ProcessingInstruction(node.target, node.data)
-        elif isinstance(node, DocumentFragment):
-            return DocumentFragment()
+            cloned = ProcessingInstruction(node.target, node.data)
         elif isinstance(node, Attr):
             return Attr(node.name, node.value)
         else:
             raise Exception("Unsupported node type")
+        cloned._ownerDocument = self
+        cloned.isConnected = False
+        return cloned
 
     # def inputEncoding(self):
     #     """ Returns the encoding used to access the document's resources."""
@@ -5968,8 +6336,16 @@ class Document(Element):
     @property
     def links(self):
         """Returns a collection of all <a> and <area> elements in the document that have a href attribute"""
-        anchors = [node for node in self.getElementsByTagName("a") if node.getAttribute("href") is not None]
-        areas = [node for node in self.getElementsByTagName("area") if node.getAttribute("href") is not None]
+        anchors = [
+            node
+            for node in self.getElementsByTagName("a")
+            if node.getAttribute("href") is not None
+        ]
+        areas = [
+            node
+            for node in self.getElementsByTagName("area")
+            if node.getAttribute("href") is not None
+        ]
         return anchors + areas
 
     # @property
@@ -6180,6 +6556,14 @@ class DocumentFragment(Node):
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
 
+    @property
+    def children(self) -> NodeList:
+        return _LiveNodeList(self, lambda child: isinstance(child, Element))
+
+    @property
+    def childElementCount(self) -> int:
+        return self.children.length
+
     querySelector = Document.querySelector
     querySelectorAll = Document.querySelectorAll
     getElementById = Document.getElementById
@@ -6190,9 +6574,7 @@ class DocumentFragment(Node):
     def append(self, *nodes: Any) -> None:
         """Appends nodes or strings to the DocumentFragment."""
         items = _coerce_insertion_nodes(*nodes)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.args = self.args + items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
@@ -6200,9 +6582,7 @@ class DocumentFragment(Node):
     def prepend(self, *nodes: Any) -> None:
         """Prepends nodes or strings to the DocumentFragment."""
         items = _coerce_insertion_nodes(*nodes)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.args = items + self.args
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
@@ -6215,9 +6595,7 @@ class DocumentFragment(Node):
                 child.parentNode = None
 
         items = _coerce_replacement_nodes(*newChildren)
-        old_documents = [
-            (item, _detach_node_for_insertion(item)) for item in items
-        ]
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.args = items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
@@ -6268,7 +6646,8 @@ class CharacterData(Node):
 
     def deleteData(self, offset: int, count: int):
         """Removes the specified amount of characters, starting at the specified offset,
-        from the CharacterData.data string; when this method returns, data contains the shortened DOMString."""
+        from the CharacterData.data string; when this method returns, data contains the shortened DOMString.
+        """
         old_value = self._validate_data_range(offset, count)
         updated = old_value[:offset] + old_value[offset + count :]
         self.args = (updated,)
@@ -6365,7 +6744,6 @@ class Entity(Node):
 #         return self.args[1]
 
 
-
 class Text(CharacterData):
     """Text Node"""
 
@@ -6378,7 +6756,8 @@ class Text(CharacterData):
 
     def splitText(self, offset: int):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
-        The first node is returned, while the second node is discarded and exists outside the tree."""
+        The first node is returned, while the second node is discarded and exists outside the tree.
+        """
         self._validate_data_range(offset)
         current = self.args[0]
         head = current[:offset]
@@ -6424,7 +6803,6 @@ class Text(CharacterData):
     def childNodes(self):
         return ()  # Text nodes have no children
 
-
     @property
     def firstChild(self):
         return None
@@ -6454,8 +6832,6 @@ class Text(CharacterData):
         return iter(())  # No children for text nodes
 
 
-
-
 class HTMLCollection(list):
     @property
     def length(self) -> int:
@@ -6482,8 +6858,16 @@ class HTMLCollection(list):
     def namedItem(self, name: str) -> Node | None:
         """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
         for item in self:
-            item_id = item.getAttribute("id") if hasattr(item, "getAttribute") else getattr(item, "id", None)
-            item_name = item.getAttribute("name") if hasattr(item, "getAttribute") else getattr(item, "name", None)
+            item_id = (
+                item.getAttribute("id")
+                if hasattr(item, "getAttribute")
+                else getattr(item, "id", None)
+            )
+            item_name = (
+                item.getAttribute("name")
+                if hasattr(item, "getAttribute")
+                else getattr(item, "name", None)
+            )
             if item_id == name:
                 return item
             elif item_name == name:
@@ -6594,7 +6978,10 @@ class MutationObserver:
                 if not options["attributes"]:
                     continue
                 attribute_filter = options.get("attributeFilter")
-                if attribute_filter is not None and record.attributeName not in attribute_filter:
+                if (
+                    attribute_filter is not None
+                    and record.attributeName not in attribute_filter
+                ):
                     continue
                 old_value = record.oldValue if options["attributeOldValue"] else None
                 filtered_record = MutationRecord(
@@ -6609,8 +6996,12 @@ class MutationObserver:
             if record.type == "characterData":
                 if not options["characterData"]:
                     continue
-                old_value = record.oldValue if options["characterDataOldValue"] else None
-                filtered_record = MutationRecord("characterData", record.target, oldValue=old_value)
+                old_value = (
+                    record.oldValue if options["characterDataOldValue"] else None
+                )
+                filtered_record = MutationRecord(
+                    "characterData", record.target, oldValue=old_value
+                )
                 self._records.append(filtered_record)
                 return True
             if record.type == "childList":
@@ -6683,9 +7074,17 @@ class ResizeObserver:
         self._records.clear()
         return records
 
-    def _process(self, changed_target: Node | None = None, target_rect: DOMRectReadOnly | None = None) -> None:
+    def _process(
+        self,
+        changed_target: Node | None = None,
+        target_rect: DOMRectReadOnly | None = None,
+    ) -> None:
         for target, previous in list(self._observations.items()):
-            rect = DOMRect.fromRect(target_rect) if target is changed_target and target_rect is not None else DOMRect.fromRect(target.getBoundingClientRect())
+            rect = (
+                DOMRect.fromRect(target_rect)
+                if target is changed_target and target_rect is not None
+                else DOMRect.fromRect(target.getBoundingClientRect())
+            )
             current = (rect.x, rect.y, rect.width, rect.height)
             if previous is None or previous != current:
                 self._observations[target] = current
@@ -6715,13 +7114,19 @@ class IntersectionObserverEntry:
         self.boundingClientRect = DOMRect.fromRect(boundingClientRect)
         self.intersectionRect = DOMRect.fromRect(intersectionRect)
         self.time = time_value
-        self.isIntersecting = self.intersectionRect.width > 0 and self.intersectionRect.height > 0
+        self.isIntersecting = (
+            self.intersectionRect.width > 0 and self.intersectionRect.height > 0
+        )
         target_area = self.boundingClientRect.width * self.boundingClientRect.height
         intersection_area = self.intersectionRect.width * self.intersectionRect.height
-        self.intersectionRatio = 0.0 if target_area == 0 else intersection_area / target_area
+        self.intersectionRatio = (
+            0.0 if target_area == 0 else intersection_area / target_area
+        )
 
 
-IntersectionObserverCallback = Callable[[list["IntersectionObserverEntry"], "IntersectionObserver"], Any]
+IntersectionObserverCallback = Callable[
+    [list["IntersectionObserverEntry"], "IntersectionObserver"], Any
+]
 
 
 class IntersectionObserver:
@@ -6734,13 +7139,19 @@ class IntersectionObserver:
 
     _all_observers: ClassVar[list["IntersectionObserver"]] = []
 
-    def __init__(self, callback: IntersectionObserverCallback, options: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        callback: IntersectionObserverCallback,
+        options: dict[str, Any] | None = None,
+    ) -> None:
         if not callable(callback):
             raise TypeError("IntersectionObserver callback must be callable")
         self.callback = callback
         self.root = (options or {}).get("root")
         threshold = (options or {}).get("threshold", 0.0)
-        self.thresholds = sorted(threshold if isinstance(threshold, list) else [threshold])
+        self.thresholds = sorted(
+            threshold if isinstance(threshold, list) else [threshold]
+        )
         self._observations: dict[Element, tuple[bool, float] | None] = {}
         self._records: list[IntersectionObserverEntry] = []
         IntersectionObserver._all_observers.append(self)
@@ -6763,16 +7174,28 @@ class IntersectionObserver:
         self._records.clear()
         return records
 
-    def _process(self, changed_target: Node | None = None, target_rect: DOMRectReadOnly | None = None) -> None:
+    def _process(
+        self,
+        changed_target: Node | None = None,
+        target_rect: DOMRectReadOnly | None = None,
+    ) -> None:
         now_ms = time.perf_counter() * 1000.0
         for target, previous in list(self._observations.items()):
-            bounding_rect = DOMRect.fromRect(target_rect) if target is changed_target and target_rect is not None else DOMRect.fromRect(target.getBoundingClientRect())
+            bounding_rect = (
+                DOMRect.fromRect(target_rect)
+                if target is changed_target and target_rect is not None
+                else DOMRect.fromRect(target.getBoundingClientRect())
+            )
             if isinstance(self.root, Element):
                 root_rect = DOMRect.fromRect(self.root.getBoundingClientRect())
             else:
-                root_rect = DOMRect.fromRect(_default_intersection_root_rect(target, bounding_rect))
+                root_rect = DOMRect.fromRect(
+                    _default_intersection_root_rect(target, bounding_rect)
+                )
             intersection_rect = _intersect_rects(root_rect, bounding_rect)
-            entry = IntersectionObserverEntry(target, root_rect, bounding_rect, intersection_rect, now_ms)
+            entry = IntersectionObserverEntry(
+                target, root_rect, bounding_rect, intersection_rect, now_ms
+            )
             state = (entry.isIntersecting, entry.intersectionRatio)
             if previous is None or previous != state:
                 self._observations[target] = state
@@ -6787,7 +7210,9 @@ class IntersectionObserver:
 
 
 class PerformanceEntry:
-    def __init__(self, name: str, entryType: str, startTime: float, duration: float) -> None:
+    def __init__(
+        self, name: str, entryType: str, startTime: float, duration: float
+    ) -> None:
         self.name = name
         self.entryType = entryType
         self.startTime = startTime
@@ -6812,7 +7237,9 @@ class PerformanceMeasure(PerformanceEntry):
         super().__init__(name, "measure", startTime, duration)
 
 
-PerformanceObserverCallback = Callable[[list["PerformanceEntry"], "PerformanceObserver"], Any]
+PerformanceObserverCallback = Callable[
+    [list["PerformanceEntry"], "PerformanceObserver"], Any
+]
 
 
 class PerformanceObserver:
@@ -6987,24 +7414,50 @@ class DOMMatrixReadOnly:
         values = []
         for row in range(1, 5):
             for col in range(1, 5):
-                values.append(getattr(matrix, f"m{row}{col}", 1.0 if row == col else 0.0))
+                values.append(
+                    getattr(matrix, f"m{row}{col}", 1.0 if row == col else 0.0)
+                )
         return DOMMatrixReadOnly(*values)
 
     def __init__(self, *values: float) -> None:
         if not values:
             values = (
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
             )
         if len(values) == 6:
             a, b, c, d, e, f = values
             values = (
-                a, b, 0.0, 0.0,
-                c, d, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                e, f, 0.0, 1.0,
+                a,
+                b,
+                0.0,
+                0.0,
+                c,
+                d,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                e,
+                f,
+                0.0,
+                1.0,
             )
         if len(values) != 16:
             raise TypeError("DOMMatrix requires 6 or 16 values")
@@ -7034,10 +7487,22 @@ class DOMMatrixReadOnly:
     @property
     def isIdentity(self) -> bool:
         return self._values == [
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
         ]
 
     @property
@@ -7074,7 +7539,11 @@ class DOMMatrixReadOnly:
         return list(self._values)
 
     def toJSON(self) -> dict[str, float | bool]:
-        data = {f"m{row}{col}": self._get(row, col) for row in range(1, 5) for col in range(1, 5)}
+        data = {
+            f"m{row}{col}": self._get(row, col)
+            for row in range(1, 5)
+            for col in range(1, 5)
+        }
         data.update({"is2D": self.is2D, "isIdentity": self.isIdentity})
         return data
 
@@ -7084,7 +7553,9 @@ class DOMMatrixReadOnly:
     def translate(self, tx: float = 0, ty: float = 0, tz: float = 0) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).translateSelf(tx, ty, tz)
 
-    def scale(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
+    def scale(
+        self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1
+    ) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).scaleSelf(scaleX, scaleY, scaleZ)
 
     def inverse(self) -> "DOMMatrix":
@@ -7166,33 +7637,63 @@ class DOMMatrix(DOMMatrixReadOnly):
         result = [0.0] * 16
         for row in range(4):
             for col in range(4):
-                result[row * 4 + col] = sum(left[row * 4 + k] * right[k * 4 + col] for k in range(4))
+                result[row * 4 + col] = sum(
+                    left[row * 4 + k] * right[k * 4 + col] for k in range(4)
+                )
         self._values = result
         return self
 
     def translateSelf(self, tx: float = 0, ty: float = 0, tz: float = 0) -> "DOMMatrix":
         translation = DOMMatrix(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            tx, ty, tz, 1,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            tx,
+            ty,
+            tz,
+            1,
         )
         return self.multiplySelf(translation)
 
-    def scaleSelf(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
+    def scaleSelf(
+        self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1
+    ) -> "DOMMatrix":
         if scaleY is None:
             scaleY = scaleX
         scale = DOMMatrix(
-            scaleX, 0, 0, 0,
-            0, scaleY, 0, 0,
-            0, 0, scaleZ, 0,
-            0, 0, 0, 1,
+            scaleX,
+            0,
+            0,
+            0,
+            0,
+            scaleY,
+            0,
+            0,
+            0,
+            0,
+            scaleZ,
+            0,
+            0,
+            0,
+            0,
+            1,
         )
         return self.multiplySelf(scale)
 
     def invertSelf(self) -> "DOMMatrix":
         matrix = [[self._values[row * 4 + col] for col in range(4)] for row in range(4)]
-        identity = [[1.0 if row == col else 0.0 for col in range(4)] for row in range(4)]
+        identity = [
+            [1.0 if row == col else 0.0 for col in range(4)] for row in range(4)
+        ]
         for col in range(4):
             pivot = max(range(col, 4), key=lambda row: abs(matrix[row][col]))
             if matrix[pivot][col] == 0:
@@ -7206,8 +7707,14 @@ class DOMMatrix(DOMMatrixReadOnly):
                 if row == col:
                     continue
                 factor = matrix[row][col]
-                matrix[row] = [current - factor * pivot_value for current, pivot_value in zip(matrix[row], matrix[col])]
-                identity[row] = [current - factor * pivot_value for current, pivot_value in zip(identity[row], identity[col])]
+                matrix[row] = [
+                    current - factor * pivot_value
+                    for current, pivot_value in zip(matrix[row], matrix[col])
+                ]
+                identity[row] = [
+                    current - factor * pivot_value
+                    for current, pivot_value in zip(identity[row], identity[col])
+                ]
         self._values = [identity[row][col] for row in range(4) for col in range(4)]
         return self
 
@@ -7218,7 +7725,9 @@ for _row in range(1, 5):
         setattr(
             DOMMatrix,
             f"m{_row}{_col}",
-            readonly_prop.setter(lambda self, value, r=_row, c=_col: self._set(r, c, value)),
+            readonly_prop.setter(
+                lambda self, value, r=_row, c=_col: self._set(r, c, value)
+            ),
         )
 
 
@@ -7237,7 +7746,16 @@ class DOMQuad:
 
     @staticmethod
     def fromQuad(quad: Any) -> "DOMQuad":
-        return DOMQuad(quad.p1.x, quad.p1.y, quad.p2.x, quad.p2.y, quad.p3.x, quad.p3.y, quad.p4.x, quad.p4.y)
+        return DOMQuad(
+            quad.p1.x,
+            quad.p1.y,
+            quad.p2.x,
+            quad.p2.y,
+            quad.p3.x,
+            quad.p3.y,
+            quad.p4.x,
+            quad.p4.y,
+        )
 
     @staticmethod
     def getBounds(quad: "DOMQuad") -> DOMRect:
@@ -7380,7 +7898,12 @@ class NodeIterator:
         return None
 
 
-mapChild = {"first": "firstChild", "last": "lastChild", "next": "firstChild", "previous": "lastChild"}
+mapChild = {
+    "first": "firstChild",
+    "last": "lastChild",
+    "next": "firstChild",
+    "previous": "lastChild",
+}
 
 mapSibling = {"next": "nextSibling", "previous": "previousSibling"}
 
@@ -7433,7 +7956,9 @@ def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
                 node = child
                 continue
         while node != None:
-            sibling = getattr(node, mapSibling["next" if _type == "first" else "previous"])
+            sibling = getattr(
+                node, mapSibling["next" if _type == "first" else "previous"]
+            )
             if sibling != None:
                 node = sibling
                 break
@@ -7572,7 +8097,8 @@ class TreeWalker:
 
     def whatToShow(self, options: int) -> int:
         """Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
-        Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are:"""
+        Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are:
+        """
         return options
 
     # def filter(self, options):
@@ -7608,7 +8134,8 @@ class TreeWalker:
     def lastChild(self) -> Node | None:
         """Moves the current Node to the last visible child of the current node, and returns the found child.
         It also moves the current node to this child.
-        If no such child exists, null is returned and the current node is not changed."""
+        If no such child exists, null is returned and the current node is not changed.
+        """
         # return self.currentNode.lastChild
         return traverseChildren(self, "last")
 
@@ -7621,7 +8148,8 @@ class TreeWalker:
 
     def nextSibling(self) -> Node | None:
         """Moves the current Node to its next sibling, if any, and returns the found sibling.
-        If there is no such node, null is returned and the current node is not changed."""
+        If there is no such node, null is returned and the current node is not changed.
+        """
         # return self.currentNode.nextSibling
         return traverseSiblings(self, "next")
 
@@ -8267,7 +8795,12 @@ class HTMLElement(Element):
             return self
         before_toggle = ToggleEvent(
             ToggleEvent.BEFORETOGGLE,
-            {"bubbles": False, "cancelable": True, "oldState": old_state, "newState": new_state},
+            {
+                "bubbles": False,
+                "cancelable": True,
+                "oldState": old_state,
+                "newState": new_state,
+            },
         )
         if not self.dispatchEvent(before_toggle):
             return self
@@ -8278,7 +8811,12 @@ class HTMLElement(Element):
         self.dispatchEvent(
             ToggleEvent(
                 ToggleEvent.TOGGLE,
-                {"bubbles": False, "cancelable": False, "oldState": old_state, "newState": new_state},
+                {
+                    "bubbles": False,
+                    "cancelable": False,
+                    "oldState": old_state,
+                    "newState": new_state,
+                },
             )
         )
         return self
@@ -8680,7 +9218,7 @@ class HTMLDListElement(HTMLElement):
 
 class HTMLDataElement(HTMLElement):
     name = "data"
-    
+
     def __init__(self, *args, value=None, **kwargs):
         """HTMLDataElement
 
@@ -8738,7 +9276,18 @@ class HTMLDialogElement(HTMLElement):
 
         self.returnValue = returnValue
         self.open = False
-        self.dispatchEvent(CloseEvent("close", {"bubbles": False, "cancelable": False, "code": 0, "reason": str(returnValue), "wasClean": True}))
+        self.dispatchEvent(
+            CloseEvent(
+                "close",
+                {
+                    "bubbles": False,
+                    "cancelable": False,
+                    "code": 0,
+                    "reason": str(returnValue),
+                    "wasClean": True,
+                },
+            )
+        )
         return self
 
 
@@ -8820,7 +9369,8 @@ class HTMLFormControlsCollection(HTMLCollection):
         matches = [
             control
             for control in self._controls()
-            if control.getAttribute("id") == name or control.getAttribute("name") == name
+            if control.getAttribute("id") == name
+            or control.getAttribute("name") == name
         ]
         if not matches:
             return None
@@ -8890,7 +9440,9 @@ class HTMLFormElement(HTMLElement):
         for control in self.elements:
             if not _is_control_valid(control):
                 valid = False
-                control.dispatchEvent(Event("invalid", {"bubbles": False, "cancelable": True}))
+                control.dispatchEvent(
+                    Event("invalid", {"bubbles": False, "cancelable": True})
+                )
         return valid
 
     def requestSubmit(self, submitter=None):
@@ -8901,7 +9453,11 @@ class HTMLFormElement(HTMLElement):
             should_validate = False
         if should_validate and not self.checkValidity():
             return False
-        return self.dispatchEvent(SubmitEvent("submit", {"bubbles": True, "cancelable": True, "submitter": submitter}))
+        return self.dispatchEvent(
+            SubmitEvent(
+                "submit", {"bubbles": True, "cancelable": True, "submitter": submitter}
+            )
+        )
 
     def reset(self):
         from domonic.events import Event
@@ -9433,6 +9989,7 @@ class HTMLMapElement(HTMLElement):
         if name is not None:
             self.setAttribute("name", name)
 
+
 class HTMLMediaElement(HTMLElement):
     name = ""
 
@@ -9464,7 +10021,9 @@ class HTMLMediaElement(HTMLElement):
 
     def load(self):
         self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
-        self.dispatchEvent(Event("loadedmetadata", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(
+            Event("loadedmetadata", {"bubbles": False, "cancelable": False})
+        )
         self.dispatchEvent(Event("loadeddata", {"bubbles": False, "cancelable": False}))
         return self
 
@@ -9482,7 +10041,9 @@ class HTMLMetaElement(HTMLElement):
     name = "meta"
     __isempty = True
 
-    def __init__(self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs):
+    def __init__(
+        self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs
+    ):
         """HTMLMetaElement
 
         Args:
@@ -9505,7 +10066,17 @@ class HTMLMetaElement(HTMLElement):
 class HTMLMeterElement(HTMLElement):
     name = "meter"
 
-    def __init__(self, *args, value=None, _min=None, _max=None, low=None, high=None, optimum=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        value=None,
+        _min=None,
+        _max=None,
+        low=None,
+        high=None,
+        optimum=None,
+        **kwargs,
+    ):
         """HTMLMeterElement
 
         The <meter> HTML element represents either a scalar value within a known range or a fractional value.
@@ -9562,7 +10133,9 @@ class HTMLOptGroupElement(HTMLElement):
 class HTMLOptionElement(HTMLElement):
     name = "option"
 
-    def __init__(self, *args, disabled=None, label=None, selected=None, value=None, **kwargs):
+    def __init__(
+        self, *args, disabled=None, label=None, selected=None, value=None, **kwargs
+    ):
         """HTMLOptionElement
 
         Args:
@@ -9599,9 +10172,13 @@ class HTMLOptionElement(HTMLElement):
     def selected(self, is_selected: bool) -> None:
         if is_selected:
             select_owner = self.parentNode
-            while select_owner is not None and not isinstance(select_owner, HTMLSelectElement):
+            while select_owner is not None and not isinstance(
+                select_owner, HTMLSelectElement
+            ):
                 select_owner = getattr(select_owner, "parentNode", None)
-            if isinstance(select_owner, HTMLSelectElement) and not select_owner.hasAttribute("multiple"):
+            if isinstance(
+                select_owner, HTMLSelectElement
+            ) and not select_owner.hasAttribute("multiple"):
                 for option in select_owner.options:
                     if option is not self:
                         option.removeAttribute("selected")
@@ -9907,7 +10484,18 @@ class HTMLSourceElement(HTMLElement):
     name = "source"
     __isempty = True
 
-    def __init__(self, *args, height=None, media=None, sizes=None, src=None, srcset=None, type=None, width=None, **kwargs):
+    def __init__(
+        self,
+        *args,
+        height=None,
+        media=None,
+        sizes=None,
+        src=None,
+        srcset=None,
+        type=None,
+        width=None,
+        **kwargs,
+    ):
         """HTMLSourceElement
 
         Args:
@@ -9935,11 +10523,12 @@ class HTMLSpanElement(HTMLElement):
     name = "span"
 
 
-
 class HTMLStyleElement(HTMLElement):
     name = "style"
 
-    def __init__(self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs):
+    def __init__(
+        self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs
+    ):
         """HTMLStyleElement
 
         Args:
@@ -9948,7 +10537,9 @@ class HTMLStyleElement(HTMLElement):
             scoped (str, optional): Indicates whether the style is scoped to the element.
         """
         super().__init__(*args, **kwargs)
-        _set_attributes(self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type})
+        _set_attributes(
+            self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type}
+        )
 
 
 class HTMLTableCaptionElement(HTMLElement):
@@ -10098,7 +10689,9 @@ class HTMLSlotElement(HTMLElement):
         return fallback
 
     def assignedElements(self, options: dict[str, Any] | None = None) -> list[Element]:
-        return [node for node in self.assignedNodes(options) if isinstance(node, Element)]
+        return [
+            node for node in self.assignedNodes(options) if isinstance(node, Element)
+        ]
 
 
 class HTMLTemplateElement(HTMLElement):
@@ -10265,8 +10858,17 @@ class HTMLTitleElement(HTMLElement):
 
 class HTMLTrackElement(HTMLElement):
     name = "track"
-    
-    def __init__(self, *args, kind=None, label=None, src=None, srclang=None, default=None, **kwargs):
+
+    def __init__(
+        self,
+        *args,
+        kind=None,
+        label=None,
+        src=None,
+        srclang=None,
+        default=None,
+        **kwargs,
+    ):
         """HTMLTrackElement
 
         Args:

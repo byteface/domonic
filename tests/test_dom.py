@@ -1097,10 +1097,49 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(str(imported_element), '<div id="one"><span>x</span></div>')
         self.assertIs(imported_element.ownerDocument, page)
         self.assertEqual(str(imported_comment), "<!--note-->")
+        self.assertIs(imported_comment.ownerDocument, page)
         self.assertEqual(str(imported_text), "hello")
+        self.assertIs(imported_text.ownerDocument, page)
         self.assertEqual(str(imported_instruction), '<?xml-stylesheet href="style.css"?>')
+        self.assertIs(imported_instruction.ownerDocument, page)
         self.assertIsInstance(imported_fragment, DocumentFragment)
         self.assertEqual((imported_attr.name, imported_attr.value), ("data-id", "7"))
+
+    def test_document_import_node_from_attached_tree_is_disconnected_clone(self):
+        source_page = html(body(div(span("kid", _id="kid"), _id="source")))
+        target_page = html(body())
+        source = source_page.querySelector("#source")
+
+        imported = target_page.importNode(source, deep=True)
+        imported_child = imported.querySelector("#kid")
+
+        self.assertIsNot(imported, source)
+        self.assertIsNone(imported.parentNode)
+        self.assertIs(imported.ownerDocument, target_page)
+        self.assertFalse(imported.isConnected)
+        self.assertIs(imported_child.parentNode, imported)
+        self.assertIs(imported_child.ownerDocument, target_page)
+        self.assertFalse(imported_child.isConnected)
+        self.assertIs(source.parentNode, source_page.body)
+        self.assertIs(source.ownerDocument, source_page)
+
+    def test_document_import_node_deep_clones_document_fragment(self):
+        page = html(body())
+        fragment = Document.createDocumentFragment(Text("lead "), span("child", _id="child"))
+
+        imported = page.importNode(fragment, deep=True)
+        shallow = page.importNode(fragment, deep=False)
+
+        self.assertEqual(str(imported), 'lead <span id="child">child</span>')
+        self.assertIs(imported.ownerDocument, page)
+        self.assertFalse(imported.isConnected)
+        self.assertEqual(imported.childNodes.length, 2)
+        self.assertEqual([child.getAttribute("id") for child in imported.children], ["child"])
+        self.assertEqual(imported.childElementCount, 1)
+        self.assertIs(imported.firstChild.ownerDocument, page)
+        self.assertIs(imported.querySelector("#child").ownerDocument, page)
+        self.assertEqual(str(fragment), 'lead <span id="child">child</span>')
+        self.assertEqual(shallow.childNodes.length, 0)
 
     def test_document_elements_from_point(self):
         one = div("one", _id="one")
@@ -1907,6 +1946,21 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(node.removeAttributeNode("_data-state").name, "data-state")
         self.assertFalse(node.hasAttribute("data-state"))
 
+    def test_toggle_attribute(self):
+        node = div()
+
+        self.assertTrue(node.toggleAttribute("hidden"))
+        self.assertTrue(node.hasAttribute("hidden"))
+        self.assertEqual(node.getAttribute("hidden"), "")
+        self.assertFalse(node.toggleAttribute("hidden"))
+        self.assertFalse(node.hasAttribute("hidden"))
+
+        self.assertTrue(node.toggleAttribute("hidden", True))
+        self.assertTrue(node.hasAttribute("hidden"))
+        self.assertTrue(node.toggleAttribute("hidden", True))
+        self.assertFalse(node.toggleAttribute("hidden", False))
+        self.assertFalse(node.hasAttribute("hidden"))
+
     def test_dataset_and_dom_string_map_helpers(self):
         node = div(**{"_data-user-id": "7", "_data-theme-name": "night"})
         dataset = node.dataset
@@ -2059,7 +2113,11 @@ class DOMTest(unittest.TestCase):
             DOMConfig.GLOBAL_AUTOESCAPE = True
             self.assertEqual(format(li("item"), ""), "\n<li>item")
             self.assertEqual(format(br(), ""), "\n<br />")
-            self.assertIn("&lt;safe&gt;", format(div("<safe>"), ""))
+            escaped = div("<safe>")
+            self.assertIn("&lt;safe&gt;", format(escaped, ""))
+            self.assertIn("&lt;safe&gt;", format(escaped, ""))
+            self.assertNotIn("&amp;lt;safe&amp;gt;", format(escaped, ""))
+            self.assertEqual(escaped.args, ("<safe>",))
         finally:
             DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = original_optional
             DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
@@ -2769,6 +2827,15 @@ class DOMTest(unittest.TestCase):
         assert birds[1].matches(".safe, .endangered")
         assert birds[1].closest("ul") is content
 
+    def test_matches_requires_all_class_tokens(self):
+        partial = li("partial", _class="foo")
+        complete = li("complete", _class="foo bar")
+
+        self.assertFalse(partial.matches(".foo.bar"))
+        self.assertFalse(partial.matches("li.foo.bar"))
+        self.assertTrue(complete.matches(".foo.bar"))
+        self.assertTrue(complete.matches("li.foo.bar"))
+
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(
             li("Orange-winged parrot"), li("Philippine eagle", _class="endangered"), li("Great white pelican")
@@ -3322,6 +3389,20 @@ class NodeTest(unittest.TestCase):
         assert res is two, f'"{res}" != "{two}"'
         assert len(node) == 0, f"{len(node)} != {0}"
 
+    def test_removeChild_only_removes_direct_children(self):
+        inner = div(span("kid", _id="kid"), _id="inner")
+        node = div(inner)
+        kid = node.querySelector("#kid")
+
+        self.assertIsNone(node.removeChild(kid))
+        self.assertIs(kid.parentNode, inner)
+        self.assertTrue(node.contains(kid))
+
+        removed = inner.removeChild(kid)
+        self.assertIs(removed, kid)
+        self.assertIsNone(kid.parentNode)
+        self.assertFalse(node.contains(kid))
+
     def test_appendChild(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
@@ -3356,6 +3437,27 @@ class NodeTest(unittest.TestCase):
         self.assertIs(kid.parentNode, new_parent)
         self.assertFalse(old_parent.contains(kid))
         self.assertTrue(new_parent.contains(kid))
+
+    def test_duplicate_node_insertion_arguments_keep_last_position(self):
+        node = div(p("tail", _id="tail"))
+        child = span("kid", _id="kid")
+
+        node.append(child, " gap ", child)
+
+        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], ["tail", None, "kid"])
+        self.assertEqual(node.childNodes.length, 3)
+        self.assertIs(child.parentNode, node)
+
+        node.prepend(child, child)
+
+        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], ["kid", "tail", None])
+        self.assertEqual(node.childNodes.length, 3)
+
+        node.replaceChildren(child, " mid ", child)
+
+        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], [None, "kid"])
+        self.assertEqual(node.childNodes.length, 2)
+        self.assertIs(child.parentNode, node)
 
     def test_insert(self):
         """Insert into empty node"""
@@ -3506,6 +3608,25 @@ class NodeTest(unittest.TestCase):
         assert len(shallow.childNodes) == 0
         assert shallow.parentNode is None
 
+    def test_cloneNode_from_attached_tree_is_disconnected(self):
+        page = html(body(div(span("kid", _id="kid"), _id="source")))
+        source = page.querySelector("#source")
+
+        deep_clone = source.cloneNode(deep=True)
+        shallow_clone = source.cloneNode(False)
+
+        self.assertIsNone(deep_clone.parentNode)
+        self.assertIs(deep_clone.ownerDocument, page)
+        self.assertFalse(deep_clone.isConnected)
+        self.assertIs(deep_clone.firstChild.parentNode, deep_clone)
+        self.assertIs(deep_clone.firstChild.ownerDocument, page)
+        self.assertFalse(deep_clone.firstChild.isConnected)
+        self.assertIsNone(shallow_clone.parentNode)
+        self.assertIs(shallow_clone.ownerDocument, page)
+        self.assertFalse(shallow_clone.isConnected)
+        self.assertEqual(shallow_clone.childNodes.length, 0)
+        self.assertIs(source.parentNode, page.body)
+
     def test_normalize(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
@@ -3522,6 +3643,21 @@ class NodeTest(unittest.TestCase):
         # print(node)
         assert len(node) == 2, f'"{len(node)}" != "{2}"'
         assert node[1] == "twothreefour", f'"{node[1]}" != "{"twothreefour"}"'
+
+    def test_normalize_preserves_element_siblings_after_text(self):
+        lead = Document.createTextNode("lead ")
+        middle = span(Document.createTextNode("mid "), Document.createTextNode("text"), _id="middle")
+        tail = Document.createTextNode(" tail")
+        node = div(lead, middle, tail, em("end", _id="end"))
+
+        node.normalize()
+
+        self.assertEqual(str(node), '<div>lead <span id="middle">mid text</span> tail<em id="end">end</em></div>')
+        self.assertIsNone(lead.parentNode)
+        self.assertIsNone(tail.parentNode)
+        self.assertIs(middle.parentNode, node)
+        self.assertIs(node.querySelector("#end").parentNode, node)
+        self.assertEqual(middle.args, ("mid text",))
 
     def test_hasAttributes(self):
         node = Document.createElement("node")
@@ -3606,6 +3742,16 @@ class NodeTest(unittest.TestCase):
         assert one.parentNode is None
         assert two.parentNode is None
         assert three.parentNode is two
+
+    def test_nodeValue_replaces_children_and_detaches_old_nodes(self):
+        node = div(span("old", _id="old"))
+        old = node.querySelector("#old")
+
+        node.nodeValue = "plain"
+
+        self.assertEqual(node.nodeValue, "plain")
+        self.assertEqual(node.args, ("plain",))
+        self.assertIsNone(old.parentNode)
 
     def test_isSameNode(self):
         node = Document.createElement("node")
@@ -3770,7 +3916,14 @@ class TestDomTokenList(unittest.TestCase):
         tokens.add("two", "three")
 
         self.assertEqual(tokens.toString(), "one two three")
+        self.assertEqual(tokens.value, "one two three")
         self.assertEqual(sample.className, "one two three")
+
+        tokens.value = " three  four\tthree "
+
+        self.assertEqual(list(tokens), ["three", "four"])
+        self.assertEqual(tokens.value, "three four")
+        self.assertEqual(sample.className, "three four")
 
     def test_class_list_rejects_invalid_tokens(self):
         sample = div(_class="one")
