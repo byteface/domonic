@@ -454,6 +454,81 @@ def _dispatch_value_change_events(control: "Element") -> None:
     control.dispatchEvent(Event("change", {"bubbles": True, "cancelable": False}))
 
 
+def _dispatch_before_input_event(
+    control: "Element",
+    new_value: Any,
+    *,
+    input_type: str = "insertReplacementText",
+) -> bool:
+    from domonic.events import InputEvent
+
+    event = InputEvent(
+        "beforeinput",
+        {
+            "bubbles": True,
+            "cancelable": True,
+            "data": "" if new_value is None else str(new_value),
+            "inputType": input_type,
+            "isComposing": False,
+        },
+    )
+    return control.dispatchEvent(event)
+
+
+def _append_form_data_value(data: dict[str, Any], name: str | None, value: Any) -> None:
+    if not name:
+        return
+    if name in data:
+        existing = data[name]
+        if isinstance(existing, list):
+            existing.append(value)
+        else:
+            data[name] = [existing, value]
+        return
+    data[name] = value
+
+
+def _construct_form_data(
+    form: "HTMLFormElement", submitter: "Element | None" = None
+) -> dict[str, Any]:
+    data: dict[str, Any] = {}
+    for control in form.elements:
+        if not isinstance(control, Element) or control.hasAttribute("disabled"):
+            continue
+        name = control.getAttribute("name")
+        if not name:
+            continue
+        if control is submitter:
+            continue
+        if isinstance(control, HTMLButtonElement):
+            continue
+        if isinstance(control, HTMLInputElement):
+            input_type = control.type
+            if input_type in {"button", "image", "reset", "submit"}:
+                continue
+            if input_type in {"checkbox", "radio"} and not control.checked:
+                continue
+            _append_form_data_value(data, name, control.value)
+        elif isinstance(control, HTMLSelectElement):
+            if control.hasAttribute("multiple"):
+                for option in control.selectedOptions:
+                    _append_form_data_value(data, name, option.value)
+            else:
+                _append_form_data_value(data, name, control.value)
+        elif isinstance(control, HTMLTextAreaElement):
+            _append_form_data_value(data, name, control.value)
+        elif hasattr(control, "value"):
+            _append_form_data_value(data, name, getattr(control, "value"))
+
+    if (
+        isinstance(submitter, Element)
+        and not submitter.hasAttribute("disabled")
+        and submitter.getAttribute("name")
+    ):
+        _append_form_data_value(data, submitter.getAttribute("name"), submitter.value)
+    return data
+
+
 def _radio_group_members(
     control: "Element", *, include_disabled: bool = True
 ) -> list["HTMLInputElement"]:
@@ -5939,118 +6014,111 @@ class Document(Element):
 
     @staticmethod
     def createEvent(event_type: str | None = None) -> Event:
-        """[Creates a new event]
+        """Creates a DOM-style event instance for the requested interface.
 
         Args:
-            event_type ([type], optional): [description]. Defaults to None.
+            event_type: Event interface name, such as ``MouseEvent`` or
+                ``SubmitEvent``. Defaults to a plain ``Event``.
 
         Returns:
-            [type]: [a new event]
+            Event: A new event object.
         """
-        if event_type == "MouseEvent":
-            return MouseEvent("click")
-        if event_type == "PointerEvent":
-            from domonic.events import PointerEvent
+        from domonic.events import (
+            AnimationEvent,
+            BeforeUnloadEvent,
+            BlobEvent,
+            ClipboardEvent,
+            CloseEvent,
+            CommandEvent,
+            CompositionEvent,
+            CustomEvent,
+            DeviceLightEvent,
+            DeviceMotionEvent,
+            DeviceOrientationEvent,
+            DeviceProximityEvent,
+            DOMContentLoadedEvent,
+            DragEvent,
+            ErrorEvent,
+            ExtendableEvent,
+            FetchEvent,
+            FocusEvent,
+            FormDataEvent,
+            GamePadEvent,
+            HashChangeEvent,
+            InputEvent,
+            KeyboardEvent,
+            MessageEvent,
+            PageTransitionEvent,
+            PointerEvent,
+            PopStateEvent,
+            ProgressEvent,
+            SecurityPolicyViolationEvent,
+            StorageEvent,
+            SubmitEvent,
+            SVGEvent,
+            SyncEvent,
+            TimerEvent,
+            ToggleEvent,
+            TrackEvent,
+            TransitionEvent,
+            UIEvent,
+            WebGLContextEvent,
+            WheelEvent,
+        )
 
-            return PointerEvent("pointerdown")
-        if event_type == "FocusEvent":
-            from domonic.events import FocusEvent
-
-            return FocusEvent("focus")
-        if event_type == "KeyboardEvent":
-            from domonic.events import KeyboardEvent
-
-            return KeyboardEvent("keydown")
-        if event_type == "UIEvent":
-            from domonic.events import UIEvent
-
-            return UIEvent("load")
-        if event_type == "CustomEvent":
-            from domonic.events import CustomEvent
-
-            return CustomEvent("custom")
-        if event_type == "CompositionEvent":
-            from domonic.events import CompositionEvent
-
-            return CompositionEvent("compositionstart")
-        if event_type == "SubmitEvent":
-            from domonic.events import SubmitEvent
-
-            return SubmitEvent("submit")
-        if event_type == "InputEvent":
-            from domonic.events import InputEvent
-
-            return InputEvent("input")
-        if event_type == "ClipboardEvent":
-            from domonic.events import ClipboardEvent
-
-            return ClipboardEvent("copy")
-        if event_type == "WheelEvent":
-            from domonic.events import WheelEvent
-
-            return WheelEvent("wheel")
-        if event_type == "BeforeUnloadEvent":
-            from domonic.events import BeforeUnloadEvent
-
-            return BeforeUnloadEvent("beforeunload")
-        if event_type == "MessageEvent":
-            from domonic.events import MessageEvent
-
-            return MessageEvent("message")
-        if event_type == "TransitionEvent":
-            from domonic.events import TransitionEvent
-
-            return TransitionEvent("transitionend")
-        if event_type == "ProgressEvent":
-            from domonic.events import ProgressEvent
-
-            return ProgressEvent("progress")
-        if event_type == "ErrorEvent":
-            from domonic.events import ErrorEvent
-
-            return ErrorEvent("error")
-        if event_type == "PopStateEvent":
-            from domonic.events import PopStateEvent
-
-            return PopStateEvent("popstate")
-        if event_type == "CloseEvent":
-            from domonic.events import CloseEvent
-
-            return CloseEvent("close")
-        if event_type == "DragEvent":
-            from domonic.events import DragEvent
-
-            return DragEvent("drag")
-        if event_type == "FormDataEvent":
-            from domonic.events import FormDataEvent
-
-            return FormDataEvent("formdata")
-        if event_type == "TrackEvent":
-            from domonic.events import TrackEvent
-
-            return TrackEvent("addtrack")
-        if event_type == "BlobEvent":
-            from domonic.events import BlobEvent
-
-            return BlobEvent("dataavailable")
-        if event_type == "DeviceMotionEvent":
-            from domonic.events import DeviceMotionEvent
-
-            return DeviceMotionEvent("devicemotion")
-        if event_type == "DeviceOrientationEvent":
-            from domonic.events import DeviceOrientationEvent
-
-            return DeviceOrientationEvent("deviceorientation")
-        if event_type == "WebGLContextEvent":
-            from domonic.events import WebGLContextEvent
-
-            return WebGLContextEvent("webglcontextlost")
-        if event_type == "SecurityPolicyViolationEvent":
-            from domonic.events import SecurityPolicyViolationEvent
-
-            return SecurityPolicyViolationEvent("securitypolicyviolation")
         if event_type is None:
             return Event()
+        factories: dict[str, Callable[[], Event]] = {
+            "AnimationEvent": lambda: AnimationEvent("animationstart"),
+            "BeforeUnloadEvent": lambda: BeforeUnloadEvent("beforeunload"),
+            "BlobEvent": lambda: BlobEvent("dataavailable"),
+            "ClipboardEvent": lambda: ClipboardEvent("copy"),
+            "CloseEvent": lambda: CloseEvent("close"),
+            "CommandEvent": lambda: CommandEvent("command"),
+            "CompositionEvent": lambda: CompositionEvent("compositionstart"),
+            "CustomEvent": lambda: CustomEvent("custom"),
+            "DeviceLightEvent": lambda: DeviceLightEvent("devicelight"),
+            "DeviceMotionEvent": lambda: DeviceMotionEvent("devicemotion"),
+            "DeviceOrientationEvent": lambda: DeviceOrientationEvent(
+                "deviceorientation"
+            ),
+            "DeviceProximityEvent": lambda: DeviceProximityEvent("deviceproximity"),
+            "DOMContentLoadedEvent": lambda: DOMContentLoadedEvent("DOMContentLoaded"),
+            "DragEvent": lambda: DragEvent("drag"),
+            "ErrorEvent": lambda: ErrorEvent("error"),
+            "Event": lambda: Event(),
+            "ExtendableEvent": lambda: ExtendableEvent("extendable"),
+            "FetchEvent": lambda: FetchEvent("fetch"),
+            "FocusEvent": lambda: FocusEvent("focus"),
+            "FormDataEvent": lambda: FormDataEvent("formdata"),
+            "GamePadEvent": lambda: GamePadEvent("gamepadconnected"),
+            "HashChangeEvent": lambda: HashChangeEvent("hashchange"),
+            "InputEvent": lambda: InputEvent("input"),
+            "KeyboardEvent": lambda: KeyboardEvent("keydown"),
+            "MessageEvent": lambda: MessageEvent("message"),
+            "MouseEvent": lambda: MouseEvent("click"),
+            "PageTransitionEvent": lambda: PageTransitionEvent("pageshow"),
+            "PointerEvent": lambda: PointerEvent("pointerdown"),
+            "PopStateEvent": lambda: PopStateEvent("popstate"),
+            "ProgressEvent": lambda: ProgressEvent("progress"),
+            "SecurityPolicyViolationEvent": lambda: SecurityPolicyViolationEvent(
+                "securitypolicyviolation"
+            ),
+            "StorageEvent": lambda: StorageEvent("storage"),
+            "SubmitEvent": lambda: SubmitEvent("submit"),
+            "SVGEvent": lambda: SVGEvent("load"),
+            "SyncEvent": lambda: SyncEvent("sync"),
+            "TimerEvent": lambda: TimerEvent("timer"),
+            "ToggleEvent": lambda: ToggleEvent("toggle"),
+            "TrackEvent": lambda: TrackEvent("addtrack"),
+            "TransitionEvent": lambda: TransitionEvent("transitionend"),
+            "UIEvent": lambda: UIEvent("load"),
+            "WebGLContextEvent": lambda: WebGLContextEvent("webglcontextlost"),
+            "WheelEvent": lambda: WheelEvent("wheel"),
+        }
+        factory = factories.get(event_type)
+        if factory is not None:
+            return factory()
         return Event(event_type)
 
     @staticmethod
@@ -9209,7 +9277,7 @@ class HTMLButtonElement(HTMLElement):
 
     def click(self):
         result = super().click()
-        if self.hasAttribute("disabled"):
+        if not result or self.hasAttribute("disabled"):
             return result
         button_type = (self.getAttribute("type") or "submit").lower()
         form = _form_owner(self)
@@ -9291,13 +9359,26 @@ class HTMLDialogElement(HTMLElement):
 
     @open.setter
     def open(self, is_open: bool) -> None:
+        from domonic.events import ToggleEvent
+
         previous = self.open
+        old_state = "open" if previous else "closed"
         if is_open:
             self.setAttribute("open", True)
         else:
             self.removeAttribute("open")
         if previous != self.open:
-            self.dispatchEvent(Event("toggle", {"bubbles": False, "cancelable": False}))
+            self.dispatchEvent(
+                ToggleEvent(
+                    ToggleEvent.TOGGLE,
+                    {
+                        "bubbles": False,
+                        "cancelable": False,
+                        "oldState": old_state,
+                        "newState": "open" if self.open else "closed",
+                    },
+                )
+            )
 
     def show(self):
         self.open = True
@@ -9482,18 +9563,28 @@ class HTMLFormElement(HTMLElement):
         return valid
 
     def requestSubmit(self, submitter=None):
-        from domonic.events import SubmitEvent
+        from domonic.events import FormDataEvent, SubmitEvent
 
         should_validate = not self.hasAttribute("novalidate")
         if submitter is not None and submitter.hasAttribute("formnovalidate"):
             should_validate = False
         if should_validate and not self.checkValidity():
             return False
-        return self.dispatchEvent(
+        submit_event_result = self.dispatchEvent(
             SubmitEvent(
                 "submit", {"bubbles": True, "cancelable": True, "submitter": submitter}
             )
         )
+        if not submit_event_result:
+            return False
+        form_data = _construct_form_data(self, submitter)
+        self.dispatchEvent(
+            FormDataEvent(
+                "formdata",
+                {"bubbles": False, "cancelable": False, "formData": form_data},
+            )
+        )
+        return True
 
     def reset(self):
         from domonic.events import Event
@@ -9858,6 +9949,8 @@ class HTMLInputElement(HTMLElement):
         self.setAttribute("value", new_value)
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
+        if dispatch_events and not _dispatch_before_input_event(self, new_value):
+            return self.value
         self.value = new_value
         if dispatch_events:
             _dispatch_value_change_events(self)
@@ -9896,7 +9989,7 @@ class HTMLInputElement(HTMLElement):
 
     def click(self):
         result = super().click()
-        if self.hasAttribute("disabled"):
+        if not result or self.hasAttribute("disabled"):
             return result
         input_type = self.type
         if input_type in {"checkbox", "radio"}:
@@ -10042,6 +10135,7 @@ class HTMLMediaElement(HTMLElement):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        self.textTracks: list[dict[str, Any]] = []
         _set_attributes(
             self,
             {
@@ -10071,6 +10165,40 @@ class HTMLMediaElement(HTMLElement):
     def pause(self):
         self.dispatchEvent(Event("pause", {"bubbles": False, "cancelable": False}))
         return None
+
+    def addTextTrack(
+        self, kind: str, label: str = "", language: str = ""
+    ) -> dict[str, Any]:
+        from domonic.events import TrackEvent
+
+        track = {
+            "kind": kind,
+            "label": label,
+            "language": language,
+            "mode": "disabled",
+            "cues": [],
+        }
+        self.textTracks.append(track)
+        self.dispatchEvent(
+            TrackEvent(
+                TrackEvent.ADDTRACK,
+                {"bubbles": False, "cancelable": False, "track": track},
+            )
+        )
+        return track
+
+    def removeTextTrack(self, track: dict[str, Any]) -> None:
+        from domonic.events import TrackEvent
+
+        if track not in self.textTracks:
+            return
+        self.textTracks.remove(track)
+        self.dispatchEvent(
+            TrackEvent(
+                TrackEvent.REMOVETRACK,
+                {"bubbles": False, "cancelable": False, "track": track},
+            )
+        )
 
 
 class HTMLMetaElement(HTMLElement):
@@ -10674,13 +10802,26 @@ class HTMLDetailsElement(HTMLElement):
 
     @open.setter
     def open(self, is_open: bool) -> None:
+        from domonic.events import ToggleEvent
+
         previous = self.open
+        old_state = "open" if previous else "closed"
         if is_open:
             self.setAttribute("open", True)
         else:
             self.removeAttribute("open")
         if previous != self.open:
-            self.dispatchEvent(Event("toggle", {"bubbles": False, "cancelable": False}))
+            self.dispatchEvent(
+                ToggleEvent(
+                    ToggleEvent.TOGGLE,
+                    {
+                        "bubbles": False,
+                        "cancelable": False,
+                        "oldState": old_state,
+                        "newState": "open" if self.open else "closed",
+                    },
+                )
+            )
 
     def toggle(self) -> bool:
         self.open = not self.open
@@ -10843,6 +10984,8 @@ class HTMLTextAreaElement(HTMLElement):
         self.textContent = "" if new_value is None else str(new_value)
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
+        if dispatch_events and not _dispatch_before_input_event(self, new_value):
+            return self.value
         self.value = new_value
         if dispatch_events:
             _dispatch_value_change_events(self)

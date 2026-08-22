@@ -1,7 +1,7 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    - unit tests for domonic.dom
+test_domonic
+~~~~~~~~~~~~
+- unit tests for domonic.dom
 
 """
 
@@ -12,6 +12,7 @@ import unittest
 from domonic import *
 from domonic.CDN import CDN_CSS
 from domonic.dom import *
+from domonic.events import FormDataEvent, InputEvent, ToggleEvent, TrackEvent
 from domonic.html import *
 from domonic.style import *
 
@@ -37,40 +38,71 @@ class DOMTest(unittest.TestCase):
                 div(_class="overlay").html(
                     div(_class="content h-100 d-flex align-items-center").html(
                         div(_class="container text-center text-black").html(
-                            p("Welcome to the information age", _class="headings-font-family text-uppercase lead"),
+                            p(
+                                "Welcome to the information age",
+                                _class="headings-font-family text-uppercase lead",
+                            ),
                             h1(
                                 "We are",
                                 span("COMPANY", _class="font-weight-bold d-block"),
                                 _class="text-uppercase hero-text text-black",
                             ),
-                            p("And this is our company website", _class="headings-font-family text-uppercase lead"),
+                            p(
+                                "And this is our company website",
+                                _class="headings-font-family text-uppercase lead",
+                            ),
                         )
                     )
                 ),
                 header(_class="header sticky-top").html(
-                    nav(_class="navbar navbar-expand-lg bg-white border-bottom py-0").html(
+                    nav(
+                        _class="navbar navbar-expand-lg bg-white border-bottom py-0"
+                    ).html(
                         div(_class="container").html(
                             h6("website.com"),
-                            div(_id="navbarSupportedContent", _class="collapse navbar-collapse").html(
+                            div(
+                                _id="navbarSupportedContent",
+                                _class="collapse navbar-collapse",
+                            ).html(
                                 ul(_class="navbar-nav ml-auto px-3").html(
                                     li(
-                                        a("Home", _href="", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Home",
+                                            _href="",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item active",
                                     ),
                                     li(
-                                        a("About", _href="#about", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "About",
+                                            _href="#about",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Services", _href="#services", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Services",
+                                            _href="#services",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Team", _href="#team", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Team",
+                                            _href="#team",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                     li(
-                                        a("Contact", _href="#contact", _class="nav-link text-uppercase link-scroll"),
+                                        a(
+                                            "Contact",
+                                            _href="#contact",
+                                            _class="nav-link text-uppercase link-scroll",
+                                        ),
                                         _class="nav-item",
                                     ),
                                 )
@@ -86,7 +118,9 @@ class DOMTest(unittest.TestCase):
                                     h6("About us", _class="lined text-uppercase"),
                                 ),
                                 p("Specialists in xxxxx.", _class="lead"),
-                                p("COMPANY can provide xxxxxx solutions. We have expertise in the following areas."),
+                                p(
+                                    "COMPANY can provide xxxxxx solutions. We have expertise in the following areas."
+                                ),
                                 div(_class="row").html(
                                     div(_class="col-lg-6").html(
                                         ul(_class="mb-0").html(
@@ -108,7 +142,8 @@ class DOMTest(unittest.TestCase):
                     )
                 ),
                 div(
-                    _class="row text-white text-center", _style="background: url(static/img/header.jpg); padding:20px;"
+                    _class="row text-white text-center",
+                    _style="background: url(static/img/header.jpg); padding:20px;",
                 ).html(
                     div(_class="col-lg-12").html(
                         h5(_class="text-uppercase font-weight-bold").html(
@@ -138,21 +173,30 @@ class DOMTest(unittest.TestCase):
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
                             div(_class="col-lg-4").html(
                                 div(_class="bg-white mb-4 p-4").html(
                                     h3(i(_class="fas fa-desktop"), _class="icon mb-3"),
-                                    h4("Headline", _class="text-uppercase font-weight-bold"),
+                                    h4(
+                                        "Headline",
+                                        _class="text-uppercase font-weight-bold",
+                                    ),
                                     p("Lorem ipsum.", _class="small text-gray"),
                                 )
                             ),
@@ -174,9 +218,16 @@ class DOMTest(unittest.TestCase):
                                         _height="300px;",
                                     ),
                                     h4(_class="font-weight-bold text-uppercase").html(
-                                        a("Username", _href="#", _class="no-anchor-style")
+                                        a(
+                                            "Username",
+                                            _href="#",
+                                            _class="no-anchor-style",
+                                        )
                                     ),
-                                    p("Director", _class="small text-gray text-uppercase"),
+                                    p(
+                                        "Director",
+                                        _class="small text-gray text-uppercase",
+                                    ),
                                 ),
                             ),
                         )
@@ -190,7 +241,10 @@ class DOMTest(unittest.TestCase):
                                 div(_class="col-lg-12 text-center").html(
                                     p(
                                         "Email : ",
-                                        a("user@website.com", _href="mailto:user@website.com"),
+                                        a(
+                                            "user@website.com",
+                                            _href="mailto:user@website.com",
+                                        ),
                                         br(),
                                         "or Call us on : ",
                                         a("123456789", _href="tel:123456789"),
@@ -229,7 +283,10 @@ class DOMTest(unittest.TestCase):
                     footer(_style="padding:20px;").html(
                         div(_class="row text-center").html(
                             div(_class="col-lg-12 text-center").html(
-                                p("Copyright &copy; 2021 COMPANY. All rights Reserved.", _class="mb-0 text-gray"),
+                                p(
+                                    "Copyright &copy; 2021 COMPANY. All rights Reserved.",
+                                    _class="mb-0 text-gray",
+                                ),
                             )
                         )
                     ),
@@ -245,7 +302,9 @@ class DOMTest(unittest.TestCase):
 
     def test_evaluate(self):
         # headings = self.page.evaluate("/html/body//h2", self.page)  #, None, XPathResult.ANY_TYPE, None);
-        headings = self.page.evaluate("//h1", self.page)  # , None, XPathResult.ANY_TYPE, None);
+        headings = self.page.evaluate(
+            "//h1", self.page
+        )  # , None, XPathResult.ANY_TYPE, None);
         assert len(headings) == 1, f'"{len(headings)}" != "{1}"'
 
     def test_NodeList(self):
@@ -266,8 +325,14 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(list(somelist.entries()), [(0, kid1), (1, kid2), (2, kid3)])
 
         seen = []
-        somelist.forEach(lambda currentValue, currentIndex, listObj, **kwargs: seen.append((currentValue, currentIndex, listObj)))
-        self.assertEqual(seen, [(kid1, 0, somelist), (kid2, 1, somelist), (kid3, 2, somelist)])
+        somelist.forEach(
+            lambda currentValue, currentIndex, listObj, **kwargs: seen.append(
+                (currentValue, currentIndex, listObj)
+            )
+        )
+        self.assertEqual(
+            seen, [(kid1, 0, somelist), (kid2, 1, somelist), (kid3, 2, somelist)]
+        )
 
         assert somelist.item(0) == kid1
         assert somelist.item(1) == kid2
@@ -300,7 +365,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(2, n.childElementCount)
         self.assertEqual(True, b in n.childNodes)
         self.assertEqual(True, c in n.childNodes)
-        self.assertEqual(None, n.localName)  # obsolete if not a tag or attribute should return none
+        self.assertEqual(
+            None, n.localName
+        )  # obsolete if not a tag or attribute should return none
         self.assertEqual(2, len(n.children))
         self.assertEqual(None, n.nodeValue)
 
@@ -376,12 +443,15 @@ class DOMTest(unittest.TestCase):
         myobj.style.float = "left"
         # myobj.style.zIndex = "1"
         # print('---')
-        self.assertEqual(True, str(myobj) == '<div class="mytest" style="float:left;"></div>')
+        self.assertEqual(
+            True, str(myobj) == '<div class="mytest" style="float:left;"></div>'
+        )
 
         # print("NOW>>>>")
         mylist = li() / 10
         assert (
-            str(mylist) == "<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>"
+            str(mylist)
+            == "<li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>"
         )
 
         myobj = domonic.load(mylist)
@@ -486,7 +556,9 @@ class DOMTest(unittest.TestCase):
         # test div html and innerhtml update content
         sometag = div("asdfasdf", div(), div("yo"), _id="someid")
         self.assertEqual(sometag.tagName, "div")
-        self.assertEqual(str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>')
+        self.assertEqual(
+            str(sometag), '<div id="someid">asdfasdf<div></div><div>yo</div></div>'
+        )
         sometag.html("test")
         self.assertEqual(str(sometag), '<div id="someid">test</div>')
         sometag.innerHTML = "test2"
@@ -507,9 +579,14 @@ class DOMTest(unittest.TestCase):
         # print(sometag.getAttribute('id'))
         # self.assertEqual(sometag.getAttribute('_id'), 'someid')
 
-        mydiv = div("I like cake", div(_class="myclass").html(div("1"), div("2"), div("3")))
+        mydiv = div(
+            "I like cake", div(_class="myclass").html(div("1"), div("2"), div("3"))
+        )
         # print(mydiv)
-        assert str(mydiv) == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
+        assert (
+            str(mydiv)
+            == '<div>I like cake<div class="myclass"><div>1</div><div>2</div><div>3</div></div></div>'
+        )
 
         self.assertEqual(sometag.innerText(), "test2")
         sometag.textContent = ""
@@ -617,7 +694,25 @@ class DOMTest(unittest.TestCase):
         assert site.contains(another_div)
 
     def test_getElementById(self):
-        dom1 = html(div(div(div(div(div(div(div(article("asdfasdf", div(), div("yo"), _id="test")))))))))
+        dom1 = html(
+            div(
+                div(
+                    div(
+                        div(
+                            div(
+                                div(
+                                    div(
+                                        article(
+                                            "asdfasdf", div(), div("yo"), _id="test"
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
         result = dom1.getElementById("test")
         assert result.tagName == "article"
         self.assertIsNone(dom1.getElementById("missing"))
@@ -631,7 +726,17 @@ class DOMTest(unittest.TestCase):
         # assert len(result.children) == 3  # TODO - does a text node count?
 
     def test_remove(self):
-        dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _id="test")))))))))
+        dom1 = html(
+            div(
+                div(
+                    div(
+                        div(
+                            div(div(div(div("asdfasdf", div(), div("yo"), _id="test"))))
+                        )
+                    )
+                )
+            )
+        )
         result = dom1.getElementById("test")
         # print("owner:", result.ownerDocument)
         assert result.ownerDocument == dom1
@@ -680,7 +785,12 @@ class DOMTest(unittest.TestCase):
                                     div(
                                         div(_id="thing"),
                                         span(_id="fun"),
-                                        div("asdfasdf", div(), div("yo"), _class="test this thing"),
+                                        div(
+                                            "asdfasdf",
+                                            div(),
+                                            div("yo"),
+                                            _class="test this thing",
+                                        ),
                                     )
                                 )
                             )
@@ -720,9 +830,15 @@ class DOMTest(unittest.TestCase):
         self.assertIsNone(scoped.querySelector("#root"))
         self.assertIsNone(scoped.getElementById("root"))
         self.assertEqual(scoped.querySelector("#child").id, "child")
-        self.assertEqual([element.id for element in scoped.getElementsByClassName("box")], ["child"])
-        self.assertEqual([element.id for element in scoped.querySelectorAll("div")], ["child"])
-        self.assertEqual([element.id for element in scoped.querySelectorAll("*")], ["child"])
+        self.assertEqual(
+            [element.id for element in scoped.getElementsByClassName("box")], ["child"]
+        )
+        self.assertEqual(
+            [element.id for element in scoped.querySelectorAll("div")], ["child"]
+        )
+        self.assertEqual(
+            [element.id for element in scoped.querySelectorAll("*")], ["child"]
+        )
 
         links = self.page.querySelectorAll("a[rel=nofollow]")
         # for linky in links:
@@ -735,7 +851,9 @@ class DOMTest(unittest.TestCase):
             assert r.textContent == expected[i]
         assert len(result) == 4
 
-        result = self.page.querySelectorAll("h4[class='font-weight-bold text-uppercase']")
+        result = self.page.querySelectorAll(
+            "h4[class='font-weight-bold text-uppercase']"
+        )
         # for r in result:
         #     print(r)
         assert len(result) == 1
@@ -778,7 +896,12 @@ class DOMTest(unittest.TestCase):
                                     div(
                                         div(_id="thing"),
                                         span(_id="fun"),
-                                        div("asdfasdf", div(), div("yo"), _class="test this thing"),
+                                        div(
+                                            "asdfasdf",
+                                            div(),
+                                            div("yo"),
+                                            _class="test this thing",
+                                        ),
                                     )
                                 )
                             )
@@ -851,7 +974,9 @@ class DOMTest(unittest.TestCase):
         result = self.page.getElementsBySelector("li[class='nav-item']", self.page)
         self.assertEqual(len(result), 4)
 
-        result = self.page.getElementsBySelector("h4[class='font-weight-bold text-uppercase']", self.page)
+        result = self.page.getElementsBySelector(
+            "h4[class='font-weight-bold text-uppercase']", self.page
+        )
         self.assertEqual(len(result), 1)
 
         result = self.page.getElementsBySelector("li.nav-item", self.page)
@@ -897,7 +1022,10 @@ class DOMTest(unittest.TestCase):
 
         matches = page.querySelectorAll(".foo+bar")
         self.assertEqual([node.textContent for node in matches], ["literal", "multi"])
-        self.assertEqual([node.textContent for node in page.querySelectorAll("div.foo+bar")], ["literal"])
+        self.assertEqual(
+            [node.textContent for node in page.querySelectorAll("div.foo+bar")],
+            ["literal"],
+        )
         self.assertEqual(page.querySelectorAll(".foo+bar.missing"), [])
 
     def test_attribute_selectors_match_literal_tokens(self):
@@ -911,9 +1039,15 @@ class DOMTest(unittest.TestCase):
             )
         )
 
-        self.assertEqual([node.textContent for node in page.querySelectorAll("[class~=foo+bar]")], ["literal"])
+        self.assertEqual(
+            [node.textContent for node in page.querySelectorAll("[class~=foo+bar]")],
+            ["literal"],
+        )
         self.assertEqual(page.querySelectorAll("[class~=foo]"), [])
-        self.assertEqual([node.textContent for node in page.querySelectorAll("[lang|=en]")], ["base", "regional"])
+        self.assertEqual(
+            [node.textContent for node in page.querySelectorAll("[lang|=en]")],
+            ["base", "regional"],
+        )
 
     def test_decorators(self):
         from domonic.decorators import el
@@ -1011,14 +1145,20 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(blur_calls, ["blur"])
 
     def test_focus_event_related_targets_and_bubbling_helpers(self):
-        page = html(body(input(_type="text", _id="first"), input(_type="text", _id="second")))
+        page = html(
+            body(input(_type="text", _id="first"), input(_type="text", _id="second"))
+        )
         body_focus_events = []
         body_blur_events = []
         first = page.querySelector("#first")
         second = page.querySelector("#second")
 
-        page.body.addEventListener("focusin", lambda e: body_focus_events.append((e.type, e.relatedTarget)))
-        page.body.addEventListener("focusout", lambda e: body_blur_events.append((e.type, e.relatedTarget)))
+        page.body.addEventListener(
+            "focusin", lambda e: body_focus_events.append((e.type, e.relatedTarget))
+        )
+        page.body.addEventListener(
+            "focusout", lambda e: body_blur_events.append((e.type, e.relatedTarget))
+        )
 
         first.focus()
         second.focus()
@@ -1055,7 +1195,9 @@ class DOMTest(unittest.TestCase):
         self.assertIs(page.activeElement, page.body)
         self.assertFalse(page.hasFocus())
 
-        self.assertEqual(events, [("first", "focus"), ("first", "blur"), ("second", "focus")])
+        self.assertEqual(
+            events, [("first", "focus"), ("first", "blur"), ("second", "focus")]
+        )
 
     def test_domimplementation_create_html_document(self):
         impl = DOMImplementation()
@@ -1074,7 +1216,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(doc.nodeType, Node.DOCUMENT_NODE)
         self.assertEqual(str(doctype), "<!DOCTYPE html>")
         self.assertEqual(doc.documentElement.tagName, "html")
-        self.assertEqual(doc.documentElement.namespaceURI, "http://www.w3.org/1999/xhtml")
+        self.assertEqual(
+            doc.documentElement.namespaceURI, "http://www.w3.org/1999/xhtml"
+        )
 
     def test_domimplementation_create_xml_document(self):
         impl = DOMImplementation()
@@ -1090,7 +1234,9 @@ class DOMTest(unittest.TestCase):
         imported_element = page.importNode(div(span("x"), _id="one"), deep=True)
         imported_comment = page.importNode(Comment("note"))
         imported_text = page.importNode(Text("hello"))
-        imported_instruction = page.importNode(ProcessingInstruction("xml-stylesheet", 'href="style.css"'))
+        imported_instruction = page.importNode(
+            ProcessingInstruction("xml-stylesheet", 'href="style.css"')
+        )
         imported_fragment = page.importNode(DocumentFragment())
         imported_attr = page.importNode(Attr("data-id", "7"))
 
@@ -1100,7 +1246,9 @@ class DOMTest(unittest.TestCase):
         self.assertIs(imported_comment.ownerDocument, page)
         self.assertEqual(str(imported_text), "hello")
         self.assertIs(imported_text.ownerDocument, page)
-        self.assertEqual(str(imported_instruction), '<?xml-stylesheet href="style.css"?>')
+        self.assertEqual(
+            str(imported_instruction), '<?xml-stylesheet href="style.css"?>'
+        )
         self.assertIs(imported_instruction.ownerDocument, page)
         self.assertIsInstance(imported_fragment, DocumentFragment)
         self.assertEqual((imported_attr.name, imported_attr.value), ("data-id", "7"))
@@ -1125,7 +1273,9 @@ class DOMTest(unittest.TestCase):
 
     def test_document_import_node_deep_clones_document_fragment(self):
         page = html(body())
-        fragment = Document.createDocumentFragment(Text("lead "), span("child", _id="child"))
+        fragment = Document.createDocumentFragment(
+            Text("lead "), span("child", _id="child")
+        )
 
         imported = page.importNode(fragment, deep=True)
         shallow = page.importNode(fragment, deep=False)
@@ -1134,7 +1284,9 @@ class DOMTest(unittest.TestCase):
         self.assertIs(imported.ownerDocument, page)
         self.assertFalse(imported.isConnected)
         self.assertEqual(imported.childNodes.length, 2)
-        self.assertEqual([child.getAttribute("id") for child in imported.children], ["child"])
+        self.assertEqual(
+            [child.getAttribute("id") for child in imported.children], ["child"]
+        )
         self.assertEqual(imported.childElementCount, 1)
         self.assertIs(imported.firstChild.ownerDocument, page)
         self.assertIs(imported.querySelector("#child").ownerDocument, page)
@@ -1202,7 +1354,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(r2.toString(), "aef")
 
     def test_range_cross_container_helpers(self):
-        container = div(span("a", _id="first"), span("b", _id="second"), span("c", _id="third"))
+        container = div(
+            span("a", _id="first"), span("b", _id="second"), span("c", _id="third")
+        )
         first = container.querySelector("#first")
         third = container.querySelector("#third")
 
@@ -1210,12 +1364,17 @@ class DOMTest(unittest.TestCase):
         r.setStartBefore(first)
         r.setEndAfter(third)
 
-        self.assertEqual(r.toString(), '<span id="first">a</span><span id="second">b</span><span id="third">c</span>')
+        self.assertEqual(
+            r.toString(),
+            '<span id="first">a</span><span id="second">b</span><span id="third">c</span>',
+        )
         self.assertEqual(str(r.cloneContents()), str(r.extractContents()))
         self.assertEqual(str(container), "<div></div>")
 
     def test_range_intersects_and_invalid_compare_type(self):
-        container = div(span("a", _id="first"), span("b", _id="second"), span("c", _id="third"))
+        container = div(
+            span("a", _id="first"), span("b", _id="second"), span("c", _id="third")
+        )
         first = container.querySelector("#first")
         second = container.querySelector("#second")
         third = container.querySelector("#third")
@@ -1407,7 +1566,9 @@ class DOMTest(unittest.TestCase):
         default_slot = slot()
         named_slot = slot(_name="header")
         events = []
-        default_slot.addEventListener("slotchange", lambda event: events.append("default"))
+        default_slot.addEventListener(
+            "slotchange", lambda event: events.append("default")
+        )
         named_slot.addEventListener("slotchange", lambda event: events.append("header"))
         shadow.appendChild(named_slot)
         shadow.appendChild(default_slot)
@@ -1445,14 +1606,23 @@ class DOMTest(unittest.TestCase):
         target = div()
         delivered = []
         observer = MutationObserver(lambda records, obs: delivered.extend(records))
-        observer.observe(target, {"attributes": True, "attributeOldValue": True, "attributeFilter": ["data-id"]})
+        observer.observe(
+            target,
+            {
+                "attributes": True,
+                "attributeOldValue": True,
+                "attributeFilter": ["data-id"],
+            },
+        )
 
         target.setAttribute("class", "skip")
         target.setAttribute("data-id", "1")
         target.setAttribute("data-id", "2")
 
         self.assertEqual(len(delivered), 2)
-        self.assertEqual([record.attributeName for record in delivered], ["data-id", "data-id"])
+        self.assertEqual(
+            [record.attributeName for record in delivered], ["data-id", "data-id"]
+        )
         self.assertEqual(delivered[0].oldValue, None)
         self.assertEqual(delivered[1].oldValue, "1")
 
@@ -1460,7 +1630,10 @@ class DOMTest(unittest.TestCase):
         target = div(Text("alpha"))
         delivered = []
         observer = MutationObserver(lambda records, obs: delivered.extend(records))
-        observer.observe(target, {"subtree": True, "characterData": True, "characterDataOldValue": True})
+        observer.observe(
+            target,
+            {"subtree": True, "characterData": True, "characterDataOldValue": True},
+        )
 
         text_node = target.firstChild
         text_node.replaceData(0, 5, "beta")
@@ -1473,7 +1646,11 @@ class DOMTest(unittest.TestCase):
 
     def test_document_normalize_and_stream_writes(self):
         page = html()
-        page.args = (Text("alpha"), Text(""), Text("beta"),)
+        page.args = (
+            Text("alpha"),
+            Text(""),
+            Text("beta"),
+        )
         for child in page.args:
             child.parentNode = page
 
@@ -1683,7 +1860,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(script_el.getAttribute("async"), True)
         self.assertEqual(script_el.getAttribute("nomodule"), True)
 
-        source_el = HTMLSourceElement(srcset="/small.avif 1x", sizes="50vw", width="640", height="360")
+        source_el = HTMLSourceElement(
+            srcset="/small.avif 1x", sizes="50vw", width="640", height="360"
+        )
         self.assertEqual(source_el.getAttribute("srcset"), "/small.avif 1x")
         self.assertEqual(source_el.getAttribute("height"), "360")
 
@@ -1698,7 +1877,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(template_el.getAttribute("shadowrootmode"), "open")
         self.assertEqual(template_el.getAttribute("shadowrootserializable"), True)
 
-        textarea_el = HTMLTextAreaElement(autocomplete="on", dirname="notes.dir", minlength=2)
+        textarea_el = HTMLTextAreaElement(
+            autocomplete="on", dirname="notes.dir", minlength=2
+        )
         self.assertEqual(textarea_el.getAttribute("autocomplete"), "on")
         self.assertEqual(textarea_el.getAttribute("minlength"), 2)
 
@@ -1740,16 +1921,52 @@ class DOMTest(unittest.TestCase):
 
         self.assertEqual(page.domain(), "example.com")
         expected_types = {
-            "FocusEvent": "focus",
-            "InputEvent": "input",
+            "AnimationEvent": "animationstart",
+            "BeforeUnloadEvent": "beforeunload",
+            "BlobEvent": "dataavailable",
             "ClipboardEvent": "copy",
-            "MouseEvent": "click",
+            "CommandEvent": "command",
+            "CompositionEvent": "compositionstart",
+            "CustomEvent": "custom",
+            "DeviceLightEvent": "devicelight",
+            "DeviceMotionEvent": "devicemotion",
+            "DeviceOrientationEvent": "deviceorientation",
+            "DeviceProximityEvent": "deviceproximity",
+            "DOMContentLoadedEvent": "DOMContentLoaded",
+            "DragEvent": "drag",
+            "ErrorEvent": "error",
+            "Event": "",
+            "ExtendableEvent": "extendable",
+            "FetchEvent": "fetch",
+            "FocusEvent": "focus",
+            "FormDataEvent": "formdata",
+            "GamePadEvent": "gamepadconnected",
+            "HashChangeEvent": "hashchange",
+            "InputEvent": "input",
             "KeyboardEvent": "keydown",
+            "MessageEvent": "message",
+            "MouseEvent": "click",
+            "PageTransitionEvent": "pageshow",
+            "PointerEvent": "pointerdown",
+            "PopStateEvent": "popstate",
+            "ProgressEvent": "progress",
+            "SecurityPolicyViolationEvent": "securitypolicyviolation",
+            "StorageEvent": "storage",
             "SubmitEvent": "submit",
+            "SVGEvent": "load",
+            "SyncEvent": "sync",
+            "TimerEvent": "timer",
+            "ToggleEvent": "toggle",
+            "TrackEvent": "addtrack",
+            "TransitionEvent": "transitionend",
+            "UIEvent": "load",
+            "WebGLContextEvent": "webglcontextlost",
+            "WheelEvent": "wheel",
         }
         for event_name, expected_type in expected_types.items():
             with self.subTest(event_name=event_name):
                 self.assertEqual(page.createEvent(event_name).type, expected_type)
+        self.assertEqual(page.createEvent("CustomMadeEvent").type, "CustomMadeEvent")
 
     def test_insert_adjacent_element_positions(self):
         host = div(span("target", _id="target"), p("sibling", _id="sibling"))
@@ -1758,7 +1975,10 @@ class DOMTest(unittest.TestCase):
         before = em("before", _id="before")
         returned = target.insertAdjacentElement("beforebegin", before)
         self.assertIs(returned, before)
-        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "sibling"])
+        self.assertEqual(
+            [child.getAttribute("id") for child in host.children],
+            ["before", "target", "sibling"],
+        )
 
         after_begin = strong("start", _id="start")
         target.insertAdjacentElement("AFTERBEGIN", after_begin)
@@ -1770,7 +1990,10 @@ class DOMTest(unittest.TestCase):
 
         after = b("after", _id="after")
         target.insertAdjacentElement("AfterEnd", after)
-        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "after", "sibling"])
+        self.assertEqual(
+            [child.getAttribute("id") for child in host.children],
+            ["before", "target", "after", "sibling"],
+        )
 
     def test_insert_adjacent_html_and_text(self):
         host = div(span("target", _id="target"), p("sibling", _id="sibling"))
@@ -1783,17 +2006,25 @@ class DOMTest(unittest.TestCase):
         target.insertAdjacentText("afterbegin", "prefix-")
         target.insertAdjacentText("beforeend", "-suffix")
 
-        self.assertEqual([child.getAttribute("id") for child in host.children], ["before", "target", "after", "sibling"])
+        self.assertEqual(
+            [child.getAttribute("id") for child in host.children],
+            ["before", "target", "after", "sibling"],
+        )
         self.assertEqual(target.children[0].getAttribute("id"), "start")
         self.assertEqual(target.children[-1].getAttribute("id"), "end")
-        self.assertEqual(str(target), '<span id="target">prefix-<strong id="start"></strong>target<i id="end"></i>-suffix</span>')
+        self.assertEqual(
+            str(target),
+            '<span id="target">prefix-<strong id="start"></strong>target<i id="end"></i>-suffix</span>',
+        )
         self.assertEqual(host.querySelector("#before").tagName, "em")
         self.assertEqual(host.querySelector("#after").tagName, "b")
 
     def test_innerhtml_and_outerhtml_parse_fragments(self):
         old_child = span("old", _id="old")
         host = div(old_child, _id="host")
-        self.assertEqual(host.outerHTML, '<div id="host"><span id="old">old</span></div>')
+        self.assertEqual(
+            host.outerHTML, '<div id="host"><span id="old">old</span></div>'
+        )
 
         host.innerHTML = "<span id='first'>A</span><span id='second'>B</span>"
         self.assertEqual(len(host.children), 2)
@@ -1803,8 +2034,12 @@ class DOMTest(unittest.TestCase):
         self.assertIs(host.children[0].parentNode, host)
 
         wrapper = div(host)
-        host.outerHTML = "<section id='replacement'>R</section><aside id='tail'>T</aside>"
-        self.assertEqual([child.tagName for child in wrapper.children], ["section", "aside"])
+        host.outerHTML = (
+            "<section id='replacement'>R</section><aside id='tail'>T</aside>"
+        )
+        self.assertEqual(
+            [child.tagName for child in wrapper.children], ["section", "aside"]
+        )
         self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
         self.assertIsNone(host.parentNode)
@@ -1829,15 +2064,23 @@ class DOMTest(unittest.TestCase):
         frag.append("lead ", child)
         frag.prepend(strong("start", _id="start"), " ")
 
-        self.assertEqual(str(frag), '<strong id="start">start</strong> lead <span id="child">child</span>')
+        self.assertEqual(
+            str(frag),
+            '<strong id="start">start</strong> lead <span id="child">child</span>',
+        )
         self.assertIs(child.parentNode, frag)
-        self.assertEqual([node.getAttribute("id") for node in frag.children], ["start", "child"])
+        self.assertEqual(
+            [node.getAttribute("id") for node in frag.children], ["start", "child"]
+        )
 
         donor = Document.createDocumentFragment(em("donor", _id="donor"))
         frag.append(donor)
 
         self.assertEqual(donor.childNodes.length, 0)
-        self.assertEqual([node.getAttribute("id") for node in frag.children], ["start", "child", "donor"])
+        self.assertEqual(
+            [node.getAttribute("id") for node in frag.children],
+            ["start", "child", "donor"],
+        )
 
     def test_fragment_before_after_and_replace_children_moves_nodes(self):
         host = div(span("target", _id="target"))
@@ -1929,7 +2172,9 @@ class DOMTest(unittest.TestCase):
         direct_attr = node.getAttributeNode("data-mode")
         self.assertIsNotNone(direct_attr)
         self.assertEqual((direct_attr.name, direct_attr.value), ("data-mode", "test"))
-        self.assertEqual(node.getAttributeNS("http://example.com/ns", "data-mode"), "test")
+        self.assertEqual(
+            node.getAttributeNS("http://example.com/ns", "data-mode"), "test"
+        )
         node.setAttributeNS("http://example.com/ns", "data-other", "x")
         self.assertEqual(node.getAttribute("data-other"), "x")
 
@@ -1975,7 +2220,10 @@ class DOMTest(unittest.TestCase):
 
         self.assertTrue(dataset.set("mode", "demo"))
         self.assertEqual(dataset.get("mode"), "demo")
-        self.assertEqual(sorted(dataset.items()), [("mode", "demo"), ("themeName", "night"), ("userId", "7")])
+        self.assertEqual(
+            sorted(dataset.items()),
+            [("mode", "demo"), ("themeName", "night"), ("userId", "7")],
+        )
         self.assertTrue(dataset.delete("mode"))
         self.assertFalse(dataset.delete("missing"))
         self.assertEqual(dataset.get("mode"), None)
@@ -2009,8 +2257,13 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(clones), 2)
         self.assertTrue(all(isinstance(clone, type(node)) for clone in clones))
         self.assertIsNot(clones[0], node)
-        self.assertEqual([str(clone) for clone in 2 * node], [str(clone) for clone in clones])
-        self.assertEqual(node / 2, '<div id="root"><span>a</span></div><div id="root"><span>a</span></div>')
+        self.assertEqual(
+            [str(clone) for clone in 2 * node], [str(clone) for clone in clones]
+        )
+        self.assertEqual(
+            node / 2,
+            '<div id="root"><span>a</span></div><div id="root"><span>a</span></div>',
+        )
 
         node += sibling
         self.assertIs(sibling.parentNode, node)
@@ -2032,12 +2285,16 @@ class DOMTest(unittest.TestCase):
         self.assertEqual([child.tagName for child in node], ["span"])
         self.assertIn(node.firstChild, node)
         self.assertNotIn(div("x"), node)
-        self.assertEqual(repr(node), '<div id="root" class="hero" data-role="banner" title="banner">')
+        self.assertEqual(
+            repr(node), '<div id="root" class="hero" data-role="banner" title="banner">'
+        )
         self.assertEqual(node._repr_html_(), str(node))
 
     def test_node_attribute_rendering_configurations(self):
         button_node = button("Go", _disabled="", _data_value="7", _get="/api/items")
-        media_node = video(_autoplay=True, _controls=True, _loop=True, _muted=True, _playsinline=True)
+        media_node = video(
+            _autoplay=True, _controls=True, _loop=True, _muted=True, _playsinline=True
+        )
         unsafe_node = div(_title='a " b & < c')
         original_quotes = DOMConfig.ATTRIBUTE_QUOTES
         original_htmx = DOMConfig.HTMX_ENABLED
@@ -2067,15 +2324,21 @@ class DOMTest(unittest.TestCase):
             DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = False
             DOMConfig.GLOBAL_AUTOESCAPE = True
-            self.assertEqual(unsafe_node.__attributes__, ' title="a &quot; b &amp; &lt; c"')
-            self.assertEqual(str(unsafe_node), '<div title="a &quot; b &amp; &lt; c"></div>')
+            self.assertEqual(
+                unsafe_node.__attributes__, ' title="a &quot; b &amp; &lt; c"'
+            )
+            self.assertEqual(
+                str(unsafe_node), '<div title="a &quot; b &amp; &lt; c"></div>'
+            )
         finally:
             DOMConfig.ATTRIBUTE_QUOTES = original_quotes
             DOMConfig.HTMX_ENABLED = original_htmx
             DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
 
     def test_node_autoescape_and_pyml_helpers(self):
-        node = div(Text("<unsafe>"), span(Text("ok")), _data_label="x", **{"data-mode": "demo"})
+        node = div(
+            Text("<unsafe>"), span(Text("ok")), _data_label="x", **{"data-mode": "demo"}
+        )
         original_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
         try:
             DOMConfig.GLOBAL_AUTOESCAPE = True
@@ -2138,30 +2401,386 @@ class DOMTest(unittest.TestCase):
 
     def test_dom_html_element_constructor_helpers(self):
         cases = [
-            (HTMLAnchorElement, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}, {"href": "/home", "target": "_blank", "rel": "noopener", "download": "file.txt", "type": "text/html"}),
-            (HTMLAreaElement, {"href": "/map", "target": "_self", "alt": "Map", "coords": "0,0,10,10", "shape": "rect"}, {"href": "/map", "target": "_self", "alt": "Map", "coords": "0,0,10,10", "shape": "rect"}),
-            (HTMLAudioElement, {"autoplay": True, "controls": True, "loop": True, "muted": True, "preload": "auto", "src": "/song.mp3"}, {"autoplay": True, "controls": True, "loop": True, "muted": True, "preload": "auto", "src": "/song.mp3"}),
-            (HTMLBaseElement, {"href": "https://example.com", "target": "_top"}, {"href": "https://example.com", "target": "_top"}),
-            (HTMLBodyElement, {"aLink": "red", "background": "/bg.png", "bgColor": "#fff", "link": "blue", "onload": "init()", "onunload": "bye()", "text": "black", "vLink": "purple"}, {"aLink": "red", "background": "/bg.png", "bgColor": "#fff", "link": "blue", "onload": "init()", "onunload": "bye()", "text": "black", "vLink": "purple"}),
-            (HTMLButtonElement, {"disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "name": "go", "type": "submit", "value": "Send"}, {"disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "name": "go", "type": "submit", "value": "Send"}),
-            (HTMLCanvasElement, {"width": 320, "height": 240}, {"width": 320, "height": 240}),
+            (
+                HTMLAnchorElement,
+                {
+                    "href": "/home",
+                    "target": "_blank",
+                    "rel": "noopener",
+                    "download": "file.txt",
+                    "type": "text/html",
+                },
+                {
+                    "href": "/home",
+                    "target": "_blank",
+                    "rel": "noopener",
+                    "download": "file.txt",
+                    "type": "text/html",
+                },
+            ),
+            (
+                HTMLAreaElement,
+                {
+                    "href": "/map",
+                    "target": "_self",
+                    "alt": "Map",
+                    "coords": "0,0,10,10",
+                    "shape": "rect",
+                },
+                {
+                    "href": "/map",
+                    "target": "_self",
+                    "alt": "Map",
+                    "coords": "0,0,10,10",
+                    "shape": "rect",
+                },
+            ),
+            (
+                HTMLAudioElement,
+                {
+                    "autoplay": True,
+                    "controls": True,
+                    "loop": True,
+                    "muted": True,
+                    "preload": "auto",
+                    "src": "/song.mp3",
+                },
+                {
+                    "autoplay": True,
+                    "controls": True,
+                    "loop": True,
+                    "muted": True,
+                    "preload": "auto",
+                    "src": "/song.mp3",
+                },
+            ),
+            (
+                HTMLBaseElement,
+                {"href": "https://example.com", "target": "_top"},
+                {"href": "https://example.com", "target": "_top"},
+            ),
+            (
+                HTMLBodyElement,
+                {
+                    "aLink": "red",
+                    "background": "/bg.png",
+                    "bgColor": "#fff",
+                    "link": "blue",
+                    "onload": "init()",
+                    "onunload": "bye()",
+                    "text": "black",
+                    "vLink": "purple",
+                },
+                {
+                    "aLink": "red",
+                    "background": "/bg.png",
+                    "bgColor": "#fff",
+                    "link": "blue",
+                    "onload": "init()",
+                    "onunload": "bye()",
+                    "text": "black",
+                    "vLink": "purple",
+                },
+            ),
+            (
+                HTMLButtonElement,
+                {
+                    "disabled": True,
+                    "form": "signup",
+                    "formaction": "/submit",
+                    "formenctype": "multipart/form-data",
+                    "formmethod": "post",
+                    "formnovalidate": True,
+                    "formtarget": "_blank",
+                    "name": "go",
+                    "type": "submit",
+                    "value": "Send",
+                },
+                {
+                    "disabled": True,
+                    "form": "signup",
+                    "formaction": "/submit",
+                    "formenctype": "multipart/form-data",
+                    "formmethod": "post",
+                    "formnovalidate": True,
+                    "formtarget": "_blank",
+                    "name": "go",
+                    "type": "submit",
+                    "value": "Send",
+                },
+            ),
+            (
+                HTMLCanvasElement,
+                {"width": 320, "height": 240},
+                {"width": 320, "height": 240},
+            ),
             (HTMLDataElement, {"value": "42"}, {"value": "42"}),
             (HTMLDialogElement, {"open": True}, {"open": True}),
-            (HTMLFormElement, {"action": "/submit", "autocomplete": "on", "enctype": "multipart/form-data", "method": "post", "name": "signup", "novalidate": True, "target": "_blank"}, {"action": "/submit", "autocomplete": "on", "enctype": "multipart/form-data", "method": "post", "name": "signup", "novalidate": True, "target": "_blank"}),
-            (HTMLIFrameElement, {"src": "/frame", "name": "hero", "sandbox": "allow-scripts", "allowfullscreen": True}, {"src": "/frame", "name": "hero", "sandbox": "allow-scripts", "allowfullscreen": True}),
-            (HTMLImageElement, {"alt": "hero", "src": "/hero.png", "crossorigin": "anonymous", "height": "100", "ismap": True, "longdesc": "/desc", "sizes": "100vw", "srcset": "/hero.png 1x", "usemap": "#hero", "width": "200"}, {"alt": "hero", "src": "/hero.png", "crossorigin": "anonymous", "height": "100", "ismap": True, "longdesc": "/desc", "sizes": "100vw", "srcset": "/hero.png 1x", "usemap": "#hero", "width": "200"}),
-            (HTMLInputElement, {"accept": "image/*", "alt": "Upload", "autocomplete": "on", "autofocus": True, "checked": True, "dirname": "dir", "disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "height": "10", "maxlength": "20", "multiple": True, "name": "avatar", "pattern": ".*", "placeholder": "Upload", "readonly": True, "required": True, "size": "10", "src": "/image.png", "step": "2", "type": "file", "value": "x", "width": "30"}, {"accept": "image/*", "alt": "Upload", "autocomplete": "on", "autofocus": True, "checked": True, "dirname": "dir", "disabled": True, "form": "signup", "formaction": "/submit", "formenctype": "multipart/form-data", "formmethod": "post", "formnovalidate": True, "formtarget": "_blank", "height": "10", "maxlength": "20", "multiple": True, "name": "avatar", "pattern": ".*", "placeholder": "Upload", "readonly": True, "required": True, "size": "10", "src": "/image.png", "step": "2", "type": "file", "value": "x", "width": "30"}),
-            (HTMLLinkElement, {"rel": "stylesheet", "href": "/app.css", "type": "text/css", "sizes": "32x32"}, {"rel": "stylesheet", "href": "/app.css", "type": "text/css", "sizes": "32x32"}),
-            (HTMLMetaElement, {"charset": "utf-8", "content": "text/html", "http_equiv": "content-type", "name": "viewport"}, {"charset": "utf-8", "content": "text/html", "http-equiv": "content-type", "name": "viewport"}),
-            (HTMLMeterElement, {"value": "5", "_min": "0", "_max": "10", "low": "2", "high": "8", "optimum": "6"}, {"value": "5", "_min": "0", "_max": "10", "low": "2", "high": "8", "optimum": "6"}),
-            (HTMLOptionElement, {"disabled": True, "label": "Choice", "selected": True, "value": "1"}, {"disabled": True, "label": "Choice", "selected": True, "value": "1"}),
-            (HTMLParamElement, {"name": "quality", "value": "high"}, {"name": "quality", "value": "high"}),
-            (HTMLProgressElement, {"value": "30", "max": "100"}, {"value": "30", "max": "100"}),
-            (HTMLQuoteElement, {"cite": "https://example.com"}, {"cite": "https://example.com"}),
-            (HTMLTextAreaElement, {"autofocus": True, "cols": "40", "disabled": True, "form": "signup", "maxlength": "100", "name": "message", "placeholder": "Write", "readonly": True, "required": True, "rows": "5", "wrap": "soft"}, {"autofocus": True, "cols": "40", "disabled": True, "form": "signup", "maxlength": "100", "name": "message", "placeholder": "Write", "readonly": True, "required": True, "rows": "5", "wrap": "soft"}),
+            (
+                HTMLFormElement,
+                {
+                    "action": "/submit",
+                    "autocomplete": "on",
+                    "enctype": "multipart/form-data",
+                    "method": "post",
+                    "name": "signup",
+                    "novalidate": True,
+                    "target": "_blank",
+                },
+                {
+                    "action": "/submit",
+                    "autocomplete": "on",
+                    "enctype": "multipart/form-data",
+                    "method": "post",
+                    "name": "signup",
+                    "novalidate": True,
+                    "target": "_blank",
+                },
+            ),
+            (
+                HTMLIFrameElement,
+                {
+                    "src": "/frame",
+                    "name": "hero",
+                    "sandbox": "allow-scripts",
+                    "allowfullscreen": True,
+                },
+                {
+                    "src": "/frame",
+                    "name": "hero",
+                    "sandbox": "allow-scripts",
+                    "allowfullscreen": True,
+                },
+            ),
+            (
+                HTMLImageElement,
+                {
+                    "alt": "hero",
+                    "src": "/hero.png",
+                    "crossorigin": "anonymous",
+                    "height": "100",
+                    "ismap": True,
+                    "longdesc": "/desc",
+                    "sizes": "100vw",
+                    "srcset": "/hero.png 1x",
+                    "usemap": "#hero",
+                    "width": "200",
+                },
+                {
+                    "alt": "hero",
+                    "src": "/hero.png",
+                    "crossorigin": "anonymous",
+                    "height": "100",
+                    "ismap": True,
+                    "longdesc": "/desc",
+                    "sizes": "100vw",
+                    "srcset": "/hero.png 1x",
+                    "usemap": "#hero",
+                    "width": "200",
+                },
+            ),
+            (
+                HTMLInputElement,
+                {
+                    "accept": "image/*",
+                    "alt": "Upload",
+                    "autocomplete": "on",
+                    "autofocus": True,
+                    "checked": True,
+                    "dirname": "dir",
+                    "disabled": True,
+                    "form": "signup",
+                    "formaction": "/submit",
+                    "formenctype": "multipart/form-data",
+                    "formmethod": "post",
+                    "formnovalidate": True,
+                    "formtarget": "_blank",
+                    "height": "10",
+                    "maxlength": "20",
+                    "multiple": True,
+                    "name": "avatar",
+                    "pattern": ".*",
+                    "placeholder": "Upload",
+                    "readonly": True,
+                    "required": True,
+                    "size": "10",
+                    "src": "/image.png",
+                    "step": "2",
+                    "type": "file",
+                    "value": "x",
+                    "width": "30",
+                },
+                {
+                    "accept": "image/*",
+                    "alt": "Upload",
+                    "autocomplete": "on",
+                    "autofocus": True,
+                    "checked": True,
+                    "dirname": "dir",
+                    "disabled": True,
+                    "form": "signup",
+                    "formaction": "/submit",
+                    "formenctype": "multipart/form-data",
+                    "formmethod": "post",
+                    "formnovalidate": True,
+                    "formtarget": "_blank",
+                    "height": "10",
+                    "maxlength": "20",
+                    "multiple": True,
+                    "name": "avatar",
+                    "pattern": ".*",
+                    "placeholder": "Upload",
+                    "readonly": True,
+                    "required": True,
+                    "size": "10",
+                    "src": "/image.png",
+                    "step": "2",
+                    "type": "file",
+                    "value": "x",
+                    "width": "30",
+                },
+            ),
+            (
+                HTMLLinkElement,
+                {
+                    "rel": "stylesheet",
+                    "href": "/app.css",
+                    "type": "text/css",
+                    "sizes": "32x32",
+                },
+                {
+                    "rel": "stylesheet",
+                    "href": "/app.css",
+                    "type": "text/css",
+                    "sizes": "32x32",
+                },
+            ),
+            (
+                HTMLMetaElement,
+                {
+                    "charset": "utf-8",
+                    "content": "text/html",
+                    "http_equiv": "content-type",
+                    "name": "viewport",
+                },
+                {
+                    "charset": "utf-8",
+                    "content": "text/html",
+                    "http-equiv": "content-type",
+                    "name": "viewport",
+                },
+            ),
+            (
+                HTMLMeterElement,
+                {
+                    "value": "5",
+                    "_min": "0",
+                    "_max": "10",
+                    "low": "2",
+                    "high": "8",
+                    "optimum": "6",
+                },
+                {
+                    "value": "5",
+                    "_min": "0",
+                    "_max": "10",
+                    "low": "2",
+                    "high": "8",
+                    "optimum": "6",
+                },
+            ),
+            (
+                HTMLOptionElement,
+                {"disabled": True, "label": "Choice", "selected": True, "value": "1"},
+                {"disabled": True, "label": "Choice", "selected": True, "value": "1"},
+            ),
+            (
+                HTMLParamElement,
+                {"name": "quality", "value": "high"},
+                {"name": "quality", "value": "high"},
+            ),
+            (
+                HTMLProgressElement,
+                {"value": "30", "max": "100"},
+                {"value": "30", "max": "100"},
+            ),
+            (
+                HTMLQuoteElement,
+                {"cite": "https://example.com"},
+                {"cite": "https://example.com"},
+            ),
+            (
+                HTMLTextAreaElement,
+                {
+                    "autofocus": True,
+                    "cols": "40",
+                    "disabled": True,
+                    "form": "signup",
+                    "maxlength": "100",
+                    "name": "message",
+                    "placeholder": "Write",
+                    "readonly": True,
+                    "required": True,
+                    "rows": "5",
+                    "wrap": "soft",
+                },
+                {
+                    "autofocus": True,
+                    "cols": "40",
+                    "disabled": True,
+                    "form": "signup",
+                    "maxlength": "100",
+                    "name": "message",
+                    "placeholder": "Write",
+                    "readonly": True,
+                    "required": True,
+                    "rows": "5",
+                    "wrap": "soft",
+                },
+            ),
             (HTMLTimeElement, {"datetime": "2026-03-27"}, {"datetime": "2026-03-27"}),
-            (HTMLTrackElement, {"kind": "subtitles", "label": "English", "src": "/captions.vtt", "srclang": "en", "default": True}, {"kind": "subtitles", "label": "English", "src": "/captions.vtt", "srclang": "en", "default": True}),
-            (HTMLVideoElement, {"autoplay": True, "controls": True, "height": "720", "loop": True, "muted": True, "poster": "/poster.png", "preload": "auto", "src": "/movie.mp4", "width": "1280"}, {"autoplay": True, "controls": True, "height": "720", "loop": True, "muted": True, "poster": "/poster.png", "preload": "auto", "src": "/movie.mp4", "width": "1280"}),
+            (
+                HTMLTrackElement,
+                {
+                    "kind": "subtitles",
+                    "label": "English",
+                    "src": "/captions.vtt",
+                    "srclang": "en",
+                    "default": True,
+                },
+                {
+                    "kind": "subtitles",
+                    "label": "English",
+                    "src": "/captions.vtt",
+                    "srclang": "en",
+                    "default": True,
+                },
+            ),
+            (
+                HTMLVideoElement,
+                {
+                    "autoplay": True,
+                    "controls": True,
+                    "height": "720",
+                    "loop": True,
+                    "muted": True,
+                    "poster": "/poster.png",
+                    "preload": "auto",
+                    "src": "/movie.mp4",
+                    "width": "1280",
+                },
+                {
+                    "autoplay": True,
+                    "controls": True,
+                    "height": "720",
+                    "loop": True,
+                    "muted": True,
+                    "poster": "/poster.png",
+                    "preload": "auto",
+                    "src": "/movie.mp4",
+                    "width": "1280",
+                },
+            ),
         ]
 
         for constructor, kwargs, expected in cases:
@@ -2207,7 +2826,11 @@ class DOMTest(unittest.TestCase):
         walker = page.createTreeWalker(
             root,
             NodeFilter.SHOW_TEXT,
-            lambda node: NodeFilter.FILTER_ACCEPT if String(node.nodeValue).trim() != "" else NodeFilter.FILTER_REJECT,
+            lambda node: (
+                NodeFilter.FILTER_ACCEPT
+                if String(node.nodeValue).trim() != ""
+                else NodeFilter.FILTER_REJECT
+            ),
             False,
         )
         seen = []
@@ -2218,7 +2841,16 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(seen, ["a", "b", "c"])
 
     def test_treewalker_parent_and_sibling_helpers(self):
-        page = html(body(div(span("a", _id="one"), span("b", _id="two"), span("c", _id="three"), _id="root")))
+        page = html(
+            body(
+                div(
+                    span("a", _id="one"),
+                    span("b", _id="two"),
+                    span("c", _id="three"),
+                    _id="root",
+                )
+            )
+        )
         root = page.getElementById("root")
         walker = page.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, None, False)
 
@@ -2228,7 +2860,12 @@ class DOMTest(unittest.TestCase):
         self.assertIs(walker.parentNode(), root)
 
     def test_domquad_get_bounds(self):
-        quad = DOMQuad(type("P", (), {"x": 5, "y": 10})(), type("P", (), {"x": 25, "y": 10})(), type("P", (), {"x": 25, "y": 30})(), type("P", (), {"x": 5, "y": 30})())
+        quad = DOMQuad(
+            type("P", (), {"x": 5, "y": 10})(),
+            type("P", (), {"x": 25, "y": 10})(),
+            type("P", (), {"x": 25, "y": 30})(),
+            type("P", (), {"x": 5, "y": 30})(),
+        )
         rect = DOMQuad.getBounds(quad)
         self.assertEqual(rect.left, 5)
         self.assertEqual(rect.top, 10)
@@ -2381,24 +3018,87 @@ class DOMTest(unittest.TestCase):
         signup = page.getElementById("signup")
         calls = []
 
-        signup.addEventListener("submit", lambda event: calls.append((event.type, event.submitter)))
+        signup.addEventListener(
+            "submit", lambda event: calls.append((event.type, event.submitter))
+        )
         result = signup.submit()
 
         self.assertTrue(result)
         self.assertEqual(calls, [("submit", None)])
 
     def test_form_request_submit_and_button_click_dispatch_submitter(self):
-        page = html(body(form(button("Send", _id="send", _type="submit"), _id="signup")))
+        page = html(
+            body(form(button("Send", _id="send", _type="submit"), _id="signup"))
+        )
         signup = page.getElementById("signup")
         send = page.getElementById("send")
         calls = []
 
-        signup.addEventListener("submit", lambda event: calls.append((event.type, event.submitter)))
+        signup.addEventListener(
+            "submit", lambda event: calls.append((event.type, event.submitter))
+        )
         signup.requestSubmit(send)
         send.click()
 
         self.assertEqual(calls[0], ("submit", send))
         self.assertEqual(calls[1], ("submit", send))
+
+        send.addEventListener("click", lambda event: event.preventDefault())
+        self.assertFalse(send.click())
+        self.assertEqual(len(calls), 2)
+
+    def test_form_submit_dispatches_formdata_after_uncanceled_submit(self):
+        page = html(
+            body(
+                form(
+                    input(_name="email", _value="me@example.com"),
+                    input(_name="plan", _type="radio", _value="free"),
+                    input(_name="plan", _type="radio", _value="pro", _checked=True),
+                    textarea("hello", _name="notes"),
+                    button(
+                        "Send",
+                        _id="send",
+                        _type="submit",
+                        _name="intent",
+                        _value="save",
+                    ),
+                    _id="signup",
+                )
+            )
+        )
+        signup = page.getElementById("signup")
+        send = page.getElementById("send")
+        calls = []
+
+        signup.addEventListener(
+            "submit", lambda event: calls.append((event.type, event.submitter))
+        )
+        signup.addEventListener(
+            "formdata",
+            lambda event: calls.append(
+                (event.type, isinstance(event, FormDataEvent), dict(event.formData))
+            ),
+        )
+
+        self.assertTrue(signup.requestSubmit(send))
+        self.assertEqual(calls[0], ("submit", send))
+        self.assertEqual(
+            calls[1],
+            (
+                "formdata",
+                True,
+                {
+                    "email": "me@example.com",
+                    "plan": "pro",
+                    "notes": "hello",
+                    "intent": "save",
+                },
+            ),
+        )
+
+        signup.addEventListener("submit", lambda event: event.preventDefault())
+        self.assertFalse(signup.requestSubmit(send))
+        self.assertEqual(len([call for call in calls if call[0] == "formdata"]), 1)
 
     def test_input_checkbox_and_radio_click_dispatch_events(self):
         page = html(
@@ -2415,10 +3115,18 @@ class DOMTest(unittest.TestCase):
         radio_b = page.getElementById("radio_b")
         events = []
 
-        checkbox.addEventListener("input", lambda event: events.append((event.type, checkbox.checked)))
-        checkbox.addEventListener("change", lambda event: events.append((event.type, checkbox.checked)))
-        radio_a.addEventListener("change", lambda event: events.append(("radio-a", radio_a.checked)))
-        radio_b.addEventListener("change", lambda event: events.append(("radio-b", radio_b.checked)))
+        checkbox.addEventListener(
+            "input", lambda event: events.append((event.type, checkbox.checked))
+        )
+        checkbox.addEventListener(
+            "change", lambda event: events.append((event.type, checkbox.checked))
+        )
+        radio_a.addEventListener(
+            "change", lambda event: events.append(("radio-a", radio_a.checked))
+        )
+        radio_b.addEventListener(
+            "change", lambda event: events.append(("radio-b", radio_b.checked))
+        )
 
         checkbox.click()
         radio_a.click()
@@ -2431,15 +3139,39 @@ class DOMTest(unittest.TestCase):
         self.assertIn(("radio-a", True), events)
         self.assertIn(("radio-b", True), events)
 
+        blocked_checkbox = input(_type="checkbox")
+        blocked_events = []
+        blocked_checkbox.addEventListener("click", lambda event: event.preventDefault())
+        blocked_checkbox.addEventListener(
+            "input", lambda event: blocked_events.append(event.type)
+        )
+        blocked_checkbox.addEventListener(
+            "change", lambda event: blocked_events.append(event.type)
+        )
+
+        self.assertFalse(blocked_checkbox.click())
+        self.assertFalse(blocked_checkbox.checked)
+        self.assertEqual(blocked_events, [])
+
     def test_select_and_textarea_value_helpers_dispatch_events(self):
-        picker = select(option("One", value="1"), option("Two", value="2"), _name="choice")
+        picker = select(
+            option("One", value="1"), option("Two", value="2"), _name="choice"
+        )
         notes = textarea("hello", _name="notes")
         events = []
 
-        picker.addEventListener("input", lambda event: events.append(("select-input", picker.value)))
-        picker.addEventListener("change", lambda event: events.append(("select-change", picker.value)))
-        notes.addEventListener("input", lambda event: events.append(("textarea-input", notes.value)))
-        notes.addEventListener("change", lambda event: events.append(("textarea-change", notes.value)))
+        picker.addEventListener(
+            "input", lambda event: events.append(("select-input", picker.value))
+        )
+        picker.addEventListener(
+            "change", lambda event: events.append(("select-change", picker.value))
+        )
+        notes.addEventListener(
+            "input", lambda event: events.append(("textarea-input", notes.value))
+        )
+        notes.addEventListener(
+            "change", lambda event: events.append(("textarea-change", notes.value))
+        )
 
         picker.selectIndex(1)
         notes.setValue("updated")
@@ -2454,6 +3186,33 @@ class DOMTest(unittest.TestCase):
                 ("select-change", "2"),
                 ("textarea-input", "updated"),
                 ("textarea-change", "updated"),
+            ],
+        )
+
+    def test_beforeinput_can_cancel_text_value_helpers(self):
+        email = input(_name="email", _value="start@example.com")
+        notes = textarea("hello", _name="notes")
+        events = []
+
+        email.addEventListener(
+            "beforeinput",
+            lambda event: events.append(
+                (event.type, isinstance(event, InputEvent), event.data, event.inputType)
+            ),
+        )
+        notes.addEventListener("beforeinput", lambda event: event.preventDefault())
+
+        self.assertEqual(email.setValue("changed@example.com"), "changed@example.com")
+        self.assertEqual(notes.setValue("blocked"), "hello")
+        self.assertEqual(
+            events,
+            [
+                (
+                    "beforeinput",
+                    True,
+                    "changed@example.com",
+                    "insertReplacementText",
+                )
             ],
         )
 
@@ -2483,7 +3242,9 @@ class DOMTest(unittest.TestCase):
         invalid_calls = []
         submit_calls = []
 
-        email.addEventListener("invalid", lambda event: invalid_calls.append(event.type))
+        email.addEventListener(
+            "invalid", lambda event: invalid_calls.append(event.type)
+        )
         signup.addEventListener("submit", lambda event: submit_calls.append(event.type))
 
         self.assertFalse(signup.requestSubmit(submitter))
@@ -2500,11 +3261,67 @@ class DOMTest(unittest.TestCase):
         media = HTMLMediaElement(src="/movie.mp4")
         events = []
 
-        dialog.addEventListener("toggle", lambda event: events.append(("dialog-toggle", dialog.open)))
-        dialog.addEventListener("close", lambda event: events.append(("dialog-close", event.reason)))
-        details_el.addEventListener("toggle", lambda event: events.append(("details-toggle", details_el.open)))
-        for event_name in ("loadstart", "loadedmetadata", "loadeddata", "play", "playing", "pause"):
-            media.addEventListener(event_name, lambda event, name=event_name: events.append(("media", name)))
+        dialog.addEventListener(
+            "toggle",
+            lambda event: events.append(
+                (
+                    "dialog-toggle",
+                    isinstance(event, ToggleEvent),
+                    event.oldState,
+                    event.newState,
+                    dialog.open,
+                )
+            ),
+        )
+        dialog.addEventListener(
+            "close", lambda event: events.append(("dialog-close", event.reason))
+        )
+        details_el.addEventListener(
+            "toggle",
+            lambda event: events.append(
+                (
+                    "details-toggle",
+                    isinstance(event, ToggleEvent),
+                    event.oldState,
+                    event.newState,
+                    details_el.open,
+                )
+            ),
+        )
+        for event_name in (
+            "loadstart",
+            "loadedmetadata",
+            "loadeddata",
+            "play",
+            "playing",
+            "pause",
+        ):
+            media.addEventListener(
+                event_name,
+                lambda event, name=event_name: events.append(("media", name)),
+            )
+        media.addEventListener(
+            "addtrack",
+            lambda event: events.append(
+                (
+                    "track",
+                    event.type,
+                    isinstance(event, TrackEvent),
+                    event.track["kind"],
+                )
+            ),
+        )
+        media.addEventListener(
+            "removetrack",
+            lambda event: events.append(
+                (
+                    "track",
+                    event.type,
+                    isinstance(event, TrackEvent),
+                    event.track["kind"],
+                )
+            ),
+        )
 
         dialog.showModal()
         dialog.close("done")
@@ -2513,11 +3330,16 @@ class DOMTest(unittest.TestCase):
         media.load()
         self.assertTrue(media.play())
         self.assertIsNone(media.pause())
+        captions = media.addTextTrack("captions", "English", "en")
+        media.removeTextTrack(captions)
 
-        self.assertIn(("dialog-toggle", True), events)
+        self.assertIn(("dialog-toggle", True, "closed", "open", True), events)
         self.assertIn(("dialog-close", "done"), events)
-        self.assertIn(("details-toggle", True), events)
-        self.assertIn(("details-toggle", False), events)
+        self.assertIn(("details-toggle", True, "closed", "open", True), events)
+        self.assertIn(("details-toggle", True, "open", "closed", False), events)
+        self.assertIn(("track", "addtrack", True, "captions"), events)
+        self.assertIn(("track", "removetrack", True, "captions"), events)
+        self.assertEqual(media.textTracks, [])
         self.assertEqual(
             [item for item in events if item[0] == "media"],
             [
@@ -2533,7 +3355,9 @@ class DOMTest(unittest.TestCase):
     def test_form_reset_restores_default_control_state(self):
         email = input(_name="email", _value="start@example.com")
         accept = input(_type="checkbox", _checked=True)
-        picker = select(option("One", value="1", selected=True), option("Two", value="2"))
+        picker = select(
+            option("One", value="1", selected=True), option("Two", value="2")
+        )
         notes = textarea("hello")
         signup = form(email, accept, picker, notes)
 
@@ -2551,7 +3375,9 @@ class DOMTest(unittest.TestCase):
 
     def test_control_validity_helpers_and_image_lifecycle_events(self):
         required_input = input(_required=True)
-        required_select = select(option("Choose", value=""), option("One", value="1"), _required=True)
+        required_select = select(
+            option("Choose", value=""), option("One", value="1"), _required=True
+        )
         required_textarea = textarea("", _required=True)
         image = HTMLImageElement(src="/hero.png")
         events = []
@@ -2725,7 +3551,9 @@ class DOMTest(unittest.TestCase):
         readonly = DOMMatrixReadOnly(1, 0, 0, 1, 10, 20)
         self.assertTrue(readonly.is2D)
         self.assertFalse(readonly.isIdentity)
-        self.assertEqual((readonly.a, readonly.d, readonly.e, readonly.f), (1.0, 1.0, 10.0, 20.0))
+        self.assertEqual(
+            (readonly.a, readonly.d, readonly.e, readonly.f), (1.0, 1.0, 10.0, 20.0)
+        )
 
         point = readonly.transformPoint(DOMPoint(2, 3))
         self.assertEqual((point.x, point.y), (12.0, 23.0))
@@ -2740,13 +3568,17 @@ class DOMTest(unittest.TestCase):
         self.assertAlmostEqual(original.x, 1.0)
         self.assertAlmostEqual(original.y, 1.0)
 
-        multiplied = DOMMatrixReadOnly(1, 0, 0, 1, 1, 2).multiply(DOMMatrixReadOnly(1, 0, 0, 1, 3, 4))
+        multiplied = DOMMatrixReadOnly(1, 0, 0, 1, 1, 2).multiply(
+            DOMMatrixReadOnly(1, 0, 0, 1, 3, 4)
+        )
         self.assertEqual((multiplied.e, multiplied.f), (4.0, 6.0))
 
     def test_domquad_from_rect_uses_rect_bounds(self):
         quad = DOMQuad.fromRect(DOMRect(5, 10, 20, 30))
         bounds = DOMQuad.getBounds(quad)
-        self.assertEqual((bounds.left, bounds.top, bounds.width, bounds.height), (5, 10, 20, 30))
+        self.assertEqual(
+            (bounds.left, bounds.top, bounds.width, bounds.height), (5, 10, 20, 30)
+        )
 
     def test_resize_observer_reports_initial_and_changed_rects(self):
         target = div()
@@ -2758,7 +3590,9 @@ class DOMTest(unittest.TestCase):
         observer.observe(target)
 
         self.assertEqual(len(entries), 1)
-        self.assertEqual((entries[0].contentRect.width, entries[0].contentRect.height), (10, 20))
+        self.assertEqual(
+            (entries[0].contentRect.width, entries[0].contentRect.height), (10, 20)
+        )
 
         target.style.width = "30px"
         target.getBoundingClientRect()
@@ -2781,7 +3615,9 @@ class DOMTest(unittest.TestCase):
         root.appendChild(target)
 
         entries = []
-        observer = IntersectionObserver(lambda records, obs: entries.extend(records), {"root": root})
+        observer = IntersectionObserver(
+            lambda records, obs: entries.extend(records), {"root": root}
+        )
         observer.observe(target)
 
         self.assertTrue(entries[-1].isIntersecting)
@@ -2811,7 +3647,9 @@ class DOMTest(unittest.TestCase):
 
     def test_domonic_matches(self):
         content = ul(_id="birds").html(
-            li("Orange-winged parrot"), li("Philippine eagle", _class="endangered"), li("Great white pelican")
+            li("Orange-winged parrot"),
+            li("Philippine eagle", _class="endangered"),
+            li("Great white pelican"),
         )
         birds = content.getElementsByTagName("li")
         # print(type(birds))
@@ -2822,7 +3660,10 @@ class DOMTest(unittest.TestCase):
         for bird in birds:
             if bird.matches(".endangered"):
                 # print('The ' + bird.textContent + ' is endangered!')
-                assert "The " + bird.textContent + " is endangered!" == "The Philippine eagle is endangered!"
+                assert (
+                    "The " + bird.textContent + " is endangered!"
+                    == "The Philippine eagle is endangered!"
+                )
         assert birds[1].matches("li.endangered")
         assert birds[1].matches(".safe, .endangered")
         assert birds[1].closest("ul") is content
@@ -2838,7 +3679,9 @@ class DOMTest(unittest.TestCase):
 
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(
-            li("Orange-winged parrot"), li("Philippine eagle", _class="endangered"), li("Great white pelican")
+            li("Orange-winged parrot"),
+            li("Philippine eagle", _class="endangered"),
+            li("Great white pelican"),
         )
         birds = content.getElementsByTagName("li")
         assert len(birds) == 3
@@ -2890,16 +3733,25 @@ class DOMTest(unittest.TestCase):
         # print("3::::", s3)
         # print(str(s3))
         # Note - check why is id/class not a default config?
-        assert str(s3) == '<div style="cool"><span style="font-weight: bold">hello</span></div>'
+        assert (
+            str(s3)
+            == '<div style="cool"><span style="font-weight: bold">hello</span></div>'
+        )
 
         # Drop <span id>: <span class='theclass' style='font-weight: bold'>...</span>
         s4 = Sanitizer({"dropAttributes": {"id": ["span"]}}).sanitize(sample)
         # print("4::::", s4)
-        assert str(s4) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+        assert (
+            str(s4)
+            == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+        )
 
         # Drop id, everywhere: <span class='theclass' style='font-weight: bold'>...</span>
         s5 = Sanitizer({"dropAttributes": {"id": ["*"]}}).sanitize(sample)
-        assert str(s5) == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+        assert (
+            str(s5)
+            == '<div style="cool"><span class="theclass" style="font-weight: bold">hello</span></div>'
+        )
 
         # Comments will be dropped by default.
         # comment = to_node("Hello  World!")
@@ -2983,13 +3835,18 @@ class DOMTest(unittest.TestCase):
 
         from domonic.dom import Comment, TreeWalker
 
-        doc = html(div(_id="contentarea").html(p("Some ", span("text")), b("Bold text")))
+        doc = html(
+            div(_id="contentarea").html(p("Some ", span("text")), b("Bold text"))
+        )
 
         rootnode = doc.getElementById("contentarea")
         # print(rootnode)
         walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
 
-        assert str(walker.currentNode) == '<div id="contentarea"><p>Some <span>text</span></p><b>Bold text</b></div>'
+        assert (
+            str(walker.currentNode)
+            == '<div id="contentarea"><p>Some <span>text</span></p><b>Bold text</b></div>'
+        )
         # print(walker.firstChild())
         # print(walker.firstChild())
         # print(walker.firstChild())
@@ -3006,7 +3863,9 @@ class DOMTest(unittest.TestCase):
             window.alert(walker.currentNode)  # //alerts P, SPAN, and B.
 
         # //Go back to the first child node of the collection and alert it
-        walker.currentNode = rootnode  # //reset TreeWalker pointer to point to root node
+        walker.currentNode = (
+            rootnode  # //reset TreeWalker pointer to point to root node
+        )
         # print('>>', walker.firstChild()) # calling it breaks it cos it moves it?. is it like an iterator then?
         assert walker.firstChild().tagName.lower() == "p"  # //alerts P
 
@@ -3018,11 +3877,15 @@ class DOMTest(unittest.TestCase):
         rootnode = doc.getElementById("mylist")
         walker = doc.createTreeWalker(rootnode, NodeFilter.SHOW_ELEMENT, None, False)
 
-        window.alert(len(walker.currentNode.childNodes))  # //alerts 7 (includes text nodes)
+        window.alert(
+            len(walker.currentNode.childNodes)
+        )  # //alerts 7 (includes text nodes)
         window.alert(len(walker.currentNode.getElementsByTagName("*")))  # //alerts 3
 
         # test 3
-        doc = html(div(_id="main").html(p("This is a ", span("paragraph")), b("Bold text")))
+        doc = html(
+            div(_id="main").html(p("This is a ", span("paragraph")), b("Bold text"))
+        )
         mainDiv = doc.getElementById("main")
         walker = doc.createTreeWalker(mainDiv, NodeFilter.SHOW_ELEMENT, None, False)
         console.log(walker)
@@ -3030,9 +3893,11 @@ class DOMTest(unittest.TestCase):
         treeWalker = document.createTreeWalker(
             mainDiv,
             NodeFilter.SHOW_TEXT,
-            lambda node: NodeFilter.FILTER_ACCEPT
-            if (String(node.nodeValue).trim() != "")
-            else NodeFilter.FILTER_REJECT,
+            lambda node: (
+                NodeFilter.FILTER_ACCEPT
+                if (String(node.nodeValue).trim() != "")
+                else NodeFilter.FILTER_REJECT
+            ),
             False,
         )
 
@@ -3086,14 +3951,20 @@ class NodeTest(unittest.TestCase):
         # Check nextSibling
         for i, item in enumerate(node):
             if i == maxidx:
-                assert item.nextSibling is None, f"nextSibling in position {i} should be None"
+                assert (
+                    item.nextSibling is None
+                ), f"nextSibling in position {i} should be None"
             else:
-                assert item.nextSibling is node[i + 1], f"nextSibling in position {i} is incorrect ({item.nextSibling})"
+                assert (
+                    item.nextSibling is node[i + 1]
+                ), f"nextSibling in position {i} is incorrect ({item.nextSibling})"
 
         # Check previousSibling
         for i, item in enumerate(node):
             if i == 0:
-                assert item.previousSibling is None, f"previousSibling in position {i} should be None"
+                assert (
+                    item.previousSibling is None
+                ), f"previousSibling in position {i} should be None"
             else:
                 # print('HERE::::', item, item.previousSibling, node[i-1])
                 assert (
@@ -3114,17 +3985,23 @@ class NodeTest(unittest.TestCase):
         if node.attributes:
             for key, value in node.attributes.items():
                 if isinstance(value, Node):
-                    assert value.parentNode is node, f"parentNode is incorrect ({value.parentNode})"
+                    assert (
+                        value.parentNode is node
+                    ), f"parentNode is incorrect ({value.parentNode})"
                     self._checkPositions(value)
 
                 elif isinstance(value, list):
                     for item in value:
-                        assert getattr(item, "parentNode", node) is node, f"parentNode is incorrect ({item.parentNode})"
+                        assert (
+                            getattr(item, "parentNode", node) is node
+                        ), f"parentNode is incorrect ({item.parentNode})"
                         self._checkPositions(item)
 
                 elif isinstance(value, dict):
                     for item in value.values():
-                        assert getattr(item, "parentNode", node) is node, f"parentNode is incorrect ({item.parentNode})"
+                        assert (
+                            getattr(item, "parentNode", node) is node
+                        ), f"parentNode is incorrect ({item.parentNode})"
                         self._checkPositions(item)
 
     def test_truthiness(self):
@@ -3197,7 +4074,9 @@ class NodeTest(unittest.TestCase):
         self.assertIsInstance(child_nodes, NodeList)
         self.assertEqual(child_nodes.length, 3)
         self.assertIs(child_nodes[-1], two)
-        self.assertEqual([child.getAttribute("id") for child in children], ["one", "two"])
+        self.assertEqual(
+            [child.getAttribute("id") for child in children], ["one", "two"]
+        )
         self.assertEqual(node.childElementCount, 2)
 
         removed = child_nodes.pop()
@@ -3444,18 +4323,26 @@ class NodeTest(unittest.TestCase):
 
         node.append(child, " gap ", child)
 
-        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], ["tail", None, "kid"])
+        self.assertEqual(
+            [getattr(child, "id", None) for child in node.childNodes],
+            ["tail", None, "kid"],
+        )
         self.assertEqual(node.childNodes.length, 3)
         self.assertIs(child.parentNode, node)
 
         node.prepend(child, child)
 
-        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], ["kid", "tail", None])
+        self.assertEqual(
+            [getattr(child, "id", None) for child in node.childNodes],
+            ["kid", "tail", None],
+        )
         self.assertEqual(node.childNodes.length, 3)
 
         node.replaceChildren(child, " mid ", child)
 
-        self.assertEqual([getattr(child, "id", None) for child in node.childNodes], [None, "kid"])
+        self.assertEqual(
+            [getattr(child, "id", None) for child in node.childNodes], [None, "kid"]
+        )
         self.assertEqual(node.childNodes.length, 2)
         self.assertIs(child.parentNode, node)
 
@@ -3472,8 +4359,12 @@ class NodeTest(unittest.TestCase):
         # node.insertBefore(two, one)
         # node.insertBefore(three, two)
         # TODO - just add an optional positional parameter to append?
-        node.args = node.args[:2] + (two,) + node.args[2:]  # does same as node.insert(1, two)
-        node.args = node.args[:3] + (three,) + node.args[3:]  # does same as node.insert(2, three)
+        node.args = (
+            node.args[:2] + (two,) + node.args[2:]
+        )  # does same as node.insert(1, two)
+        node.args = (
+            node.args[:3] + (three,) + node.args[3:]
+        )  # does same as node.insert(2, three)
         # print(node)
         expected = [one, two, three]
         for i, item in enumerate(node):
@@ -3646,13 +4537,20 @@ class NodeTest(unittest.TestCase):
 
     def test_normalize_preserves_element_siblings_after_text(self):
         lead = Document.createTextNode("lead ")
-        middle = span(Document.createTextNode("mid "), Document.createTextNode("text"), _id="middle")
+        middle = span(
+            Document.createTextNode("mid "),
+            Document.createTextNode("text"),
+            _id="middle",
+        )
         tail = Document.createTextNode(" tail")
         node = div(lead, middle, tail, em("end", _id="end"))
 
         node.normalize()
 
-        self.assertEqual(str(node), '<div>lead <span id="middle">mid text</span> tail<em id="end">end</em></div>')
+        self.assertEqual(
+            str(node),
+            '<div>lead <span id="middle">mid text</span> tail<em id="end">end</em></div>',
+        )
         self.assertIsNone(lead.parentNode)
         self.assertIsNone(tail.parentNode)
         self.assertIs(middle.parentNode, node)
@@ -3953,7 +4851,11 @@ class TestDomTokenList(unittest.TestCase):
         self.assertEqual(list(tokens.entries()), [(0, "one"), (1, "three")])
 
         seen = []
-        tokens.forEach(lambda currentValue, currentIndex, listObj: seen.append((currentValue, currentIndex, listObj)))
+        tokens.forEach(
+            lambda currentValue, currentIndex, listObj: seen.append(
+                (currentValue, currentIndex, listObj)
+            )
+        )
         self.assertEqual(seen, [("one", 0, tokens), ("three", 1, tokens)])
 
         with self.assertRaises(ValueError):
