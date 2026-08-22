@@ -39,8 +39,10 @@ except ImportError:  # pragma: no cover - optional dependency chain
     pass
 
 try:
-    from domonic.utils import Utils
+    from domonic.utils import NumberUnit, NumberUtils, Utils
 except ImportError:  # pragma: no cover - optional dependency chain
+    NumberUnit = None
+    NumberUtils = None
     Utils = None
 
 

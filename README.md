@@ -100,6 +100,7 @@ domonic -x https://google.com '//a' | uniq | sort
 - [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in Python 3 😲
 - [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in Python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
 - JSON : utils for loading / decorating / transforming
+- utils : string, number/unit, byte-size, and iterable helpers
 - SVG || mathml || aframe || x3d tags - generators for popular tags
 - terminal || cmd : call terminal commands with Python3 😱
 

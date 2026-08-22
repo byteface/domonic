@@ -4,16 +4,250 @@ domonic.utils
 snippets etc
 """
 
+import math
 import random
+import re
 from collections import Counter
+from dataclasses import dataclass
 from itertools import chain, islice
+from numbers import Real
 from re import sub
 from typing import Any, Iterable, Iterator, Sequence, TypeVar
 
 from domonic.decorators import deprecated
 
 T = TypeVar("T")
+D = TypeVar("D")
 _random = random.SystemRandom()
+_NUMBER_UNIT_RE = re.compile(
+    r"^\s*([+-]?(?:\d[\d,_]*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*([a-zA-Z%]*)\s*$"
+)
+
+
+@dataclass(frozen=True)
+class NumberUnit:
+    """A parsed numeric value and its optional unit suffix."""
+
+    value: float
+    unit: str = ""
+
+    @property
+    def number(self) -> int | float:
+        """Return integers as ``int`` while preserving fractional values."""
+        if self.value.is_integer():
+            return int(self.value)
+        return self.value
+
+
+class NumberUtils:
+    """Small numeric helpers for CSS values, web sizes, percentages, and ports."""
+
+    BYTE_UNITS = {
+        "": 1,
+        "b": 1,
+        "byte": 1,
+        "bytes": 1,
+        "k": 1000,
+        "kb": 1000,
+        "m": 1000**2,
+        "mb": 1000**2,
+        "g": 1000**3,
+        "gb": 1000**3,
+        "t": 1000**4,
+        "tb": 1000**4,
+        "p": 1000**5,
+        "pb": 1000**5,
+        "ki": 1024,
+        "kib": 1024,
+        "mi": 1024**2,
+        "mib": 1024**2,
+        "gi": 1024**3,
+        "gib": 1024**3,
+        "ti": 1024**4,
+        "tib": 1024**4,
+        "pi": 1024**5,
+        "pib": 1024**5,
+    }
+
+    @staticmethod
+    def _as_float(value: Any, name: str = "value") -> float:
+        try:
+            return NumberUtils.parse_unit(value).value
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{name} must be a finite number") from exc
+
+    @staticmethod
+    def _coerce_number(value: float) -> int | float:
+        return int(value) if value.is_integer() else value
+
+    @staticmethod
+    def is_number(value: Any) -> bool:
+        """Return ``True`` for finite real numbers, excluding booleans."""
+        if isinstance(value, bool) or not isinstance(value, Real):
+            return False
+        try:
+            return math.isfinite(value)
+        except (TypeError, ValueError, OverflowError):
+            return False
+
+    @staticmethod
+    def parse_unit(value: Any) -> NumberUnit:
+        """Parse a number or a string such as ``"12px"``, ``"1.5rem"``, or ``"50%"``."""
+        if isinstance(value, bool):
+            raise ValueError("boolean values are not numeric")
+
+        if isinstance(value, Real):
+            number = float(value)
+            if not math.isfinite(number):
+                raise ValueError("value must be finite")
+            return NumberUnit(number)
+
+        match = _NUMBER_UNIT_RE.match(str(value))
+        if not match:
+            raise ValueError("value must be a number or number+unit string")
+
+        number = float(match.group(1).replace(",", "").replace("_", ""))
+        if not math.isfinite(number):
+            raise ValueError("value must be finite")
+        return NumberUnit(number, match.group(2))
+
+    @staticmethod
+    def to_number(value: Any, default: D | None = None) -> int | float | D | None:
+        """Convert a number-like value to ``int`` or ``float``; return ``default`` on failure."""
+        try:
+            return NumberUtils.parse_unit(value).number
+        except (TypeError, ValueError, OverflowError):
+            return default
+
+    @staticmethod
+    def clamp(value: Any, min_value: Any = None, max_value: Any = None) -> int | float:
+        """Clamp ``value`` between optional minimum and maximum bounds."""
+        number = NumberUtils._as_float(value)
+        minimum = None if min_value is None else NumberUtils._as_float(min_value, "min_value")
+        maximum = None if max_value is None else NumberUtils._as_float(max_value, "max_value")
+
+        if minimum is not None and maximum is not None and minimum > maximum:
+            raise ValueError("min_value cannot be greater than max_value")
+        if minimum is not None:
+            number = max(number, minimum)
+        if maximum is not None:
+            number = min(number, maximum)
+        return NumberUtils._coerce_number(number)
+
+    @staticmethod
+    def normalize(value: Any, min_value: Any, max_value: Any, clamp_result: bool = False) -> float:
+        """Map ``value`` from the given range to a ratio between ``0`` and ``1``."""
+        number = NumberUtils._as_float(value)
+        minimum = NumberUtils._as_float(min_value, "min_value")
+        maximum = NumberUtils._as_float(max_value, "max_value")
+        if minimum == maximum:
+            raise ValueError("min_value and max_value cannot be the same")
+        result = (number - minimum) / (maximum - minimum)
+        if clamp_result:
+            return float(NumberUtils.clamp(result, 0, 1))
+        return result
+
+    @staticmethod
+    def lerp(start: Any, end: Any, amount: Any) -> int | float:
+        """Linearly interpolate between ``start`` and ``end`` by ``amount``."""
+        start_number = NumberUtils._as_float(start, "start")
+        end_number = NumberUtils._as_float(end, "end")
+        amount_number = NumberUtils._as_float(amount, "amount")
+        return NumberUtils._coerce_number(
+            start_number + (end_number - start_number) * amount_number
+        )
+
+    @staticmethod
+    def remap(
+        value: Any,
+        in_min: Any,
+        in_max: Any,
+        out_min: Any,
+        out_max: Any,
+        clamp_result: bool = False,
+    ) -> int | float:
+        """Map ``value`` from one numeric range into another."""
+        ratio = NumberUtils.normalize(value, in_min, in_max, clamp_result)
+        output = NumberUtils.lerp(out_min, out_max, ratio)
+        return NumberUtils._coerce_number(float(output))
+
+    @staticmethod
+    def percent(value: Any, total: Any, scale: Any = 100.0) -> int | float:
+        """Return ``value`` as a percentage of ``total``."""
+        total_number = NumberUtils._as_float(total, "total")
+        if total_number == 0:
+            raise ValueError("total cannot be zero")
+        result = (NumberUtils._as_float(value) / total_number) * NumberUtils._as_float(
+            scale, "scale"
+        )
+        return NumberUtils._coerce_number(result)
+
+    @staticmethod
+    def parse_percent(value: Any, total: Any = 1.0) -> int | float:
+        """Resolve a percentage string against ``total``; plain numbers pass through unchanged."""
+        parsed = NumberUtils.parse_unit(value)
+        if parsed.unit == "%":
+            return NumberUtils._coerce_number(
+                (parsed.value / 100.0) * NumberUtils._as_float(total, "total")
+            )
+        if parsed.unit:
+            raise ValueError("percentage values may only use the '%' unit")
+        return parsed.number
+
+    @staticmethod
+    def parse_bytes(value: Any) -> int:
+        """Parse byte-size strings such as ``"1KB"`` or ``"1.5 MiB"`` into bytes."""
+        parsed = NumberUtils.parse_unit(value)
+        unit = parsed.unit.lower()
+        if unit not in NumberUtils.BYTE_UNITS:
+            raise ValueError(f"unknown byte unit: {parsed.unit}")
+        return int(parsed.value * NumberUtils.BYTE_UNITS[unit])
+
+    @staticmethod
+    def format_bytes(value: Any, binary: bool = False, precision: int = 1) -> str:
+        """Format a byte count with decimal units or binary IEC units."""
+        if precision < 0:
+            raise ValueError("precision cannot be negative")
+
+        number = NumberUtils._as_float(value)
+        base = 1024 if binary else 1000
+        units = (
+            ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
+            if binary
+            else ["B", "KB", "MB", "GB", "TB", "PB"]
+        )
+        sign = "-" if number < 0 else ""
+        number = abs(number)
+        index = 0
+
+        while number >= base and index < len(units) - 1:
+            number /= base
+            index += 1
+
+        if index == 0:
+            formatted = str(int(number))
+        else:
+            formatted = f"{number:.{precision}f}".rstrip("0").rstrip(".")
+        return f"{sign}{formatted} {units[index]}"
+
+    @staticmethod
+    def is_port(value: Any, allow_zero: bool = True) -> bool:
+        """Return whether ``value`` is a valid TCP/UDP port number."""
+        return NumberUtils.to_port(value, allow_zero=allow_zero) is not None
+
+    @staticmethod
+    def to_port(value: Any, default: D | None = None, allow_zero: bool = True) -> int | D | None:
+        """Convert ``value`` to a port number, returning ``default`` when invalid."""
+        if isinstance(value, bool):
+            return default
+        try:
+            port = int(str(value).strip())
+        except (TypeError, ValueError):
+            return default
+        minimum = 0 if allow_zero else 1
+        if minimum <= port <= 65535:
+            return port
+        return default
 
 
 class Utils:
