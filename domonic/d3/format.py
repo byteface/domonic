@@ -475,7 +475,7 @@ class formatLocale:
                 # Break the formatted value into the integer “value” part that can be
                 # grouped, and fractional or exponential “suffix” part that is not.
                 if maybeSuffix:
-                    i = -1
+                    i = 0
                     n = len(str(value))
 
                     while i < n:

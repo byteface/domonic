@@ -11,6 +11,7 @@ from __future__ import annotations
 import array
 import builtins
 import calendar
+
 # import chunk
 import datetime
 import gc
@@ -135,6 +136,43 @@ undefined: object = None
 
 # def typeof(v):
 #     return type(v).__name__
+
+
+def _is_nan(value: Any) -> bool:
+    return isinstance(value, float) and math.isnan(value)
+
+
+def _js_same_value_zero(left: Any, right: Any) -> bool:
+    if _is_nan(left) and _is_nan(right):
+        return True
+    try:
+        return left == right
+    except Exception:
+        return False
+
+
+def _js_strictish_equal(left: Any, right: Any) -> bool:
+    if _is_nan(left) or _is_nan(right):
+        return False
+    try:
+        return left == right
+    except Exception:
+        return False
+
+
+def _clamp_js_index(index: int, length: int) -> int:
+    if index < 0:
+        return max(length + index, 0)
+    return min(index, length)
+
+
+def _looks_like_regex_separator(value: str) -> bool:
+    return (
+        "\\" in value
+        or any(char in value for char in "[](){}|")
+        or value.startswith("^")
+        or value.endswith("$")
+    )
 
 
 class Boolean:
@@ -691,12 +729,14 @@ class Map:
     def clear(self) -> None:
         """Removes all key-value pairs from the Map object."""
         self._data = {}
+        self._dict = self._data
         self._order = []
 
     def delete(self, key: str) -> bool:
         """Returns true if an element in the Map object existed and has been removed,
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards.
         """
+        key = str(key)
         try:
             self._order.remove(key)
             del self._dict[key]
@@ -729,10 +769,10 @@ class Map:
         for each element in the Map object in insertion order."""
         return list(self.iterkeys())
 
-    def values(self) -> list[tuple[str, Any]]:
+    def values(self) -> list[Any]:
         """Returns a new Iterator object that contains the values
         for each element in the Map object in insertion order."""
-        return list(self.iteritems())
+        return [self._dict[key] for key in self._order]
 
     def entries(self) -> list[tuple[str, Any]]:
         """Returns a new Iterator object that contains an array of [key, value]
@@ -1160,19 +1200,18 @@ class Global:
     @staticmethod
     def isFinite(x) -> bool:
         """Returns true if x is a finite number"""
-        try:
-            value = x if isinstance(x, (int, float)) else float(x)
-        except (TypeError, ValueError):
+        value = Global.Number(x)
+        if value == "NaN":
             return False
-        return math.isfinite(value)
+        return math.isfinite(float(value))
 
     @staticmethod
     def isNaN(x: Any) -> bool:
         """Determines whether a value is an illegal number"""
-        try:
-            return math.isnan(x)
-        except TypeError:
+        value = Global.Number(x)
+        if value == "NaN":
             return True
+        return math.isnan(float(value))
 
     def NaN(self) -> str:
         """ "Not-a-Number" value"""
@@ -1182,18 +1221,47 @@ class Global:
     @staticmethod
     def Number(x: Any) -> int | float | str:
         """Converts an object's value to a number"""
-        try:
-            if type(x) == float or type(x) == int:  # or type(x) == long:
-                return x
+        if isinstance(x, bool):
+            return 1 if x else 0
+        if x is None:
+            return "NaN"
+        if isinstance(x, (int, float)):
+            return x
+        if isinstance(x, (list, tuple)):
+            if len(x) == 0:
+                return 0
+            if len(x) == 1:
+                return Global.Number(x[0])
+            return "NaN"
 
-            if type(x) == str:
-                if "." in x:
-                    return float(x)
-                else:
-                    return int(x)
+        if isinstance(x, str):
+            value = x.strip()
+            if value == "":
+                return 0
+            if "_" in value or value.lower() == "nan":
+                return "NaN"
+
+            unsigned = value[1:] if value[:1] in ("+", "-") else value
+            try:
+                if unsigned.lower().startswith(("0x", "0o", "0b")):
+                    return int(value, 0)
+                if value.lower() in ("infinity", "+infinity", "-infinity"):
+                    return float(value)
+                if re.fullmatch(
+                    r"[+-]?(?:(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?)",
+                    value,
+                ):
+                    if "." in value or "e" in value.lower():
+                        return float(value)
+                    return int(value, 10)
+            except Exception:
+                return "NaN"
+            return "NaN"
+
+        try:
+            return float(x)
         except Exception:
             return "NaN"
-        return "NaN"
 
     @staticmethod
     def Boolean(x: Any) -> bool:
@@ -1208,20 +1276,57 @@ class Global:
         return True
 
     @staticmethod
-    def parseFloat(x: str) -> float:
+    def parseFloat(x: str) -> float | str:
         """Parses a string and returns a floating point number"""
-        # return float(x)
-        import ast
-
-        return float(ast.literal_eval(x))
+        value = str(x).lstrip()
+        match = re.match(
+            r"[+-]?(?:Infinity|(?:(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?))",
+            value,
+        )
+        if not match:
+            return "NaN"
+        try:
+            return float(match.group(0))
+        except Exception:
+            return "NaN"
 
     @staticmethod
-    def parseInt(x: str) -> int:
+    def parseInt(x: str, radix: int = 0) -> int | str:
         """Parses a string and returns an integer"""
-        # return int(x)
-        import ast
+        value = str(x).lstrip()
+        sign = 1
+        if value[:1] in ("+", "-"):
+            sign = -1 if value[0] == "-" else 1
+            value = value[1:]
 
-        return int(ast.literal_eval(x))
+        try:
+            radix = int(radix or 0)
+        except Exception:
+            return "NaN"
+
+        if radix and (radix < 2 or radix > 36):
+            return "NaN"
+        if radix == 0:
+            if value.lower().startswith("0x"):
+                radix = 16
+                value = value[2:]
+            else:
+                radix = 10
+        elif radix == 16 and value.lower().startswith("0x"):
+            value = value[2:]
+
+        alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
+        allowed = alphabet[:radix]
+        digits = []
+        for char in value.lower():
+            if char in allowed:
+                digits.append(char)
+            else:
+                break
+
+        if not digits:
+            return "NaN"
+        return sign * int("".join(digits), radix)
 
     @staticmethod
     def String(x: Any) -> str:
@@ -2443,10 +2548,9 @@ class Array:
         self, value: Any = None, start: int | None = None, end: int | None = None
     ) -> list[Any]:
         """[Fills elements of an array from a start index to an end index with a static value]"""
-        if start is None:
-            start = 0
-        if end is None:
-            end = len(self.args)
+        length = len(self.args)
+        start = _clamp_js_index(0 if start is None else int(start), length)
+        end = length if end is None else _clamp_js_index(int(end), length)
         for i in range(start, end):
             self.args[i] = value
         return self.args
@@ -2504,23 +2608,15 @@ class Array:
         Returns:
             [bool]: [a boolean]
         """
-        if value in self.args:
-            return True
-        else:
-            return False
+        return any(_js_same_value_zero(item, value) for item in self.args)
 
-    def indexOf(self, value: Any) -> int:
+    def indexOf(self, value: Any, fromIndex: int = 0) -> int:
         """Search the array for an element and returns its position"""
-        # for count, each in enumerate(self.args):
-        #     if each == value:
-        #         return count
-        try:
-            return self.args.index(value)
-        except ValueError:
-            return -1
-        except Exception as e:
-            # print(e)
-            return -1
+        start = _clamp_js_index(int(fromIndex), len(self.args))
+        for index in range(start, len(self.args)):
+            if _js_strictish_equal(self.args[index], value):
+                return index
+        return -1
 
     @staticmethod
     def isArray(thing: Any) -> bool:
@@ -2542,13 +2638,25 @@ class Array:
         # TODO - get passed param names
         return value.join([str(x) for x in self.args])
 
-    def lastIndexOf(self, value: Any) -> int | None:
+    def lastIndexOf(self, value: Any, fromIndex: int | None = None) -> int:
         """Search the array for an element, starting at the end, and returns its position"""
-        try:
-            return len(self.args) - self.args[::-1].index(value) - 1
-        except Exception as e:
-            # print(e)
-            return None
+        length = len(self.args)
+        if length == 0:
+            return -1
+        if fromIndex is None:
+            start = length - 1
+        else:
+            start = int(fromIndex)
+            if start < 0:
+                start = length + start
+            else:
+                start = min(start, length - 1)
+        if start < 0:
+            return -1
+        for index in range(start, -1, -1):
+            if _js_strictish_equal(self.args[index], value):
+                return index
+        return -1
 
     def pop(self) -> Any:
         """Removes the last element of an array, and returns that element"""
@@ -2587,12 +2695,16 @@ class Array:
         self, start: int, delete_count: int | None = None, *items: Any
     ) -> list[Any]:
         """Selects a part of an array, and returns the new array"""
+        length = len(self.args)
+        start = _clamp_js_index(int(start), length)
         if delete_count is None:
-            delete_count = len(self.args) - start
+            delete_count = length - start
+        else:
+            delete_count = min(max(int(delete_count), 0), length - start)
 
-        total = start + delete_count
-        removed = self.args[start:total]
-        self.args[start:total] = items
+        stop = start + delete_count
+        removed = self.args[start:stop]
+        self.args[start:stop] = items
         return removed
         # return self.args
 
@@ -2725,7 +2837,10 @@ class Array:
     def findIndex(self, value: Any) -> int:
         """Returns the index of the first element in an array that pass a test"""
         for i, current in enumerate(self.args):
-            if current == value:
+            if callable(value):
+                if value(current):
+                    return i
+            elif _js_strictish_equal(current, value):
                 return i
         return -1
 
@@ -2783,6 +2898,11 @@ class Array:
         Returns:
             [type]: [item at the given position]
         """
+        index = int(index)
+        if index < 0:
+            index = len(self.args) + index
+        if index < 0 or index >= len(self.args):
+            return undefined
         return self.args[index]
 
 
@@ -3225,7 +3345,7 @@ class String:
     def __imul__(self, other: int) -> str:
         return self.x * int(other)
 
-    def split(self, expr: str) -> list[str]:
+    def split(self, expr: str | RegExp) -> list[str]:
         """[can split a string based on a regex]
 
         Args:
@@ -3235,22 +3355,18 @@ class String:
             [list]: [list of str]
         """
 
-        # if isinstance( expr, RegExp)
+        if isinstance(expr, RegExp):
+            return re.split(expr.expression, self.x)
 
-        import re
-
-        # print( '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.', type(expr) )
-        is_regex = False
-        try:
-            re.compile(expr)
-            is_regex = True
-        except re.error:
-            is_regex = False
-
-        if is_regex:
-            return re.split(expr, self.x)
-        else:
-            return self.x.split(expr)
+        expr = str(expr)
+        if expr == "":
+            return list(self.x)
+        if _looks_like_regex_separator(expr):
+            try:
+                return re.split(expr, self.x)
+            except re.error:
+                pass
+        return self.x.split(expr)
 
     def concat(self, *args, seperator: str = "") -> str:
         """[concatenates the string arguments to the calling string and returns a new string.]
@@ -3268,6 +3384,9 @@ class String:
     # @staticmethod
     def charCodeAt(self, index: int) -> int:
         """Returns the Unicode of the character at the specified index"""
+        index = int(index)
+        if index < 0 or index >= len(self.x):
+            return "NaN"
         return ord(self.x[index])
 
     # @staticmethod
@@ -3281,12 +3400,16 @@ class String:
 
     def repeat(self, count: int) -> str:
         """Returns a new string with a specified number of copies of an existing string"""
+        count = int(count)
+        if count < 0:
+            raise ValueError("repeat count must be non-negative")
         return self.x * count
 
     def startsWith(self, x: str, start: int = None, end: int = None) -> bool:
         """Checks whether a string begins with specified characters"""
         if start is None:
             start = 0
+        start = max(int(start), 0)
         if end is None:
             end = len(self.x)
         # print(self.x.startswith(x, start, end))
@@ -3294,10 +3417,14 @@ class String:
 
     def substring(self, start: int, end: int = None) -> str:
         """Extracts the characters from a string, between two specified indices"""
-        if start < 0:
-            start = 0
+        length = len(self.x)
+        start = min(max(int(start), 0), length)
         if end is None:
-            end = len(self.x)
+            end = length
+        else:
+            end = min(max(int(end), 0), length)
+        if start > end:
+            start, end = end, start
         return self.x[start:end]
 
     def endsWith(self, x: str, start: int = None, end: int = None) -> bool:
@@ -3336,10 +3463,10 @@ class String:
             [str]: [the character at the specified index.
             if the index is out of range, an empty string is returned.]
         """
-        try:
-            return self.x[index]
-        except IndexError:
+        index = int(index)
+        if index < 0 or index >= len(self.x):
             return ""
+        return self.x[index]
 
     def replace(self, old: str, new: str | Callable[..., str]) -> str:
         """
@@ -3373,8 +3500,15 @@ class String:
     def substr(self, start: int = 0, end: int | None = None) -> str:
         """Extracts the characters from a string, beginning at a specified start position,
         and through the specified number of character"""
+        length = len(self.x)
+        start = int(start)
+        if start < 0:
+            start = max(length + start, 0)
         if end is None:
-            end = len(self.x)
+            end = length - start
+        end = int(end)
+        if end <= 0:
+            return ""
         return self.x[start : start + end]
 
     def toLocaleLowerCase(self) -> str:
@@ -3399,10 +3533,11 @@ class String:
             [type]: [The index of the first occurrence of searchValue, or -1 if not found.]
 
         """
-        try:
-            return self.x.index(searchValue, fromIndex)
-        except ValueError:
-            return -1
+        searchValue = str(searchValue)
+        fromIndex = max(int(fromIndex), 0)
+        if fromIndex > len(self.x):
+            return len(self.x) if searchValue == "" else -1
+        return self.x.find(searchValue, fromIndex)
 
     def codePointAt(self, index: int) -> int:
         """[Returns the Unicode code point at the specified index (position)]
@@ -3413,6 +3548,9 @@ class String:
         Returns:
             [type]: [the Unicode code point at the specified index (position)]
         """
+        index = int(index)
+        if index < 0 or index >= len(self.x):
+            return undefined
         return ord(self.x[index])
 
     def padEnd(self, length: int, padChar: str = " ") -> str:
@@ -3426,7 +3564,13 @@ class String:
         Returns:
             [str]: [the padded string]
         """
-        return str(self.x + padChar * (length - len(self.x)))
+        length = int(length)
+        padChar = str(padChar)
+        if length <= len(self.x) or padChar == "":
+            return self.x
+        needed = length - len(self.x)
+        padding = (padChar * ((needed // len(padChar)) + 1))[:needed]
+        return self.x + padding
 
     def padStart(self, length: int, padChar: str = " ") -> str:
         """[Pads the start of a string with a specified character]
@@ -3438,7 +3582,13 @@ class String:
         Returns:
             [str]: [the padded string]
         """
-        return padChar * (length - len(self.x)) + self.x
+        length = int(length)
+        padChar = str(padChar)
+        if length <= len(self.x) or padChar == "":
+            return self.x
+        needed = length - len(self.x)
+        padding = (padChar * ((needed // len(padChar)) + 1))[:needed]
+        return padding + self.x
 
     def localeCompare(self, comparisonString: str, locale: str = None, *args) -> int:
         """method returns a number indicating whether a reference string comes before,
@@ -3478,6 +3628,7 @@ class String:
         Returns:
             [type]: [a boolean value indicating whether the search value was found.]
         """
+        position = min(max(int(position), 0), len(self.x))
         return searchValue in self.x[position:]
 
     def search(self, searchValue: str, position: int = 0) -> bool:
@@ -3489,6 +3640,7 @@ class String:
         Returns:
             [type]: [a boolean value indicating whether the search value was found.]
         """
+        position = min(max(int(position), 0), len(self.x))
         return searchValue in self.x[position:]
 
     def matchAll(self, pattern: str) -> str:
@@ -3515,15 +3667,19 @@ class String:
         """
         return re.compile(pattern)
 
-    def lastIndexOf(self, searchValue: str, fromIndex: int = 0) -> int:
+    def lastIndexOf(self, searchValue: str, fromIndex: int | None = None) -> int:
         """
         returns the last index within the calling String object of the first occurrence of the specified value,
         starting the search at fromIndex
         """
-        try:
-            return self.x.rindex(searchValue, fromIndex)
-        except ValueError:
-            return -1
+        searchValue = str(searchValue)
+        if fromIndex is None:
+            fromIndex = len(self.x)
+        else:
+            fromIndex = min(max(int(fromIndex), 0), len(self.x))
+        if searchValue == "":
+            return fromIndex
+        return self.x.rfind(searchValue, 0, fromIndex + len(searchValue))
 
     # def test(self, pattern: str):? was this on string?
 
@@ -3654,8 +3810,7 @@ class String:
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import (body, h1, head, html, link, meta, script,
-                                  style, title)
+        from domonic.html import body, h1, head, html, link, meta, script, style, title
 
         content = html(
             head(

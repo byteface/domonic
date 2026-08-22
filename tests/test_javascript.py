@@ -1,7 +1,7 @@
 """
-    test_javascript
-    ~~~~~~~~~~~~~~~
-    unit tests for domonic.javascript
+test_javascript
+~~~~~~~~~~~~~~~
+unit tests for domonic.javascript
 """
 
 import math
@@ -11,8 +11,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
-from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
-                                Window)
+from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
 
 # import requests
 # from mock import patch
@@ -337,6 +336,35 @@ class TestCase(unittest.TestCase):
         self.assertTrue(Global.Boolean("false"))
         self.assertTrue(Global.Boolean([]))
 
+    def test_domonic_global_number_and_parser_edge_cases(self):
+        self.assertEqual(Global.Number(""), 0)
+        self.assertEqual(Global.Number("   "), 0)
+        self.assertEqual(Global.Number(True), 1)
+        self.assertEqual(Global.Number(False), 0)
+        self.assertEqual(Global.Number(None), "NaN")
+        self.assertEqual(Global.Number("0x10"), 16)
+        self.assertEqual(Global.Number("-1.5e2"), -150.0)
+        self.assertEqual(Global.Number("1_000"), "NaN")
+
+        self.assertTrue(Global.isFinite(""))
+        self.assertFalse(Global.isFinite(None))
+        self.assertFalse(Global.isNaN("12.5"))
+        self.assertFalse(Global.isNaN(""))
+        self.assertTrue(Global.isNaN(None))
+        self.assertTrue(Global.isNaN("nope"))
+
+        self.assertEqual(Global.parseFloat("  -12.5px"), -12.5)
+        self.assertEqual(Global.parseFloat(".5rem"), 0.5)
+        self.assertEqual(Global.parseFloat("1e3ms"), 1000.0)
+        self.assertEqual(Global.parseFloat("0x10"), 0.0)
+        self.assertEqual(Global.parseFloat("nope"), "NaN")
+        self.assertEqual(Global.parseInt("  -12px"), -12)
+        self.assertEqual(Global.parseInt("0x10"), 16)
+        self.assertEqual(Global.parseInt("10", 2), 2)
+        self.assertEqual(Global.parseInt("0x10", 10), 0)
+        self.assertEqual(Global.parseInt("ff", 16), 255)
+        self.assertEqual(Global.parseInt("nope"), "NaN")
+
     def test_domonic_window_console_log(self):
         # window = Window()
         # Window().console.log("test this")
@@ -353,7 +381,9 @@ class TestCase(unittest.TestCase):
         print_mock.assert_called_once_with("test this 2")
 
     def test_domonic_window_prompt(self):
-        with patch("builtins.print") as print_mock, patch("builtins.input", return_value="typed"):
+        with patch("builtins.print") as print_mock, patch(
+            "builtins.input", return_value="typed"
+        ):
             self.assertEqual(Window.prompt("say something"), "typed")
         print_mock.assert_called_once_with("say something")
 
@@ -380,7 +410,9 @@ class TestCase(unittest.TestCase):
         performance.clearMarks()
         self.assertEqual(performance.getEntriesByType("mark"), [])
         performance.measure("named")
-        self.assertEqual(performance.getEntriesByName("named", "measure")[0].name, "named")
+        self.assertEqual(
+            performance.getEntriesByName("named", "measure")[0].name, "named"
+        )
         performance.clearMeasures("named")
         self.assertEqual(performance.getEntriesByName("named"), [])
         performance.clearMeasures()
@@ -540,7 +572,18 @@ class TestCase(unittest.TestCase):
         assert myarr == ["1", "a", "b", 7]
         assert myarr.concat() == ["1", "a", "b", 7]
         # assert myarr.concat(['a', 'b', 'c']) == ["1", "a", "b", 7, "a", "b", "c"]
-        assert myarr.concat(["a", "b", "c"], ["d", "e", "f"]) == ["1", "a", "b", 7, "a", "b", "c", "d", "e", "f"]
+        assert myarr.concat(["a", "b", "c"], ["d", "e", "f"]) == [
+            "1",
+            "a",
+            "b",
+            7,
+            "a",
+            "b",
+            "c",
+            "d",
+            "e",
+            "f",
+        ]
         # make array do both python and javascript methods.
         myarr = Array("1", "2", 3, {"4": "four"}, 5, [6])
         myarr.append("test")
@@ -559,7 +602,15 @@ class TestCase(unittest.TestCase):
 
         myarr = Array([3, 4, 2, "b", "c", 6, 3])
         # print(myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)))
-        assert myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)) == [4, 5, 3, "c", "d", 7, 4]
+        assert myarr.map(lambda x: x + 1 if type(x) == int else chr(ord(x) + 1)) == [
+            4,
+            5,
+            3,
+            "c",
+            "d",
+            7,
+            4,
+        ]
         # print(myarr.filter()) # passing nothing fails like javascript
         with self.assertRaises(TypeError):
             myarr.filter()
@@ -612,15 +663,32 @@ class TestCase(unittest.TestCase):
         assert myarr.findIndex("b") == 3
         assert myarr.findIndex("missing") == -1
         assert list(myarr.keys()) == list(range(len(myarr)))
-        assert list(myarr.entries()) == [[0, 3], [1, 4], [2, 2], [3, "b"], [4, "c"], [5, 6], [6, 3]]
+        assert list(myarr.entries()) == [
+            [0, 3],
+            [1, 4],
+            [2, 2],
+            [3, "b"],
+            [4, "c"],
+            [5, 6],
+            [6, 3],
+        ]
 
         assert Array.from_("abc") == ["a", "b", "c"]
         assert Array.from_({"a": 1}) == [("a", 1)]
         assert Array.of(1, 2, 3) == [1, 2, 3]
         assert Array([1, [2, [3]], 4]).flat() == [1, 2, [3], 4]
         assert Array([1, [2, [3]], 4]).flat(2) == [1, 2, 3, 4]
-        assert Array([1, 2, 3]).flatMap(lambda value: [value, value * 10]) == [1, 10, 2, 20, 3, 30]
-        assert Array([1, 2, 3, 4]).groupBy(lambda value, index, arr: "even" if value % 2 == 0 else "odd") == {
+        assert Array([1, 2, 3]).flatMap(lambda value: [value, value * 10]) == [
+            1,
+            10,
+            2,
+            20,
+            3,
+            30,
+        ]
+        assert Array([1, 2, 3, 4]).groupBy(
+            lambda value, index, arr: "even" if value % 2 == 0 else "odd"
+        ) == {
             "odd": [1, 3],
             "even": [2, 4],
         }
@@ -649,22 +717,54 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Array([1]).flat(-1)
 
+    def test_javascript_array_edge_cases(self):
+        myarr = Array([1, float("nan"), 3])
+        self.assertTrue(myarr.includes(float("nan")))
+        self.assertEqual(myarr.indexOf(float("nan")), -1)
+        self.assertEqual(myarr.lastIndexOf("missing"), -1)
+        self.assertIs(Array([1, 2]).at(5), undefined)
+        self.assertIs(Array([1, 2]).at(-3), undefined)
+
+        self.assertEqual(Array([1, 2, 3, 4]).fill(0, -2), [1, 2, 0, 0])
+        self.assertEqual(Array([1, 2, 3]).fill(9, 1, 99), [1, 9, 9])
+        self.assertEqual(Array([1, 2, 3]).fill(9, 2, 1), [1, 2, 3])
+
+        spliced = Array(["a", "b", "c"])
+        self.assertEqual(spliced.splice(1, -1, "x"), [])
+        self.assertEqual(spliced, ["a", "x", "b", "c"])
+
+        spliced = Array(["a", "b", "c"])
+        self.assertEqual(spliced.splice(-2, 1, "x"), ["b"])
+        self.assertEqual(spliced, ["a", "x", "c"])
+        self.assertEqual(
+            Array(["a", "b", "c"]).findIndex(lambda value: value == "b"), 1
+        )
+
     def test_javascript_map(self):
         mapping = Map({"a": 1})
         self.assertTrue(mapping.has("a"))
         self.assertEqual(mapping.get("a"), 1)
         self.assertEqual(mapping.keys(), ["a"])
         self.assertEqual(mapping.entries(), [("a", 1)])
+        self.assertEqual(mapping.values(), [1])
         mapping.set("b", 2)
         self.assertEqual(mapping.get("b"), 2)
         self.assertEqual(mapping.keys(), ["a", "b"])
+        self.assertEqual(mapping.values(), [1, 2])
         self.assertTrue(mapping.delete("a"))
         self.assertFalse(mapping.delete("a"))
         self.assertFalse(mapping.has("a"))
+        mapping.clear()
+        self.assertFalse(mapping.has("b"))
+        self.assertEqual(mapping.keys(), [])
+        self.assertEqual(mapping.entries(), [])
 
         list_map = Map(["x", "y"])
         self.assertEqual(list_map.get("x"), "x")
         self.assertEqual(list_map.get("y"), "y")
+        numeric = Map({1: "one"})
+        self.assertTrue(numeric.delete(1))
+        self.assertFalse(numeric.has(1))
 
     def test_javascript_interval(self):
         callback = Mock()
@@ -693,7 +793,9 @@ class TestCase(unittest.TestCase):
             promise = window.fetch(urls[0])
             self.assertEqual(promise.state, "fulfilled")
             self.assertEqual(promise.data.url, urls[0])
-            self.assertEqual(promise.then(lambda response: response.text).data, f"response:{urls[0]}")
+            self.assertEqual(
+                promise.then(lambda response: response.text).data, f"response:{urls[0]}"
+            )
 
             fetched = window.fetch_set(urls)
             self.assertEqual(len(fetched.results), 2)
@@ -706,7 +808,9 @@ class TestCase(unittest.TestCase):
 
             pooled = window.fetch_pooled(urls)
             self.assertEqual(len(pooled.results), 2)
-            self.assertEqual(sorted(result.url for result in pooled.results), sorted(urls))
+            self.assertEqual(
+                sorted(result.url for result in pooled.results), sorted(urls)
+            )
 
     def test_javascript_do_request_success_and_failure(self):
         class FakeRequest:
@@ -728,15 +832,28 @@ class TestCase(unittest.TestCase):
                 return None
 
         fetched = FetchedSet()
-        fake_requests = SimpleNamespace(Request=FakeRequest, Session=lambda: FakeSession())
+        fake_requests = SimpleNamespace(
+            Request=FakeRequest, Session=lambda: FakeSession()
+        )
         with patch.dict("sys.modules", {"requests": fake_requests}):
-            response = Window._do_request("https://example.com", fetched, method="POST", callback_function=lambda _: _, error_handler=None)
+            response = Window._do_request(
+                "https://example.com",
+                fetched,
+                method="POST",
+                callback_function=lambda _: _,
+                error_handler=None,
+            )
         self.assertEqual(response.url, "https://example.com")
         self.assertEqual(response.method, "POST")
         self.assertEqual(len(fetched.results), 1)
 
-        broken_requests = SimpleNamespace(Request=FakeRequest, Session=lambda: (_ for _ in ()).throw(RuntimeError("boom")))
-        with patch.dict("sys.modules", {"requests": broken_requests}), patch("builtins.print") as print_mock:
+        broken_requests = SimpleNamespace(
+            Request=FakeRequest,
+            Session=lambda: (_ for _ in ()).throw(RuntimeError("boom")),
+        )
+        with patch.dict("sys.modules", {"requests": broken_requests}), patch(
+            "builtins.print"
+        ) as print_mock:
             self.assertIsNone(Window._do_request("https://example.com"))
         print_mock.assert_called()
 
@@ -748,7 +865,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(myPromise.data, "ONCE!")
 
         rejected = Promise(lambda resolve, reject: reject("bad"))
-        self.assertEqual(rejected.catch(lambda error: f"caught:{error}").data, "caught:bad")
+        self.assertEqual(
+            rejected.catch(lambda error: f"caught:{error}").data, "caught:bad"
+        )
         self.assertEqual(rejected.state, "rejected")
 
     def test_javascript_string(self):
@@ -893,7 +1012,9 @@ class TestCase(unittest.TestCase):
         assert searchParams1.has("http://example.com/search?query") == True
 
         assert searchParams1.get("query") == None
-        searchParams1.get("http://example.com/search?query")  # "@" (equivalent to decodeURIComponent('%40'))
+        searchParams1.get(
+            "http://example.com/search?query"
+        )  # "@" (equivalent to decodeURIComponent('%40'))
 
         paramsString2 = "?query=value"
         searchParams2 = URLSearchParams(paramsString2)
@@ -905,7 +1026,9 @@ class TestCase(unittest.TestCase):
 
         self.assertEqual(searchParams3.toString(), "query=%40")
 
-        base64 = window.btoa(String.fromCharCode(19, 224, 23, 64, 31, 128))  # base64 is "E+AXQB+A"
+        base64 = window.btoa(
+            String.fromCharCode(19, 224, 23, 64, 31, 128)
+        )  # base64 is "E+AXQB+A"
         searchParams = URLSearchParams("q=foo&bin=" + str(base64))  # q=foo&bin=E+AXQB+A
         self.assertTrue(searchParams.has("bin"))
         # getBin = searchParams.get("bin")  # "E AXQB A" + char is replaced by spaces
@@ -978,7 +1101,9 @@ class TestCase(unittest.TestCase):
 
         with patch.object(º, "ajax", return_value=response):
 
-            @called(lambda: º.ajax("https://www.google.com"), lambda err: errors.append(err))
+            @called(
+                lambda: º.ajax("https://www.google.com"), lambda err: errors.append(err)
+            )
             def success(data=None):
                 seen.append(data.text if data is not None else None)
 
@@ -1077,7 +1202,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(text.split(r"\."), ["Hello", "World"])
         self.assertEqual(String("a,b,c").split(","), ["a", "b", "c"])
         self.assertEqual(text.concat("!", seperator=""), "Hello.World!")
-        self.assertEqual(text.replace(r"Hello", lambda match: match.group(0).upper()), "HELLO.World")
+        self.assertEqual(
+            text.replace(r"Hello", lambda match: match.group(0).upper()), "HELLO.World"
+        )
         self.assertEqual(text.replaceAll(".", "-"), "Hello-World")
         self.assertEqual(text.indexOf("World"), 6)
         self.assertEqual(text.indexOf("missing"), -1)
@@ -1107,6 +1234,27 @@ class TestCase(unittest.TestCase):
         self.assertIn("Hello.World", str(rendered))
         self.assertEqual(text.div(_class="hero").tagName, "div")
         self.assertIn("<html>", text.webpage())
+
+    def test_javascript_string_edge_cases(self):
+        self.assertEqual(String("a.b.c").split("."), ["a", "b", "c"])
+        self.assertEqual(String("abc").split(""), ["a", "b", "c"])
+        self.assertEqual(String("abcabc").indexOf("a", -1), 0)
+        self.assertEqual(String("abc").indexOf("", 99), 3)
+        self.assertEqual(String("ababa").lastIndexOf("ba", 2), 1)
+        self.assertEqual(String("ababa").lastIndexOf("a", 0), 0)
+        self.assertEqual(String("abc").lastIndexOf("", 99), 3)
+        self.assertTrue(String("abc").includes("a", -1))
+        self.assertTrue(String("abc").includes("", 99))
+        self.assertEqual(String("abc").charAt(-1), "")
+        self.assertEqual(String("abc").charCodeAt(99), "NaN")
+        self.assertIs(String("abc").codePointAt(99), undefined)
+        self.assertEqual(String("abc").substring(2, 1), "b")
+        self.assertEqual(String("abc").substr(1, -1), "")
+        self.assertEqual(String("abc").padStart(6, "01"), "010abc")
+        self.assertEqual(String("abc").padEnd(6, "01"), "abc010")
+        self.assertEqual(String("abc").padStart(6, ""), "abc")
+        with self.assertRaises(ValueError):
+            String("x").repeat(-1)
 
     def test_javascript_regexp_surface(self):
         regex = RegExp(r"(foo)(bar)", "im")
@@ -1550,8 +1698,12 @@ class TestCase(unittest.TestCase):
     def test_reflect(self):
         target = {"name": "John"}
         self.assertEqual(list(Reflect.ownKeys(target)), ["name"])
-        self.assertEqual(Reflect.apply(lambda left, right: left + right, None, [2, 3]), 5)
-        self.assertEqual(Reflect.construct(dict, [[("name", "John")]]), {"name": "John"})
+        self.assertEqual(
+            Reflect.apply(lambda left, right: left + right, None, [2, 3]), 5
+        )
+        self.assertEqual(
+            Reflect.construct(dict, [[("name", "John")]]), {"name": "John"}
+        )
         self.assertTrue(Reflect.defineProperty(target, "age", {"value": 30}))
         self.assertEqual(Reflect.get(target, "age", None), 30)
         self.assertTrue(Reflect.has(target, "age"))
