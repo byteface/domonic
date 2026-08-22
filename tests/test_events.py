@@ -1,7 +1,7 @@
 """
-    test_events
-    ~~~~~~~~~~~~
-    - unit tests for events
+test_events
+~~~~~~~~~~~~
+- unit tests for events
 
 """
 
@@ -11,6 +11,7 @@ import unittest
 from domonic import *
 from domonic.dom import Range, document
 from domonic.events import *
+
 
 class TestCase(unittest.TestCase):
     """Tests for the events classes"""
@@ -44,8 +45,12 @@ class TestCase(unittest.TestCase):
         self.assertIn(site, event_results)
 
     def test_modern_html_event_types(self):
+        self.assertEqual(Event.ADDTRACK, "addtrack")
+        self.assertEqual(Event.DATAAVAILABLE, "dataavailable")
         self.assertEqual(Event.BEFOREMATCH, "beforematch")
         self.assertEqual(Event.BEFORETOGGLE, "beforetoggle")
+        self.assertEqual(Event.DEVICEMOTION, "devicemotion")
+        self.assertEqual(Event.DEVICEORIENTATION, "deviceorientation")
         self.assertEqual(Event.DOMCONTENTLOADED, "DOMContentLoaded")
         self.assertEqual(Event.BEFOREINPUT, "beforeinput")
         self.assertEqual(Event.CURRENTENTRYCHANGE, "currententrychange")
@@ -59,8 +64,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Event.NAVIGATESUCCESS, "navigatesuccess")
         self.assertEqual(Event.PAGEREVEAL, "pagereveal")
         self.assertEqual(Event.PAGESWAP, "pageswap")
+        self.assertEqual(Event.REMOVETRACK, "removetrack")
         self.assertEqual(Event.SCROLLEND, "scrollend")
         self.assertEqual(Event.SLOTCHANGE, "slotchange")
+        self.assertEqual(Event.WEBGLCONTEXTLOST, "webglcontextlost")
         self.assertIn("onbeforematch", GlobalEventHandler._handler_names)
         self.assertIn("onbeforetoggle", GlobalEventHandler._handler_names)
         self.assertIn("onbeforeinput", GlobalEventHandler._handler_names)
@@ -74,12 +81,19 @@ class TestCase(unittest.TestCase):
         self.assertIn("ontoggle", GlobalEventHandler._handler_names)
         self.assertIn("onvisibilitychange", WindowEventHandler._handler_names)
 
-        toggle_event = ToggleEvent(ToggleEvent.BEFORETOGGLE, oldState="closed", newState="open", source="button")
+        toggle_event = ToggleEvent(
+            ToggleEvent.BEFORETOGGLE,
+            oldState="closed",
+            newState="open",
+            source="button",
+        )
         self.assertEqual(toggle_event.oldState, "closed")
         self.assertEqual(toggle_event.newState, "open")
         self.assertEqual(toggle_event.source, "button")
 
-        command_event = CommandEvent(CommandEvent.COMMAND, command="show-modal", source="button")
+        command_event = CommandEvent(
+            CommandEvent.COMMAND, command="show-modal", source="button"
+        )
         self.assertEqual(command_event.command, "show-modal")
         self.assertEqual(command_event.source, "button")
 
@@ -196,12 +210,18 @@ class TestCase(unittest.TestCase):
         child.parentNode = parent
         results = []
 
-        parent.addEventListener("custom_event", lambda event: results.append(("parent", event.eventPhase)))
-        child.addEventListener("custom_event", lambda event: results.append(("child", event.eventPhase)))
+        parent.addEventListener(
+            "custom_event", lambda event: results.append(("parent", event.eventPhase))
+        )
+        child.addEventListener(
+            "custom_event", lambda event: results.append(("child", event.eventPhase))
+        )
 
         child.dispatchEvent(Event("custom_event", {"bubbles": True}))
 
-        self.assertEqual(results, [("child", Event.AT_TARGET), ("parent", Event.BUBBLING_PHASE)])
+        self.assertEqual(
+            results, [("child", Event.AT_TARGET), ("parent", Event.BUBBLING_PHASE)]
+        )
 
     def test_event_target_with_target_matching(self):
         # Create an event target and some event handlers
@@ -270,7 +290,12 @@ class TestCase(unittest.TestCase):
         target.dispatchEvent(custom_event)
 
         # Check if the event listeners in the capture phase were executed in order
-        expected_results = ["Capture Handler 1", "Capture Handler 2", "Capture Handler 3", "Bubble Handler"]
+        expected_results = [
+            "Capture Handler 1",
+            "Capture Handler 2",
+            "Capture Handler 3",
+            "Bubble Handler",
+        ]
         self.assertEqual(results, expected_results)
 
     def test_capture_and_bubble_order_across_path(self):
@@ -281,29 +306,99 @@ class TestCase(unittest.TestCase):
         child.parentNode = parent
         results = []
 
-        root.addEventListener("custom_event", lambda event: results.append("root-capture"), {"capture": True})
-        parent.addEventListener("custom_event", lambda event: results.append("parent-capture"), {"capture": True})
-        child.addEventListener("custom_event", lambda event: results.append("child-capture"), {"capture": True})
-        child.addEventListener("custom_event", lambda event: results.append("child-bubble"))
-        parent.addEventListener("custom_event", lambda event: results.append("parent-bubble"))
+        root.addEventListener(
+            "custom_event",
+            lambda event: results.append("root-capture"),
+            {"capture": True},
+        )
+        parent.addEventListener(
+            "custom_event",
+            lambda event: results.append("parent-capture"),
+            {"capture": True},
+        )
+        child.addEventListener(
+            "custom_event",
+            lambda event: results.append("child-capture"),
+            {"capture": True},
+        )
+        child.addEventListener(
+            "custom_event", lambda event: results.append("child-bubble")
+        )
+        parent.addEventListener(
+            "custom_event", lambda event: results.append("parent-bubble")
+        )
 
         child.dispatchEvent(Event("custom_event", {"bubbles": True}))
 
         self.assertEqual(
             results,
-            ["root-capture", "parent-capture", "child-capture", "child-bubble", "parent-bubble"],
+            [
+                "root-capture",
+                "parent-capture",
+                "child-capture",
+                "child-bubble",
+                "parent-bubble",
+            ],
         )
 
     def test_once_listener_is_removed_after_first_dispatch(self):
         target = EventTarget()
         calls = []
 
-        target.addEventListener("custom_event", lambda event: calls.append(event.type), {"once": True})
+        target.addEventListener(
+            "custom_event", lambda event: calls.append(event.type), {"once": True}
+        )
 
         target.dispatchEvent(Event("custom_event"))
         target.dispatchEvent(Event("custom_event"))
 
         self.assertEqual(calls, ["custom_event"])
+
+    def test_event_target_listener_edge_cases(self):
+        target = EventTarget()
+        calls = []
+
+        def listener(event):
+            calls.append((event.type, event.eventPhase))
+
+        target.addEventListener("custom_event", None)
+        self.assertFalse(target.hasEventListener("custom_event"))
+
+        target.addEventListener("custom_event", listener, {"capture": True})
+        target.addEventListener("custom_event", listener)
+        target.removeEventListener("custom_event", listener, {"capture": True})
+
+        target.dispatchEvent("custom_event")
+        target.dispatchEvent({"type": "custom_event"})
+
+        self.assertEqual(
+            calls,
+            [
+                ("custom_event", Event.AT_TARGET),
+                ("custom_event", Event.AT_TARGET),
+            ],
+        )
+        self.assertEqual(target.listeners["custom_event"], [listener])
+
+        with self.assertRaises(TypeError):
+            target.dispatchEvent(object())
+
+    def test_once_listener_is_removed_even_when_it_raises(self):
+        target = EventTarget()
+        calls = []
+
+        def boom(event):
+            calls.append(event.type)
+            raise RuntimeError("boom")
+
+        target.addEventListener("custom_event", boom, {"once": True})
+
+        with self.assertRaises(RuntimeError):
+            target.dispatchEvent(Event("custom_event"))
+
+        target.dispatchEvent(Event("custom_event"))
+        self.assertEqual(calls, ["custom_event"])
+        self.assertFalse(target.hasEventListener("custom_event"))
 
     def test_stop_immediate_propagation_stops_remaining_listeners(self):
         target = EventTarget()
@@ -331,7 +426,7 @@ class TestCase(unittest.TestCase):
             "detail": "click_detail",
             "layerX": 10,
             "layerY": 20,
-            "sourceCapabilities": "capabilities"
+            "sourceCapabilities": "capabilities",
         }
 
         ui_event = UIEvent(Event.RESIZE, **event_data)
@@ -377,9 +472,37 @@ class TestCase(unittest.TestCase):
         self.assertIs(event.submitter, submitter)
 
     def test_mouse_event_client_coordinates_and_modifiers(self):
-        event = MouseEvent("click", {"clientX": 10, "clientY": 20, "ctrlKey": True})
+        related = object()
+        event = MouseEvent(
+            "click",
+            {
+                "clientX": 10,
+                "clientY": 20,
+                "screenX": 30,
+                "screenY": 40,
+                "pageX": 50,
+                "pageY": 60,
+                "offsetX": 7,
+                "offsetY": 8,
+                "movementX": 2,
+                "movementY": 3,
+                "button": 2,
+                "buttons": 2,
+                "ctrlKey": True,
+                "relatedTarget": related,
+            },
+        )
         self.assertEqual(event.clientX, 10)
         self.assertEqual(event.clientY, 20)
+        self.assertEqual((event.x, event.y), (10, 20))
+        self.assertEqual((event.screenX, event.screenY), (30, 40))
+        self.assertEqual((event.pageX, event.pageY), (50, 60))
+        self.assertEqual((event.offsetX, event.offsetY), (7, 8))
+        self.assertEqual((event.movementX, event.movementY), (2, 3))
+        self.assertEqual(event.button, 2)
+        self.assertEqual(event.buttons, 2)
+        self.assertEqual(event.which, 3)
+        self.assertIs(event.relatedTarget, related)
         self.assertTrue(event.getModifierState("Control"))
 
     def test_document_create_event_specializations(self):
@@ -392,6 +515,23 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(document.createEvent("ErrorEvent"), ErrorEvent)
         self.assertIsInstance(document.createEvent("PopStateEvent"), PopStateEvent)
         self.assertIsInstance(document.createEvent("CloseEvent"), CloseEvent)
+        self.assertIsInstance(document.createEvent("DragEvent"), DragEvent)
+        self.assertIsInstance(document.createEvent("FormDataEvent"), FormDataEvent)
+        self.assertIsInstance(document.createEvent("TrackEvent"), TrackEvent)
+        self.assertIsInstance(document.createEvent("BlobEvent"), BlobEvent)
+        self.assertIsInstance(
+            document.createEvent("DeviceMotionEvent"), DeviceMotionEvent
+        )
+        self.assertIsInstance(
+            document.createEvent("DeviceOrientationEvent"), DeviceOrientationEvent
+        )
+        self.assertIsInstance(
+            document.createEvent("SecurityPolicyViolationEvent"),
+            SecurityPolicyViolationEvent,
+        )
+        self.assertIsInstance(
+            document.createEvent("WebGLContextEvent"), WebGLContextEvent
+        )
 
     def test_handle_event_listener_object(self):
         target = EventTarget()
@@ -425,8 +565,14 @@ class TestCase(unittest.TestCase):
         target = EventTarget()
         listener_calls = []
 
-        signal.addEventListener("abort", lambda event: events.append((event.type, signal.reason)))
-        target.addEventListener("custom_event", lambda event: listener_calls.append(event.type), {"signal": signal})
+        signal.addEventListener(
+            "abort", lambda event: events.append((event.type, signal.reason))
+        )
+        target.addEventListener(
+            "custom_event",
+            lambda event: listener_calls.append(event.type),
+            {"signal": signal},
+        )
 
         controller.abort("stop")
         target.dispatchEvent(Event("custom_event"))
@@ -438,7 +584,11 @@ class TestCase(unittest.TestCase):
 
         already_aborted = AbortController()
         already_aborted.abort("done")
-        target.addEventListener("never", lambda event: listener_calls.append("never"), {"signal": already_aborted.signal})
+        target.addEventListener(
+            "never",
+            lambda event: listener_calls.append("never"),
+            {"signal": already_aborted.signal},
+        )
         self.assertFalse(target.hasEventListener("never"))
 
     def test_close_event_shape(self):
@@ -449,16 +599,22 @@ class TestCase(unittest.TestCase):
 
     def test_long_tail_event_data_helpers(self):
         custom_event = CustomEvent("custom")
-        custom_event.initCustomEvent("customized", bubbles=False, cancelable=True, detail={"ok": True})
+        custom_event.initCustomEvent(
+            "customized", bubbles=False, cancelable=True, detail={"ok": True}
+        )
         self.assertEqual(custom_event.type, "customized")
         self.assertEqual(custom_event.detail, {"ok": True})
         self.assertFalse(custom_event.bubbles)
 
-        transition = TransitionEvent("transitionend", {"propertyName": "opacity", "elapsedTime": 0.25})
+        transition = TransitionEvent(
+            "transitionend", {"propertyName": "opacity", "elapsedTime": 0.25}
+        )
         self.assertEqual(transition.propertyName, "opacity")
         self.assertEqual(transition.elapsedTime, 0.25)
 
-        request = type("Request", (), {"url": "/a", "referrer": "/a", "clientId": "c1"})()
+        request = type(
+            "Request", (), {"url": "/a", "referrer": "/a", "clientId": "c1"}
+        )()
         fetch_event = FetchEvent("fetch", {"request": request, "clientId": "c2"})
         self.assertTrue(fetch_event.isReload)
         self.assertTrue(fetch_event.replacesClientId)
@@ -470,7 +626,9 @@ class TestCase(unittest.TestCase):
         self.assertIs(extendable.waitUntil(marker), marker)
         self.assertEqual(extendable._pending_promises, [marker])
 
-        promise_event = PromiseRejectionEvent("unhandledrejection", {"reason": "boom", "isRejected": True})
+        promise_event = PromiseRejectionEvent(
+            "unhandledrejection", {"reason": "boom", "isRejected": True}
+        )
         self.assertEqual(promise_event.reason, "boom")
         self.assertTrue(promise_event.isRejected)
 
@@ -495,12 +653,38 @@ class TestCase(unittest.TestCase):
         self.assertTrue(ui_event.bubbles)
         self.assertFalse(ui_event.cancelable)
 
-        mouse_event = MouseEvent("click").initMouseEvent("mousedown", True, True, None, 1, 0, 0, 11, 22, True, False, False, False, 1, None)
+        mouse_event = MouseEvent("click").initMouseEvent(
+            "mousedown",
+            True,
+            True,
+            None,
+            1,
+            0,
+            0,
+            11,
+            22,
+            True,
+            False,
+            False,
+            False,
+            1,
+            None,
+        )
         self.assertEqual(mouse_event.type, "mousedown")
         self.assertEqual(mouse_event.clientX, 11)
         self.assertTrue(mouse_event.ctrlKey)
 
-        keyboard_event = KeyboardEvent("keydown").initKeyboardEvent("keyup", True, True, None, 65, "A", 0, "", False)
+        relayed_mouse_event = MouseEvent("mousemove").initMouseEvent(
+            from_json={"clientX": 44, "clientY": 55, "button": 2, "buttons": 2}
+        )
+        self.assertEqual(relayed_mouse_event.clientX, 44)
+        self.assertEqual(relayed_mouse_event.clientY, 55)
+        self.assertEqual(relayed_mouse_event.button, 2)
+        self.assertEqual(relayed_mouse_event.buttons, 2)
+
+        keyboard_event = KeyboardEvent("keydown").initKeyboardEvent(
+            "keyup", True, True, None, 65, "A", 0, "", False
+        )
         self.assertEqual(keyboard_event.type, "keyup")
         self.assertEqual(keyboard_event.key, "a")
         self.assertEqual(keyboard_event.charCode, 65)
@@ -535,11 +719,17 @@ class TestCase(unittest.TestCase):
         self.assertTrue(keyboard_event.getModifierState("CapsLock"))
         self.assertFalse(keyboard_event.getModifierState("Shift"))
 
-        pointer_event = PointerEvent("pointerdown", {"clientX": 5, "clientY": 6, "pointerId": 3})
+        pointer_event = PointerEvent(
+            "pointerdown", {"clientX": 5, "clientY": 6, "pointerId": 3}
+        )
         self.assertEqual(pointer_event.clientX, 5)
         self.assertEqual(pointer_event.pointerId, 3)
+        self.assertEqual(pointer_event.width, 1)
+        self.assertEqual(pointer_event.height, 1)
 
-        error_event = ErrorEvent("error", {"message": "boom", "filename": "x.py", "lineno": 4, "colno": 2})
+        error_event = ErrorEvent(
+            "error", {"message": "boom", "filename": "x.py", "lineno": 4, "colno": 2}
+        )
         self.assertEqual(error_event.filename, "x.py")
         self.assertEqual(error_event.lineno, 4)
 
@@ -568,10 +758,26 @@ class TestCase(unittest.TestCase):
         self.assertFalse(event.defaultPrevented)
         self.assertTrue(event.returnValue)
 
+        event = Event("custom", {"defaultPrevented": True})
+        self.assertTrue(event.defaultPrevented)
+        self.assertFalse(event.returnValue)
+
     def test_pointer_beforeunload_input_and_fetch_helpers(self):
-        pointer = PointerEvent("pointermove", {"coalescedEvents": [1, 2], "predictedEvents": [3]})
+        pointer = PointerEvent(
+            "pointermove",
+            {
+                "coalescedEvents": [1, 2],
+                "predictedEvents": [3],
+                "altitudeAngle": 0.5,
+                "azimuthAngle": 1.5,
+                "persistentDeviceId": 42,
+            },
+        )
         self.assertEqual(pointer.getCoalescedEvents(), [1, 2])
         self.assertEqual(pointer.getPredictedEvents(), [3])
+        self.assertEqual(pointer.altitudeAngle, 0.5)
+        self.assertEqual(pointer.azimuthAngle, 1.5)
+        self.assertEqual(pointer.persistentDeviceId, 42)
 
         beforeunload = BeforeUnloadEvent("beforeunload")
         beforeunload.returnValue = "Leave?"
@@ -581,12 +787,24 @@ class TestCase(unittest.TestCase):
         self.assertFalse(beforeunload.defaultPrevented)
 
         target = EventTarget()
-        input_event = InputEvent("input")
+        input_event = InputEvent("input", {"targetRanges": [Range()]})
         input_event.target = target
-        input_event._targetRanges = [Range()]
         self.assertEqual(len(input_event.getTargetRanges()), 1)
 
-        request = type("Request", (), {"url": "/a", "referrer": "/b", "clientId": "c1"})()
+        wheel = WheelEvent("wheel", {"deltaMode": WheelEvent.DOM_DELTA_LINE})
+        self.assertEqual(wheel.deltaMode, WheelEvent.DOM_DELTA_LINE)
+
+        touch = TouchEvent("touchstart", {"touches": [1], "shiftKey": True})
+        self.assertEqual(touch.touches, [1])
+        self.assertTrue(touch.getModifierState("Shift"))
+
+        drag = DragEvent("drag", {"clientX": 9, "dataTransfer": {"text": "hi"}})
+        self.assertEqual(drag.clientX, 9)
+        self.assertEqual(drag.dataTransfer, {"text": "hi"})
+
+        request = type(
+            "Request", (), {"url": "/a", "referrer": "/b", "clientId": "c1"}
+        )()
         fetch_event = FetchEvent("fetch", {"request": request})
         marker = object()
         self.assertIs(fetch_event.waitUntil(marker), marker)
@@ -600,6 +818,220 @@ class TestCase(unittest.TestCase):
 
         self.assertEqual(event.eventPhase, Event.NONE)
         self.assertIsNone(event.currentTarget)
+
+    def test_init_event_defaults_and_noops_while_dispatching(self):
+        event = Event("custom_event", {"bubbles": True, "cancelable": True})
+        event.initEvent("reset_event")
+
+        self.assertEqual(event.type, "reset_event")
+        self.assertFalse(event.bubbles)
+        self.assertFalse(event.cancelable)
+
+        target = EventTarget()
+        dispatched = Event("custom_event")
+
+        def listener(evt):
+            evt.initEvent("mutated", True, True)
+
+        target.addEventListener("custom_event", listener)
+        target.dispatchEvent(dispatched)
+
+        self.assertEqual(dispatched.type, "custom_event")
+        self.assertFalse(dispatched.bubbles)
+        self.assertFalse(dispatched.cancelable)
+
+    def test_modern_event_data_classes(self):
+        marker = object()
+        self.assertIs(FormDataEvent("formdata", {"formData": marker}).formData, marker)
+        self.assertIs(TrackEvent("addtrack", {"track": marker}).track, marker)
+        self.assertEqual(
+            BlobEvent("dataavailable", {"data": b"x", "timecode": 12}).timecode,
+            12,
+        )
+
+        motion = DeviceMotionEvent(
+            "devicemotion",
+            {
+                "acceleration": {"x": 1},
+                "accelerationIncludingGravity": {"z": 9.8},
+                "rotationRate": {"alpha": 2},
+                "interval": 16,
+            },
+        )
+        self.assertEqual(motion.acceleration, {"x": 1})
+        self.assertEqual(motion.accelerationIncludingGravity, {"z": 9.8})
+        self.assertEqual(motion.rotationRate, {"alpha": 2})
+        self.assertEqual(motion.interval, 16)
+
+        orientation = DeviceOrientationEvent(
+            "deviceorientation",
+            {"absolute": True, "alpha": 1, "beta": 2, "gamma": 3},
+        )
+        self.assertTrue(orientation.absolute)
+        self.assertEqual(
+            (orientation.alpha, orientation.beta, orientation.gamma), (1, 2, 3)
+        )
+
+        light = DeviceLightEvent("devicelight", {"value": 50})
+        self.assertEqual(light.value, 50)
+
+        proximity = DeviceProximityEvent(
+            "deviceproximity", {"value": 3, "min": 1, "max": 10}
+        )
+        self.assertEqual((proximity.value, proximity.min, proximity.max), (3, 1, 10))
+
+        webgl = WebGLContextEvent("webglcontextlost", {"statusMessage": "context lost"})
+        self.assertEqual(webgl.statusMessage, "context lost")
+
+        violation = SecurityPolicyViolationEvent(
+            "securitypolicyviolation",
+            {
+                "documentURI": "https://example.com",
+                "referrer": "https://referrer.example",
+                "blockedURI": "inline",
+                "violatedDirective": "script-src",
+                "effectiveDirective": "script-src-elem",
+                "originalPolicy": "script-src 'self'",
+                "disposition": "enforce",
+                "sourceFile": "app.js",
+                "statusCode": 200,
+                "lineNumber": 4,
+                "columnNumber": 8,
+                "sample": "alert(1)",
+            },
+        )
+        self.assertEqual(violation.documentURI, "https://example.com")
+        self.assertEqual(violation.effectiveDirective, "script-src-elem")
+        self.assertEqual(violation.statusCode, 200)
+        self.assertFalse(hasattr(violation, "waitUntil"))
+
+    def test_long_tail_event_shapes_and_legacy_helpers(self):
+        options = EventListenerOptions(
+            capture=True, once=True, passive=True, signal="signal"
+        )
+        self.assertEqual(
+            options,
+            {"capture": True, "once": True, "passive": True, "signal": "signal"},
+        )
+
+        base_event = Event("custom")
+        self.assertEqual(
+            base_event.msConvertURL("https://example.com"),
+            'javascript:window.open("https://example.com");',
+        )
+        self.assertEqual(
+            base_event.msConvertURL("mailto:test@example.com"),
+            "mailto:test@example.com",
+        )
+
+        controller = AbortController()
+        aborts = []
+        controller.signal.onabort = lambda event: aborts.append(
+            controller.signal.reason
+        )
+        controller.abort("stop")
+        controller.abort("ignored")
+        self.assertEqual(aborts, ["stop"])
+        with self.assertRaises(RuntimeError):
+            controller.signal.throwIfAborted()
+
+        self.assertEqual(
+            CompositionEvent("compositionupdate", {"data": "é", "locale": "fr"}).data,
+            "é",
+        )
+        marker = object()
+        self.assertIs(
+            FocusEvent("focus", {"relatedTarget": marker}).relatedTarget, marker
+        )
+
+        animation = AnimationEvent(
+            "animationend",
+            {"animationName": "fade", "elapsedTime": 0.3, "pseudoElement": "::before"},
+        )
+        self.assertEqual(animation.animationName, "fade")
+        self.assertEqual(animation.pseudoElement, "::before")
+
+        clipboard = ClipboardEvent("copy", {"clipboardData": {"text/plain": "hi"}})
+        self.assertEqual(clipboard.clipboardData, {"text/plain": "hi"})
+
+        self.assertEqual(SVGEvent("load").type, "load")
+        self.assertEqual(TimerEvent(TimerEvent.TIMER_COMPLETE).type, "timercomplete")
+        self.assertTrue(PageTransitionEvent("pageshow", {"persisted": True}).persisted)
+        self.assertEqual(PopStateEvent("popstate", {"state": {"x": 1}}).state, {"x": 1})
+
+        storage = StorageEvent(
+            "storage",
+            {
+                "key": "theme",
+                "oldValue": "light",
+                "newValue": "dark",
+                "url": "https://example.com",
+            },
+        )
+        self.assertEqual(
+            (storage.key, storage.oldValue, storage.newValue),
+            ("theme", "light", "dark"),
+        )
+
+        progress = ProgressEvent(
+            "progress", {"lengthComputable": True, "loaded": 5, "total": 10}
+        )
+        self.assertTrue(progress.lengthComputable)
+        self.assertEqual((progress.loaded, progress.total), (5, 10))
+
+        loaded = DOMContentLoadedEvent("DOMContentLoaded", {"document": document})
+        self.assertIs(loaded.document, document)
+
+        sync = SyncEvent("sync", {"tag": "outbox", "lastChance": True})
+        self.assertEqual(sync.tag, "outbox")
+        self.assertTrue(sync.lastChance)
+
+        tween = TweenEvent(
+            TweenEvent.COMPLETE, source="animation", bubbles=True, cancelable=True
+        )
+        self.assertEqual(tween.source, "animation")
+        self.assertTrue(tween.bubbles)
+        self.assertTrue(tween.cancelable)
+
+    def test_async_dispatch_path_and_handler_callback(self):
+        async def runner():
+            root = EventTarget()
+            parent = EventTarget()
+            child = EventTarget()
+            parent.parentNode = root
+            child.parentNode = parent
+            calls = []
+
+            async def root_capture(event):
+                await asyncio.sleep(0)
+                calls.append(("root", event.eventPhase))
+
+            def parent_bubble(event):
+                calls.append(("parent", event.eventPhase))
+
+            async def child_handler(event):
+                calls.append(("handler", event.eventPhase))
+                return False
+
+            root.addEventListener("custom", root_capture, {"capture": True})
+            parent.addEventListener("custom", parent_bubble)
+            child.oncustom = child_handler
+
+            event = Event("custom", {"bubbles": True, "cancelable": True})
+            result = await child.dispatchEventAsync(event)
+
+            self.assertFalse(result)
+            self.assertTrue(event.defaultPrevented)
+            self.assertEqual(
+                calls,
+                [
+                    ("root", Event.CAPTURING_PHASE),
+                    ("handler", Event.AT_TARGET),
+                    ("parent", Event.BUBBLING_PHASE),
+                ],
+            )
+
+        asyncio.run(runner())
 
     def test_async_dispatch_respects_false_and_resets_state(self):
         async def runner():
@@ -619,5 +1051,6 @@ class TestCase(unittest.TestCase):
 
         asyncio.run(runner())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

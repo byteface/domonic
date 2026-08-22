@@ -15,8 +15,14 @@ import inspect
 import time
 from typing import Any, Callable, ClassVar
 
-from domonic.constants.keyboard import (Code, Key, KeyCode, KeyLocation,
-                                        normalize_code, normalize_key)
+from domonic.constants.keyboard import (
+    Code,
+    Key,
+    KeyCode,
+    KeyLocation,
+    normalize_code,
+    normalize_key,
+)
 
 
 class EventListener:
@@ -143,17 +149,19 @@ class EventTarget:
                 continue
             callback = listener["callback"]
             event._in_passive_listener = listener["passive"]
-            if hasattr(callback, "handleEvent"):
-                result = callback.handleEvent(event)
-            else:
-                result = callback(event)
-            if result is False:
-                event.preventDefault()
-            event._in_passive_listener = False
-            if listener["once"]:
-                current_target.removeEventListener(
-                    event_type, callback, listener["capture"]
-                )
+            try:
+                if hasattr(callback, "handleEvent"):
+                    result = callback.handleEvent(event)
+                else:
+                    result = callback(event)
+                if result is False:
+                    event.preventDefault()
+            finally:
+                event._in_passive_listener = False
+                if listener["once"]:
+                    current_target.removeEventListener(
+                        event_type, callback, listener["capture"]
+                    )
             if event._immediate_propagation_stopped:
                 return
 
@@ -167,7 +175,7 @@ class EventTarget:
     def addEventListener(
         self,
         eventType: str,
-        callback: Callable[..., Any],
+        callback: Callable[..., Any] | None,
         options: bool | dict[str, Any] | None = None,
         *args,
         **kwargs,
@@ -179,6 +187,8 @@ class EventTarget:
             eventType (str): The type of the event to listen for.
             callback (Callable): The callback function to be executed when the event occurs.
         """
+        if callback is None:
+            return
         if eventType not in self.listeners:
             self.listeners[eventType] = []
             self._listener_options[eventType] = []
@@ -213,7 +223,7 @@ class EventTarget:
     def removeEventListener(
         self,
         eventType: str,
-        callback: Callable[..., Any],
+        callback: Callable[..., Any] | None,
         options: bool | dict[str, Any] | None = None,
     ) -> None:
         """
@@ -223,7 +233,7 @@ class EventTarget:
             eventType (str): The type of the event.
             callback (Callable): The callback function to be removed.
         """
-        if eventType not in self.listeners:
+        if callback is None or eventType not in self.listeners:
             return
         capture = self._normalize_listener_options(options)["capture"]
         callbacks = self.listeners[eventType]
@@ -231,14 +241,22 @@ class EventTarget:
         for index, listener in enumerate(listeners):
             if listener["callback"] is callback and listener["capture"] == capture:
                 listeners.pop(index)
-                try:
-                    callbacks.remove(callback)
-                except ValueError:
-                    pass
+                if index < len(callbacks):
+                    callbacks.pop(index)
                 break
         if not listeners:
             self._listener_options.pop(eventType, None)
             self.listeners.pop(eventType, None)
+
+    @staticmethod
+    def _coerce_event(event: Any) -> "Event":
+        if isinstance(event, Event):
+            return event
+        if isinstance(event, str):
+            return Event(event)
+        if isinstance(event, dict):
+            return Event(event.get("type", ""), event)
+        raise TypeError("dispatchEvent() expects an Event, event type, or mapping")
 
     def dispatchEvent(self, event: Any) -> bool:
         """
@@ -250,8 +268,7 @@ class EventTarget:
         Returns:
             bool: True if the event was successfully dispatched, otherwise False.
         """
-        if not isinstance(event, Event):
-            event = Event(event.get("type", ""), event)
+        event = self._coerce_event(event)
         event.target = self
         event.currentTarget = self
         event.srcElement = self
@@ -259,6 +276,7 @@ class EventTarget:
         event._propagation_stopped = False
         event._immediate_propagation_stopped = False
         event._in_passive_listener = False
+        event._dispatching = True
 
         path = self._get_event_path(self)
         event._path = path
@@ -284,6 +302,7 @@ class EventTarget:
                     break
             return not event.defaultPrevented
         finally:
+            event._dispatching = False
             event.eventPhase = Event.NONE
             event.currentTarget = None
             event._in_passive_listener = False
@@ -310,8 +329,7 @@ class EventTarget:
             async_event = {"type": "async_event", "data": event_data}
             await target.dispatchEventAsync(async_event)
         """
-        if not isinstance(event, Event):
-            event = Event(event.get("type", ""), event)
+        event = self._coerce_event(event)
         event.target = self
         event.currentTarget = self
         event.srcElement = self
@@ -319,6 +337,7 @@ class EventTarget:
         event._propagation_stopped = False
         event._immediate_propagation_stopped = False
         event._in_passive_listener = False
+        event._dispatching = True
 
         async def call_listener(
             callback: Callable[..., Any], current_target: Any, capture: bool
@@ -346,21 +365,30 @@ class EventTarget:
                 if listener["capture"] != capture:
                     continue
                 event._in_passive_listener = listener["passive"]
-                result = await call_listener(
-                    listener["callback"], current_target, capture
-                )
-                if result is False:
-                    event.preventDefault()
-                event._in_passive_listener = False
-                if listener["once"]:
-                    current_target.removeEventListener(
-                        event.type, listener["callback"], listener["capture"]
+                try:
+                    result = await call_listener(
+                        listener["callback"], current_target, capture
                     )
+                    if result is False:
+                        event.preventDefault()
+                finally:
+                    event._in_passive_listener = False
+                    if listener["once"]:
+                        current_target.removeEventListener(
+                            event.type, listener["callback"], listener["capture"]
+                        )
                 if event._immediate_propagation_stopped:
                     return
             if capture is False:
                 handler = getattr(current_target, f"on{event.type}", None)
                 if callable(handler):
+                    event.currentTarget = current_target
+                    event.srcElement = event.target
+                    event.eventPhase = (
+                        Event.AT_TARGET
+                        if current_target is event.target
+                        else Event.BUBBLING_PHASE
+                    )
                     result = handler(event)
                     if inspect.isawaitable(result):
                         result = await result
@@ -388,6 +416,7 @@ class EventTarget:
                     break
             return not event.defaultPrevented
         finally:
+            event._dispatching = False
             event.eventPhase = Event.NONE
             event.currentTarget = None
             event._in_passive_listener = False
@@ -402,7 +431,12 @@ class Event:
     # Constants for event types
     EMPTIED: str = "emptied"  #:
     ABORT: str = "abort"  #:
+    ADDTRACK: str = "addtrack"  #:
     AFTERPRINT: str = "afterprint"  #:
+    ANIMATIONCANCEL: str = "animationcancel"  #:
+    ANIMATIONEND: str = "animationend"  #:
+    ANIMATIONITERATION: str = "animationiteration"  #:
+    ANIMATIONSTART: str = "animationstart"  #:
     AUXCLICK: str = "auxclick"  #:
     BEFOREINPUT: str = "beforeinput"  #:
     BEFOREMATCH: str = "beforematch"  #:
@@ -421,6 +455,12 @@ class Event:
     CONTEXTLOST: str = "contextlost"  #:
     CONTEXTRESTORED: str = "contextrestored"  #:
     CURRENTENTRYCHANGE: str = "currententrychange"  #:
+    DATAAVAILABLE: str = "dataavailable"  #:
+    DEVICELIGHT: str = "devicelight"  #:
+    DEVICEMOTION: str = "devicemotion"  #:
+    DEVICEORIENTATION: str = "deviceorientation"  #:
+    DEVICEORIENTATIONABSOLUTE: str = "deviceorientationabsolute"  #:
+    DEVICEPROXIMITY: str = "deviceproximity"  #:
     DISPOSE: str = "dispose"  #:
     DOMCONTENTLOADED: str = "DOMContentLoaded"  #:
     DURATIONCHANGE: str = "durationchange"  #:
@@ -459,6 +499,7 @@ class Event:
     PROGRESS: str = "progress"  #:
     RATECHANGE: str = "ratechange"  #:
     READYSTATECHANGE: str = "readystatechange"  #:
+    REMOVETRACK: str = "removetrack"  #:
     RESIZE: str = "resize"  #:
     REJECTIONHANDLED: str = "rejectionhandled"  #:
     RESET: str = "reset"  #:
@@ -476,11 +517,16 @@ class Event:
     SUBMIT: str = "submit"  #:
     SUSPEND: str = "suspend"  #:
     TOGGLE: str = "toggle"  #:
+    TRANSITIONCANCEL: str = "transitioncancel"  #:
+    TRANSITIONEND: str = "transitionend"  #:
     UNHANDLEDREJECTION: str = "unhandledrejection"  #:
     UNLOAD: str = "unload"  #:
     VISIBILITYCHANGE: str = "visibilitychange"  #:
     VOLUMECHANGE: str = "volumechange"  #:
     WAITING: str = "waiting"  #:
+    WEBGLCONTEXTCREATIONERROR: str = "webglcontextcreationerror"  #:
+    WEBGLCONTEXTLOST: str = "webglcontextlost"  #:
+    WEBGLCONTEXTRESTORED: str = "webglcontextrestored"  #:
 
     NONE: int = 0
     CAPTURING_PHASE: int = 1
@@ -500,23 +546,25 @@ class Event:
         self._cancelBubble: bool = False
         self.composed: bool = options.get("composed", False)
         self.currentTarget: object = options.get("currentTarget", None)
-        self.defaultPrevented: bool = options.get("defaultPrevented", False)
+        self.defaultPrevented: bool = bool(options.get("defaultPrevented", False))
         self.eventPhase: int = options.get("eventPhase", Event.NONE)
         self.explicitOriginalTarget: object = options.get(
             "explicitOriginalTarget", None
         )
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
-        self._returnValue: bool = True
+        self._returnValue: bool = not self.defaultPrevented
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
         self.timeStamp: float = time.time_ns() / 1_000_000
         self._propagation_stopped: bool = False
         self._immediate_propagation_stopped: bool = False
         self._in_passive_listener: bool = False
+        self._dispatching: bool = False
         self._path: list[Any] | None = None
         self.cancelBubble = options.get("cancelBubble", False)
-        self.returnValue = options.get("returnValue", True)
+        if "returnValue" in options:
+            self.returnValue = options["returnValue"]
 
     @property
     def cancelBubble(self) -> bool:
@@ -562,12 +610,14 @@ class Event:
     def initEvent(
         self,
         _type: str | None = None,
-        bubbles: bool = True,
-        cancelable: bool = True,
+        bubbles: bool = False,
+        cancelable: bool = False,
         *args,
         **kwargs,
     ) -> "Event":
         """Initialize the event."""
+        if self._dispatching:
+            return self
         self.type = _type or self.type
         self.bubbles = bubbles
         self.cancelable = cancelable
@@ -727,17 +777,31 @@ class MouseEvent(UIEvent):
         options = options or kwargs
         self.canBubble = options.get("canBubble", None)
         self.cancelable = options.get("cancelable", None)
-        self.x = options.get("x", 0)
-        self.y = options.get("y", 0)
+        self.screenX = options.get("screenX", 0)
+        self.screenY = options.get("screenY", 0)
         self._clientX = options.get("clientX", 0)
         self._clientY = options.get("clientY", 0)
+        self.x = options.get("x", self._clientX)
+        self.y = options.get("y", self._clientY)
+        self.pageX = options.get("pageX", self._clientX)
+        self.pageY = options.get("pageY", self._clientY)
+        self.offsetX = options.get("offsetX", self._clientX)
+        self.offsetY = options.get("offsetY", self._clientY)
+        self.movementX = options.get("movementX", 0)
+        self.movementY = options.get("movementY", 0)
+        self.layerX = options.get("layerX", self._clientX)
+        self.layerY = options.get("layerY", self._clientY)
+        self.relatedTarget = options.get("relatedTarget", None)
+        self.region = options.get("region", None)
         self._altKey: bool = options.get("altKey", False)
         self._ctrlKey: bool = options.get("ctrlKey", False)
         self._shiftKey: bool = options.get("shiftKey", False)
         self._metaKey: bool = options.get("metaKey", False)
-        self._button = None
-        self._buttons = []
+        self._button = options.get("button", 0)
+        self._buttons = options.get("buttons", 0)
         super().__init__(_type, options, *args, **kwargs)
+        self.layerX = options.get("layerX", self._clientX)
+        self.layerY = options.get("layerY", self._clientY)
 
     def initMouseEvent(
         self,
@@ -756,11 +820,11 @@ class MouseEvent(UIEvent):
         metaKey: bool = False,
         button=None,
         relatedTarget=None,
-        from_json={},
+        from_json=None,
         *args,
         **kwargs,
     ) -> "MouseEvent":
-        # print('initMouseEvent')
+        from_json = from_json or {}
         self.initEvent(_type or self.type, canBubble, cancelable)
         self.canBubble = canBubble
         self.view = view
@@ -775,10 +839,43 @@ class MouseEvent(UIEvent):
         self._altKey = altKey
         self._shiftKey = shiftKey
         self._metaKey = metaKey
-        self._button = button
-        self._buttons = [] if button is None else [button]
+        self._button = 0 if button is None else button
+        self._buttons = 0 if button is None else 1 << int(button)
         self.relatedTarget = relatedTarget
-        # TODO - parse from_json - so can relay
+        for name in (
+            "screenX",
+            "screenY",
+            "clientX",
+            "clientY",
+            "ctrlKey",
+            "altKey",
+            "shiftKey",
+            "metaKey",
+            "button",
+            "buttons",
+            "relatedTarget",
+        ):
+            if name in from_json:
+                if name == "clientX":
+                    self._clientX = from_json[name]
+                    self.x = from_json[name]
+                elif name == "clientY":
+                    self._clientY = from_json[name]
+                    self.y = from_json[name]
+                elif name == "ctrlKey":
+                    self._ctrlKey = from_json[name]
+                elif name == "altKey":
+                    self._altKey = from_json[name]
+                elif name == "shiftKey":
+                    self._shiftKey = from_json[name]
+                elif name == "metaKey":
+                    self._metaKey = from_json[name]
+                elif name == "button":
+                    self._button = from_json[name]
+                elif name == "buttons":
+                    self._buttons = from_json[name]
+                else:
+                    setattr(self, name, from_json[name])
         return self
 
     @property
@@ -815,7 +912,7 @@ class MouseEvent(UIEvent):
 
     @property
     def which(self):
-        return self._button
+        return 0 if self._button is None else int(self._button) + 1
 
     # MOUSE_EVENT
     def getModifierState(self, keyArg: str):
@@ -1007,25 +1104,6 @@ class KeyboardEvent(UIEvent):
     def getModifierState(self, keyArg: str) -> bool:
         return self._modifier_states.get(keyArg, False)
 
-    # @property
-    # def keyCode(self):
-    #     return self.keyCode
-
-    # @property
-    # def charCode(self):
-    #     return self.charCode
-
-    # @property
-    # def code(self):
-    #     return self.code
-
-    # @property
-    # def key(self):
-    #     return self.key
-
-    # def isComposing(self, *args, **kwargs):
-    #     pass
-
     # KeyboardEvent
     # isComposing   Returns whether the state of the event is composing or not  InputEvent, KeyboardEvent
     # repeat    Returns whether a key is being hold down repeatedly, or not KeyboardEvent
@@ -1080,9 +1158,22 @@ class TouchEvent(UIEvent):
         self.touches = options.get("touches", [])
         super().__init__(_type, options, *args, **kwargs)
 
+    def getModifierState(self, keyArg: str):
+        lookup = {
+            "Alt": self.altKey,
+            "Control": self.ctrlKey,
+            "Meta": self.metaKey,
+            "Shift": self.shiftKey,
+        }
+        return lookup.get(keyArg, False)
+
 
 class WheelEvent(UIEvent):
     """WheelEvent"""
+
+    DOM_DELTA_PIXEL: int = 0
+    DOM_DELTA_LINE: int = 1
+    DOM_DELTA_PAGE: int = 2
 
     MOUSEWHEEL: str = "mousewheel"  # DEPRECATED - USE WHEEL  #:
     WHEEL: str = "wheel"  #:
@@ -1183,15 +1274,18 @@ class PointerEvent(MouseEvent):
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.pointerId: float = options.get("pointerId", 0)
-        self.width: float = options.get("width", 0)
-        self.height: float = options.get("height", 0)
+        self.width: float = options.get("width", 1)
+        self.height: float = options.get("height", 1)
         self.pressure: float = options.get("pressure", 0)
         self.tangentialPressure: float = options.get("tangentialPressure", 0)
         self.tiltX: float = options.get("tiltX", 0)
         self.tiltY: float = options.get("tiltY", 0)
         self.twist: float = options.get("twist", 0)
+        self.altitudeAngle: float = options.get("altitudeAngle", 0)
+        self.azimuthAngle: float = options.get("azimuthAngle", 0)
         self.pointerType: str = options.get("pointerType", "")
         self.isPrimary: bool = options.get("isPrimary", False)
+        self.persistentDeviceId: int = options.get("persistentDeviceId", 0)
         self._coalescedEvents = list(options.get("coalescedEvents", []))
         self._predictedEvents = list(options.get("predictedEvents", []))
         super().__init__(_type, options, *args, **kwargs)
@@ -1201,14 +1295,6 @@ class PointerEvent(MouseEvent):
 
     def getPredictedEvents(self):
         return list(self._predictedEvents)
-
-    # def getCurrentPoint(self, element):
-    #     """ Returns the current coordinates of the specified element relative to the viewport. """
-    #     pass
-
-    # def getIntermediatePoints(self, element):
-    #     """ Returns the coordinates of all the intermediate points of the pointer along the path of the pointer. """
-    #     pass
 
 
 class BeforeUnloadEvent(Event):
@@ -1249,9 +1335,6 @@ class SVGEvent(Event):
         options = options or kwargs  # if options is none use kwargs
         super().__init__(_type, options, *args, **kwargs)
 
-    # def initEvent(self, eventTypeArg, canBubbleArg, cancelableArg):
-    #     pass
-
 
 class TimerEvent(Event):
     TIMER: str = "timer"  #:
@@ -1262,15 +1345,17 @@ class TimerEvent(Event):
         options = options or kwargs  # if options is none use kwargs
         super().__init__(_type, options, *args, **kwargs)
 
-    # def initTimerEvent(self, type, bubbles, cancelable, detail):
-    #     """ initTimerEvent() """
-    #     pass
 
-
-class DragEvent(Event):
+class DragEvent(MouseEvent):
     """DragEvent"""
 
     DRAG: str = "drag"  #:
+    DRAGEND: str = "dragend"  #:
+    DRAGENTER: str = "dragenter"  #:
+    DRAGEXIT: str = "dragexit"  #:
+    DRAGLEAVE: str = "dragleave"  #:
+    DRAGOVER: str = "dragover"  #:
+    DRAGSTART: str = "dragstart"  #:
     END: str = "dragend"  #:
     ENTER: str = "dragenter"  #:
     EXIT: str = "dragexit"  #:
@@ -1315,6 +1400,7 @@ class InputEvent(UIEvent):
         """ Returns the type of the change (i.e "inserting" or "deleting") """
         self.isComposing = options.get("isComposing", None)
         """ Returns whether the state of the event is composing or not """
+        self._targetRanges = list(options.get("targetRanges", []))
         super().__init__(_type, options, *args, **kwargs)
 
     def getTargetRanges(self):
@@ -1472,7 +1558,109 @@ class GamePadEvent(Event):
         super().__init__(_type, options, *args, **kwargs)
 
 
-# TODO - tests and service worker API
+class FormDataEvent(Event):
+    """FormDataEvent"""
+
+    FORMDATA: str = "formdata"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.formData = options.get("formData", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class TrackEvent(Event):
+    """TrackEvent"""
+
+    ADDTRACK: str = "addtrack"  #:
+    REMOVETRACK: str = "removetrack"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.track = options.get("track", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class BlobEvent(Event):
+    """BlobEvent"""
+
+    DATAAVAILABLE: str = "dataavailable"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.data = options.get("data", None)
+        self.timecode = options.get("timecode", 0)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class DeviceMotionEvent(Event):
+    """DeviceMotionEvent"""
+
+    DEVICEMOTION: str = "devicemotion"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.acceleration = options.get("acceleration", None)
+        self.accelerationIncludingGravity = options.get(
+            "accelerationIncludingGravity", None
+        )
+        self.rotationRate = options.get("rotationRate", None)
+        self.interval = options.get("interval", 0)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class DeviceOrientationEvent(Event):
+    """DeviceOrientationEvent"""
+
+    DEVICEORIENTATION: str = "deviceorientation"  #:
+    DEVICEORIENTATIONABSOLUTE: str = "deviceorientationabsolute"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.absolute = bool(options.get("absolute", False))
+        self.alpha = options.get("alpha", None)
+        self.beta = options.get("beta", None)
+        self.gamma = options.get("gamma", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class DeviceLightEvent(Event):
+    """DeviceLightEvent"""
+
+    DEVICELIGHT: str = "devicelight"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.value = options.get("value", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class DeviceProximityEvent(Event):
+    """DeviceProximityEvent"""
+
+    DEVICEPROXIMITY: str = "deviceproximity"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.value = options.get("value", None)
+        self.min = options.get("min", None)
+        self.max = options.get("max", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+
+class WebGLContextEvent(Event):
+    """WebGLContextEvent"""
+
+    WEBGLCONTEXTLOST: str = "webglcontextlost"  #:
+    WEBGLCONTEXTRESTORED: str = "webglcontextrestored"  #:
+    WEBGLCONTEXTCREATIONERROR: str = "webglcontextcreationerror"  #:
+
+    def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
+        options = options or kwargs
+        self.statusMessage = options.get("statusMessage", "")
+        super().__init__(_type, options, *args, **kwargs)
+
+
 class FetchEvent(Event):
     """FetchEvent"""
 
@@ -1557,19 +1745,37 @@ class SyncEvent(ExtendableEvent):
         super().__init__(_type, options, *args, **kwargs)
 
 
-class SecurityPolicyViolationEvent(ExtendableEvent):
+class SecurityPolicyViolationEvent(Event):
     """SecurityPolicyViolationEvent"""
 
     SECURITY_POLICY_VIOLATION: str = "securitypolicyviolation"  #:
 
     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
+        self.documentURI = options.get("documentURI", None)
+        """ Returns the URI of the document that violated the policy """
+        self.referrer = options.get("referrer", None)
+        """ Returns the referrer of the resource that violated the policy """
         self.blockedURI = options.get("blockedURI", None)
         """ Returns the blocked URI """
         self.violatedDirective = options.get("violatedDirective", None)
         """ Returns the violated directive """
+        self.effectiveDirective = options.get("effectiveDirective", None)
+        """ Returns the effective directive that was violated """
         self.originalPolicy = options.get("originalPolicy", None)
         """ Returns the original policy """
+        self.disposition = options.get("disposition", None)
+        """ Returns whether the policy was enforced or reported """
+        self.sourceFile = options.get("sourceFile", None)
+        """ Returns the source file that violated the policy """
+        self.statusCode = options.get("statusCode", 0)
+        """ Returns the HTTP status code of the document or resource """
+        self.lineNumber = options.get("lineNumber", 0)
+        """ Returns the line number where the violation occurred """
+        self.columnNumber = options.get("columnNumber", 0)
+        """ Returns the column number where the violation occurred """
+        self.sample = options.get("sample", "")
+        """ Returns a sample of the violating source """
         self.isFrameAncestor = options.get("isFrameAncestor", None)
         """ Returns whether the frame is an ancestor of the frame that violated the policy """
         self.isMainFrame = options.get("isMainFrame", None)
@@ -1593,58 +1799,6 @@ class DOMContentLoadedEvent(Event):
         self.document = options.get("document", None)
         """ Returns the document that was loaded """
         super().__init__(_type, options, *args, **kwargs)
-
-
-# class InstallEvent()
-
-# class DeviceMotionEvent(Event):
-#     """ DeviceMotionEvent """
-#     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-#         self.acceleration = None
-#         """ Returns the acceleration of the device """
-#         self.accelerationIncludingGravity = None
-#         """ Returns the acceleration of the device, including gravity """
-#         self.rotationRate = None
-#         """ Returns the rotation rate of the device """
-#         self.interval = None
-#         """ Returns the time interval between the previous and the current event """
-#         super().__init__(_type, options, *args, **kwargs)
-
-
-# class DeviceOrientationEvent(Event):
-#     """ DeviceOrientationEvent """
-#     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-#         self.absolute = None
-#         """ Returns true if the orientation is absolute """
-#         self.alpha = None
-#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
-#         self.beta = None
-#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
-#         self.gamma = None
-#         """ Returns the orientation of the device in degrees, relative to the Earth's coordinate system """
-#         self.interval = None
-#         """ Returns the time interval between the previous and the current event """
-#         super().__init__(_type, options, *args, **kwargs)
-
-
-# class DeviceLightEvent(Event):
-#     """ DeviceLightEvent """
-#     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-#         self.value = None
-#         """ Returns the value of the ambient light sensor """
-#         super().__init__(_type, options, *args, **kwargs)
-
-
-# class DeviceProximityEvent(Event):
-#     """ DeviceProximityEvent """
-#     def __init__(self, _type: str, options: dict = None, *args, **kwargs) -> None:
-#         self.value = None
-#         """ Returns the value of the proximity sensor """
-#         self.min = None
-#         """ Returns the minimum value of the proximity sensor """
-#         self.max = None
-#         """ Returns the maximum value of the proximity sensor """
-#         super().__init__(_type, options, *args, **kwargs)
 
 
 class TweenEvent(Event):
@@ -1671,12 +1825,11 @@ class TweenEvent(Event):
         self._source = source
 
     def __init__(self, _type, source=None, bubbles=False, cancelable=False):
-        # super.__init__(self, type, bubbles, cancelable)
-        super().__init__(_type)  # TODO -
+        super().__init__(_type, {"bubbles": bubbles, "cancelable": cancelable})
         self.source = source
 
 
-class PromiseRejectionEvent(Event):  # TODO - put with the promise?
+class PromiseRejectionEvent(Event):
     """PromiseRejectionEvent"""
 
     UNHANDLED: str = "unhandledrejection"  #:

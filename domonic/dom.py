@@ -28,8 +28,12 @@ from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
 from domonic.webapi.url import URL
-from domonic.webapi.xpath import (XPathEvaluator, XPathException,
-                                  XPathExpression, XPathResult)
+from domonic.webapi.xpath import (
+    XPathEvaluator,
+    XPathException,
+    XPathExpression,
+    XPathResult,
+)
 
 # from xml.dom.pulldom import END_ELEMENT
 
@@ -6013,6 +6017,38 @@ class Document(Element):
             from domonic.events import CloseEvent
 
             return CloseEvent("close")
+        if event_type == "DragEvent":
+            from domonic.events import DragEvent
+
+            return DragEvent("drag")
+        if event_type == "FormDataEvent":
+            from domonic.events import FormDataEvent
+
+            return FormDataEvent("formdata")
+        if event_type == "TrackEvent":
+            from domonic.events import TrackEvent
+
+            return TrackEvent("addtrack")
+        if event_type == "BlobEvent":
+            from domonic.events import BlobEvent
+
+            return BlobEvent("dataavailable")
+        if event_type == "DeviceMotionEvent":
+            from domonic.events import DeviceMotionEvent
+
+            return DeviceMotionEvent("devicemotion")
+        if event_type == "DeviceOrientationEvent":
+            from domonic.events import DeviceOrientationEvent
+
+            return DeviceOrientationEvent("deviceorientation")
+        if event_type == "WebGLContextEvent":
+            from domonic.events import WebGLContextEvent
+
+            return WebGLContextEvent("webglcontextlost")
+        if event_type == "SecurityPolicyViolationEvent":
+            from domonic.events import SecurityPolicyViolationEvent
+
+            return SecurityPolicyViolationEvent("securitypolicyviolation")
         if event_type is None:
             return Event()
         return Event(event_type)
