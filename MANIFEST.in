@@ -1,4 +1,7 @@
 include README.md
+include CHANGELOG.md
+include SECURITY.md
+include CITATION.cff
 include LICENSE.txt
 include requirements.txt
 include requirements-dev.txt

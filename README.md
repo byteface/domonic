@@ -2,19 +2,33 @@
     <br>𖤐 domonic 𖤐<br>
 </h1>
 
-[![PyPI version](https://badge.fury.io/py/domonic.svg)](https://badge.fury.io/py/domonic.svg)
+[![PyPI version](https://badge.fury.io/py/domonic.svg)](https://pypi.org/project/domonic/)
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
-[![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)
+[![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://pypi.org/project/domonic/)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
 [![readthedocs](https://readthedocs.org/projects/domonic/badge/?version=latest)](https://domonic.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![byteface github](https://img.shields.io/badge/GitHub-byteface-181717.svg?style=flat&logo=github)](https://github.com/byteface)
 
-#### A pure Python [DOM](https://dom.spec.whatwg.org/) that goes way beyond minidom
+#### A pure Python [DOM](https://dom.spec.whatwg.org/) toolkit that goes way beyond minidom
 
 - Python `3.10+`
-- HTML, SVG, DOM, events, web APIs, animation, and a JavaScript-like runtime
-- Built for generating, parsing, traversing, and manipulating real document trees
+- HTML generation, SVG, XML, MathML, RSS, ODF, DOM events, CSSOM, selectors, XPath, Web APIs, animation, and a JavaScript-like runtime
+- Built for generating, parsing, traversing, querying, and manipulating real document trees
+- Useful for server-side rendering, static-site generation, web scraping utilities, browser API experiments, and Python-first HTML templates
+
+domonic gives Python code a browser-flavoured document model: create HTML with Python functions, parse pages into DOM nodes, query them with CSS selectors or XPath, script them with JavaScript-like helpers, and render the result back to markup.
+
+### Feature map
+
+| Area | What domonic covers |
+| --- | --- |
+| Markup | HTML5 tags, SVG, XML, MathML, A-Frame, X3D, RSS, Atom, sitemaps, ODF, and custom tag constructors |
+| DOM | Document, Element, NodeList, events, ranges, fragments, custom elements, shadow DOM, selectors, observers, and tree traversal |
+| Web APIs | URL, URLSearchParams, URLPattern, storage, history, fetch-style helpers, forms, XPath, SSE, WebSocket, permissions, media, and performance APIs |
+| JavaScript-like runtime | Array, Date, Math, String, Number, Promise, timers, typed arrays, JSON helpers, dQuery, and d3-inspired utilities |
+| Tooling | `domonic` CLI for XPath/CSS extraction, parser selection, project scaffolding, terminal wrappers, and server framework hello worlds |
+| Parsers | Bundled `html5lib` support plus optional `html5_parser`, `markupever`, `selectolax`, `justhtml`, `lxml`, and expat adapters |
 
 ### Install
 
@@ -90,6 +104,8 @@ domonic -x https://google.com '//a' | uniq | sort
 - terminal || cmd : call terminal commands with Python3 😱
 
 See the [docs/code](https://domonic.readthedocs.io/) for more features or examples in the [repo](https://github.com/byteface/domonic/tree/master/examples)
+
+Project links: [Changelog](CHANGELOG.md) | [Security](SECURITY.md) | [Contributing](CONTRIBUTING.md) | [Examples](examples/README.md)
 
 
 ### Namespace

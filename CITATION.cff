@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If domonic helps your work, please cite the project."
+title: "domonic: a Python DOM, HTML, SVG, XML, and Web API toolkit"
+version: 1.0.1
+date-released: 2026-08-22
+authors:
+  - alias: byteface
+repository-code: "https://github.com/byteface/domonic"
+url: "https://domonic.readthedocs.io/"
+license: MIT
+abstract: "domonic is a Python DOM toolkit for generating, parsing, traversing, querying, and manipulating HTML, SVG, XML, and browser-like Web API document trees."
+keywords:
+  - python
+  - dom
+  - html
+  - svg
+  - xml
+  - javascript
+  - web-api
+  - css-selectors
+  - xpath
+  - html-parser
+  - server-side-rendering
+

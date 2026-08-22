@@ -21,6 +21,8 @@ import domonic
 project = "domonic"
 copyright = "2021, byteface"
 author = "byteface"
+html_title = "domonic - Python DOM, HTML, SVG, XML and Web API toolkit"
+html_short_title = "domonic"
 
 # The full version, including alpha/beta/rc tags
 release = domonic.__version__

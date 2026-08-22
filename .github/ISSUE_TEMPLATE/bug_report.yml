@@ -1,0 +1,58 @@
+name: Bug report
+description: Report something in domonic that is broken or surprising.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve domonic. Small reproductions are massively useful.
+  - type: input
+    id: version
+    attributes:
+      label: domonic version
+      description: Run `python -c "import domonic; print(domonic.__version__)"`.
+      placeholder: "1.0.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - HTML generation
+        - DOM / selectors
+        - JavaScript runtime
+        - Web APIs
+        - CSS / style
+        - SVG / XML
+        - CLI
+        - Parsers
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest Python snippet, HTML/XML input, or CLI command that shows the issue.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Python version, OS, parser backend, and any optional packages involved.
+

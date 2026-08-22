@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest a missing tag, DOM API, Web API, parser, CLI option, or integration.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for pushing domonic forward. Links to specs or MDN pages help a lot.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - HTML / tags
+        - DOM
+        - Web API
+        - CSS / style
+        - SVG / XML
+        - JavaScript runtime
+        - CLI
+        - Server integration
+        - Docs / examples
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Spec links, MDN pages, comparable libraries, or examples.
+

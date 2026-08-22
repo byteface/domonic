@@ -1,0 +1,9 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://domonic.readthedocs.io/
+    about: Check the package guide and API docs.
+  - name: Discussions
+    url: https://github.com/byteface/domonic/discussions
+    about: Ask questions, share examples, or talk through ideas before opening an issue.
+

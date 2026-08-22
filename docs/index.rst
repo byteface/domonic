@@ -1,6 +1,10 @@
 domonic
 =======
 
+.. meta::
+   :description: domonic is a Python DOM toolkit for HTML generation, SVG/XML, CSS selectors, XPath, Web APIs, and JavaScript-like scripting.
+   :keywords: Python DOM, HTML generator, SVG, XML, JavaScript runtime, Web API, CSS selectors, XPath, HTML parser, server-side rendering, static site generator
+
 .. image:: _static/domonic.jpg
   :width: 696
   :alt: domonic
