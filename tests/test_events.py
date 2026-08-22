@@ -1051,6 +1051,264 @@ class TestCase(unittest.TestCase):
 
         asyncio.run(runner())
 
+    def test_event_target_option_and_path_edge_cases(self):
+        with self.assertRaises(NotImplementedError):
+            EventListener().handleEvent(Event("custom"))
+
+        signal = object()
+        normalized = EventTarget._normalize_listener_options(
+            capture=True, once=True, passive=True, signal=signal
+        )
+        self.assertEqual(
+            normalized,
+            {"capture": True, "once": True, "passive": True, "signal": signal},
+        )
+
+        target = EventTarget()
+        calls = []
+
+        def listener(event):
+            calls.append(event.type)
+
+        target.addEventListener("custom", listener)
+        target.addEventListener("custom", listener)
+        self.assertEqual(target.listeners["custom"], [listener])
+
+        target.removeEventListener("missing", None)
+        target.dispatchEvent(Event("custom"))
+        self.assertEqual(calls, ["custom"])
+
+        child = EventTarget()
+        document_target = EventTarget()
+        window_target = EventTarget()
+        child.ownerDocument = document_target
+        document_target.defaultView = window_target
+
+        self.assertEqual(
+            child._get_event_path(child), [child, document_target, window_target]
+        )
+
+    def test_sync_dispatch_cancelation_and_path_edge_cases(self):
+        target = EventTarget()
+        target.addEventListener("custom", lambda event: False)
+        event = Event("custom", {"cancelable": True})
+        self.assertFalse(target.dispatchEvent(event))
+        self.assertTrue(event.defaultPrevented)
+
+        handler_target = EventTarget()
+        handler_target.oncustom = lambda event: False
+        handler_event = Event("custom", {"cancelable": True})
+        self.assertFalse(handler_target.dispatchEvent(handler_event))
+        self.assertTrue(handler_event.defaultPrevented)
+
+        root = EventTarget()
+        parent = EventTarget()
+        child = EventTarget()
+        parent.parentNode = root
+        child.parentNode = parent
+        calls = []
+
+        def root_capture(event):
+            calls.append("root-capture")
+            event.stopPropagation()
+
+        root.addEventListener("custom", root_capture, {"capture": True})
+        child.addEventListener("custom", lambda event: calls.append("child"))
+
+        capture_event = Event("custom", {"bubbles": True})
+        self.assertTrue(child.dispatchEvent(capture_event))
+        self.assertEqual(calls, ["root-capture"])
+        self.assertTrue(capture_event.cancelBubble)
+
+        root = EventTarget()
+        parent = EventTarget()
+        child = EventTarget()
+        parent.parentNode = root
+        child.parentNode = parent
+        calls = []
+
+        def parent_bubble(event):
+            calls.append("parent-bubble")
+            event.stopPropagation()
+
+        parent.addEventListener("custom", parent_bubble)
+        root.addEventListener("custom", lambda event: calls.append("root-bubble"))
+
+        self.assertTrue(child.dispatchEvent(Event("custom", {"bubbles": True})))
+        self.assertEqual(calls, ["parent-bubble"])
+
+        stringified = str(Event("custom"))
+        self.assertTrue(stringified.startswith("custom:"))
+
+        return_value_event = Event("custom", {"returnValue": False})
+        self.assertFalse(return_value_event.returnValue)
+        self.assertTrue(return_value_event.defaultPrevented)
+
+        document_target = EventTarget()
+        window_target = EventTarget()
+        child = EventTarget()
+        child.parentNode = document_target
+        document_target.defaultView = window_target
+        path_event = Event("custom")
+        path_event.target = child
+        self.assertEqual(
+            path_event.composedPath(), [child, document_target, window_target]
+        )
+
+        dispatched = Event("custom", {"bubbles": True})
+        child.dispatchEvent(dispatched)
+        self.assertEqual(
+            dispatched.composedPath(), [child, document_target, window_target]
+        )
+
+    def test_async_dispatch_edge_cases(self):
+        async def runner():
+            target = EventTarget()
+            calls = []
+
+            class AsyncHandler:
+                async def handleEvent(self, event):
+                    await asyncio.sleep(0)
+                    calls.append("object")
+
+            target.addEventListener("custom", AsyncHandler(), {"once": True})
+            await target.dispatchEventAsync(Event("custom"))
+            await target.dispatchEventAsync(Event("custom"))
+            self.assertEqual(calls, ["object"])
+            self.assertFalse(target.hasEventListener("custom"))
+
+            target = EventTarget()
+            calls = []
+
+            def first(event):
+                calls.append("first")
+                event.stopImmediatePropagation()
+
+            target.addEventListener("custom", first)
+            target.addEventListener("custom", lambda event: calls.append("second"))
+            await target.dispatchEventAsync(Event("custom"))
+            self.assertEqual(calls, ["first"])
+
+            root = EventTarget()
+            parent = EventTarget()
+            child = EventTarget()
+            parent.parentNode = root
+            child.parentNode = parent
+            calls = []
+
+            async def root_capture(event):
+                await asyncio.sleep(0)
+                calls.append("root-capture")
+                event.stopPropagation()
+
+            root.addEventListener("custom", root_capture, {"capture": True})
+            child.addEventListener("custom", lambda event: calls.append("child"))
+            self.assertTrue(
+                await child.dispatchEventAsync(Event("custom", {"bubbles": True}))
+            )
+            self.assertEqual(calls, ["root-capture"])
+
+            root = EventTarget()
+            parent = EventTarget()
+            child = EventTarget()
+            parent.parentNode = root
+            child.parentNode = parent
+            calls = []
+
+            def parent_bubble(event):
+                calls.append("parent-bubble")
+                event.stopPropagation()
+
+            parent.addEventListener("custom", parent_bubble)
+            root.addEventListener("custom", lambda event: calls.append("root-bubble"))
+
+            self.assertTrue(
+                await child.dispatchEventAsync(Event("custom", {"bubbles": True}))
+            )
+            self.assertEqual(calls, ["parent-bubble"])
+
+        asyncio.run(runner())
+
+    def test_event_data_branch_edge_cases(self):
+        related = object()
+        mouse_event = MouseEvent("mousemove").initMouseEvent(
+            from_json={
+                "screenX": 101,
+                "screenY": 102,
+                "ctrlKey": True,
+                "altKey": True,
+                "shiftKey": True,
+                "metaKey": True,
+                "relatedTarget": related,
+            }
+        )
+        self.assertEqual((mouse_event.screenX, mouse_event.screenY), (101, 102))
+        self.assertTrue(mouse_event.ctrlKey)
+        self.assertTrue(mouse_event.altKey)
+        self.assertTrue(mouse_event.shiftKey)
+        self.assertTrue(mouse_event.metaKey)
+        self.assertIs(mouse_event.relatedTarget, related)
+
+        keyboard = KeyboardEvent(
+            "keydown",
+            {"key": "Enter", "ctrlKey": True, "altKey": True, "metaKey": True},
+        )
+        self.assertEqual(keyboard.charCode, 0)
+        self.assertTrue(keyboard.ctrlKey)
+        self.assertTrue(keyboard.altKey)
+        self.assertTrue(keyboard.metaKey)
+        self.assertEqual(keyboard.unicode, "Enter")
+        self.assertEqual(KeyboardEvent("keypress", {"key": "a"}).charCode, 97)
+
+        class Selection:
+            rangeCount = 2
+
+            def getRangeAt(self, index):
+                return f"range-{index}"
+
+        class SelectionTarget:
+            def getSelection(self):
+                return Selection()
+
+        input_event = InputEvent("beforeinput")
+        del input_event._targetRanges
+        input_event.target = SelectionTarget()
+        self.assertEqual(input_event.getTargetRanges(), ["range-0", "range-1"])
+
+        input_event_without_selection = InputEvent("beforeinput")
+        del input_event_without_selection._targetRanges
+        input_event_without_selection.target = object()
+        self.assertEqual(input_event_without_selection.getTargetRanges(), [])
+
+        class EmptySelectionTarget:
+            def getSelection(self):
+                return None
+
+        input_event_with_empty_selection = InputEvent("beforeinput")
+        del input_event_with_empty_selection._targetRanges
+        input_event_with_empty_selection.target = EmptySelectionTarget()
+        self.assertEqual(input_event_with_empty_selection.getTargetRanges(), [])
+
+        hash_change = HashChangeEvent(
+            "hashchange", {"oldURL": "https://example.com/#old", "newURL": "#new"}
+        )
+        self.assertEqual(hash_change.oldURL, "https://example.com/#old")
+        self.assertEqual(hash_change.newURL, "#new")
+
+        gamepad = object()
+        self.assertIs(
+            GamePadEvent(GamePadEvent.START, {"gamepad": gamepad}).gamepad, gamepad
+        )
+
+        fetch_event = FetchEvent("fetch", {"clientId": "client-1"})
+        self.assertFalse(fetch_event.isReload)
+        self.assertFalse(fetch_event.replacesClientId)
+        self.assertEqual(fetch_event.resultingClientId, "client-1")
+
+        handler = GlobalEventHandler()
+        handler._onclick_callback = lambda event: "handled"
+        self.assertEqual(handler.onclick(Event("click")), "handled")
+
 
 if __name__ == "__main__":
     unittest.main()
