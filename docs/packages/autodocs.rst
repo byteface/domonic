@@ -67,6 +67,9 @@
 .. automodule:: domonic.webapi.crypto
     :members:
 
+.. automodule:: domonic.webapi.messaging
+    :members:
+
 .. automodule:: domonic.webapi.file
     :members:
 

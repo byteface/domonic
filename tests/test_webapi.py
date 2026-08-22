@@ -34,6 +34,7 @@ from domonic.webapi.fetch import (
 from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
+from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
@@ -799,6 +800,85 @@ class TestCase(unittest.TestCase):
 
     def test_mediastream(self):
         pass
+
+    def test_messaging(self):
+        channel = MessageChannel()
+        queued = []
+
+        channel.port1.addEventListener("message", lambda event: queued.append(event.data))
+        original = {"count": 1, "items": ["a"]}
+        channel.port2.postMessage(original)
+        original["items"].append("mutated")
+
+        self.assertEqual(queued, [])
+        channel.port1.start()
+        self.assertEqual(queued, [{"count": 1, "items": ["a"]}])
+
+        replies = []
+        channel.port2.onmessage = lambda event: replies.append(
+            (event.data, event.source, event.ports)
+        )
+        extra_port = MessagePort()
+        channel.port1.postMessage("hello", [extra_port])
+        self.assertEqual(replies, [("hello", channel.port1, [extra_port])])
+
+        channel.port2.close()
+        channel.port1.postMessage("ignored")
+        self.assertEqual(replies, [("hello", channel.port1, [extra_port])])
+
+        class Uncloneable:
+            def __deepcopy__(self, memo):
+                raise TypeError("no clone")
+
+        errors = []
+        error_channel = MessageChannel()
+        error_channel.port2.onmessageerror = lambda event: errors.append(
+            (event.data, event.source, type(event.error))
+        )
+        bad_message = Uncloneable()
+        error_channel.port1.postMessage(bad_message)
+        self.assertEqual(errors, [(bad_message, error_channel.port1, TypeError)])
+
+    def test_broadcast_channel(self):
+        first = BroadcastChannel("domonic-test")
+        second = BroadcastChannel("domonic-test")
+        third = BroadcastChannel("domonic-test")
+        other = BroadcastChannel("other")
+        seen = []
+
+        first.onmessage = lambda event: seen.append(("first", event.data))
+        second.addEventListener(
+            "message", lambda event: seen.append(("second", event.data))
+        )
+        third.onmessage = lambda event: seen.append(("third", event.data))
+        other.onmessage = lambda event: seen.append(("other", event.data))
+
+        payload = {"ready": True}
+        first.postMessage(payload)
+        payload["ready"] = False
+        self.assertCountEqual(
+            seen,
+            [("second", {"ready": True}), ("third", {"ready": True})],
+        )
+
+        third.close()
+        second.postMessage("ping")
+        self.assertEqual(len(seen), 3)
+        self.assertIn(("first", "ping"), seen)
+
+        errors = []
+        second.onmessageerror = lambda event: errors.append(type(event.error))
+
+        class Uncloneable:
+            def __deepcopy__(self, memo):
+                raise TypeError("no broadcast clone")
+
+        first.postMessage(Uncloneable())
+        self.assertEqual(errors, [TypeError])
+
+        first.close()
+        second.close()
+        other.close()
 
     def test_networkinfo(self):
         pass

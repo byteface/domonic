@@ -47,6 +47,25 @@ browser-like ``crypto`` object.
 	print(crypto.subtle.digest("SHA-256", b"domonic").data.hex())
 
 
+Messaging
+----------------
+
+``MessageChannel`` and ``BroadcastChannel`` provide browser-style in-process
+message wiring for worker-like code and tests.
+
+.. code-block :: python
+
+	from domonic.webapi.messaging import BroadcastChannel, MessageChannel
+
+	channel = MessageChannel()
+	channel.port1.onmessage = lambda event: print(event.data)
+	channel.port2.postMessage("hello")
+
+	updates = BroadcastChannel("updates")
+	updates.onmessage = lambda event: print(event.data)
+	BroadcastChannel("updates").postMessage({"ok": True})
+
+
 File API
 ----------------
 
@@ -148,6 +167,10 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.crypto
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.messaging
     :members:
     :noindex:
 
