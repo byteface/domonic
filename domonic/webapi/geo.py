@@ -1,7 +1,7 @@
 """
-    domonic.webapi.geolocation
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
+domonic.webapi.geolocation
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API
 """
 
 from domonic.events import Event

@@ -1,16 +1,16 @@
 """
-    domonic.rss
-    ====================================
+domonic.rss
+====================================
 
-    RSS tag constructors for generating feeds with domonic.
+RSS tag constructors for generating feeds with domonic.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from domonic.xml._elements import XMLElement, register_xml_tags, xml_attribute_aliases, xml_tag_alias
-
+from domonic.xml._elements import (XMLElement, register_xml_tags,
+                                   xml_attribute_aliases, xml_tag_alias)
 
 RSS_VERSION = "2.0"
 XMLNS_ATOM = "http://www.w3.org/2005/Atom"
@@ -120,7 +120,9 @@ def create_element(name: str = "rss_element", *args: Any, **kwargs: Any) -> RSSE
     if tag_name in _RSS_TAG_LOOKUP:
         return globals()[xml_tag_alias(tag_name)](*args, **kwargs)
 
-    custom_rss_tag = type("rss_element", (RSSElement,), {"name": tag_name, "__module__": __name__})
+    custom_rss_tag = type(
+        "rss_element", (RSSElement,), {"name": tag_name, "__module__": __name__}
+    )
     return custom_rss_tag(*args, **kwargs)
 
 

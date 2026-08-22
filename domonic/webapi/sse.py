@@ -1,16 +1,16 @@
 """
-    domonic.webapi.sse
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
+domonic.webapi.sse
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events
 
-    TODO - consider a blocking version?
-    TODO - port one of the polyfills?
-    https://github.com/EventSource/eventsource/blob/master/lib/eventsource.js
-    https://github.com/remy/polyfills/blob/master/EventSource.js
-    https://github.com/Yaffle/EventSource/blob/master/src/eventsource.js
+TODO - consider a blocking version?
+TODO - port one of the polyfills?
+https://github.com/EventSource/eventsource/blob/master/lib/eventsource.js
+https://github.com/remy/polyfills/blob/master/EventSource.js
+https://github.com/Yaffle/EventSource/blob/master/src/eventsource.js
 
-    # TESTING - useage example... clone this and point at the stream
-    # https://github.com/byteface/SSELoggerDemo
+# TESTING - useage example... clone this and point at the stream
+# https://github.com/byteface/SSELoggerDemo
 
 """
 

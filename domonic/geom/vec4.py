@@ -1,8 +1,9 @@
 """
-    domonic.geom.vec4
-    ====================================
-    written by.ai
+domonic.geom.vec4
+====================================
+written by.ai
 """
+
 import math
 
 from domonic.javascript import Math
@@ -22,7 +23,6 @@ class vec4:
         self.y: float = y
         self.z: float = z
         self.w: float = w
-
 
     def __getitem__(self, item):
         if isinstance(item, int):
@@ -44,8 +44,6 @@ class vec4:
             elif item == "w":
                 return self.w
         raise KeyError(f"Invalid key: {item}")
-
-
 
     def __add__(self, other):
         x = self.x + other.x

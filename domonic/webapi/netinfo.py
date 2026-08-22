@@ -1,7 +1,7 @@
 """
-    domonic.webapi.netinfo
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API
+domonic.webapi.netinfo
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API
 """
 
 from domonic.dom import EventTarget

@@ -1,7 +1,7 @@
 """
-    domonic.webapi.history
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/History
+domonic.webapi.history
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/History
 """
 
 from domonic.events import PopStateEvent

@@ -1,13 +1,12 @@
 """
-    domonic.components
-    ====================================
+domonic.components
+====================================
 
-    A bit of a dumping ground for components ideas.
+A bit of a dumping ground for components ideas.
 
-    Mainly used by the examples.
+Mainly used by the examples.
 
 """
-
 
 import base64
 import json
@@ -46,7 +45,11 @@ class Websocket:
             evt.code = dom_event["code"]
             evt.key = dom_event["key"]
 
-        elif event_string == "mousedown" or event_string == "mouseup" or event_string == "mousemove":
+        elif (
+            event_string == "mousedown"
+            or event_string == "mouseup"
+            or event_string == "mousemove"
+        ):
             evt = MouseEvent(event_string)
             evt.initMouseEvent(
                 _type=event_string,
@@ -59,7 +62,16 @@ class Websocket:
                 shiftKey=dom_event["shiftKey"],
             )
 
-        elif event_string in ["drag", "dragend", "dragenter", "dragexit", "dragleave", "dragover", "dragstart", "drop"]:
+        elif event_string in [
+            "drag",
+            "dragend",
+            "dragenter",
+            "dragexit",
+            "dragleave",
+            "dragover",
+            "dragstart",
+            "drop",
+        ]:
             evt = DragEvent(event_string)
             try:
                 evt.dataTransfer = dom_event["dataTransfer"]
@@ -420,7 +432,9 @@ class SpriteCSS:
         bg_color: str = "none",
     ):
         self.id = id
-        self.styles = SpriteCSS.STYLE(id, width, height, spritesheet, time, steps, loop, y_offset, bg_color)
+        self.styles = SpriteCSS.STYLE(
+            id, width, height, spritesheet, time, steps, loop, y_offset, bg_color
+        )
 
     def __str__(self):
         return str(span(style(self.styles), div(_class=self.id)))
@@ -444,8 +458,7 @@ class DomonicJS:
         pass
 
     def __str__(self):
-        return script(
-            """
+        return script("""
             window.domonic = {'version':'0.0.3'}; // || domonic.js
             function print(msg){
                 console.log(msg);
@@ -468,8 +481,7 @@ class DomonicJS:
             //        this.list.push(item);
             //    }
             //}
-            """
-        )
+            """)
 
 
 # class ImgButton():
@@ -495,7 +507,11 @@ class Sound:
     def __str__(self):
         return str(
             div(
-                audio(source(_src=self.filename, _type="audio/mp3"), _id="sfx", _autoplay="true"),
+                audio(
+                    source(_src=self.filename, _type="audio/mp3"),
+                    _id="sfx",
+                    _autoplay="true",
+                ),
                 script(
                     """
                 function play_sound( filename ) {
@@ -604,8 +620,7 @@ class Webpage:  # TODO - shouldn't this extend html?
     def __str__(self):
         classless_css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
         jquery = script(_src=CDN_JS.JQUERY)
-        code = script(
-            """
+        code = script("""
             $(document).on( "click", ".close", function() {
                 var _id = $(this).data('ref');
                 $('#'+_id).css("display","none");
@@ -630,10 +645,8 @@ class Webpage:  # TODO - shouldn't this extend html?
                 });
             }
 
-        """
-        )
-        styles = style(
-            """
+        """)
+        styles = style("""
             .domonic-container {
                 padding:20px;
             }
@@ -669,8 +682,7 @@ class Webpage:  # TODO - shouldn't this extend html?
                 background-color:green;
             }
 
-        """
-        )
+        """)
         return str(
             html(
                 "<!DOCTYPE HTML>",
@@ -682,8 +694,7 @@ class Webpage:  # TODO - shouldn't this extend html?
 
 # quick templates
 
-webpage_tmpl = (
-    lambda content: f"""
+webpage_tmpl = lambda content: f"""
     <!DOCTYPE html>
     <html>
     <head>
@@ -695,7 +706,6 @@ webpage_tmpl = (
     </body>
     </html>
     """
-)
 
 
 # carousel_tmpl = lambda content: f"""

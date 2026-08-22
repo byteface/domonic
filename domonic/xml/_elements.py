@@ -1,8 +1,8 @@
 """
-    domonic.xml._elements
-    ====================================
+domonic.xml._elements
+====================================
 
-    Shared helpers for XML tag constructor modules.
+Shared helpers for XML tag constructor modules.
 """
 
 from __future__ import annotations

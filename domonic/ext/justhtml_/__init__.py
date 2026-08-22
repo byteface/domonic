@@ -1,9 +1,9 @@
 """
-    domonic.ext.justhtml_
-    ====================================
+domonic.ext.justhtml_
+====================================
 
-    Adapter for using justhtml as a frontend parser while rebuilding a
-    domonic document tree from the parsed output.
+Adapter for using justhtml as a frontend parser while rebuilding a
+domonic document tree from the parsed output.
 """
 
 from __future__ import annotations

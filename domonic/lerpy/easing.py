@@ -128,7 +128,9 @@ class Elastic:
             s = p / (2 * Math.PI) * Math.asin(c / a)
 
         t -= 1
-        return -(a * Math.pow(2, 10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b
+        return (
+            -(a * Math.pow(2, 10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p)) + b
+        )
 
     @staticmethod
     def easeOut(t, b, c, d, aa, bb):
@@ -151,7 +153,9 @@ class Elastic:
         else:
             s = p / (2 * Math.PI) * Math.asin(c / a)
 
-        return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b
+        return (
+            a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + c + b
+        )
 
     @staticmethod
     def easeInOut(t, b, c, d, aa, bb):
@@ -176,10 +180,17 @@ class Elastic:
 
         if t < 1:
             t -= 1
-            return -a / 2 * Math.pow(2, 10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) + b
+            return (
+                -a / 2 * Math.pow(2, 10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p)
+                + b
+            )
 
         t -= 1
-        return a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) * 0.5 + c + b
+        return (
+            a * Math.pow(2, -10 * t) * Math.sin((t * d - s) * (2 * Math.PI) / p) * 0.5
+            + c
+            + b
+        )
 
 
 class Expo:
@@ -334,7 +345,7 @@ class Sine:
 
 """
 class Exponential():
-    
+
     @staticmethod
     def easeIn(t, b, c, d, aa, bb):
         if t == 0:

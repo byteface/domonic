@@ -1,12 +1,13 @@
 """
-    domonic.i18n.zu
-    ====================================
+domonic.i18n.zu
+====================================
 
-    html tags in Zulu
+html tags in Zulu
 
-    first translated to Zulu using google translate.
-    feel free to send a pull request if you think it should be different
+first translated to Zulu using google translate.
+feel free to send a pull request if you think it should be different
 """
+
 from domonic.html import *
 
 umzimba = body

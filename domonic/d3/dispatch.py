@@ -1,6 +1,6 @@
 """
-    domonic.d3.dispatch
-    ===================================
+domonic.d3.dispatch
+===================================
 
 """
 
@@ -62,10 +62,14 @@ class Dispatch:
         while i < n:
             typename = T[i]
             if typename["type"] is not None:
-                _[typename["type"]] = self.set(_[typename["type"]], typename["name"], callback)
+                _[typename["type"]] = self.set(
+                    _[typename["type"]], typename["name"], callback
+                )
             elif callback == None:
                 for t in _:
-                    _[typename["type"]] = self.set(_[typename["type"]], typename["name"], None)
+                    _[typename["type"]] = self.set(
+                        _[typename["type"]], typename["name"], None
+                    )
             i += 1
 
         return self

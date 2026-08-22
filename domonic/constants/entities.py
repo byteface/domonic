@@ -1,6 +1,6 @@
 """
-    domonic.constants.entities
-    ====================================
+domonic.constants.entities
+====================================
 
 """
 

@@ -1,12 +1,12 @@
 """
-    domonic.parsers
-    ====================================
+domonic.parsers
+====================================
 
-    A place for parsers and utils for doings so.
+A place for parsers and utils for doings so.
 
-    These methods operate strings not on pyml objects. For dom manipulation use the dom.
+These methods operate strings not on pyml objects. For dom manipulation use the dom.
 
-    WARNING> dont use this class. still in development/idea phase. Teasing util methods out from the in-place parser
+WARNING> dont use this class. still in development/idea phase. Teasing util methods out from the in-place parser
 
 """
 
@@ -20,7 +20,8 @@ def create_element(name="custom_tag", *args, **kwargs):
     """
     NOTE - USED BY THE HACKED EXPAT PARSER TO GET VALID DOCUMENT NODES FROM ANY KNOWN SET
     """
-    from domonic.html import create_element as create_html_element, html_tags
+    from domonic.html import create_element as create_html_element
+    from domonic.html import html_tags
 
     if name in html_tags:
         return globals()[name]()
@@ -36,6 +37,7 @@ def remove_tags(html_str: str, tags):
     """
     removes a list of tags and their content from the html
     """
+
     def remove_tag_block(content: str, tag_name: str) -> str:
         opening = f"<{tag_name}"
         closing = f"</{tag_name}>"
@@ -346,11 +348,15 @@ def clean_junk(page):
     page = page.replace(', "\n)', "\n)")
 
     # page = page.replace(',",', ',') < VALID
-    page = page.replace(",  ,", ",")  # < new bug. due to single attributes having big space in front for some reason
+    page = page.replace(
+        ",  ,", ","
+    )  # < new bug. due to single attributes having big space in front for some reason
     page = page.replace(', ",', ",")
     page = page.replace(",,", ",")
     page = page.replace(", ,", ",")
-    page = page.replace(',"",', ",")  # careul. new and covers up somethings else. solo attributes still not done well
+    page = page.replace(
+        ',"",', ","
+    )  # careul. new and covers up somethings else. solo attributes still not done well
 
     page = page.replace("( ,*", "(*")
     page = page.replace("( , *", "(*")
@@ -365,7 +371,9 @@ def clean_junk(page):
     page = page.replace('),\n"\n),', "),\n),")
     page = page.replace('},\n"\n),', "}\n),")
 
-    page = page.replace('"_, _', '"_')  # when solo hyphenated custom attribute is first on a line.
+    page = page.replace(
+        '"_, _', '"_'
+    )  # when solo hyphenated custom attribute is first on a line.
 
     # page = page.replace('),\n",\n', '(')  # < break things but is also valid. text sentences can start with a comma
     # 2 issues. this also turns a closer into an opener. when catching a true case
@@ -398,7 +406,9 @@ def dent(pyml, use_tabs=False):
     return dented
 
 
-def add_cdata_tags_to_every_node(content: str):  # TODO - just have a CDATASection class?
+def add_cdata_tags_to_every_node(
+    content: str,
+):  # TODO - just have a CDATASection class?
     """[puts a CDATA tag on every node in the document]"""
     content = content.replace("<", "<![CDATA[")
     content = content.replace(">", "]]>")

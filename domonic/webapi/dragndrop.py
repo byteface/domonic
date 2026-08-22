@@ -1,7 +1,7 @@
 """
-    domonic.webapi.dragndrop
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+domonic.webapi.dragndrop
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
 """
 
 from domonic.events import DragEvent

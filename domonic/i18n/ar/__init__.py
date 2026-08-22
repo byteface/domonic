@@ -1,12 +1,13 @@
 """
-    domonic.i18n.ar
-    ====================================
+domonic.i18n.ar
+====================================
 
-    html tags in Arabic
+html tags in Arabic
 
-    translated to Arabic using google translate.
-    send a pull request if you have a better translation.
+translated to Arabic using google translate.
+send a pull request if you have a better translation.
 """
+
 from domonic.html import *
 
 aljism = الجسم = body

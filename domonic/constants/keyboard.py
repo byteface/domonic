@@ -352,7 +352,16 @@ class KeyCode:
     SCROLL_LOCK: ClassVar[str] = "145"
 
     MODIFIER_KEYS: ClassVar[frozenset[str]] = frozenset(
-        {SHIFT, CONTROL, ALT, LEFT_COMMAND, RIGHT_COMMAND, CAPS_LOCK, NUM_LOCK, SCROLL_LOCK}
+        {
+            SHIFT,
+            CONTROL,
+            ALT,
+            LEFT_COMMAND,
+            RIGHT_COMMAND,
+            CAPS_LOCK,
+            NUM_LOCK,
+            SCROLL_LOCK,
+        }
     )
 
     @classmethod

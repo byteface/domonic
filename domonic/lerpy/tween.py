@@ -48,7 +48,9 @@ class Tween(EventDispatcher):
     _timePaused = 0
     _timePrevious = 0
 
-    def __init__(self, target=None, values=None, duration=0, equations=None, delay=0, loop=False):
+    def __init__(
+        self, target=None, values=None, duration=0, equations=None, delay=0, loop=False
+    ):
         self.target = target
         self.values = values
         self.duration = duration
@@ -154,7 +156,9 @@ class Tween(EventDispatcher):
 
         self._tweening = True
         self._paused = False
-        self._intID = window.setInterval(self._update, 1000 / Tween.FPS, TweenEvent(TweenEvent.TIMER))
+        self._intID = window.setInterval(
+            self._update, 1000 / Tween.FPS, TweenEvent(TweenEvent.TIMER)
+        )
         self.dispatchEvent(TweenEvent(TweenEvent.START, self))
 
     def stop(self):
@@ -171,7 +175,9 @@ class Tween(EventDispatcher):
         # TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.
         # seems to not increment. then suddenly jumps to catch up with where it should be
         self._paused = True
-        self.dispatchEvent(TweenEvent(TweenEvent.PAUSE if self._paused else TweenEvent.UNPAUSE, self))
+        self.dispatchEvent(
+            TweenEvent(TweenEvent.PAUSE if self._paused else TweenEvent.UNPAUSE, self)
+        )
 
     def unpause(self):
         """unpauses the tween"""
@@ -219,7 +225,9 @@ class Tween(EventDispatcher):
                     x = e.extra
                     a = x.a if x != None else 0
                     b = x.b if x != None else 0
-                    self._target[v.prop] = e.ease(time, v.start, v.change, self._duration, a, b)
+                    self._target[v.prop] = e.ease(
+                        time, v.start, v.change, self._duration, a, b
+                    )
 
                 self.dispatchEvent(TweenEvent(TweenEvent.UPDATE_END, self))
 

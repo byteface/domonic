@@ -21,8 +21,10 @@ from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import CloseEvent, Event, EventTarget, FocusEvent, HashChangeEvent, MessageEvent, PopStateEvent
-from domonic.javascript import Promise, Window as JavaScriptWindow
+from domonic.events import (CloseEvent, Event, EventTarget, FocusEvent,
+                            HashChangeEvent, MessageEvent, PopStateEvent)
+from domonic.javascript import Promise
+from domonic.javascript import Window as JavaScriptWindow
 from domonic.javascript import performance
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
@@ -51,16 +53,26 @@ class MediaQueryList(EventTarget):
             return False
         text = media.strip().lower()
         if "," in text:
-            return any(MediaQueryList._evaluate(part, width=width, height=height) for part in text.split(","))
+            return any(
+                MediaQueryList._evaluate(part, width=width, height=height)
+                for part in text.split(",")
+            )
         if text.startswith("not "):
-            return not MediaQueryList._evaluate(text[4:].strip(), width=width, height=height)
+            return not MediaQueryList._evaluate(
+                text[4:].strip(), width=width, height=height
+            )
         if text.startswith("only "):
             text = text[5:].strip()
         if text in ("all", "screen"):
             return True
 
         checks: list[bool] = []
-        for label, value in (("min-width", width), ("max-width", width), ("min-height", height), ("max-height", height)):
+        for label, value in (
+            ("min-width", width),
+            ("max-width", width),
+            ("min-height", height),
+            ("max-height", height),
+        ):
             match = re.search(rf"\({label}\s*:\s*(\d+)px\)", text)
             if not match:
                 continue
@@ -70,7 +82,9 @@ class MediaQueryList(EventTarget):
             else:
                 checks.append(value <= target)
 
-        orientation_match = re.search(r"\(orientation\s*:\s*(portrait|landscape)\)", text)
+        orientation_match = re.search(
+            r"\(orientation\s*:\s*(portrait|landscape)\)", text
+        )
         if orientation_match:
             orientation = "landscape" if width >= height else "portrait"
             checks.append(orientation == orientation_match.group(1))
@@ -121,7 +135,9 @@ class CustomElementRegistry:
     def _validate_name(name: str) -> str:
         normalized = str(name).strip().lower()
         if not normalized or "-" not in normalized:
-            raise ValueError("Invalid custom element name. Must contain hyphen: " + str(name))
+            raise ValueError(
+                "Invalid custom element name. Must contain hyphen: " + str(name)
+            )
         if not re.fullmatch(r"[a-z][.0-9_a-z-]*-[.0-9_a-z-]*", normalized):
             raise ValueError("Invalid custom element name: " + str(name))
         if normalized in {
@@ -138,7 +154,11 @@ class CustomElementRegistry:
         return normalized
 
     @staticmethod
-    def _coerce_constructor(name: str, constructor: Callable[..., Any], options: dict[str, Any] | None = None) -> type[Element]:
+    def _coerce_constructor(
+        name: str,
+        constructor: Callable[..., Any],
+        options: dict[str, Any] | None = None,
+    ) -> type[Element]:
         if not isinstance(constructor, type):
             raise TypeError("constructor must be a class")
         if issubclass(constructor, Element):
@@ -150,13 +170,21 @@ class CustomElementRegistry:
             attrs["extends"] = options["extends"]
         return type(name.replace("-", "_"), (constructor, Element), attrs)
 
-    def define(self, name: str, constructor: Callable[..., Any], options: dict[str, Any] | None = None) -> type:
+    def define(
+        self,
+        name: str,
+        constructor: Callable[..., Any],
+        options: dict[str, Any] | None = None,
+    ) -> type:
         """Defines a new custom element."""
         normalized = self._validate_name(name)
         if normalized in self.store:
             raise ValueError("Custom element already defined: " + normalized)
         if constructor in self._constructors:
-            raise ValueError("Custom element constructor already defined: " + self._constructors[constructor])
+            raise ValueError(
+                "Custom element constructor already defined: "
+                + self._constructors[constructor]
+            )
 
         element_class = self._coerce_constructor(normalized, constructor, options)
         element_class.name = normalized
@@ -176,19 +204,31 @@ class CustomElementRegistry:
         return self._constructors.get(constructor)
 
     def _upgrade_element(self, element: Element) -> Element:
-        name = str(getattr(element, "tagName", getattr(element, "name", ""))).strip().lower()
+        name = (
+            str(getattr(element, "tagName", getattr(element, "name", "")))
+            .strip()
+            .lower()
+        )
         constructor = self.store.get(name)
         if constructor is None or isinstance(element, constructor):
             return element
-        old_document = element.ownerDocument if isinstance(element.ownerDocument, Document) else None
+        old_document = (
+            element.ownerDocument
+            if isinstance(element.ownerDocument, Document)
+            else None
+        )
         element.__class__ = constructor
         element.name = name
         element._custom_element_name = name
         if hasattr(constructor, "observedAttributes"):
             element.observedAttributes = getattr(constructor, "observedAttributes")
-        if isinstance(old_document, Document) and getattr(element, "isConnected", False):
+        if isinstance(old_document, Document) and getattr(
+            element, "isConnected", False
+        ):
             callback = getattr(element, "connectedCallback", None)
-            if callable(callback) and not getattr(element, "_custom_element_connected", False):
+            if callable(callback) and not getattr(
+                element, "_custom_element_connected", False
+            ):
                 element._custom_element_connected = True
                 callback()
         return element
@@ -296,7 +336,12 @@ class Navigator:
         return None
 
     def getBattery(self):
-        return {"charging": False, "chargingTime": 0, "dischargingTime": 0, "level": 1.0}
+        return {
+            "charging": False,
+            "chargingTime": 0,
+            "dischargingTime": 0,
+            "level": 1.0,
+        }
 
     @property
     def javaEnabled(self):
@@ -360,7 +405,9 @@ class Window(JavaScriptWindow, EventTarget):
         self._status: str = ""
         self._opener = opener
         self._parent = parent if parent is not None else self
-        self._top = getattr(self._parent, "top", self._parent) if parent is not None else self
+        self._top = (
+            getattr(self._parent, "top", self._parent) if parent is not None else self
+        )
         self._outer_width = self._screen.width
         self._outer_height = self._screen.height
         self._scroll_x = 0
@@ -465,7 +512,9 @@ class Window(JavaScriptWindow, EventTarget):
     @property
     def isSecureContext(self) -> bool:
         href = self.location.href or ""
-        return href.startswith(("https:", "wss:", "file:")) or href.startswith(("http://localhost", "http://127.0.0.1"))
+        return href.startswith(("https:", "wss:", "file:")) or href.startswith(
+            ("http://localhost", "http://127.0.0.1")
+        )
 
     @property
     def localStorage(self) -> Storage:
@@ -498,8 +547,13 @@ class Window(JavaScriptWindow, EventTarget):
         self._location = Location(href)
         self._document.URL = href
         self._document.referrer = previous_href or ""
-        if previous_href != href and previous_href.split("#", 1)[0] == href.split("#", 1)[0]:
-            self.dispatchEvent(HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href}))
+        if (
+            previous_href != href
+            and previous_href.split("#", 1)[0] == href.split("#", 1)[0]
+        ):
+            self.dispatchEvent(
+                HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href})
+            )
 
         loaded_document = self._fetch_document(href)
         if loaded_document is not None:
@@ -507,7 +561,11 @@ class Window(JavaScriptWindow, EventTarget):
 
     def blur(self):
         self._focused = False
-        self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
+        self.dispatchEvent(
+            FocusEvent(
+                "blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}
+            )
+        )
         return None
 
     @property
@@ -516,7 +574,18 @@ class Window(JavaScriptWindow, EventTarget):
 
     def close(self):
         self._closed = True
-        self.dispatchEvent(CloseEvent("close", {"bubbles": False, "cancelable": False, "code": 1000, "reason": "", "wasClean": True}))
+        self.dispatchEvent(
+            CloseEvent(
+                "close",
+                {
+                    "bubbles": False,
+                    "cancelable": False,
+                    "code": 1000,
+                    "reason": "",
+                    "wasClean": True,
+                },
+            )
+        )
         return None
 
     def confirm(self, message: str):
@@ -534,7 +603,13 @@ class Window(JavaScriptWindow, EventTarget):
         print(message)
         return None
 
-    def find(self, string: str, case_sensitive: bool = False, backwards: bool = False, wrap: bool = False):
+    def find(
+        self,
+        string: str,
+        case_sensitive: bool = False,
+        backwards: bool = False,
+        wrap: bool = False,
+    ):
         text = self.document.textContent or ""
         needle = str(string)
         if not case_sensitive:
@@ -544,7 +619,11 @@ class Window(JavaScriptWindow, EventTarget):
 
     def focus(self):
         self._focused = True
-        self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
+        self.dispatchEvent(
+            FocusEvent(
+                "focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}
+            )
+        )
         return None
 
     def frameElement(self):
@@ -569,7 +648,9 @@ class Window(JavaScriptWindow, EventTarget):
             query._set_viewport(width=self.innerWidth, height=self.innerHeight)
 
     def matchMedia(self, media_query_list):
-        query = MediaQueryList(media_query_list, width=self.innerWidth, height=self.innerHeight)
+        query = MediaQueryList(
+            media_query_list, width=self.innerWidth, height=self.innerHeight
+        )
         self._media_query_lists.append(query)
         return query
 
@@ -605,7 +686,13 @@ class Window(JavaScriptWindow, EventTarget):
     def navigator(self):
         return self._navigator
 
-    def open(self, url: str = "", target: str = "_blank", features: str = "", replace: bool = False):
+    def open(
+        self,
+        url: str = "",
+        target: str = "_blank",
+        features: str = "",
+        replace: bool = False,
+    ):
         target_window = None
         if target == "_self" or (self.name and target == self.name):
             target_window = self
@@ -638,7 +725,9 @@ class Window(JavaScriptWindow, EventTarget):
     def pageYOffset(self):
         return self.scrollY
 
-    def postMessage(self, message: Any, targetOrigin: str = "*", transfer: list[Any] | None = None):
+    def postMessage(
+        self, message: Any, targetOrigin: str = "*", transfer: list[Any] | None = None
+    ):
         if targetOrigin not in ("*", "/") and targetOrigin != self.origin:
             return None
         event = MessageEvent(
@@ -656,7 +745,9 @@ class Window(JavaScriptWindow, EventTarget):
         return None
 
     def print(self):
-        self.dispatchEvent(Event("beforeprint", {"bubbles": False, "cancelable": False}))
+        self.dispatchEvent(
+            Event("beforeprint", {"bubbles": False, "cancelable": False})
+        )
         self.dispatchEvent(Event("afterprint", {"bubbles": False, "cancelable": False}))
         return None
 
@@ -690,7 +781,11 @@ class Window(JavaScriptWindow, EventTarget):
         timer.start()
         return request_id
 
-    def requestIdleCallback(self, callback: Callable[[IdleDeadline], Any], options: dict[str, Any] | None = None) -> int:
+    def requestIdleCallback(
+        self,
+        callback: Callable[[IdleDeadline], Any],
+        options: dict[str, Any] | None = None,
+    ) -> int:
         if not callable(callback):
             raise TypeError("requestIdleCallback callback must be callable")
         options = options or {}
@@ -783,7 +878,9 @@ class Window(JavaScriptWindow, EventTarget):
         self._scroll_y = y
         if changed:
             self.dispatchEvent(Event("scroll", {"bubbles": False, "cancelable": False}))
-            self.dispatchEvent(Event("scrollend", {"bubbles": False, "cancelable": False}))
+            self.dispatchEvent(
+                Event("scrollend", {"bubbles": False, "cancelable": False})
+            )
         return None
 
     @property

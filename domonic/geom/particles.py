@@ -1,7 +1,7 @@
 """
-    domonic.geom.particles
-    ====================================
-    fun stuff
+domonic.geom.particles
+====================================
+fun stuff
 
 """
 

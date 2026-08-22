@@ -1,9 +1,10 @@
 """
-    domonic.webapi.XMLHttpRequest
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+domonic.webapi.XMLHttpRequest
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
 
 """
+
 from __future__ import annotations
 
 import json
@@ -84,23 +85,47 @@ class FormData:
 
             if el.nodeName.lower() == "input":
                 if el.type in ["email", "text", "hidden", "password", "reset", "email"]:
-                    q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                    q.append(
+                        el.getAttribute("name")
+                        + "="
+                        + Global.encodeURIComponent(el.nodeValue)
+                    )
                 elif el.type in ["checkbox", "radio"]:
                     if el.checked:
-                        q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                        q.append(
+                            el.getAttribute("name")
+                            + "="
+                            + Global.encodeURIComponent(el.nodeValue)
+                        )
             elif el.nodeName.lower() == "textarea":
-                q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                q.append(
+                    el.getAttribute("name")
+                    + "="
+                    + Global.encodeURIComponent(el.nodeValue)
+                )
             elif el.nodeName.lower() == "select":
                 if el.getAttribute("multiple") != None:
                     for option in el.getElementsByTagName("option"):
                         if option.getAttribute("selected") != None:
-                            q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(option.nodeValue))
+                            q.append(
+                                el.getAttribute("name")
+                                + "="
+                                + Global.encodeURIComponent(option.nodeValue)
+                            )
                 else:
-                    q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                    q.append(
+                        el.getAttribute("name")
+                        + "="
+                        + Global.encodeURIComponent(el.nodeValue)
+                    )
             elif el.nodeName.lower() == "button":
                 if el.type in ["reset", "submit", "button"]:
                     try:
-                        q.append(el.getAttribute("name") + "=" + Global.encodeURIComponent(el.nodeValue))
+                        q.append(
+                            el.getAttribute("name")
+                            + "="
+                            + Global.encodeURIComponent(el.nodeValue)
+                        )
                     except:
                         pass  # ? we dont pass submit button do we?
 

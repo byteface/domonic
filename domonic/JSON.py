@@ -21,9 +21,7 @@ from domonic.html import table, td, th, tr
 
 return_json = as_json  # legacy. use the one in decorators package
 
-RowsLike = (
-    str | bytes | bytearray | Mapping[str, Any] | Iterable[Mapping[str, Any]]
-)
+RowsLike = str | bytes | bytearray | Mapping[str, Any] | Iterable[Mapping[str, Any]]
 
 
 def parse_file(filepath: str | Path, **kwargs) -> Any:

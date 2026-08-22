@@ -1,8 +1,8 @@
 """
-    domonic.d3.timer
-    ====================================
+domonic.d3.timer
+====================================
 
-    # TODO - completely untested
+# TODO - completely untested
 
 """
 

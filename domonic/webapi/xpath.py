@@ -1,14 +1,15 @@
 """
-    domonic.webapi.xpath
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Glossary/XPath
+domonic.webapi.xpath
+====================================
+https://developer.mozilla.org/en-US/docs/Glossary/XPath
 
-    uses elementpath lib.
+uses elementpath lib.
 
-    TODO - content strings must be TextNodes for it to work.
-        so will have to iterate and update them. i.e. Treewalker
+TODO - content strings must be TextNodes for it to work.
+    so will have to iterate and update them. i.e. Treewalker
 
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -23,7 +24,9 @@ class XPathEvaluator:
     def __init__(self) -> None:
         pass
 
-    def createExpression(self, expression: str) -> XPathExpression:  # , namespaces: Dict[str, str]) -> None:
+    def createExpression(
+        self, expression: str
+    ) -> XPathExpression:  # , namespaces: Dict[str, str]) -> None:
         return XPathExpression(expression)
 
 
@@ -195,12 +198,14 @@ class XPathExpression:
         return getattr(node, "tagName", getattr(node, "name", ""))
 
     @staticmethod
-    def _predicate_matches(node: Any, predicate: str, index: int, nodes: list[Any]) -> bool:
+    def _predicate_matches(
+        node: Any, predicate: str, index: int, nodes: list[Any]
+    ) -> bool:
         from domonic.dom import Text
 
         if predicate == "last()":
             return index == len(nodes) - 1
-        if predicate.startswith('name()='):
+        if predicate.startswith("name()="):
             expected = predicate.split("=", 1)[1].strip().strip("'\"")
             return XPathExpression._node_name(node) == expected
         if predicate.startswith("@"):
@@ -253,7 +258,10 @@ class XPathExpression:
             if predicates:
                 filtered = []
                 for idx, candidate in enumerate(candidates):
-                    if all(self._predicate_matches(candidate, predicate, idx, candidates) for predicate in predicates):
+                    if all(
+                        self._predicate_matches(candidate, predicate, idx, candidates)
+                        for predicate in predicates
+                    ):
                         filtered.append(candidate)
                 candidates = filtered
             nodes = candidates
@@ -320,7 +328,10 @@ class XPathResult:
                 self.booleanValue = value  # .bool()
             else:
                 self.booleanValue = bool(value)
-        elif _type == self.ANY_UNORDERED_NODE_TYPE or _type == self.FIRST_ORDERED_NODE_TYPE:
+        elif (
+            _type == self.ANY_UNORDERED_NODE_TYPE
+            or _type == self.FIRST_ORDERED_NODE_TYPE
+        ):
             self.singleNodeValue = value  # .first()
         else:
             self.nodes = value  # .list()

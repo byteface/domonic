@@ -1,7 +1,7 @@
 """
-    domonic.dQuery
-    ===================================
-    alt + 0
+domonic.dQuery
+===================================
+alt + 0
 
 """
 
@@ -139,7 +139,9 @@ class dQuery_el:
 
     def _set_elements(self, elements, preserve_current=True):
         if preserve_current:
-            current = self._coerce_nodes(self.elements) if self.elements is not None else []
+            current = (
+                self._coerce_nodes(self.elements) if self.elements is not None else []
+            )
             self.prevObject = list(current)
         self.elements = elements
         return self
@@ -162,7 +164,17 @@ class dQuery_el:
 
     @staticmethod
     def _event_object(event_name):
-        if event_name in {"click", "dblclick", "mousedown", "mouseenter", "mouseleave", "mousemove", "mouseout", "mouseover", "mouseup"}:
+        if event_name in {
+            "click",
+            "dblclick",
+            "mousedown",
+            "mouseenter",
+            "mouseleave",
+            "mousemove",
+            "mouseout",
+            "mouseover",
+            "mouseup",
+        }:
             return MouseEvent(event_name)
         return Event(event_name)
 
@@ -375,7 +387,9 @@ class dQuery_el:
             el.triggerEvent("blur")
         return self
 
-    def change(self, handler):  # TODO - untested... from description sound like would be something like this?
+    def change(
+        self, handler
+    ):  # TODO - untested... from description sound like would be something like this?
         """Bind an event handler to the “change” JavaScript event, or trigger that event on an element."""
         if not isinstance(self.elements, (list, tuple)):
             self.elements = (self.elements,)
@@ -501,6 +515,7 @@ class dQuery_el:
         """Attach a handler to one or more events for all elements that match the selector, now or in the future,
         based on a specific set of root elements."""
         for el in self._ensure_list():
+
             def delegated(evt, _selector=selector, _handler=handler):
                 target = getattr(evt, "target", None)
                 if target is not None and self._match_selector(target, _selector):
@@ -576,7 +591,9 @@ class dQuery_el:
 
     def even(self):  # TODO - untested
         """Reduce the set of matched elements to the even ones in the set, numbered from zero."""
-        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 0]
+        self.elements = [
+            el for index, el in enumerate(self._ensure_list()) if index % 2 == 0
+        ]
         return self
 
     def fadeIn(self):
@@ -597,7 +614,9 @@ class dQuery_el:
 
     def filter(self, selector):  # TODO - untested
         """Reduce the set of matched elements to those that match the selector or pass the function’s test."""
-        self.elements = [el for el in self._ensure_list() if self._match_selector(el, selector)]
+        self.elements = [
+            el for el in self._ensure_list() if self._match_selector(el, selector)
+        ]
         return self
 
     def find(self, selector):
@@ -607,7 +626,9 @@ class dQuery_el:
         for el in self._ensure_list():
             if isinstance(selector, str):
                 matches = el.querySelectorAll(selector)
-                found.extend(list(matches) if isinstance(matches, (list, tuple)) else [matches])
+                found.extend(
+                    list(matches) if isinstance(matches, (list, tuple)) else [matches]
+                )
             else:
                 for child in el.getElementsByTagName("*"):
                     if self._match_selector(child, selector):
@@ -653,9 +674,19 @@ class dQuery_el:
         that matches the selector or DOM element."""
         matched = []
         for el in self._ensure_list():
-            descendants = el.querySelectorAll(selector) if isinstance(selector, str) else el.getElementsByTagName("*")
-            descendants = descendants if isinstance(descendants, (list, tuple)) else [descendants]
-            if any(self._match_selector(child, selector) for child in descendants if child is not None):
+            descendants = (
+                el.querySelectorAll(selector)
+                if isinstance(selector, str)
+                else el.getElementsByTagName("*")
+            )
+            descendants = (
+                descendants if isinstance(descendants, (list, tuple)) else [descendants]
+            )
+            if any(
+                self._match_selector(child, selector)
+                for child in descendants
+                if child is not None
+            ):
                 matched.append(el)
         self.elements = matched
         return self
@@ -859,7 +890,8 @@ class dQuery_el:
 
     def next(self, selector=None):  # TODO - test
         """Get the immediately following sibling of each element in the set of matched elements.
-        If a selector is provided, it retrieves the next sibling only if it matches that selector."""
+        If a selector is provided, it retrieves the next sibling only if it matches that selector.
+        """
         matches = []
         for el in self._ensure_list():
             if el.parentNode is None:
@@ -919,7 +951,9 @@ class dQuery_el:
 
     def odd(self):  # TODO - untested
         """Reduce the set of matched elements to the odd ones in the set, numbered from zero."""
-        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 1]
+        self.elements = [
+            el for index, el in enumerate(self._ensure_list()) if index % 2 == 1
+        ]
         return self
 
     def off(self, event):
@@ -958,6 +992,7 @@ class dQuery_el:
         """Attach a handler to an event for the elements.
         The handler is executed at most once per element per event type."""
         for el in self._ensure_list():
+
             @functools.wraps(callback)
             def wrapper(evt, _el=el):
                 callback(evt)
@@ -979,7 +1014,8 @@ class dQuery_el:
 
     def outerWidth(self):
         """Get the current computed outer width (including padding, border, and optionally margin) for the
-        first element in the set of matched elements or set the outer width of every matched element."""
+        first element in the set of matched elements or set the outer width of every matched element.
+        """
         el = self._ensure_list()[0]
         return (
             self.innerWidth()
@@ -1013,7 +1049,8 @@ class dQuery_el:
 
     def parentsUntil(self, selector):
         """Get the ancestors of each element in the current set of matched elements,
-        up to but not including the element matched by the selector, DOM node, or dQuery object."""
+        up to but not including the element matched by the selector, DOM node, or dQuery object.
+        """
         parents = []
         for el in self._ensure_list():
             current = el.parentNode
@@ -1045,7 +1082,8 @@ class dQuery_el:
 
     def prev(self, selector=None):  # TODO - untested
         """Get the immediately preceding sibling of each element in the set of matched elements.
-        If a selector is provided, it retrieves the previous sibling only if it matches that selector."""
+        If a selector is provided, it retrieves the previous sibling only if it matches that selector.
+        """
         matches = []
         for el in self._ensure_list():
             if el.parentNode is None:
@@ -1252,7 +1290,16 @@ class dQuery_el:
                 value = getattr(el, "value", None)
                 if value is None:
                     value = el.nodeValue if el.nodeValue is not None else ""
-                if el.type in ["email", "text", "hidden", "password", "button", "reset", "submit", "email"]:
+                if el.type in [
+                    "email",
+                    "text",
+                    "hidden",
+                    "password",
+                    "button",
+                    "reset",
+                    "submit",
+                    "email",
+                ]:
                     q.append(name + "=" + Global.encodeURIComponent(value))
                 elif el.type in ["checkbox", "radio"]:
                     if el.checked:
@@ -1266,7 +1313,9 @@ class dQuery_el:
                 if el.getAttribute("multiple") != None:
                     for option in el.getElementsByTagName("option"):
                         if option.getAttribute("selected") != None:
-                            q.append(name + "=" + Global.encodeURIComponent(option.nodeValue))
+                            q.append(
+                                name + "=" + Global.encodeURIComponent(option.nodeValue)
+                            )
                 else:
                     selected = None
                     for option in el.getElementsByTagName("option"):
@@ -1442,7 +1491,9 @@ class dQuery_el:
                     for callback in list(el.listeners[event_type]):
                         el.removeEventListener(event_type, callback)
                 self.eventHandler.events = [
-                    registered for registered in self.eventHandler.events if registered["target"] != el
+                    registered
+                    for registered in self.eventHandler.events
+                    if registered["target"] != el
                 ]
             else:
                 for callback in list(el.listeners.get(event, [])):
@@ -1762,7 +1813,14 @@ class º(dQuery_el):
 
     @staticmethod
     def ajax(
-        url="/", type="GET", data=None, contentType=False, processData=False, cache=False, success=None, error=None
+        url="/",
+        type="GET",
+        data=None,
+        contentType=False,
+        processData=False,
+        cache=False,
+        success=None,
+        error=None,
     ):
         """make an ajax request"""
         try:
@@ -2130,7 +2188,8 @@ class º(dQuery_el):
     def param(obj):
         """Create a serialized representation of an array, a plain object,
         or a dQuery object suitable for use in a URL query string or Ajax request.
-        In case a dQuery object is passed, it should contain input elements with name/value properties."""
+        In case a dQuery object is passed, it should contain input elements with name/value properties.
+        """
         if isinstance(obj, list):
             return json.dumps(obj)
         elif isinstance(obj, dict):

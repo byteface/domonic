@@ -1,7 +1,7 @@
 """
-    domonic.CDN
-    ====================================
-    For quick reference when prototyping
+domonic.CDN
+====================================
+For quick reference when prototyping
 """
 
 
@@ -12,16 +12,26 @@ class CDN_JS:
 
     JQUERY: str = "https://code.jquery.com/jquery-4.0.0.min.js"
     JQUERY_UI: str = "https://code.jquery.com/ui/1.14.2/jquery-ui.min.js"
-    UNDERSCORE: str = "https://cdn.jsdelivr.net/npm/underscore@1.13.8/underscore-umd-min.js"
-    BOOTSTRAP: str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    POPPER: str = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    UNDERSCORE: str = (
+        "https://cdn.jsdelivr.net/npm/underscore@1.13.8/underscore-umd-min.js"
+    )
+    BOOTSTRAP: str = (
+        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    )
+    POPPER: str = (
+        "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    )
     D3: str = "https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"
     # Modernizr 3.x no longer publishes a generic browser build; keep the last public default build.
-    MODERNIZR: str = "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"
+    MODERNIZR: str = (
+        "https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"
+    )
     MODERNIZER: str = MODERNIZR
     MOMENT: str = "https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment.min.js"
     PIXI: str = "https://cdn.jsdelivr.net/npm/pixi.js@8.20.0/dist/pixi.min.js"
-    SOCKET: str = "https://cdn.jsdelivr.net/npm/socket.io-client@4.8.3/dist/socket.io.min.js"
+    SOCKET: str = (
+        "https://cdn.jsdelivr.net/npm/socket.io-client@4.8.3/dist/socket.io.min.js"
+    )
     X3DOM: str = "https://www.x3dom.org/download/x3dom.js"
     AFRAME: str = "https://cdn.jsdelivr.net/npm/aframe@1.8.0/dist/aframe-v1.8.0.min.js"
     BRYTHON: str = "https://cdn.jsdelivr.net/npm/brython@3.14.3/brython.min.js"
@@ -31,11 +41,21 @@ class CDN_JS:
     AXIOS: str = "https://cdn.jsdelivr.net/npm/axios@1.19.0/dist/axios.min.js"
     DAY_JS: str = "https://cdn.jsdelivr.net/npm/dayjs@1.11.23/dayjs.min.js"
     CHART_JS: str = "https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"
-    ANIME_JS: str = "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"
-    VALIDATOR_JS: str = "https://cdn.jsdelivr.net/npm/validator@13.15.35/validator.min.js"
-    TAILWIND: str = "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3/dist/index.global.js"
-    CODEMIRROR: str = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/codemirror.min.js"
-    CODEMIRROR_PYTHON: str = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/mode/python/python.min.js"
+    ANIME_JS: str = (
+        "https://cdn.jsdelivr.net/npm/animejs@4.5.0/dist/bundles/anime.umd.min.js"
+    )
+    VALIDATOR_JS: str = (
+        "https://cdn.jsdelivr.net/npm/validator@13.15.35/validator.min.js"
+    )
+    TAILWIND: str = (
+        "https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.3/dist/index.global.js"
+    )
+    CODEMIRROR: str = (
+        "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/codemirror.min.js"
+    )
+    CODEMIRROR_PYTHON: str = (
+        "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/mode/python/python.min.js"
+    )
 
 
 class CDN_CSS:
@@ -43,20 +63,34 @@ class CDN_CSS:
     CSS Libraries
     """
 
-    BOOTSTRAP: str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    BOOTSTRAP: str = (
+        "https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    )
     MARX: str = "https://cdn.jsdelivr.net/npm/marx-css@5.3.0/css/marx.min.css"
     MVP: str = "https://cdn.jsdelivr.net/npm/mvp.css@1.17.3/mvp.css"
     WATER: str = "https://cdn.jsdelivr.net/npm/water.css@2.1.1/out/water.min.css"
     BALLOON: str = "https://cdn.jsdelivr.net/npm/balloon-css@1.2.0/balloon.min.css"
-    THREE_DOTS: str = "https://cdn.jsdelivr.net/npm/three-dots@0.3.2/dist/three-dots.min.css"
-    MILLIGRAM: str = "https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css"
+    THREE_DOTS: str = (
+        "https://cdn.jsdelivr.net/npm/three-dots@0.3.2/dist/three-dots.min.css"
+    )
+    MILLIGRAM: str = (
+        "https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css"
+    )
     X3DOM: str = "https://www.x3dom.org/download/x3dom.css"
-    FONTAWESOME: str = "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"
-    MDI: str = "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+    FONTAWESOME: str = (
+        "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"
+    )
+    MDI: str = (
+        "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+    )
     TAILWIND: str = "https://cdn.jsdelivr.net/npm/tailwindcss@4.3.3/index.css"
     SIMPLE: str = "https://cdn.jsdelivr.net/npm/simpledotcss@2.3.7/simple.min.css"
-    CODEMIRROR: str = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/codemirror.min.css"
-    CODEMIRROR_MONOKAI: str = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/theme/monokai.min.css"
+    CODEMIRROR: str = (
+        "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/codemirror.min.css"
+    )
+    CODEMIRROR_MONOKAI: str = (
+        "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.20/theme/monokai.min.css"
+    )
 
 
 class CDN_IMG:

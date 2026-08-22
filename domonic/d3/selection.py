@@ -1,8 +1,8 @@
 """
-    domonic.d3.selection
-    ====================================
+domonic.d3.selection
+====================================
 
-    https://github.com/d3/d3-selection/tree/main/src/selection
+https://github.com/d3/d3-selection/tree/main/src/selection
 
 """
 
@@ -24,6 +24,7 @@ namespaces = {
     "xmlns": "http://www.w3.org/2000/xmlns/",
 }
 
+
 # export {default as namespace} from "./namespace.js";
 # export {default as namespaces} from "./namespaces.js";
 def namespace(name):
@@ -35,7 +36,9 @@ def namespace(name):
     if i >= 0 and prefix != "xmlns":
         name = String(name).slice(i + 1)
     return (
-        {"space": namespaces[prefix], "local": name} if Object(namespaces).hasOwnProperty(prefix) else name
+        {"space": namespaces[prefix], "local": name}
+        if Object(namespaces).hasOwnProperty(prefix)
+        else name
     )  # eslint-disable-line no-prototype-builtins
 
 
@@ -61,7 +64,9 @@ def creatorFixed(fullname):
     # return lambda this: this.ownerDocument.createElementNS(fullname['space'], fullname['local'])
     from domonic.dom import document  # bring in the global document
 
-    return lambda *args: document.ownerDocument.createElementNS(fullname["space"], fullname["local"])
+    return lambda *args: document.ownerDocument.createElementNS(
+        fullname["space"], fullname["local"]
+    )
 
 
 def creator(name):
@@ -76,7 +81,9 @@ def none():
 
 
 def selector(selector):
-    return None if selector == None else lambda this, *args: this.querySelector(selector)
+    return (
+        None if selector == None else lambda this, *args: this.querySelector(selector)
+    )
 
 
 # // Given something array like (or null), returns something that is strictly an
@@ -92,16 +99,23 @@ def array(x):
 
 # export {default as window} from "./window.js";
 def window(node):
-    return (node.ownerDocument and node.ownerDocument.defaultView) or (node.document and node) or node.defaultView
+    return (
+        (node.ownerDocument and node.ownerDocument.defaultView)
+        or (node.document and node)
+        or node.defaultView
+    )
 
 
 defaultView = window
 
 # import selection_select from "./select.js";
 
+
 # import selection_style from "./style.js";
 def styleValue(node, name):
-    return node.style.getPropertyValue(name) or defaultView(node).getComputedStyle(node, None).getPropertyValue(name)
+    return node.style.getPropertyValue(name) or defaultView(node).getComputedStyle(
+        node, None
+    ).getPropertyValue(name)
 
 
 def sparse(self, update):
@@ -201,7 +215,8 @@ def _invoke_callback(callback, *args):
     positional = [
         param
         for param in parameters
-        if param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if param.kind
+        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     ]
     return callback(*args[: len(positional)])
 
@@ -946,7 +961,9 @@ class Selection:
     # def lower: selection_lower,
     def _lower(self):
         if self.this.previousSibling:
-            self.this.parentNode.insertBefore(self.this, self.this.parentNode.firstChild)
+            self.this.parentNode.insertBefore(
+                self.this, self.this.parentNode.firstChild
+            )
 
     def lower(self):
         return self.each(lower)
@@ -966,8 +983,15 @@ class Selection:
         #     return this.insertBefore(create.apply(this, arguments), select.apply(this, arguments) || null);
         # })
         create = name if callable(name) else creator(name)
-        select = before == None or before == "null" or before == "undefined" or before == "null"
-        return self.select(lambda: self.this.insertBefore(Function(create).apply(self, args), select))
+        select = (
+            before == None
+            or before == "null"
+            or before == "undefined"
+            or before == "null"
+        )
+        return self.select(
+            lambda: self.this.insertBefore(Function(create).apply(self, args), select)
+        )
 
     # import selection_remove from "./remove.js";
     # def remove: selection_remove,
@@ -999,7 +1023,11 @@ class Selection:
         #     ? this.property("__data__", value)
         #     : this.node().__data__;
         # }
-        return self.this.property("__data__", value) if value is not None else self.node().__data__
+        return (
+            self.this.property("__data__", value)
+            if value is not None
+            else self.node().__data__
+        )
 
     # import selection_on from "./on.js";
     def contextListener(self, listener):
@@ -1012,7 +1040,9 @@ class Selection:
         #     if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i)
         #     return {type: t, name: name}
         # });
-        return [{"type": t[0], "name": t[1]} for t in re.findall(r"\.([^\.]+)", typenames)]
+        return [
+            {"type": t[0], "name": t[1]} for t in re.findall(r"\.([^\.]+)", typenames)
+        ]
 
     def onRemove(self, typename):
         # TODO - write this as python
@@ -1201,7 +1231,9 @@ def select(selector):
     from domonic.dom import document  # bring in the global document
 
     if isinstance(selector, str):
-        return Selection([[document.querySelector(selector)]], [document.documentElement])
+        return Selection(
+            [[document.querySelector(selector)]], [document.documentElement]
+        )
     else:
         return Selection([[selector]], root)
 
@@ -1283,7 +1315,10 @@ def pointer(event, node):
 
     if node.getBoundingClientRect:
         rect = node.getBoundingClientRect()
-        return [event.clientX - rect.left - node.clientLeft, event.clientY - rect.top - node.clientTop]
+        return [
+            event.clientX - rect.left - node.clientLeft,
+            event.clientY - rect.top - node.clientTop,
+        ]
 
     return [event.pageX, event.pageY]
 
@@ -1306,11 +1341,17 @@ def selectAll(selector):
 
     # print(document)
     if isinstance(selector, str):
-        return Selection([document.querySelectorAll(selector)], [document.documentElement])
+        return Selection(
+            [document.querySelectorAll(selector)], [document.documentElement]
+        )
         # return Selection([document.getElementsBySelector(selector, document)], [document.documentElement])
     else:
         return Selection([array(selector)], root)
 
 
 def selectorAll(selector):
-    return empty if selector == None else lambda this, *args: this.querySelectorAll(selector)
+    return (
+        empty
+        if selector == None
+        else lambda this, *args: this.querySelectorAll(selector)
+    )

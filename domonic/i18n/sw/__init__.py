@@ -1,19 +1,20 @@
 """
-    domonic.i18n.sw
-    ====================================
+domonic.i18n.sw
+====================================
 
-    html tags in Swahili
+html tags in Swahili
 
-    translated to Swahili using google translate.
-    send a pull request if you have a better translation.
+translated to Swahili using google translate.
+send a pull request if you have a better translation.
 
-    html(
-        kichwa(),
-        mwili(
-            div('Salamu, Dunia')
-        )
+html(
+    kichwa(),
+    mwili(
+        div('Salamu, Dunia')
     )
+)
 """
+
 from domonic.html import *
 
 # tags

@@ -1,9 +1,9 @@
 """
-    domonic.ext.markupever_
-    ====================================
+domonic.ext.markupever_
+====================================
 
-    Fast hybrid adapter for using markupever as a frontend parser and then
-    rebuilding a domonic tree via the lxml_html adapter.
+Fast hybrid adapter for using markupever as a frontend parser and then
+rebuilding a domonic tree via the lxml_html adapter.
 """
 
 from __future__ import annotations

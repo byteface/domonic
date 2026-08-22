@@ -1,9 +1,8 @@
 """
-    domonic.webapi.push
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Push_API
+domonic.webapi.push
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Push_API
 """
-
 
 # class PushManager:
 #     """

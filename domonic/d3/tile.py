@@ -1,8 +1,8 @@
 """
-    domonic.d3.tile
-    ====================================
+domonic.d3.tile
+====================================
 
-    # TODO - completely untested
+# TODO - completely untested
 
 """
 

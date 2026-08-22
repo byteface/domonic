@@ -1,7 +1,7 @@
 """
-    domonic.templates
-    ====================================
-    some builtin templates
+domonic.templates
+====================================
+some builtin templates
 
 """
 
@@ -33,7 +33,9 @@ class _page_template:
         self.title_text = title_text
         self.wholepage = wholepage
         self.body_node = body(*_normalize_children(body_children))
-        self.page = html(head(title(self.title_text), meta(_charset="utf-8")), self.body_node)
+        self.page = html(
+            head(title(self.title_text), meta(_charset="utf-8")), self.body_node
+        )
         self.content = self.page if wholepage else self.body_node
 
     def __str__(self) -> str:
@@ -55,7 +57,9 @@ class status_page(_page_template):
 
 
 class blank_page(_page_template):
-    def __init__(self, title_text: str = "Untitled", content=None, wholepage: bool = True):
+    def __init__(
+        self, title_text: str = "Untitled", content=None, wholepage: bool = True
+    ):
         super().__init__(title_text, content, wholepage)
 
 
@@ -156,7 +160,9 @@ class runtime_page(_page_template):
         ]
 
         if include_environment:
-            env_rows = [tr(th(key), td(value)) for key, value in sorted(os.environ.items())]
+            env_rows = [
+                tr(th(key), td(value)) for key, value in sorted(os.environ.items())
+            ]
             sections.append(h2("Environment"))
             sections.append(table(tbody(*env_rows), _id="environment-info"))
 

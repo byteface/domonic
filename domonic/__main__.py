@@ -1,7 +1,7 @@
 """
-    domonic CLI
-    ====================================
-    - some useful cli commands
+domonic CLI
+====================================
+- some useful cli commands
 """
 
 import argparse
@@ -9,11 +9,8 @@ import os
 import subprocess
 import sys
 
-from domonic.ext import (
-    get_hello_world,
-    get_server_requirements,
-    get_supported_servers,
-)
+from domonic.ext import (get_hello_world, get_server_requirements,
+                         get_supported_servers)
 
 prog = """
 
@@ -72,6 +69,8 @@ function project(){
 }
 
 """
+
+
 def _open_directory(path: str = ".") -> None:
     if sys.platform.startswith("darwin"):
         subprocess.run(["open", path], check=False)
@@ -104,7 +103,14 @@ def _read_source(source: str | None, use_stdin: bool = False) -> str:
     return response.text
 
 
-def _emit_results(results, *, text_only: bool = False, attr_name: str | None = None, count_only: bool = False, first_only: bool = False):
+def _emit_results(
+    results,
+    *,
+    text_only: bool = False,
+    attr_name: str | None = None,
+    count_only: bool = False,
+    first_only: bool = False,
+):
     items = list(results)
     if first_only:
         items = items[:1]
@@ -141,10 +147,17 @@ def project(name, server_choice: str | None = None):
     this will replace the older bash script
     """
     from domonic.utils import Utils
+
     server_opt = get_supported_servers()
 
-    if server_choice is not None and server_choice not in server_opt and server_choice != "none":
-        raise ValueError(f"Unsupported server '{server_choice}'. Supported servers: {', '.join(server_opt)}")
+    if (
+        server_choice is not None
+        and server_choice not in server_opt
+        and server_choice != "none"
+    ):
+        raise ValueError(
+            f"Unsupported server '{server_choice}'. Supported servers: {', '.join(server_opt)}"
+        )
 
     def write_requirements(server: str) -> list[str]:
         requirements = ["domonic", "requests", *get_server_requirements(server)]
@@ -187,12 +200,10 @@ def project(name, server_choice: str | None = None):
         # f.write(". venv/bin/activate\n")
         # f.write("python3 app.py\n")
         # TOD as a run command
-        f.write(
-            """
+        f.write("""
 run:
 \t(. venv/bin/activate; python3 app.py;)
-"""
-        )
+""")
 
     # create a README.md
     with open("README.md", "w") as f:
@@ -306,7 +317,12 @@ def parse_args():
     )
     parser.add_argument("-v", "--version", action="store_true")
     parser.add_argument("-p", "--project", help="Create a new project", type=str)
-    parser.add_argument("--server", help="Choose the project server non-interactively", type=str, default=None)
+    parser.add_argument(
+        "--server",
+        help="Choose the project server non-interactively",
+        type=str,
+        default=None,
+    )
     parser.add_argument(
         "-e",
         "--eval",
@@ -342,21 +358,54 @@ def parse_args():
         nargs="*",
         default=None,
     )
-    parser.add_argument("--xpath-file", help="pass a local HTML file and an xpath", type=str, nargs=2, default=None)
-    parser.add_argument("--query-file", help="pass a local HTML file and a css query", type=str, nargs=2, default=None)
-    parser.add_argument("--xpath-stdin", help="read HTML from stdin and apply an xpath", type=str, default=None)
-    parser.add_argument("--query-stdin", help="read HTML from stdin and apply a css query", type=str, default=None)
-    parser.add_argument("--text", help="print text content instead of node markup", action="store_true")
-    parser.add_argument("--attr", help="print a specific attribute from each result", type=str, default=None)
-    parser.add_argument("--count", help="print only the number of matches", action="store_true")
-    parser.add_argument("--first", help="print only the first match", action="store_true")
     parser.add_argument(
-        "-h2p", 
-        "--html2pyml", 
-        help="Convert HTML to PyML", 
-        type=str, 
-        nargs="?", 
-        default=None
+        "--xpath-file",
+        help="pass a local HTML file and an xpath",
+        type=str,
+        nargs=2,
+        default=None,
+    )
+    parser.add_argument(
+        "--query-file",
+        help="pass a local HTML file and a css query",
+        type=str,
+        nargs=2,
+        default=None,
+    )
+    parser.add_argument(
+        "--xpath-stdin",
+        help="read HTML from stdin and apply an xpath",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--query-stdin",
+        help="read HTML from stdin and apply a css query",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--text", help="print text content instead of node markup", action="store_true"
+    )
+    parser.add_argument(
+        "--attr",
+        help="print a specific attribute from each result",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
+        "--count", help="print only the number of matches", action="store_true"
+    )
+    parser.add_argument(
+        "--first", help="print only the first match", action="store_true"
+    )
+    parser.add_argument(
+        "-h2p",
+        "--html2pyml",
+        help="Convert HTML to PyML",
+        type=str,
+        nargs="?",
+        default=None,
     )
 
     # parser.add_argument('-u', '--ui', help="launches a UI")
@@ -434,7 +483,7 @@ def do_things(arguments):
         from domonic.utils import Utils
 
         # print("filename:", Utils.url2file(arguments.download))
-        print(render(outp, to='pyml'))
+        print(render(outp, to="pyml"))
 
     if arguments.project is not None:
         print("creating a basic project:")
@@ -458,7 +507,11 @@ def do_things(arguments):
         print(result)
         return result
 
-    if arguments.xpath is not None or arguments.xpath_file is not None or arguments.xpath_stdin is not None:
+    if (
+        arguments.xpath is not None
+        or arguments.xpath_file is not None
+        or arguments.xpath_stdin is not None
+    ):
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
@@ -466,7 +519,9 @@ def do_things(arguments):
         xpath: str
         use_stdin = False
         if arguments.xpath is not None:
-            source, xpath, use_stdin = _resolve_source_and_expression(arguments.xpath, "xpath")
+            source, xpath, use_stdin = _resolve_source_and_expression(
+                arguments.xpath, "xpath"
+            )
         elif arguments.xpath_file is not None:
             source, xpath = arguments.xpath_file
         else:
@@ -485,10 +540,16 @@ def do_things(arguments):
             first_only=arguments.first,
         )
 
-    if arguments.query is not None or arguments.query_file is not None or arguments.query_stdin is not None:
+    if (
+        arguments.query is not None
+        or arguments.query_file is not None
+        or arguments.query_stdin is not None
+    ):
         query: str
         if arguments.query is not None:
-            source, query, use_stdin = _resolve_source_and_expression(arguments.query, "query")
+            source, query, use_stdin = _resolve_source_and_expression(
+                arguments.query, "query"
+            )
             if use_stdin:
                 from domonic import domonic
 

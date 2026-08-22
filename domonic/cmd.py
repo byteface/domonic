@@ -1,8 +1,9 @@
 """
-    domonic.cmd
-    ====================================
-    - call cmd commands from python 3
+domonic.cmd
+====================================
+- call cmd commands from python 3
 """
+
 import os
 import subprocess
 
@@ -46,7 +47,9 @@ class Cmdcommand:
         Returns:
             str: the response as a string
         """
-        returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+        returned_output = subprocess.check_output(
+            cmd, shell=True, stderr=subprocess.STDOUT
+        )
         return returned_output.decode("utf-8")
 
     def __init__(self, *args, **kwargs):
@@ -100,7 +103,9 @@ class Cmdcommand:
             # for now this behaves how i want despite the _new_ hack and double call on this command
             """
             if self.has_wait is not True:
-                returned_output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+                returned_output = subprocess.check_output(
+                    cmd, shell=True, stderr=subprocess.STDOUT
+                )
                 self.result = returned_output.decode("utf-8")
             else:
                 self.result = "PING FAIL"
@@ -110,7 +115,9 @@ class Cmdcommand:
                     return
 
                 # try:
-                proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                proc = subprocess.Popen(
+                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+                )
                 intId = window.setInterval(3000, kill_switch, proc)
                 self.result = proc.stdout.readlines()
                 window.clearInterval(intId)
@@ -178,7 +185,9 @@ class cd(Cmdcommand):
 
 
 # tested --
-dir = type("dir", (Cmdcommand,), {"name": "dir", "iterable": True})  #: list directory content
+dir = type(
+    "dir", (Cmdcommand,), {"name": "dir", "iterable": True}
+)  #: list directory content
 erase = type("erase", (Cmdcommand,), {"name": "erase"})
 # del = type('del', (command,), {'name': 'del'})
 mkdir = type("mkdir", (Cmdcommand,), {"name": "mkdir"})  #: create a new directory
@@ -186,7 +195,9 @@ rmdir = type("rmdir", (Cmdcommand,), {"name": "rmdir"})  #: delete directory
 copy = type("copy", (Cmdcommand,), {"name": "copy"})  #: copy files
 
 fsutil = type("fsutil", (Cmdcommand,), {"name": "fsutil"})
-fc = type("fc", (Cmdcommand,), {"name": "fc"})  # compare files and display the differences
+fc = type(
+    "fc", (Cmdcommand,), {"name": "fc"}
+)  # compare files and display the differences
 
 
 class touch(Cmdcommand):
@@ -201,7 +212,9 @@ class touch(Cmdcommand):
 
 
 getmac = type("getmac", (Cmdcommand,), {"name": "getmac"})  #: display MAC address
-ipconfig = type("ipconfig", (Cmdcommand,), {"name": "ipconfig"})  #: display IP network settings
+ipconfig = type(
+    "ipconfig", (Cmdcommand,), {"name": "ipconfig"}
+)  #: display IP network settings
 shutdown = type(
     "shutdown", (Cmdcommand,), {"name": "shutdown"}
 )  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
@@ -209,7 +222,9 @@ shutdown = type(
 echo = type("echo", (Cmdcommand,), {"name": "echo"})  #: text output
 hostname = type("hostname", (Cmdcommand,), {"name": "hostname"})  #: display host name
 # time = type('time', (Cmdcommand,), {'name': 'time'})  #: display/edit the system time - TODO seemed to hang
-ver = type("ver", (Cmdcommand,), {"name": "ver"})  #: display operating system version - TODO seemed to hang
+ver = type(
+    "ver", (Cmdcommand,), {"name": "ver"}
+)  #: display operating system version - TODO seemed to hang
 # netstat = type('netstat', (Cmdcommand,), {'name': 'netstat'})  #: display TCP/IP connections and status
 ping = type("ping", (Cmdcommand,), {"name": "ping"})  #: pings the network
 # ping = type('ping', (Cmdcommand,), {'name': 'ping', 'wait': True, 'iterable': True})  # < TODO - need to stream feedback
@@ -231,23 +246,39 @@ chkdsk = type("chkdsk", (Cmdcommand,), {"name": "chkdsk"})  #: check volumes
 driverquery = type(
     "driverquery", (Cmdcommand,), {"name": "driverquery"}
 )  #: display installed devices and their properties
-vol = type("vol", (Cmdcommand,), {"name": "vol"})  #: show volume description and serial numbers of the HDDs
-gpresult = type("gpresult", (Cmdcommand,), {"name": "gpresult"})  #: display group policies
+vol = type(
+    "vol", (Cmdcommand,), {"name": "vol"}
+)  #: show volume description and serial numbers of the HDDs
+gpresult = type(
+    "gpresult", (Cmdcommand,), {"name": "gpresult"}
+)  #: display group policies
 
 # ssh = type('ssh', (Cmdcommand,), {'name': 'ssh'})
 
-chdir = type("chdir", (Cmdcommand,), {"name": "chdir"})  # : show current dir or can switch dir
+chdir = type(
+    "chdir", (Cmdcommand,), {"name": "chdir"}
+)  # : show current dir or can switch dir
 # clip = type('clip', (Cmdcommand,), {'name': 'clip'})  # : Forwards the result of a command to the clipboard
 
 # find = type('find', (Cmdcommand,), {'name': 'find'})
-whoami = type("whoami", (Cmdcommand,), {"name": "whoami"})  #: information about the current user. /GROUP parameter
+whoami = type(
+    "whoami", (Cmdcommand,), {"name": "whoami"}
+)  #: information about the current user. /GROUP parameter
 
-logoff = type("logoff", (Cmdcommand,), {"name": "logoff"})  #: Logs the user out of Windows.
-mrinfo = type("mrinfo", (Cmdcommand,), {"name": "mrinfo"})  #: Provides information on the router
-tasklist = type("tasklist", (Cmdcommand,), {"name": "tasklist"})  #: Lists all running processes
+logoff = type(
+    "logoff", (Cmdcommand,), {"name": "logoff"}
+)  #: Logs the user out of Windows.
+mrinfo = type(
+    "mrinfo", (Cmdcommand,), {"name": "mrinfo"}
+)  #: Provides information on the router
+tasklist = type(
+    "tasklist", (Cmdcommand,), {"name": "tasklist"}
+)  #: Lists all running processes
 
 # cmd = type('cmd', (Cmdcommand,), {'name': 'cmd'})  #: start command prompt - NOTE hangs
-title = type("title", (Cmdcommand,), {"name": "title"})  #: Changes the title of the command prompt
+title = type(
+    "title", (Cmdcommand,), {"name": "title"}
+)  #: Changes the title of the command prompt
 tzutil = type(
     "tzutil", (Cmdcommand,), {"name": "tzutil"}
 )  #: Displays the currently set time zone (/g) or changes it (/s)

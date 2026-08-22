@@ -15,7 +15,8 @@ import inspect
 import time
 from typing import Any, Callable, ClassVar
 
-from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
+from domonic.constants.keyboard import (Code, Key, KeyCode, KeyLocation,
+                                        normalize_code, normalize_key)
 
 
 class EventListener:
@@ -72,7 +73,12 @@ class EventTarget:
     def _normalize_listener_options(
         options: bool | dict[str, Any] | None = None, **kwargs: Any
     ) -> dict[str, Any]:
-        normalized: dict[str, Any] = {"capture": False, "once": False, "passive": False, "signal": None}
+        normalized: dict[str, Any] = {
+            "capture": False,
+            "once": False,
+            "passive": False,
+            "signal": None,
+        }
         if isinstance(options, bool):
             normalized["capture"] = options
         elif isinstance(options, dict):
@@ -100,7 +106,10 @@ class EventTarget:
         while current is not None and id(current) not in seen:
             path.append(current)
             seen.add(id(current))
-            if hasattr(current, "parentNode") and getattr(current, "parentNode", None) is not None:
+            if (
+                hasattr(current, "parentNode")
+                and getattr(current, "parentNode", None) is not None
+            ):
                 current = current.parentNode
                 continue
             owner_document = getattr(current, "ownerDocument", None)
@@ -114,13 +123,19 @@ class EventTarget:
             break
         return path
 
-    def _invoke_listeners(self, current_target: Any, event: "Event", capture: bool) -> None:
+    def _invoke_listeners(
+        self, current_target: Any, event: "Event", capture: bool
+    ) -> None:
         event_type = event.type
-        listeners = list(getattr(current_target, "_listener_options", {}).get(event_type, []))
+        listeners = list(
+            getattr(current_target, "_listener_options", {}).get(event_type, [])
+        )
         event.currentTarget = current_target
         event.srcElement = event.target
-        event.eventPhase = Event.AT_TARGET if current_target is event.target else (
-            Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE
+        event.eventPhase = (
+            Event.AT_TARGET
+            if current_target is event.target
+            else (Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE)
         )
 
         for listener in listeners:
@@ -136,7 +151,9 @@ class EventTarget:
                 event.preventDefault()
             event._in_passive_listener = False
             if listener["once"]:
-                current_target.removeEventListener(event_type, callback, listener["capture"])
+                current_target.removeEventListener(
+                    event_type, callback, listener["capture"]
+                )
             if event._immediate_propagation_stopped:
                 return
 
@@ -171,18 +188,33 @@ class EventTarget:
             if getattr(signal, "aborted", False):
                 return
         for listener in self._listener_options[eventType]:
-            if listener["callback"] is callback and listener["capture"] == listener_options["capture"]:
+            if (
+                listener["callback"] is callback
+                and listener["capture"] == listener_options["capture"]
+            ):
                 return
         self.listeners[eventType].append(callback)
-        self._listener_options[eventType].append({"callback": callback, **listener_options})
+        self._listener_options[eventType].append(
+            {"callback": callback, **listener_options}
+        )
         if signal is not None and hasattr(signal, "addEventListener"):
-            def _remove_on_abort(event: Any, target=self, ev_type=eventType, cb=callback, capture=listener_options["capture"]):
+
+            def _remove_on_abort(
+                event: Any,
+                target=self,
+                ev_type=eventType,
+                cb=callback,
+                capture=listener_options["capture"],
+            ):
                 target.removeEventListener(ev_type, cb, {"capture": capture})
 
             signal.addEventListener("abort", _remove_on_abort, {"once": True})
 
     def removeEventListener(
-        self, eventType: str, callback: Callable[..., Any], options: bool | dict[str, Any] | None = None
+        self,
+        eventType: str,
+        callback: Callable[..., Any],
+        options: bool | dict[str, Any] | None = None,
     ) -> None:
         """
         Remove an event listener for the given event type.
@@ -288,11 +320,15 @@ class EventTarget:
         event._immediate_propagation_stopped = False
         event._in_passive_listener = False
 
-        async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> Any:
+        async def call_listener(
+            callback: Callable[..., Any], current_target: Any, capture: bool
+        ) -> Any:
             event.currentTarget = current_target
             event.srcElement = event.target
-            event.eventPhase = Event.AT_TARGET if current_target is event.target else (
-                Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE
+            event.eventPhase = (
+                Event.AT_TARGET
+                if current_target is event.target
+                else (Event.CAPTURING_PHASE if capture else Event.BUBBLING_PHASE)
             )
             if hasattr(callback, "handleEvent"):
                 result = callback.handleEvent(event)
@@ -303,17 +339,23 @@ class EventTarget:
             return result
 
         async def invoke(current_target: Any, capture: bool) -> None:
-            listeners = list(getattr(current_target, "_listener_options", {}).get(event.type, []))
+            listeners = list(
+                getattr(current_target, "_listener_options", {}).get(event.type, [])
+            )
             for listener in listeners:
                 if listener["capture"] != capture:
                     continue
                 event._in_passive_listener = listener["passive"]
-                result = await call_listener(listener["callback"], current_target, capture)
+                result = await call_listener(
+                    listener["callback"], current_target, capture
+                )
                 if result is False:
                     event.preventDefault()
                 event._in_passive_listener = False
                 if listener["once"]:
-                    current_target.removeEventListener(event.type, listener["callback"], listener["capture"])
+                    current_target.removeEventListener(
+                        event.type, listener["callback"], listener["capture"]
+                    )
                 if event._immediate_propagation_stopped:
                     return
             if capture is False:
@@ -448,7 +490,9 @@ class Event:
     def __str__(self) -> str:
         return self.type + ":" + str(self.timeStamp)
 
-    def __init__(self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs) -> None:
+    def __init__(
+        self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs
+    ) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.type: str = _type
         self.bubbles: bool = options.get("bubbles", False)
@@ -458,7 +502,9 @@ class Event:
         self.currentTarget: object = options.get("currentTarget", None)
         self.defaultPrevented: bool = options.get("defaultPrevented", False)
         self.eventPhase: int = options.get("eventPhase", Event.NONE)
-        self.explicitOriginalTarget: object = options.get("explicitOriginalTarget", None)
+        self.explicitOriginalTarget: object = options.get(
+            "explicitOriginalTarget", None
+        )
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
         self._returnValue: bool = True
@@ -514,7 +560,12 @@ class Event:
         return path
 
     def initEvent(
-        self, _type: str | None = None, bubbles: bool = True, cancelable: bool = True, *args, **kwargs
+        self,
+        _type: str | None = None,
+        bubbles: bool = True,
+        cancelable: bool = True,
+        *args,
+        **kwargs,
     ) -> "Event":
         """Initialize the event."""
         self.type = _type or self.type
@@ -544,7 +595,7 @@ class Event:
         Returns:
             str: The converted URL.
         """
-        if url.startswith('http'):
+        if url.startswith("http"):
             # Example conversion for HTTP/HTTPS URLs in Internet Explorer
             return f'javascript:window.open("{url}");'
         else:
@@ -596,7 +647,9 @@ class AbortSignal(EventTarget):
 
     def throwIfAborted(self) -> None:
         if self.aborted:
-            raise RuntimeError(self.reason if self.reason is not None else "Signal already aborted")
+            raise RuntimeError(
+                self.reason if self.reason is not None else "Signal already aborted"
+            )
 
 
 class AbortController:
@@ -633,7 +686,9 @@ class UIEvent(Event):
         self.sourceCapabilities = options.get("sourceCapabilities", None)
         super().__init__(_type, options, *args, **kwargs)
 
-    def initUIEvent(self, _type: str, canBubble: bool, cancelable: bool, view, detail) -> "UIEvent":
+    def initUIEvent(
+        self, _type: str, canBubble: bool, cancelable: bool, view, detail
+    ) -> "UIEvent":
         """
         Initialize a UIEvent with specific parameters.
 
@@ -703,7 +758,7 @@ class MouseEvent(UIEvent):
         relatedTarget=None,
         from_json={},
         *args,
-        **kwargs
+        **kwargs,
     ) -> "MouseEvent":
         # print('initMouseEvent')
         self.initEvent(_type or self.type, canBubble, cancelable)
@@ -811,8 +866,12 @@ def _infer_code_from_key_and_location(key: str, location: int) -> str:
         Key.ARROW_RIGHT: Code.ARROW_RIGHT,
         Key.ARROW_UP: Code.ARROW_UP,
         Key.ARROW_DOWN: Code.ARROW_DOWN,
-        Key.SHIFT: Code.SHIFT_RIGHT if location == KeyLocation.RIGHT else Code.SHIFT_LEFT,
-        Key.CONTROL: Code.CONTROL_RIGHT if location == KeyLocation.RIGHT else Code.CONTROL_LEFT,
+        Key.SHIFT: (
+            Code.SHIFT_RIGHT if location == KeyLocation.RIGHT else Code.SHIFT_LEFT
+        ),
+        Key.CONTROL: (
+            Code.CONTROL_RIGHT if location == KeyLocation.RIGHT else Code.CONTROL_LEFT
+        ),
         Key.ALT: Code.ALT_RIGHT if location == KeyLocation.RIGHT else Code.ALT_LEFT,
         Key.META: Code.META_RIGHT if location == KeyLocation.RIGHT else Code.META_LEFT,
         Key.CAPS_LOCK: Code.CAPS_LOCK,
@@ -867,10 +926,16 @@ class KeyboardEvent(UIEvent):
         raw_code = options.get("code", "")
         raw_key_code = options.get("keyCode", None)
         self.key = normalize_key(raw_key)
-        self.code = normalize_code(raw_code) or KeyCode.to_code(raw_key_code) or _infer_code_from_key_and_location(
-            self.key, self.location
+        self.code = (
+            normalize_code(raw_code)
+            or KeyCode.to_code(raw_key_code)
+            or _infer_code_from_key_and_location(self.key, self.location)
         )
-        self.keyCode = int(raw_key_code) if raw_key_code not in (None, "") else _infer_legacy_keycode(self.key)
+        self.keyCode = (
+            int(raw_key_code)
+            if raw_key_code not in (None, "")
+            else _infer_legacy_keycode(self.key)
+        )
         self.charCode = int(options.get("charCode", _infer_char_code(self.key)))
 
         super().__init__(_type, options, *args, **kwargs)
@@ -897,7 +962,11 @@ class KeyboardEvent(UIEvent):
         self.location = locationArg
         self.locationArg = locationArg
         self.modifiersListArg = modifiersListArg
-        modifiers = {modifier.strip().lower() for modifier in str(modifiersListArg).split() if modifier}
+        modifiers = {
+            modifier.strip().lower()
+            for modifier in str(modifiersListArg).split()
+            if modifier
+        }
         self._altKey = "alt" in modifiers
         self._ctrlKey = "control" in modifiers or "ctrl" in modifiers
         self._metaKey = "meta" in modifiers
@@ -1146,7 +1215,9 @@ class BeforeUnloadEvent(Event):
     BEFOREUNLOAD: ClassVar[str] = Event.BEFOREUNLOAD  #:
     """ BeforeUnloadEvent """
 
-    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
+    def __init__(
+        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
+    ) -> None:
         options = options or kwargs  # if options is none use kwargs
         self._beforeunload_return_value = options.get("returnValue", "")
         super().__init__(_type, options, *args, **kwargs)
@@ -1255,7 +1326,9 @@ class InputEvent(UIEvent):
             if hasattr(target, "getSelection"):
                 selection = target.getSelection()
                 if selection is not None:
-                    return [selection.getRangeAt(i) for i in range(selection.rangeCount)]
+                    return [
+                        selection.getRangeAt(i) for i in range(selection.rangeCount)
+                    ]
         return []
 
 
@@ -1350,7 +1423,11 @@ class CustomEvent(Event):
         super().__init__(_type, options, *args, **kwargs)
 
     def initCustomEvent(
-        self, _type: str, bubbles: bool = True, cancelable: bool = True, detail: Any = None
+        self,
+        _type: str,
+        bubbles: bool = True,
+        cancelable: bool = True,
+        detail: Any = None,
     ) -> "CustomEvent":
         self.initEvent(_type, bubbles, cancelable)
         self.detail = detail
@@ -1415,7 +1492,9 @@ class FetchEvent(Event):
     def isReload(self):
         if self.request is None:
             return False
-        return getattr(self.request, "url", None) == getattr(self.request, "referrer", object())
+        return getattr(self.request, "url", None) == getattr(
+            self.request, "referrer", object()
+        )
 
     @property
     def replacesClientId(self):
@@ -1427,7 +1506,11 @@ class FetchEvent(Event):
     def resultingClientId(self):
         if self.request is None:
             return self.clientId
-        return self.clientId if self.replacesClientId else getattr(self.request, "clientId", None)
+        return (
+            self.clientId
+            if self.replacesClientId
+            else getattr(self.request, "clientId", None)
+        )
 
     def respondWith(self, response):
         """Returns a promise that resolves to the response object"""
@@ -1634,47 +1717,200 @@ class MessageEvent(Event):
 
 class GlobalEventHandler:
     _handler_names = (
-        "onabort", "onanimationcancel", "onanimationend", "onanimationiteration", "onauxclick",
-        "onbeforeinput", "onbeforematch", "onbeforetoggle", "onblur", "oncancel", "oncanplay",
-        "oncanplaythrough", "onchange", "onclick", "onclose", "oncommand", "onconnect",
-        "oncontextlost", "oncontextmenu", "oncontextrestored", "oncuechange", "oncurrententrychange",
-        "ondblclick", "ondispose", "ondrag", "ondragend", "ondragenter", "ondragexit",
-        "ondragleave", "ondragover", "ondragstart", "ondrop", "ondurationchange", "onemptied",
-        "onended", "onerror", "onfocus", "onformdata", "ongotpointercapture", "oninput",
-        "oninvalid", "onkeydown", "onkeypress", "onkeyup", "onlanguagechange", "onload",
-        "onloadeddata", "onloadedmetadata", "onloadend", "onloadstart", "onlostpointercapture",
-        "onmessage", "onmessageerror", "onmouseenter", "onmouseleave", "onmousedown",
-        "onmousemove", "onmouseout", "onmouseover", "onmouseup", "onnavigate", "onnavigateerror",
-        "onnavigatesuccess", "onopen", "onpause", "onplay", "onplaying", "onpointercancel",
-        "onpointerdown", "onpointerenter", "onpointerleave", "onpointermove", "onpointerout",
-        "onpointerover", "onpointerup", "onprogress", "onratechange", "onreadystatechange",
-        "onrejectionhandled", "onreset", "onresize", "onscroll", "onscrollend", "onsearch",
-        "onsecuritypolicyviolation", "onseeked", "onseeking", "onselect", "onselectionchange",
-        "onselectstart", "onshow", "onslotchange", "onstalled", "onsubmit", "onsuspend",
-        "ontimeupdate", "ontoggle", "ontouchcancel", "ontouchstart", "ontransitioncancel",
-        "ontransitionend", "onunhandledrejection", "onvisibilitychange", "onvolumechange",
-        "onwaiting", "onwheel",
+        "onabort",
+        "onanimationcancel",
+        "onanimationend",
+        "onanimationiteration",
+        "onauxclick",
+        "onbeforeinput",
+        "onbeforematch",
+        "onbeforetoggle",
+        "onblur",
+        "oncancel",
+        "oncanplay",
+        "oncanplaythrough",
+        "onchange",
+        "onclick",
+        "onclose",
+        "oncommand",
+        "onconnect",
+        "oncontextlost",
+        "oncontextmenu",
+        "oncontextrestored",
+        "oncuechange",
+        "oncurrententrychange",
+        "ondblclick",
+        "ondispose",
+        "ondrag",
+        "ondragend",
+        "ondragenter",
+        "ondragexit",
+        "ondragleave",
+        "ondragover",
+        "ondragstart",
+        "ondrop",
+        "ondurationchange",
+        "onemptied",
+        "onended",
+        "onerror",
+        "onfocus",
+        "onformdata",
+        "ongotpointercapture",
+        "oninput",
+        "oninvalid",
+        "onkeydown",
+        "onkeypress",
+        "onkeyup",
+        "onlanguagechange",
+        "onload",
+        "onloadeddata",
+        "onloadedmetadata",
+        "onloadend",
+        "onloadstart",
+        "onlostpointercapture",
+        "onmessage",
+        "onmessageerror",
+        "onmouseenter",
+        "onmouseleave",
+        "onmousedown",
+        "onmousemove",
+        "onmouseout",
+        "onmouseover",
+        "onmouseup",
+        "onnavigate",
+        "onnavigateerror",
+        "onnavigatesuccess",
+        "onopen",
+        "onpause",
+        "onplay",
+        "onplaying",
+        "onpointercancel",
+        "onpointerdown",
+        "onpointerenter",
+        "onpointerleave",
+        "onpointermove",
+        "onpointerout",
+        "onpointerover",
+        "onpointerup",
+        "onprogress",
+        "onratechange",
+        "onreadystatechange",
+        "onrejectionhandled",
+        "onreset",
+        "onresize",
+        "onscroll",
+        "onscrollend",
+        "onsearch",
+        "onsecuritypolicyviolation",
+        "onseeked",
+        "onseeking",
+        "onselect",
+        "onselectionchange",
+        "onselectstart",
+        "onshow",
+        "onslotchange",
+        "onstalled",
+        "onsubmit",
+        "onsuspend",
+        "ontimeupdate",
+        "ontoggle",
+        "ontouchcancel",
+        "ontouchstart",
+        "ontransitioncancel",
+        "ontransitionend",
+        "onunhandledrejection",
+        "onvisibilitychange",
+        "onvolumechange",
+        "onwaiting",
+        "onwheel",
     )
 
 
 class WindowEventHandler:
     _handler_names = (
-        "onabort", "onafterprint", "onbeforeinput", "onbeforematch", "onbeforeprint",
-        "onbeforetoggle", "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough",
-        "onchange", "onclick", "oncommand", "onconnect", "oncontextlost", "oncontextmenu",
-        "oncontextrestored", "oncopy", "oncuechange", "oncurrententrychange", "oncut",
-        "ondblclick", "ondispose", "ondrag", "ondragend", "ondragenter", "ondragleave",
-        "ondragover", "ondragstart", "ondrop", "ondurationchange", "onemptied", "onended",
-        "onerror", "onfocus", "onformdata", "onhashchange", "oninput", "oninvalid",
-        "onkeydown", "onkeypress", "onkeyup", "onlanguagechange", "onload", "onloadeddata",
-        "onloadedmetadata", "onloadstart", "onmessage", "onmessageerror", "onmousedown",
-        "onmouseenter", "onmouseleave", "onmousemove", "onmouseout", "onmouseover",
-        "onmouseup", "onmousewheel", "onnavigate", "onnavigateerror", "onnavigatesuccess",
-        "onoffline", "ononline", "onopen", "onpagehide", "onpagereveal", "onpageshow",
-        "onpageswap", "onpaste", "onpopstate", "onreadystatechange", "onrejectionhandled",
-        "onresize", "onscroll", "onscrollend", "onsearch", "onsecuritypolicyviolation",
-        "onslotchange", "onstorage", "onsubmit", "ontoggle", "onunhandledrejection",
-        "onunload", "onvisibilitychange",
+        "onabort",
+        "onafterprint",
+        "onbeforeinput",
+        "onbeforematch",
+        "onbeforeprint",
+        "onbeforetoggle",
+        "onbeforeunload",
+        "onblur",
+        "oncanplay",
+        "oncanplaythrough",
+        "onchange",
+        "onclick",
+        "oncommand",
+        "onconnect",
+        "oncontextlost",
+        "oncontextmenu",
+        "oncontextrestored",
+        "oncopy",
+        "oncuechange",
+        "oncurrententrychange",
+        "oncut",
+        "ondblclick",
+        "ondispose",
+        "ondrag",
+        "ondragend",
+        "ondragenter",
+        "ondragleave",
+        "ondragover",
+        "ondragstart",
+        "ondrop",
+        "ondurationchange",
+        "onemptied",
+        "onended",
+        "onerror",
+        "onfocus",
+        "onformdata",
+        "onhashchange",
+        "oninput",
+        "oninvalid",
+        "onkeydown",
+        "onkeypress",
+        "onkeyup",
+        "onlanguagechange",
+        "onload",
+        "onloadeddata",
+        "onloadedmetadata",
+        "onloadstart",
+        "onmessage",
+        "onmessageerror",
+        "onmousedown",
+        "onmouseenter",
+        "onmouseleave",
+        "onmousemove",
+        "onmouseout",
+        "onmouseover",
+        "onmouseup",
+        "onmousewheel",
+        "onnavigate",
+        "onnavigateerror",
+        "onnavigatesuccess",
+        "onoffline",
+        "ononline",
+        "onopen",
+        "onpagehide",
+        "onpagereveal",
+        "onpageshow",
+        "onpageswap",
+        "onpaste",
+        "onpopstate",
+        "onreadystatechange",
+        "onrejectionhandled",
+        "onresize",
+        "onscroll",
+        "onscrollend",
+        "onsearch",
+        "onsecuritypolicyviolation",
+        "onslotchange",
+        "onstorage",
+        "onsubmit",
+        "ontoggle",
+        "onunhandledrejection",
+        "onunload",
+        "onvisibilitychange",
     )
 
     def __init__(self, window):

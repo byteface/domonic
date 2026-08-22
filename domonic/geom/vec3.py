@@ -1,8 +1,9 @@
 """
-    domonic.geom.vec3
-    ====================================
+domonic.geom.vec3
+====================================
 
 """
+
 import math
 
 
@@ -103,7 +104,9 @@ class vec3:
 
     def distance(self, other):
         """Returns the distance between this point and another vector3."""
-        return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
+        return (
+            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
+        )
 
     def equals(self, other):
         """Determine whether two objects are identical."""

@@ -1,11 +1,11 @@
 """
-    domonic.webapi.webstorage
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Storage
-    
-    TODO - add more than just json as options.
-    TODO - i dont believe there's any unit tests for this.
-    
+domonic.webapi.webstorage
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Storage
+
+TODO - add more than just json as options.
+TODO - i dont believe there's any unit tests for this.
+
 """
 
 import json
@@ -52,9 +52,9 @@ class Storage:
 
     def __setattr__(self, key: str, value: str) -> None:
         if key == "storage":
-            self.__dict__[
-                key
-            ] = value  # TODO - tests required. not sure this is correct. shouldn't it be self.storage = value?
+            self.__dict__[key] = (
+                value  # TODO - tests required. not sure this is correct. shouldn't it be self.storage = value?
+            )
         else:
             self.storage[key] = value
             self._save()

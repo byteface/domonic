@@ -1,6 +1,6 @@
 """
-    domonic.decorators
-    ====================================
+domonic.decorators
+====================================
 
 """
 
@@ -16,10 +16,12 @@ def _invoke_before(before, function):
     result = before()
     params = list(inspect.signature(function).parameters.values())
     can_receive_value = any(
-        param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        param.kind
+        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         for param in params
     ) or any(param.kind == inspect.Parameter.VAR_POSITIONAL for param in params)
     return result, can_receive_value
+
 
 def el(element="div", string: bool = False):
     """[wraps the results of a function in an element]"""
@@ -120,7 +122,7 @@ def accepts(*types):
         assert len(types) == f.__code__.co_argcount
 
         def new_f(*args, **kwds):
-            for (a, t) in zip(args, types):
+            for a, t in zip(args, types):
                 assert isinstance(a, t), "arg %r does not match %s" % (a, t)
             return f(*args, **kwds)
 
@@ -260,7 +262,7 @@ def aka(names):
 '''
 
 
-'''
+"""
 import functools
 
 # def DIV(func):
@@ -310,4 +312,4 @@ for tag in html_tags:
 # @SPAN
 # def somecontent():
 #     return 'content only'
-'''
+"""

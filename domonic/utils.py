@@ -1,8 +1,9 @@
 """
-    domonic.utils
-    ====================================
-    snippets etc
+domonic.utils
+====================================
+snippets etc
 """
+
 import random
 from collections import Counter
 from itertools import chain, islice
@@ -28,7 +29,11 @@ class Utils:
         """
         snake('camelCase') # 'camel_case'
         """
-        return "_".join(sub("([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))).split()).lower()
+        return "_".join(
+            sub(
+                "([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))
+            ).split()
+        ).lower()
 
     @staticmethod
     def case_kebab(s: str) -> str:
@@ -299,7 +304,9 @@ class Utils:
         return s
 
     @staticmethod
-    def replace_between(content: str, match: str, replacement: str, start: int = 0, end: int = 0):
+    def replace_between(
+        content: str, match: str, replacement: str, start: int = 0, end: int = 0
+    ):
         """[replace some text but only between certain indexes]
 
         Args:

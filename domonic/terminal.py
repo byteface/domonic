@@ -1,8 +1,9 @@
 """
-    domonic.terminal
-    ====================================
-    - call command line functions in python 3
+domonic.terminal
+====================================
+- call command line functions in python 3
 """
+
 import os
 import shlex
 import subprocess
@@ -13,7 +14,9 @@ from typing import Any, Iterable, Sequence
 class TerminalException(Exception):
     """raised if the terminal throws an exception"""
 
-    def __init__(self, error=None, message="An error message was received from terminal"):
+    def __init__(
+        self, error=None, message="An error message was received from terminal"
+    ):
         self.error = error
         self.output = _decode_output(message)
         self.returncode = getattr(error, "returncode", None)
@@ -100,7 +103,9 @@ class command:
 
         completed.stdout = _decode_output(completed.stdout, encoding)
         if check and completed.returncode != 0:
-            error = subprocess.CalledProcessError(completed.returncode, cmd, output=completed.stdout)
+            error = subprocess.CalledProcessError(
+                completed.returncode, cmd, output=completed.stdout
+            )
             raise TerminalException(error, completed.stdout) from error
         return completed
 
@@ -286,7 +291,9 @@ class history(command):
         self.result = ""
 
 
-ping = type("ping", (command,), {"name": "ping", "wait": True, "iterable": True})  # < TODO - need to stream feedback
+ping = type(
+    "ping", (command,), {"name": "ping", "wait": True, "iterable": True}
+)  # < TODO - need to stream feedback
 man = type("man", (command,), {"name": "man"})
 find = type("find", (command,), {"name": "find"})
 awk = type("awk", (command,), {"name": "awk"})
@@ -316,7 +323,9 @@ nohup = type("nohup", (command,), {"name": "nohup"})
 python = type("python", (command,), {"name": "python"})
 npm = type("npm", (command,), {"name": "npm"})
 cowsay = type("cowsay", (command,), {"name": "cowsay"})
-pip = type("pip", (command,), {"name": "pip"})  # TODO - change to 'python3 -m pip'? # TODO - both iterable and not
+pip = type(
+    "pip", (command,), {"name": "pip"}
+)  # TODO - change to 'python3 -m pip'? # TODO - both iterable and not
 say = type("say", (command,), {"name": "say"})  # Mac only?
 gcc = type("gcc", (command,), {"name": "gcc"})
 jq = type("jq", (command,), {"name": "jq"})

@@ -7,8 +7,8 @@ This module defines various constants used in the domonic package.
 """
 
 import mimetypes
-from http import HTTPStatus as StdlibHTTPStatus
 from enum import IntEnum
+from http import HTTPStatus as StdlibHTTPStatus
 from typing import Final
 
 
@@ -69,6 +69,7 @@ doctypes: Final[dict[str, str]] = {
     "SVG1_1": '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">',
     "MATHML2": '<!DOCTYPE math SYSTEM "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">',
 }
+
 
 # HTTP Response Status Codes
 class HTTPStatus(IntEnum):
@@ -132,6 +133,7 @@ class HTTPStatus(IntEnum):
     NOT_EXTENDED = 510
     NETWORK_AUTHENTICATION_REQUIRED = 511
 
+
 http_response_status_codes: Final[dict[int, str]] = {
     status.value: _status_text(status) for status in HTTPStatus
 }
@@ -156,9 +158,12 @@ def get_status_text(code: int, default: str | None = None) -> str | None:
     """Return the status phrase for an HTTP response code."""
     return http_response_status_codes.get(code, default)
 
+
 mimetypes.init()
 _BASE_MIME_TYPES: dict[str, str] = {
-    extension.lstrip("."): mime_type for extension, mime_type in mimetypes.types_map.items() if extension.startswith(".")
+    extension.lstrip("."): mime_type
+    for extension, mime_type in mimetypes.types_map.items()
+    if extension.startswith(".")
 }
 _BASE_MIME_TYPES.update(
     {

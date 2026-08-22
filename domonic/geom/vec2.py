@@ -1,8 +1,9 @@
 """
-    domonic.geom.vec2
-    ====================================
+domonic.geom.vec2
+====================================
 
 """
+
 import math
 
 # import operator

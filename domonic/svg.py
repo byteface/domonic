@@ -28,7 +28,11 @@ def _svg_number(value: Any, default: float = 0.0) -> float:
 
 
 def _svg_points(value: Any) -> list[tuple[float, float]]:
-    numbers = [_svg_number(item) for item in re.split(r"[\s,]+", str(value or "").strip()) if item]
+    numbers = [
+        _svg_number(item)
+        for item in re.split(r"[\s,]+", str(value or "").strip())
+        if item
+    ]
     return list(zip(numbers[0::2], numbers[1::2]))
 
 
@@ -50,7 +54,10 @@ class SVGElement(Element):
     def ownerSVGElement(self) -> "SVGElement | None":
         current = getattr(self, "parentNode", None)
         while isinstance(current, Element):
-            if getattr(current, "namespaceURI", None) == SVG_NAMESPACE and getattr(current, "name", None) == "svg":
+            if (
+                getattr(current, "namespaceURI", None) == SVG_NAMESPACE
+                and getattr(current, "name", None) == "svg"
+            ):
                 return current
             current = getattr(current, "parentNode", None)
         return None
@@ -223,7 +230,9 @@ for _tag_name in svg_tags:
     globals()[_svg_class_name(_tag_name)] = _make_svg_constructor(_tag_name)
 
 
-def create_element(name: str = "custom_svg_tag", *args: Any, **kwargs: Any) -> SVGElement:
+def create_element(
+    name: str = "custom_svg_tag", *args: Any, **kwargs: Any
+) -> SVGElement:
     """
     A method for creating SVG tags, including custom or hyphenated ones.
     """

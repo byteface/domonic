@@ -1,12 +1,13 @@
 """
-    domonic.i18n.hi
-    ====================================
+domonic.i18n.hi
+====================================
 
-    html tags in Hindi
+html tags in Hindi
 
-    first translated to Hindi using google translate.
-    send a pull request if you have a better translation.
+first translated to Hindi using google translate.
+send a pull request if you have a better translation.
 """
+
 from domonic.html import *
 
 शरीर = shareer = body

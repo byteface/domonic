@@ -1,7 +1,7 @@
 """
-    domonic.webapi.permissions
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Permissions
+domonic.webapi.permissions
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Permissions
 """
 
 

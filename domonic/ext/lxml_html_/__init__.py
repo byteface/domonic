@@ -1,9 +1,9 @@
 """
-    domonic.ext.lxml_html_
-    ====================================
+domonic.ext.lxml_html_
+====================================
 
-    Adapter for using lxml.html as a frontend parser while rebuilding a
-    domonic document tree from the parsed lxml tree.
+Adapter for using lxml.html as a frontend parser while rebuilding a
+domonic document tree from the parsed lxml tree.
 """
 
 from __future__ import annotations

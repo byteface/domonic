@@ -1,8 +1,8 @@
 """
-    domonic.mathml
-    ====================================
+domonic.mathml
+====================================
 
-    Generate MATHML using python 3
+Generate MATHML using python 3
 
 """
 

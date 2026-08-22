@@ -1,9 +1,9 @@
 """
-    domonic.aframe
-    ====================================
+domonic.aframe
+====================================
 
-    Generate aframe tags with python 3
-    https://aframe.io/
+Generate aframe tags with python 3
+https://aframe.io/
 
 """
 

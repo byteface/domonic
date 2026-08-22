@@ -1,10 +1,11 @@
 """
-    domonic.geom
-    ====================================
+domonic.geom
+====================================
 
-    written by.ai
+written by.ai
 
 """
+
 import math
 
 # from domonic.geom.shape import Triangle

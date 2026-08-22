@@ -1,6 +1,6 @@
 """
-    domonic.constants.color
-    ====================================
+domonic.constants.color
+====================================
 """
 
 from __future__ import annotations
@@ -54,7 +54,7 @@ class Color:
         """
         if h[0] == "#":
             h = h.lstrip("#")
-        if len(h) == 6: 
+        if len(h) == 6:
             return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
         raise ValueError(f"Unsupported color string: #{h}")
 
@@ -175,7 +175,7 @@ class Color:
                     # elif len(color_str) == 4:  # #RGB
                     #     self.r, self.g, self.b = self.hex2rgb(color_str)
                     else:
-                        raise ValueError(f"Unsupported color string: {color_str}")    
+                        raise ValueError(f"Unsupported color string: {color_str}")
                     return
                 # elif color_str.lower() in self.named_colors():
                 #     self.r, self.g, self.b = self.named_colors()[color_str.lower()]
@@ -203,7 +203,6 @@ class Color:
             return
 
         raise ValueError(f"Unsupported input format for Color: {args}")
-
 
     @property
     def alpha(self) -> float:
@@ -272,7 +271,9 @@ class Color:
     def toRGBA(self) -> tuple[float, float, float, float]:
         return (self.r, self.g, self.b, self.a)
 
-    def toSVG(self, shape: Literal["circle", "square"] = "circle", size: int = 10) -> str | None:
+    def toSVG(
+        self, shape: Literal["circle", "square"] = "circle", size: int = 10
+    ) -> str | None:
         """returns the color as an svg string
         Args:
             shape ([str]): [can be circle or square]
@@ -281,7 +282,11 @@ class Color:
         if shape == "circle":
             return '<circle cx="0" cy="0" r="%d" fill="%s" />' % (size, self.toHex())
         if shape == "square":
-            return '<rect x="0" y="0" width="%d" height="%d" fill="%s" />' % (size, size, self.toHex())
+            return '<rect x="0" y="0" width="%d" height="%d" fill="%s" />' % (
+                size,
+                size,
+                self.toHex(),
+            )
 
     # def toIMG(self, size=10):
     #     """ returns the color as an svg string

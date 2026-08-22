@@ -1,12 +1,13 @@
 """
-    domonic.i18n.ru
-    ====================================
+domonic.i18n.ru
+====================================
 
-    html tags in Russian
+html tags in Russian
 
-    first translated to Russian using google translate.
-    send a pull request if you have a better translation.
+first translated to Russian using google translate.
+send a pull request if you have a better translation.
 """
+
 from domonic.html import *
 
 telo = тело = body

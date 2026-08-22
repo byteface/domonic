@@ -1,8 +1,8 @@
 """
-    domonic.d3.queue
-    ====================================
+domonic.d3.queue
+====================================
 
-    Small Python port of d3-queue's callback-oriented API.
+Small Python port of d3-queue's callback-oriented API.
 """
 
 from __future__ import annotations
@@ -80,7 +80,12 @@ class Queue:
 
             finished = False
 
-            def done(error: Exception | None = None, result: Any = None, *, _index: int = index) -> None:
+            def done(
+                error: Exception | None = None,
+                result: Any = None,
+                *,
+                _index: int = index,
+            ) -> None:
                 nonlocal finished
                 if finished:
                     return

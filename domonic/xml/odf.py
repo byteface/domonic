@@ -1,16 +1,16 @@
 """
-    domonic.odf
-    ====================================
+domonic.odf
+====================================
 
-    OpenDocument Format XML tag constructors for domonic.
+OpenDocument Format XML tag constructors for domonic.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from domonic.xml._elements import XMLElement, register_xml_tags, xml_attribute_aliases, xml_tag_alias
-
+from domonic.xml._elements import (XMLElement, register_xml_tags,
+                                   xml_attribute_aliases, xml_tag_alias)
 
 OFFICE = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 TEXT = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"
@@ -41,7 +41,11 @@ odf_namespaces = {
 }
 
 DEFAULT_NAMESPACES = {
-    **{f"xmlns:{prefix}": uri for prefix, uri in odf_namespaces.items() if prefix != "manifest"},
+    **{
+        f"xmlns:{prefix}": uri
+        for prefix, uri in odf_namespaces.items()
+        if prefix != "manifest"
+    },
     "office:version": ODF_VERSION,
 }
 
@@ -181,7 +185,9 @@ def create_element(name: str = "odf_element", *args: Any, **kwargs: Any) -> ODFE
     if tag_name in _ODF_TAG_LOOKUP:
         return globals()[xml_tag_alias(tag_name)](*args, **kwargs)
 
-    custom_odf_tag = type("odf_element", (ODFElement,), {"name": tag_name, "__module__": __name__})
+    custom_odf_tag = type(
+        "odf_element", (ODFElement,), {"name": tag_name, "__module__": __name__}
+    )
     return custom_odf_tag(*args, **kwargs)
 
 

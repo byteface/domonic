@@ -1,8 +1,8 @@
 """
-    domonic.xml
-    ====================================
+domonic.xml
+====================================
 
-    definitions for generating given types of xml
+definitions for generating given types of xml
 
 """
 

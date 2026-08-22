@@ -1,7 +1,7 @@
 """
-    domonic.webapi.fetch
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+domonic.webapi.fetch
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
 """
 
 # import array
@@ -46,7 +46,9 @@ def fetch(url: str, **kwargs):
     # undocumented - warning. use at own risk
     # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
     if type(url) is not str:
-        raise ValueError("fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled")
+        raise ValueError(
+            "fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled"
+        )
     f = Promise()
     r = window._do_request(url, f, *kwargs)
     return f.resolve(r)
@@ -104,7 +106,10 @@ def fetch_pooled(urls: list, callback_function=None, error_handler=None, **kwarg
 
     jobs = []
     p = Pool()
-    urls = [{"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs} for url in urls]
+    urls = [
+        {"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs}
+        for url in urls
+    ]
     results = p.map(_do_request_wrapper, urls)
     p.close()
     p.join()
@@ -156,10 +161,17 @@ class Headers:
         return [callback(value, name, self) for name, value in self.headers.items()]
 
     def filter(self, callback, thisArg=None):
-        return [callback(value, name, self) for name, value in self.headers.items() if callback(value, name, self)]
+        return [
+            callback(value, name, self)
+            for name, value in self.headers.items()
+            if callback(value, name, self)
+        ]
 
     def reduce(self, callback, initialValue):
-        return [callback(initialValue, value, name, self) for name, value in self.headers.items()]
+        return [
+            callback(initialValue, value, name, self)
+            for name, value in self.headers.items()
+        ]
 
     def toString(self):
         return str(self.headers)
@@ -247,7 +259,16 @@ class Response:
 
 
 class Request:
-    def __init__(self, url=None, method=None, headers=None, body=None, mode=None, credentials=None, cache=None):
+    def __init__(
+        self,
+        url=None,
+        method=None,
+        headers=None,
+        body=None,
+        mode=None,
+        credentials=None,
+        cache=None,
+    ):
         self.url = url
         self.method = method
         self.headers = headers
@@ -257,7 +278,15 @@ class Request:
         self.cache = cache
 
     def clone(self):
-        return Request(self.url, self.method, self.headers, self.body, self.mode, self.credentials, self.cache)
+        return Request(
+            self.url,
+            self.method,
+            self.headers,
+            self.body,
+            self.mode,
+            self.credentials,
+            self.cache,
+        )
 
     def arrayBuffer(self):
         return self.body

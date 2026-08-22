@@ -1,12 +1,13 @@
 """
-    domonic.i18n.da
-    ====================================
+domonic.i18n.da
+====================================
 
-    html tags in Danish
+html tags in Danish
 
-    first translated to Danish using google translate.
-    send a pull request if you have a better translation.
+first translated to Danish using google translate.
+send a pull request if you have a better translation.
 """
+
 from domonic.html import *
 
 krop = body

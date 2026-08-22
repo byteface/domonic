@@ -14,6 +14,7 @@ class Version(NamedTuple):
     minor: int
     patch: int
 
+
 if not hasattr(sys, "generating_docs_via_sphinx"):
     from lxml import \
         etree  # Must be imported before html_parser to initialize libxml
@@ -27,7 +28,9 @@ if not hasattr(sys, "generating_docs_via_sphinx"):
         version = Version(html_parser.MAJOR, html_parser.MINOR, html_parser.PATCH)
 
         if not hasattr(etree, "adopt_external_document"):
-            raise ImportError("Your version of lxml is too old, version 3.8.0 is minimum")
+            raise ImportError(
+                "Your version of lxml is too old, version 3.8.0 is minimum"
+            )
 
         LIBXML_VERSION = (
             (html_parser.LIBXML_VERSION // 10000) % 100,
@@ -39,10 +42,16 @@ if not hasattr(sys, "generating_docs_via_sphinx"):
                 "html5-parser and lxml are using different versions of libxml2."
                 " This happens commonly when using pip installed versions of lxml."
                 " Use pip install --no-binary lxml lxml instead."
-                " libxml2 versions: html5-parser: {} != lxml: {}".format(LIBXML_VERSION, etree.LIBXML_VERSION)
+                " libxml2 versions: html5-parser: {} != lxml: {}".format(
+                    LIBXML_VERSION, etree.LIBXML_VERSION
+                )
             )
 
-BOMS: Final[tuple[bytes, ...]] = (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE)
+BOMS: Final[tuple[bytes, ...]] = (
+    codecs.BOM_UTF8,
+    codecs.BOM_UTF16_BE,
+    codecs.BOM_UTF16_LE,
+)
 
 
 def check_bom(data):
@@ -109,7 +118,10 @@ def as_utf8(bytes_or_unicode, transport_encoding=None, fallback_encoding=None):
                 if encoding and encoding.lower() not in PASSTHROUGH_ENCODINGS:
                     if encoding == "x-user-defined":
                         # https://encoding.spec.whatwg.org/#x-user-defined
-                        buf = (b if b <= 0x7F else 0xF780 + b - 0x80 for b in bytearray(data))
+                        buf = (
+                            b if b <= 0x7F else 0xF780 + b - 0x80
+                            for b in bytearray(data)
+                        )
                         try:
                             chr = unichr
                         except NameError:
@@ -128,7 +140,9 @@ def normalize_treebuilder(x):
     return {"lxml.etree": "lxml", "etree": "stdlib_etree"}.get(x, x)
 
 
-NAMESPACE_SUPPORTING_BUILDERS: Final[frozenset[str]] = frozenset("lxml stdlib_etree dom lxml_html".split())
+NAMESPACE_SUPPORTING_BUILDERS: Final[frozenset[str]] = frozenset(
+    "lxml stdlib_etree dom lxml_html".split()
+)
 
 
 def parse(
@@ -195,7 +209,12 @@ def parse(
     if treebuilder == "soup":
         from .soup import parse
 
-        return parse(data, return_root=return_root, keep_doctype=keep_doctype, stack_size=stack_size)
+        return parse(
+            data,
+            return_root=return_root,
+            keep_doctype=keep_doctype,
+            stack_size=stack_size,
+        )
     if treebuilder not in NAMESPACE_SUPPORTING_BUILDERS:
         namespace_elements = False
     fragment_namespace = html_parser.GUMBO_NAMESPACE_HTML

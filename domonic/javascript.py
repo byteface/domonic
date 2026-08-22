@@ -37,6 +37,7 @@ from urllib.parse import quote, unquote
 try:
     from dateutil.parser import parse, parserinfo
 except ImportError:  # pragma: no cover - optional dependency
+
     class parserinfo:
         def convertyear(self, year: int, *args: Any, **kwargs: Any) -> int:
             return year
@@ -73,11 +74,13 @@ except ImportError:  # pragma: no cover - optional dependency
                 return datetime.datetime.strptime(value, fmt)
             except ValueError:
                 continue
-        raise ValueError(f"Unsupported date format without python-dateutil: {date_string}")
+        raise ValueError(
+            f"Unsupported date format without python-dateutil: {date_string}"
+        )
+
 
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.webstorage import Storage
-
 
 JSONScalar = str | int | float | bool | None
 PropertyDict = dict[str, Any]
@@ -98,7 +101,9 @@ def _own_enumerable_items(obj: Any) -> list[tuple[str, Any]]:
     if isinstance(obj, (float, int, bool, complex)):
         return []
     if hasattr(obj, "__dict__"):
-        return [(key, value) for key, value in vars(obj).items() if not key.startswith("_")]
+        return [
+            (key, value) for key, value in vars(obj).items() if not key.startswith("_")
+        ]
     return []
 
 
@@ -141,7 +146,9 @@ class Boolean:
 
 
 class Object:
-    def __init__(self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any) -> None:
+    def __init__(
+        self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any
+    ) -> None:
         """[Creates a Javascript-like Object in python]
 
         Args:
@@ -415,7 +422,8 @@ class Object:
 
     def hasOwnProperty(self, prop: str) -> bool:
         """Returns a boolean indicating whether an object contains the specified property
-        as a direct property of that object and not inherited through the prototype chain."""
+        as a direct property of that object and not inherited through the prototype chain.
+        """
         # raise NotImplementedError
         # return hasattr(self, prop)
         return self.__dict__.get(prop, None) != None
@@ -686,7 +694,8 @@ class Map:
 
     def delete(self, key: str) -> bool:
         """Returns true if an element in the Map object existed and has been removed,
-        or false if the element does not exist. Map.prototype.has(key) will return false afterwards."""
+        or false if the element does not exist. Map.prototype.has(key) will return false afterwards.
+        """
         try:
             self._order.remove(key)
             del self._dict[key]
@@ -1234,7 +1243,9 @@ class Global:
         raise NotImplementedError
 
     @staticmethod
-    def setTimeout(callback: str | Callable[..., Any], t: int | float, *args: Any, **kwargs: Any) -> int:
+    def setTimeout(
+        callback: str | Callable[..., Any], t: int | float, *args: Any, **kwargs: Any
+    ) -> int:
         """[sets a timer which executes a function or evaluates an expression after a specified delay]
 
         Args:
@@ -1296,7 +1307,9 @@ class Performance:
         PerformanceObserver._notify_entry(entry)
         return entry
 
-    def measure(self, name: str, startMark: str | None = None, endMark: str | None = None) -> Any:
+    def measure(
+        self, name: str, startMark: str | None = None, endMark: str | None = None
+    ) -> Any:
         from domonic.dom import PerformanceMeasure, PerformanceObserver
 
         end = self.now() if endMark is None else self._marks.get(endMark, self.now())
@@ -1310,34 +1323,58 @@ class Performance:
         return list(self._entries)
 
     def getEntriesByType(self, entryType: str) -> list[Any]:
-        return [entry for entry in self._entries if getattr(entry, "entryType", None) == entryType]
+        return [
+            entry
+            for entry in self._entries
+            if getattr(entry, "entryType", None) == entryType
+        ]
 
     def getEntriesByName(self, name: str, entryType: str | None = None) -> list[Any]:
-        entries = [entry for entry in self._entries if getattr(entry, "name", None) == name]
+        entries = [
+            entry for entry in self._entries if getattr(entry, "name", None) == name
+        ]
         if entryType is not None:
-            entries = [entry for entry in entries if getattr(entry, "entryType", None) == entryType]
+            entries = [
+                entry
+                for entry in entries
+                if getattr(entry, "entryType", None) == entryType
+            ]
         return entries
 
     def clearMarks(self, name: str | None = None) -> None:
         if name is None:
             self._marks.clear()
-            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "mark"]
+            self._entries = [
+                entry
+                for entry in self._entries
+                if getattr(entry, "entryType", None) != "mark"
+            ]
             return
         self._marks.pop(name, None)
         self._entries = [
             entry
             for entry in self._entries
-            if not (getattr(entry, "entryType", None) == "mark" and getattr(entry, "name", None) == name)
+            if not (
+                getattr(entry, "entryType", None) == "mark"
+                and getattr(entry, "name", None) == name
+            )
         ]
 
     def clearMeasures(self, name: str | None = None) -> None:
         if name is None:
-            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "measure"]
+            self._entries = [
+                entry
+                for entry in self._entries
+                if getattr(entry, "entryType", None) != "measure"
+            ]
             return
         self._entries = [
             entry
             for entry in self._entries
-            if not (getattr(entry, "entryType", None) == "measure" and getattr(entry, "name", None) == name)
+            if not (
+                getattr(entry, "entryType", None) == "measure"
+                and getattr(entry, "name", None) == name
+            )
         ]
 
     # def reset(self):
@@ -1359,9 +1396,13 @@ class Intl:
             locales = [locales]
         for locale in locales:
             if locale.find("-") != -1:
-                locale = locale.split("-")[0].lower() + "-" + locale.split("-")[1].upper()
+                locale = (
+                    locale.split("-")[0].lower() + "-" + locale.split("-")[1].upper()
+                )
             elif locale.find("_") != -1:
-                locale = locale.split("_")[0].lower() + "_" + locale.split("_")[1].upper()
+                locale = (
+                    locale.split("_")[0].lower() + "_" + locale.split("_")[1].upper()
+                )
             else:
                 locale = locale.lower()
         return locales
@@ -1369,7 +1410,8 @@ class Intl:
     @staticmethod
     def supportedValuesOf(locales: str | list[str], property: str) -> None:
         """Returns a sorted array containing the supported unique calendar,
-        collation, currency, numbering systems, or unit values supported by the implementation."""
+        collation, currency, numbering systems, or unit values supported by the implementation.
+        """
         pass
 
     class _Collator:
@@ -1403,7 +1445,9 @@ class Date(Object):
         d.parse_date(str(date_string))
         return int(d.date.timestamp() * 1000)
 
-    def __init__(self, date: Any = None, *args: Any, formatter: str = "python", **kwargs: Any) -> None:
+    def __init__(
+        self, date: Any = None, *args: Any, formatter: str = "python", **kwargs: Any
+    ) -> None:
         """A date object that tries to behave like the Javascript one.
 
         TODO - js allowed dates are larger than pythons(mysql) datetime 99999 limit
@@ -1591,7 +1635,12 @@ class Date(Object):
             self.date = self.date.replace(day=int(day))
         return self.getTime()
 
-    def setFullYear(self, yearValue: int, monthValue: int | None = None, dateValue: int | None = None) -> int:
+    def setFullYear(
+        self,
+        yearValue: int,
+        monthValue: int | None = None,
+        dateValue: int | None = None,
+    ) -> int:
         """Sets the year of a date object
 
         Args:
@@ -1656,7 +1705,12 @@ class Date(Object):
         self.date = self.date.replace(microsecond=microseconds)
         # return
 
-    def setMinutes(self, minutesValue: int, secondsValue: int | None = None, msValue: int | None = None) -> int:
+    def setMinutes(
+        self,
+        minutesValue: int,
+        secondsValue: int | None = None,
+        msValue: int | None = None,
+    ) -> int:
         """Set the minutes of a date object
 
         Args:
@@ -1711,11 +1765,15 @@ class Date(Object):
             # as there's 29 days in February that year.
             # in python it will error as the new month has less days.
             # so we need to change it first.
-            next_month_total_days = calendar.monthrange(self.date.year, monthValue + 1)[1]
+            next_month_total_days = calendar.monthrange(self.date.year, monthValue + 1)[
+                1
+            ]
             leftovers = next_month_total_days - self.getDate()
             if leftovers < 0:
                 leftovers = abs(leftovers)
-                self.date = self.date.replace(day=int(leftovers))  # reset the day for now to not error
+                self.date = self.date.replace(
+                    day=int(leftovers)
+                )  # reset the day for now to not error
                 self.date = self.date.replace(month=int(monthValue + 1))
                 self.date = self.date.replace(day=leftovers)
             else:
@@ -1915,7 +1973,11 @@ class ProgramKilled(Exception):
 
 class Job(threading.Thread):
     def __init__(
-        self, interval: datetime.timedelta, execute: Callable[..., Any], *args: Any, **kwargs: Any
+        self,
+        interval: datetime.timedelta,
+        execute: Callable[..., Any],
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
         threading.Thread.__init__(self)
         self.daemon = False
@@ -1941,10 +2003,14 @@ class SetInterval:
     def signal_handler(self, signum: int, frame: Any) -> None:
         raise ProgramKilled
 
-    def __init__(self, function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self, function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any
+    ) -> None:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-        self.job = Job(datetime.timedelta(microseconds=time * 1000), function, *args, **kwargs)
+        self.job = Job(
+            datetime.timedelta(microseconds=time * 1000), function, *args, **kwargs
+        )
         self.job.start()
 
     # def stop(self):
@@ -1953,7 +2019,14 @@ class SetInterval:
 
 class Promise:
     # undocumented - warning. use at own risk
-    def __init__(self, func: Callable[[Callable[[Any], Promise], Callable[[Any], Promise]], Any] | None = None, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        func: (
+            Callable[[Callable[[Any], Promise], Callable[[Any], Promise]], Any] | None
+        ) = None,
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
         # print('init')
         self.data = None
         self.state = "pending"  # fullfilled, rejected
@@ -1998,7 +2071,9 @@ class FetchedSet:  # not a promise
     def __getitem__(self, index: int) -> Any:
         return self.results[index]
 
-    def oncomplete(self, func: Callable[[list[Any]], Any]) -> None:  # runs once all results are back
+    def oncomplete(
+        self, func: Callable[[list[Any]], Any]
+    ) -> None:  # runs once all results are back
         func(self.results)
         return
 
@@ -2043,7 +2118,9 @@ class Window:
         job.stop()
 
     @staticmethod
-    def setInterval(function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any) -> Job:
+    def setInterval(
+        function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any
+    ) -> Job:
         interval_ID = SetInterval(function, time, *args, **kwargs)
         return interval_ID.job
 
@@ -2084,7 +2161,9 @@ class Window:
         # undocumented - warning. use at own risk
         # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
         if type(url) is not str:
-            raise ValueError("fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled")
+            raise ValueError(
+                "fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled"
+            )
         f = Promise()
         r = window._do_request(url, f, *kwargs)
         return f.resolve(r)
@@ -2155,7 +2234,16 @@ class Window:
 
         jobs = []
         p = Pool()
-        urls = [{"url": url, "f": f, "c": callback_function, "e": error_handler, "k": kwargs} for url in urls]
+        urls = [
+            {
+                "url": url,
+                "f": f,
+                "c": callback_function,
+                "e": error_handler,
+                "k": kwargs,
+            }
+            for url in urls
+        ]
         results = p.map(_do_request_wrapper, urls)
         p.close()
         p.join()
@@ -2346,7 +2434,9 @@ class Array:
         mapped = [fn(i) for i in self.args]
         return Array(*Array(mapped).flat(1))
 
-    def fill(self, value: Any = None, start: int | None = None, end: int | None = None) -> list[Any]:
+    def fill(
+        self, value: Any = None, start: int | None = None, end: int | None = None
+    ) -> list[Any]:
         """[Fills elements of an array from a start index to an end index with a static value]"""
         if start is None:
             start = 0
@@ -2471,7 +2561,9 @@ class Array:
         self.args = self.args[::-1]
         return self.args
 
-    def slice(self, start: int = 0, stop: int | None = None, step: int = 1) -> list[Any]:
+    def slice(
+        self, start: int = 0, stop: int | None = None, step: int = 1
+    ) -> list[Any]:
         """[Selects a part of an array, and returns the new array]
 
         Args:
@@ -2486,7 +2578,9 @@ class Array:
             stop = len(self.args)
         return self.args[slice(start, stop, step)]
 
-    def splice(self, start: int, delete_count: int | None = None, *items: Any) -> list[Any]:
+    def splice(
+        self, start: int, delete_count: int | None = None, *items: Any
+    ) -> list[Any]:
         """Selects a part of an array, and returns the new array"""
         if delete_count is None:
             delete_count = len(self.args) - start
@@ -2571,10 +2665,14 @@ class Array:
             elif len(inspect.signature(callback).parameters) == 1:
                 initialValue = callback(initialValue)
             else:
-                raise Exception("Callback does not have the correct number of parameters")
+                raise Exception(
+                    "Callback does not have the correct number of parameters"
+                )
         return initialValue
 
-    def reduceRight(self, callback: Callable[..., Any], initialValue: Any = None) -> Any:
+    def reduceRight(
+        self, callback: Callable[..., Any], initialValue: Any = None
+    ) -> Any:
         """Reduces the array to a single value (going right-to-left)
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
@@ -2595,7 +2693,9 @@ class Array:
             elif len(inspect.signature(callback).parameters) == 1:
                 initialValue = callback(initialValue)
             else:
-                raise Exception("Callback does not have the correct number of parameters")
+                raise Exception(
+                    "Callback does not have the correct number of parameters"
+                )
         return initialValue
 
     def filter(self, func: Callable[[Any], bool]) -> list[Any]:
@@ -2638,7 +2738,9 @@ class Array:
         for i in range(len(self.args)):
             yield i
 
-    def copyWithin(self, target: Sequence[Any], start: int = 0, end: int | None = None) -> None:
+    def copyWithin(
+        self, target: Sequence[Any], start: int = 0, end: int | None = None
+    ) -> None:
         """Copies array elements within the array, from start to end"""
         if end is None:
             end = len(target)
@@ -2731,7 +2833,8 @@ class Set:
 
     def delete(self, value: Any) -> bool:
         """Removes the element associated to the value
-        returns a boolean asserting whether an element was successfully removed or not."""
+        returns a boolean asserting whether an element was successfully removed or not.
+        """
         if value in self.args:
             self.args.remove(value)
             return True
@@ -2763,7 +2866,9 @@ class Set:
         return iter([[i, i] for i in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
-    def forEach(self, callbackFn: Callable[[Any, Any], Any], thisArg: Any = None) -> None:
+    def forEach(
+        self, callbackFn: Callable[[Any, Any], Any], thisArg: Any = None
+    ) -> None:
         """Calls callbackFn once for each value present in the Set object, in insertion order.
         If a thisArg parameter is provided, it will be used as the this value for each invocation of callbackFn.
         """
@@ -2778,8 +2883,12 @@ class Number(float):
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
-    NEGATIVE_INFINITY = float("inf")  #: Represents negative infinity (returned on overflow) Number
-    POSITIVE_INFINITY = float("-inf")  #: Represents infinity (returned on overflow)  Number
+    NEGATIVE_INFINITY = float(
+        "inf"
+    )  #: Represents negative infinity (returned on overflow) Number
+    POSITIVE_INFINITY = float(
+        "-inf"
+    )  #: Represents infinity (returned on overflow)  Number
 
     # prototype Allows you to add properties and methods to an object   Number
 
@@ -2928,7 +3037,9 @@ class Number(float):
             n = "0"
 
         if int(e) != 0:
-            if int(e) < 10 and int(e) > -10:  # TODO - not correct. lazy way to strip left 0s only
+            if (
+                int(e) < 10 and int(e) > -10
+            ):  # TODO - not correct. lazy way to strip left 0s only
                 e = e.replace("0", "")
 
         # print(  "AND:", n, "e" , e )
@@ -3576,7 +3687,9 @@ class String:
 class RegExp:
     def __init__(self, expression: str, flags: str = "") -> None:
         self.expression = expression
-        self.flags = flags.lower()  #: A string that contains the flags of the RegExp object.
+        self.flags = (
+            flags.lower()
+        )  #: A string that contains the flags of the RegExp object.
         # self.multiline  # Whether or not to search in strings across multiple lines.
         # self.source  # The text of the pattern.
         # self.sticky  # Whether or not the search is sticky
@@ -3819,8 +3932,14 @@ class ArrayBuffer:
         chunk = [self.buffer[index + offset] for offset in range(size)]
         return list(reversed(chunk)) if littleEndian and size > 1 else chunk
 
-    def _write(self, index: int, values: Sequence[int], littleEndian: bool = False) -> None:
-        chunk = list(reversed(list(values))) if littleEndian and len(values) > 1 else list(values)
+    def _write(
+        self, index: int, values: Sequence[int], littleEndian: bool = False
+    ) -> None:
+        chunk = (
+            list(reversed(list(values)))
+            if littleEndian and len(values) > 1
+            else list(values)
+        )
         for offset, value in enumerate(chunk):
             self.buffer[index + offset] = value
 
@@ -3875,12 +3994,16 @@ class ArrayBuffer:
 
 class DataView(ArrayBuffer):
     # ?? is this right. don't look lt
-    def __init__(self, buffer: Any, byteOffset: int = 0, byteLength: int | None = None) -> None:
+    def __init__(
+        self, buffer: Any, byteOffset: int = 0, byteLength: int | None = None
+    ) -> None:
         super().__init__(0 if byteLength is None else byteLength)
         self.isView = True
         self.buffer = buffer
         self.byteOffset = byteOffset
-        self._viewByteLength = buffer.byteLength - byteOffset if byteLength is None else byteLength
+        self._viewByteLength = (
+            buffer.byteLength - byteOffset if byteLength is None else byteLength
+        )
 
     @property
     def byteLength(self) -> int:
@@ -3993,14 +4116,18 @@ class TypedArray:
             # }
             if self.byteOffset % self.BYTES_PER_ELEMENT:
                 # raise RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
-                raise Exception("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
+                raise Exception(
+                    "ArrayBuffer length minus the byteOffset is not a multiple of the element size."
+                )
 
             if len(args) < 3:
                 self.byteLength = self.buffer.byteLength - self.byteOffset
 
                 if self.byteLength % self.BYTES_PER_ELEMENT:
                     # raise RangeError("length of buffer minus byteOffset not a multiple of the element size");
-                    raise Exception("length of buffer minus byteOffset not a multiple of the element size")
+                    raise Exception(
+                        "length of buffer minus byteOffset not a multiple of the element size"
+                    )
 
                 self.length = self.byteLength / self.BYTES_PER_ELEMENT
             else:
@@ -4008,7 +4135,9 @@ class TypedArray:
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
             if (self.byteOffset + self.byteLength) > self.buffer.byteLength:
                 # raise RangeError("byteOffset and length reference an area beyond the end of the buffer");
-                raise Exception("byteOffset and length reference an area beyond the end of the buffer")
+                raise Exception(
+                    "byteOffset and length reference an area beyond the end of the buffer"
+                )
 
             return
         # elif isinstance(arg, array.array):
@@ -4040,7 +4169,9 @@ class TypedArray:
             # // Constructor(unsigned long length)
             self.length = ToInt32(args[0])
             if self.length < 0:
-                raise Exception("ArrayBufferView size is not a small enough positive integer")
+                raise Exception(
+                    "ArrayBufferView size is not a small enough positive integer"
+                )
 
             self.byteLength = self.length * self.BYTES_PER_ELEMENT
             self.buffer = ArrayBuffer(self.byteLength)
@@ -4152,7 +4283,9 @@ class TypedArray:
 
         if isinstance(index, TypedArray):
             sequence = [index[i] for i in range(index.length)]
-        elif isinstance(index, Sequence) and not isinstance(index, (str, bytes, bytearray)):
+        elif isinstance(index, Sequence) and not isinstance(
+            index, (str, bytes, bytearray)
+        ):
             sequence = list(index)
         else:
             raise TypeError("Unexpected argument type(s)")
@@ -4190,7 +4323,9 @@ class TypedArray:
         if nlen < 0:
             nlen = 0
 
-        return self.__class__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
+        return self.__class__(
+            self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen
+        )
 
 
 def as_signed(value: int, bits: int) -> int:
@@ -4262,7 +4397,9 @@ class __byteutils__:
         # return struct.pack('>I', n)
 
     def unpackU32(self, bytes: list[int]) -> int:
-        return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
+        return as_unsigned(
+            bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32
+        )
         # return struct.unpack('>I', bytes)[0]
 
     def packIEEE754(self, v: float, ebits: int, fbits: int) -> list[Any]:
@@ -4270,15 +4407,23 @@ class __byteutils__:
             return list(struct.pack(">f", v))
         if (ebits, fbits) == (11, 52):
             return list(struct.pack(">d", v))
-        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
+        raise NotImplementedError(
+            f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}"
+        )
 
     def unpackIEEE754(self, bytes: list[int], ebits: int, fbits: int) -> Any:
-        data = bytes if isinstance(bytes, (builtins.bytes, bytearray)) else builtins.bytes(bytes)
+        data = (
+            bytes
+            if isinstance(bytes, (builtins.bytes, bytearray))
+            else builtins.bytes(bytes)
+        )
         if (ebits, fbits) == (8, 23):
             return struct.unpack(">f", data)[0]
         if (ebits, fbits) == (11, 52):
             return struct.unpack(">d", data)[0]
-        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
+        raise NotImplementedError(
+            f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}"
+        )
 
     def unpackF64(self, b: list[int]) -> Any:
         return struct.unpack(">d", bytes(b))[0]
@@ -4294,63 +4439,101 @@ class __byteutils__:
 
 
 Int8Array = type(
-    "Int8Array", (TypedArray,), {"name": "Int8Array", "_pack": __byteutils__.packI8, "_unpack": __byteutils__.unpackI8}
+    "Int8Array",
+    (TypedArray,),
+    {
+        "name": "Int8Array",
+        "_pack": __byteutils__.packI8,
+        "_unpack": __byteutils__.unpackI8,
+    },
 )
 Int8Array.BYTES_PER_ELEMENT = 1
 
 Uint8Array = type(
     "Uint8Array",
     (TypedArray,),
-    {"name": "Uint8Array", "_pack": __byteutils__.packU8, "_unpack": __byteutils__.unpackU8},
+    {
+        "name": "Uint8Array",
+        "_pack": __byteutils__.packU8,
+        "_unpack": __byteutils__.unpackU8,
+    },
 )
 Uint8Array.BYTES_PER_ELEMENT = 1
 
 Uint8ClampedArray = type(
     "Uint8ClampedArray",
     (TypedArray,),
-    {"name": "Uint8ClampedArray", "_pack": __byteutils__.packU8Clamped, "_unpack": __byteutils__.unpackU8},
+    {
+        "name": "Uint8ClampedArray",
+        "_pack": __byteutils__.packU8Clamped,
+        "_unpack": __byteutils__.unpackU8,
+    },
 )
 Uint8ClampedArray.BYTES_PER_ELEMENT = 1
 
 Int16Array = type(
     "Int16Array",
     (TypedArray,),
-    {"name": "Int16Array", "_pack": __byteutils__.packI16, "_unpack": __byteutils__.unpackI16},
+    {
+        "name": "Int16Array",
+        "_pack": __byteutils__.packI16,
+        "_unpack": __byteutils__.unpackI16,
+    },
 )
 Int16Array.BYTES_PER_ELEMENT = 2
 
 Uint16Array = type(
     "Uint16Array",
     (TypedArray,),
-    {"name": "Uint16Array", "_pack": __byteutils__.packU16, "_unpack": __byteutils__.unpackU16},
+    {
+        "name": "Uint16Array",
+        "_pack": __byteutils__.packU16,
+        "_unpack": __byteutils__.unpackU16,
+    },
 )
 Uint16Array.BYTES_PER_ELEMENT = 2
 
 Int32Array = type(
     "Int32Array",
     (TypedArray,),
-    {"name": "Int32Array", "_pack": __byteutils__.packI32, "_unpack": __byteutils__.unpackI32},
+    {
+        "name": "Int32Array",
+        "_pack": __byteutils__.packI32,
+        "_unpack": __byteutils__.unpackI32,
+    },
 )
 Int32Array.BYTES_PER_ELEMENT = 4
 
 Uint32Array = type(
     "Uint32Array",
     (TypedArray,),
-    {"name": "Uint32Array", "_pack": __byteutils__.packU32, "_unpack": __byteutils__.unpackU32},
+    {
+        "name": "Uint32Array",
+        "_pack": __byteutils__.packU32,
+        "_unpack": __byteutils__.unpackU32,
+    },
 )
 Uint32Array.BYTES_PER_ELEMENT = 4
 
 Float32Array = type(
     "Float32Array",
     (TypedArray,),
-    {"name": "Float32Array", "_pack": __byteutils__.packF32, "_unpack": __byteutils__.unpackF32},
+    {
+        "name": "Float32Array",
+        "_pack": __byteutils__.packF32,
+        "_unpack": __byteutils__.unpackF32,
+    },
 )
 Float32Array.BYTES_PER_ELEMENT = 4
 
 Float64Array = type(
     "Float64Array",
     (TypedArray,),
-    {"name": "Float64Array", "_pack": __byteutils__.packF64, "_unpack": __byteutils__.unpackF64},
+    {
+        "name": "Float64Array",
+        "_pack": __byteutils__.packF64,
+        "_unpack": __byteutils__.unpackF64,
+    },
 )
 Float64Array.BYTES_PER_ELEMENT = 8
 
@@ -4402,13 +4585,17 @@ class Reflect:
         return Object.getOwnPropertyNames(target)
 
     @staticmethod
-    def apply(target: Callable[..., Any], thisArgument: Any, argumentsList: Sequence[Any]) -> Any:
+    def apply(
+        target: Callable[..., Any], thisArgument: Any, argumentsList: Sequence[Any]
+    ) -> Any:
         """Calls a target function with arguments as specified by the argumentsList parameter.
         See also Function.prototype.apply()."""
         return target(*argumentsList)
 
     @staticmethod
-    def construct(target: Any, argumentsList: Sequence[Any], newTarget: Any = None) -> Any:
+    def construct(
+        target: Any, argumentsList: Sequence[Any], newTarget: Any = None
+    ) -> Any:
         """The new operator as a function. Equivalent to calling new target(...argumentsList).
         Also provides the option to specify a different prototype."""
         constructor = newTarget or target
@@ -4419,7 +4606,9 @@ class Reflect:
         """Similar to Object.defineProperty().
         Returns a Boolean that is true if the property was successfully defined."""
         try:
-            value = attributes.get("value") if isinstance(attributes, dict) else attributes
+            value = (
+                attributes.get("value") if isinstance(attributes, dict) else attributes
+            )
             if isinstance(target, dict):
                 target[propertyKey] = value
             else:
@@ -4443,7 +4632,8 @@ class Reflect:
     @staticmethod
     def get(target: Any, propertyKey: str, receiver: Any = None) -> Any:
         """Returns the value of the property.
-        Works like getting a property from an object (target[propertyKey]) as a function."""
+        Works like getting a property from an object (target[propertyKey]) as a function.
+        """
         if isinstance(target, dict):
             return target.get(propertyKey)
         return getattr(target, propertyKey, None)
@@ -4451,13 +4641,24 @@ class Reflect:
     @staticmethod
     def getOwnPropertyDescriptor(target: Any, propertyKey: str) -> Any:
         """Similar to Object.getOwnPropertyDescriptor().
-        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise."""
+        Returns a property descriptor of the given property if it exists on the object,  undefined otherwise.
+        """
         if isinstance(target, dict):
             if propertyKey not in target:
                 return None
-            return {"value": target[propertyKey], "writable": True, "enumerable": True, "configurable": True}
+            return {
+                "value": target[propertyKey],
+                "writable": True,
+                "enumerable": True,
+                "configurable": True,
+            }
         if hasattr(target, propertyKey):
-            return {"value": getattr(target, propertyKey), "writable": True, "enumerable": True, "configurable": True}
+            return {
+                "value": getattr(target, propertyKey),
+                "writable": True,
+                "enumerable": True,
+                "configurable": True,
+            }
         return None
 
     getPrototypeOf = Object.getPrototypeOf

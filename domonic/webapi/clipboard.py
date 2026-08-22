@@ -1,14 +1,15 @@
 """
-    domonic.webapi.clipboard
-    ====================================
+domonic.webapi.clipboard
+====================================
 
-    TODO - make this clipboard same as the webapi and make it work for linux, mac and windows
+TODO - make this clipboard same as the webapi and make it work for linux, mac and windows
 
-    https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
-    
+https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
+
 """
 
 import sys
+
 mac = sys.platform == "darwin"
 windows = sys.platform == "win32"
 linux = sys.platform == "linux"
@@ -74,7 +75,6 @@ class Clipboard:
 
     def readData(self):
         return self.readText()
-
 
 
 # class ClipboardData:

@@ -1,6 +1,6 @@
 """
-    domonic.d3.path
-    ====================================
+domonic.d3.path
+====================================
 
 """
 
@@ -44,7 +44,20 @@ class Path:
     def bezierCurveTo(self, x1, y1, x2, y2, x, y):
         self._x1 = x
         self._y1 = y
-        self._ += "C" + str(x1) + "," + str(y1) + "," + str(x2) + "," + str(y2) + "," + str(x) + "," + str(y)
+        self._ += (
+            "C"
+            + str(x1)
+            + ","
+            + str(y1)
+            + ","
+            + str(x2)
+            + ","
+            + str(y2)
+            + ","
+            + str(x)
+            + ","
+            + str(y)
+        )
 
     def arcTo(self, x1, y1, x2, y2, r):
         x1 = x1
@@ -90,7 +103,9 @@ class Path:
             l20_2 = x20 * x20 + y20 * y20
             l21 = Math.sqrt(l21_2)
             l01 = Math.sqrt(l01_2)
-            l = r * Math.tan((pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2)
+            l = r * Math.tan(
+                (pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2
+            )
             t01 = l / l01
             t21 = l / l21
 

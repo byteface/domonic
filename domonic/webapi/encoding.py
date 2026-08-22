@@ -1,7 +1,7 @@
 """
-    domonic.webapi.encoding
-    ====================================
-    https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API
+domonic.webapi.encoding
+====================================
+https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API
 """
 
 from domonic.javascript import (ArrayBuffer, DataView, Float32Array,

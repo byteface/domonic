@@ -1,8 +1,9 @@
 """
-    domonic.game
-    ====================================
+domonic.game
+====================================
 
 """
+
 import random
 
 
@@ -40,7 +41,9 @@ class Game:
         Returns:
             [list]: [list of cards]
         """
-        return [Game.pick_a_card() for _ in range(n)]  # TODO - this could have duplicates
+        return [
+            Game.pick_a_card() for _ in range(n)
+        ]  # TODO - this could have duplicates
 
     @staticmethod
     def random_bool() -> bool:

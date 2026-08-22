@@ -1,12 +1,13 @@
 """
-    domonic.geom.shape
-    ====================================
+domonic.geom.shape
+====================================
 
 """
 
 from domonic.geom.vec2 import vec2
-from domonic.svg import *
 from domonic.javascript import Math
+from domonic.svg import *
+
 
 class vertex(vec2):
     """
@@ -86,12 +87,18 @@ class Shape(Point):
     @property
     def width(self):
         """determine the width of the shape"""
-        return max(self.vertices, key=lambda v: v.x).x - min(self.vertices, key=lambda v: v.x).x
+        return (
+            max(self.vertices, key=lambda v: v.x).x
+            - min(self.vertices, key=lambda v: v.x).x
+        )
 
     @property
     def height(self):
         """determine the height of the shape"""
-        return max(self.vertices, key=lambda v: v.y).y - min(self.vertices, key=lambda v: v.y).y
+        return (
+            max(self.vertices, key=lambda v: v.y).y
+            - min(self.vertices, key=lambda v: v.y).y
+        )
 
     def rotate(self, angle):
         """rotate the shape"""
@@ -407,10 +414,20 @@ class Rect(Shape):
         return f"Rect({self.x}, {self.y}, {self.width}, {self.height})"
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
+        return (
+            self.x == other.x
+            and self.y == other.y
+            and self.width == other.width
+            and self.height == other.height
+        )
 
     def __ne__(self, other):
-        return self.x != other.x or self.y != other.y or self.width != other.width or self.height != other.height
+        return (
+            self.x != other.x
+            or self.y != other.y
+            or self.width != other.width
+            or self.height != other.height
+        )
 
     def __hash__(self):
         return hash((self.x, self.y, self.width, self.height))
@@ -451,13 +468,19 @@ class Rect(Shape):
         )
 
     def __mul__(self, other):
-        return Rect(self.x * other, self.y * other, self.width * other, self.height * other)
+        return Rect(
+            self.x * other, self.y * other, self.width * other, self.height * other
+        )
 
     def __truediv__(self, other):
-        return Rect(self.x / other, self.y / other, self.width / other, self.height / other)
+        return Rect(
+            self.x / other, self.y / other, self.width / other, self.height / other
+        )
 
     def __floordiv__(self, other):
-        return Rect(self.x // other, self.y // other, self.width // other, self.height // other)
+        return Rect(
+            self.x // other, self.y // other, self.width // other, self.height // other
+        )
 
     def __iadd__(self, other):
         self.x += other.x
@@ -521,16 +544,36 @@ class Rect(Shape):
         )
 
     def __lt__(self, other):
-        return self.x < other.x and self.y < other.y and self.width < other.width and self.height < other.height
+        return (
+            self.x < other.x
+            and self.y < other.y
+            and self.width < other.width
+            and self.height < other.height
+        )
 
     def __le__(self, other):
-        return self.x <= other.x and self.y <= other.y and self.width <= other.width and self.height <= other.height
+        return (
+            self.x <= other.x
+            and self.y <= other.y
+            and self.width <= other.width
+            and self.height <= other.height
+        )
 
     def __gt__(self, other):
-        return self.x > other.x and self.y > other.y and self.width > other.width and self.height > other.height
+        return (
+            self.x > other.x
+            and self.y > other.y
+            and self.width > other.width
+            and self.height > other.height
+        )
 
     def __ge__(self, other):
-        return self.x >= other.x and self.y >= other.y and self.width >= other.width and self.height >= other.height
+        return (
+            self.x >= other.x
+            and self.y >= other.y
+            and self.width >= other.width
+            and self.height >= other.height
+        )
 
     # def __eq__(self, other):
     #     return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height

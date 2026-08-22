@@ -1,9 +1,9 @@
 """
-    domonic.ext.html5lib_
-    ====================================
+domonic.ext.html5lib_
+====================================
 
-    stolen from here and modded to work with domonic instead of mindidom
-    https://github.com/html5lib/html5lib-python/blob/master/html5lib/treebuilders/__init__.py
+stolen from here and modded to work with domonic instead of mindidom
+https://github.com/html5lib/html5lib-python/blob/master/html5lib/treebuilders/__init__.py
 
 """
 
@@ -29,9 +29,9 @@ def getTreeBuilder(treeType, implementation='domonic', **kwargs):
 
 # from __future__ import absolute_import, division, unicode_literals
 
-from collections.abc import MutableMapping
 # from xml.dom import minidom, Node
 import weakref
+from collections.abc import MutableMapping
 
 from html5lib import constants
 from html5lib._utils import moduleFactoryFactory
@@ -48,6 +48,7 @@ from domonic.dom import DOMImplementation, Node
 
 # def getDomBuilder(DomImplementation):
 #     Dom = DomImplementation
+
 
 def getDomBuilder(ignore: object):
     # Dom = DomImplementation
@@ -106,7 +107,11 @@ def getDomBuilder(ignore: object):
             base.Node.__init__(self, element.name)
             self.element = element
 
-        namespace = property(lambda self: hasattr(self.element, "namespaceURI") and self.element.namespaceURI or None)
+        namespace = property(
+            lambda self: hasattr(self.element, "namespaceURI")
+            and self.element.namespaceURI
+            or None
+        )
 
         def appendChild(self, node):
             node.parent = self
@@ -204,7 +209,9 @@ def getDomBuilder(ignore: object):
         def appendChild(self, node):
             from domonic.dom import HTMLDocument
 
-            if isinstance(self.dom, HTMLDocument) and isinstance(node.element, HTMLDocument):
+            if isinstance(self.dom, HTMLDocument) and isinstance(
+                node.element, HTMLDocument
+            ):
                 # print('HERE IS THE PROBLEM!!!!')
                 # TODO - this can't be the final solution as a nested html would replace the outer
                 self.dom = node.element
@@ -251,7 +258,10 @@ def getDomBuilder(ignore: object):
                     if element.publicId or element.systemId:
                         publicId = element.publicId or ""
                         systemId = element.systemId or ""
-                        rv.append("""|%s<!DOCTYPE %s "%s" "%s">""" % (" " * indent, element.name, publicId, systemId))
+                        rv.append(
+                            """|%s<!DOCTYPE %s "%s" "%s">"""
+                            % (" " * indent, element.name, publicId, systemId)
+                        )
                     else:
                         rv.append("|%s<!DOCTYPE %s>" % (" " * indent, element.name))
                 else:
@@ -265,8 +275,14 @@ def getDomBuilder(ignore: object):
             elif element.nodeType == Node.TEXT_NODE:
                 rv.append('|%s"%s"' % (" " * indent, element.nodeValue))
             else:
-                if hasattr(element, "namespaceURI") and element.namespaceURI is not None:
-                    name = "%s %s" % (constants.prefixes[element.namespaceURI], element.nodeName)
+                if (
+                    hasattr(element, "namespaceURI")
+                    and element.namespaceURI is not None
+                ):
+                    name = "%s %s" % (
+                        constants.prefixes[element.namespaceURI],
+                        element.nodeName,
+                    )
                 else:
                     name = element.nodeName
                 rv.append("|%s<%s>" % (" " * indent, name))

@@ -1,9 +1,9 @@
 """
-    domonic.ext.selectolax_
-    ====================================
+domonic.ext.selectolax_
+====================================
 
-    Fast hybrid adapter for using selectolax as a frontend parser and then
-    rebuilding a domonic tree via the lxml_html adapter.
+Fast hybrid adapter for using selectolax as a frontend parser and then
+rebuilding a domonic tree via the lxml_html adapter.
 """
 
 from __future__ import annotations
