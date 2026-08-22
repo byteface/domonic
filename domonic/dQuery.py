@@ -10,6 +10,7 @@ import functools
 import json
 import re
 import sys
+import time
 
 from domonic.dom import *
 from domonic.events import (
@@ -42,6 +43,14 @@ _MOUSE_EVENTS = {
 _KEYBOARD_EVENTS = {"keydown", "keypress", "keyup"}
 _FOCUS_EVENTS = {"blur", "focus", "focusin", "focusout"}
 _INPUT_EVENTS = {"beforeinput", "input"}
+_AJAX_EVENTS = (
+    "ajaxStart",
+    "ajaxSend",
+    "ajaxSuccess",
+    "ajaxError",
+    "ajaxComplete",
+    "ajaxStop",
+)
 
 
 def _split_event_name(event_name):
@@ -498,27 +507,27 @@ class dQuery_el:
 
     def ajaxComplete(self, handler):
         """Register a handler to be called when Ajax requests complete. This is an Ajax Event"""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxComplete", handler, self)
 
     def ajaxError(self, handler):
         """Register a handler to be called when Ajax requests complete with an error. This is an Ajax Event"""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxError", handler, self)
 
     def ajaxSend(self, handler):
         """Register a handler to be called when Ajax requests complete successfully. This is an Ajax Event"""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxSend", handler, self)
 
     def ajaxStart(self, handler):
         """Register a handler to be called when the first Ajax request begins. This is an Ajax Event"""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxStart", handler, self)
 
     def ajaxStop(self, handler):
         """Register a handler to be called when all Ajax requests have completed. This is an Ajax Event"""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxStop", handler, self)
 
     def ajaxSuccess(self, handler):
         """Attach a function to be executed whenever an Ajax request completes successfully. This is an Ajax Event."""
-        raise NotImplementedError
+        return º._add_ajax_handler("ajaxSuccess", handler, self)
 
     def andSelf(self):
         """Add the previous set of elements on the stack to the current set."""
@@ -1043,21 +1052,36 @@ class dQuery_el:
 
     def load(self, url, data=None, complete=None):  # TODO - test
         """Load data from the server and place the returned HTML into the matched elements."""
-        if data is None:
-            data = {}
-        if complete is None:
-            complete = lambda x: x
-        for el in self.elements:
+        if callable(data) and complete is None:
+            complete = data
+            data = None
+
+        for el in self._ensure_list():
             el.innerHTML = ""
             el.innerHTML = "<div class='loading'></div>"
 
             def load(el, url, data, complete):
-                def onload(response):
+                def onload(response, text_status="success", jqxhr=None):
                     el.innerHTML = ""
                     el.innerHTML = response
-                    complete(response)
+                    if complete is not None:
+                        dQuery_el._call_with_fallback(
+                            complete,
+                            (response, text_status, jqxhr),
+                            (response, text_status),
+                            (response,),
+                            (),
+                        )
 
-                dQuery.ajax(url, data, onload)
+                dQuery.ajax(
+                    {
+                        "url": url,
+                        "type": "POST" if data is not None else "GET",
+                        "data": data,
+                        "dataType": "html",
+                        "success": onload,
+                    }
+                )
 
             load(el, url, data, complete)
         return self
@@ -2051,6 +2075,17 @@ def dproxy(q):
 
 
 class º(dQuery_el):
+    ajaxSettings = {
+        "timeout": 30,
+        "headers": {},
+        "processData": True,
+        "cache": True,
+        "global": True,
+    }
+    _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}
+    _ajax_prefilters = []
+    _ajax_active = 0
+
     def __init__(self, selector=None, *args, **kwargs):
         super().__init__(selector, *args, **kwargs)
         self.init(selector)
@@ -2059,63 +2094,301 @@ class º(dQuery_el):
         return dproxy(args[0])
 
     @staticmethod
+    def _add_ajax_handler(event_name, handler, collection=None):
+        if handler is not None:
+            º._ajax_event_handlers.setdefault(event_name, []).append(handler)
+        return collection if collection is not None else handler
+
+    @staticmethod
+    def _ajax_event_adapter(self_or_handler, handler, event_name):
+        if isinstance(self_or_handler, dQuery_el):
+            return º._add_ajax_handler(event_name, handler, self_or_handler)
+        return º._add_ajax_handler(event_name, self_or_handler)
+
+    @staticmethod
+    def _callback(callback, *args):
+        if callback is None:
+            return None
+        attempts = [args]
+        for length in range(len(args) - 1, -1, -1):
+            attempts.append(args[:length])
+        return dQuery_el._call_with_fallback(callback, *attempts)
+
+    @staticmethod
+    def _ajax_error_callback(callback, response, text_status, thrown):
+        if callback is None:
+            return None
+        return dQuery_el._call_with_fallback(
+            callback,
+            (response, text_status, thrown),
+            (thrown,),
+            (response,),
+            (),
+        )
+
+    @staticmethod
+    def _trigger_ajax_event(event_name, *args):
+        event = Event(event_name)
+        for handler in list(º._ajax_event_handlers.get(event_name, [])):
+            º._callback(handler, event, *args)
+
+    @staticmethod
+    def _ajax_success_status(response):
+        return 200 <= response.status_code < 300 or response.status_code == 304
+
+    @staticmethod
+    def _parse_ajax_response(response, dataType=None):
+        data_type = str(dataType or "").lower()
+        if data_type == "json":
+            return response.json()
+        if data_type in ("", "text", "html", "script"):
+            return response.text
+        if data_type == "xml":
+            return º.parseXML(response.text)
+        return response.text
+
+    @staticmethod
+    def _normalize_ajax_options(
+        url="/",
+        type="GET",
+        data=None,
+        contentType=False,
+        processData=None,
+        cache=None,
+        success=None,
+        error=None,
+        **kwargs,
+    ):
+        if isinstance(url, dict):
+            options = dict(url)
+            explicit = dict(kwargs)
+            if contentType is not False:
+                explicit["contentType"] = contentType
+            if success is not None:
+                explicit["success"] = success
+            if error is not None:
+                explicit["error"] = error
+            if type != "GET":
+                explicit["type"] = type
+            if data is not None:
+                explicit["data"] = data
+            if processData is not None:
+                explicit["processData"] = processData
+            if cache is not None:
+                explicit["cache"] = cache
+            options.update(
+                {key: value for key, value in explicit.items() if value is not None}
+            )
+        else:
+            options = dict(kwargs)
+            options.update(
+                {
+                    "url": url,
+                    "type": type,
+                    "data": data,
+                    "contentType": contentType,
+                    "success": success,
+                    "error": error,
+                }
+            )
+            if processData is not None:
+                options["processData"] = processData
+            if cache is not None:
+                options["cache"] = cache
+
+        settings = copy.deepcopy(º.ajaxSettings)
+        headers = dict(settings.get("headers", {}))
+        headers.update(options.get("headers") or {})
+        settings.update(options)
+        settings["headers"] = headers
+        settings["url"] = settings.get("url", "/")
+        settings["type"] = str(
+            settings.get("method", settings.get("type", "GET")) or "GET"
+        ).upper()
+        if "data" not in settings:
+            settings["data"] = None
+        if "processData" not in settings or settings["processData"] is None:
+            settings["processData"] = True
+        if "cache" not in settings or settings["cache"] is None:
+            settings["cache"] = True
+        if "global" not in settings:
+            settings["global"] = True
+        if settings.get("contentType"):
+            settings["headers"]["Content-Type"] = settings["contentType"]
+        return settings
+
+    def ajaxComplete(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxComplete")
+
+    def ajaxError(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxError")
+
+    def ajaxSend(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxSend")
+
+    def ajaxStart(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxStart")
+
+    def ajaxStop(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxStop")
+
+    def ajaxSuccess(self, handler=None):
+        return º._ajax_event_adapter(self, handler, "ajaxSuccess")
+
+    @staticmethod
     def ajax(
         url="/",
         type="GET",
         data=None,
         contentType=False,
-        processData=False,
-        cache=False,
+        processData=None,
+        cache=None,
         success=None,
         error=None,
+        complete=None,
+        dataType=None,
+        headers=None,
+        timeout=None,
+        **kwargs,
     ):
         """make an ajax request"""
-        if isinstance(url, dict):
-            options = url
-            url = options.get("url", "/")
-            type = options.get("type", options.get("method", type))
-            data = options.get("data", data)
-            contentType = options.get("contentType", contentType)
-            processData = options.get("processData", processData)
-            cache = options.get("cache", cache)
-            success = options.get("success", success)
-            error = options.get("error", error)
+        extra_options = dict(kwargs)
+        if complete is not None:
+            extra_options["complete"] = complete
+        if dataType is not None:
+            extra_options["dataType"] = dataType
+        if headers is not None:
+            extra_options["headers"] = headers
+        if timeout is not None:
+            extra_options["timeout"] = timeout
+        options = º._normalize_ajax_options(
+            url=url,
+            type=type,
+            data=data,
+            contentType=contentType,
+            processData=processData,
+            cache=cache,
+            success=success,
+            error=error,
+            **extra_options,
+        )
+        for prefilter in list(º._ajax_prefilters):
+            º._callback(prefilter, options)
 
-        try:
-            from requests import Request, Session
+        method = options["type"]
+        request_data = options.get("data")
+        request_params = dict(options.get("params") or {})
+        request_headers = dict(options.get("headers") or {})
+        request_kwargs = {
+            "headers": request_headers or None,
+            "timeout": options.get("timeout") or 30,
+        }
 
-            method = type
-            headers = {}
-            if contentType:
-                headers["Content-Type"] = contentType
-            with Session() as s:
-                req = Request(method, url, data=data, headers=headers)
-                prepped = s.prepare_request(req)
-                r = s.send(prepped, timeout=30)
-            if 200 <= r.status_code < 300:
-                if success is not None:
-                    success(r.text)
+        if options.get("json") is not None:
+            request_kwargs["json"] = options.get("json")
+        elif method in ("GET", "HEAD") and request_data is not None:
+            if options.get("processData") and isinstance(request_data, dict):
+                request_params.update(request_data)
             else:
-                if error is not None:
-                    error(r.text)
+                request_kwargs["data"] = request_data
+        elif request_data is not None:
+            if options.get("processData") and isinstance(request_data, (dict, list)):
+                request_kwargs["data"] = º.param(request_data)
+                request_headers.setdefault(
+                    "Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"
+                )
+            else:
+                request_kwargs["data"] = request_data
 
-            return r
+        if options.get("cache") is False and method in ("GET", "HEAD"):
+            request_params.setdefault("_", int(time.time() * 1000))
+        if request_params:
+            request_kwargs["params"] = request_params
 
-        except Exception as e:
-            if error is not None:
-                error(e)
+        use_global_events = bool(options.get("global", True))
+        if use_global_events:
+            if º._ajax_active == 0:
+                º._trigger_ajax_event("ajaxStart")
+            º._ajax_active += 1
+
+        response = None
+        text_status = "error"
+        try:
+            from requests import Session
+
+            before_send = options.get("beforeSend")
+            if before_send is not None:
+                should_send = º._callback(before_send, None, options)
+                if should_send is False:
+                    text_status = "abort"
+                    return None
+
+            if use_global_events:
+                º._trigger_ajax_event("ajaxSend", None, options)
+
+            with Session() as session:
+                response = session.request(method, options["url"], **request_kwargs)
+
+            response.data = º._parse_ajax_response(response, options.get("dataType"))
+            response.parsedData = response.data
+            text_status = "success" if º._ajax_success_status(response) else "error"
+
+            status_handlers = options.get("statusCode") or {}
+            status_handler = status_handlers.get(response.status_code)
+            if status_handler is not None:
+                º._callback(status_handler, response, text_status)
+
+            if text_status == "success":
+                º._callback(options.get("success"), response.data, text_status, response)
+                if use_global_events:
+                    º._trigger_ajax_event(
+                        "ajaxSuccess", response, options, response.data
+                    )
+            else:
+                thrown = response.reason or response.text
+                º._ajax_error_callback(
+                    options.get("error"), response, text_status, thrown
+                )
+                if use_global_events:
+                    º._trigger_ajax_event("ajaxError", response, options, thrown)
+            return response
+
+        except Exception as exc:
+            text_status = "parsererror" if response is not None else "error"
+            º._ajax_error_callback(options.get("error"), response, text_status, exc)
+            if use_global_events:
+                º._trigger_ajax_event("ajaxError", response, options, exc)
             return None
+        finally:
+            º._callback(options.get("complete"), response, text_status)
+            if use_global_events:
+                º._trigger_ajax_event("ajaxComplete", response, options)
+                º._ajax_active = max(0, º._ajax_active - 1)
+                if º._ajax_active == 0:
+                    º._trigger_ajax_event("ajaxStop")
 
     @staticmethod
-    def ajaxPrefilter():
+    def ajaxPrefilter(callback=None):
         """Handle custom Ajax options or modify existing options before each request is sent
         and before they are processed by .ajax"""
-        raise NotImplementedError
+        if callback is None:
+            return list(º._ajax_prefilters)
+        º._ajax_prefilters.append(callback)
+        return callback
 
     @staticmethod
-    def ajaxSetup():
+    def ajaxSetup(options=None, **kwargs):
         """Set default values for future Ajax requests. Its use is not recommended."""
-        raise NotImplementedError
+        updates = {}
+        if options:
+            updates.update(options)
+        updates.update(kwargs)
+        if "headers" in updates:
+            headers = dict(º.ajaxSettings.get("headers", {}))
+            headers.update(updates.pop("headers") or {})
+            º.ajaxSettings["headers"] = headers
+        º.ajaxSettings.update(updates)
+        return º.ajaxSettings.copy()
 
     @staticmethod
     def ajaxTransport():
@@ -2285,34 +2558,12 @@ class º(dQuery_el):
         return result
 
     @staticmethod
-    def get(url: str, data=None, dataType=False, success=None, error=None):
-        """[simplified ajax request]
-
-        Args:
-            url (str): [the url to request]
-            data ([type]): [the data to send]
-            dataType (bool, optional): [the dataType]. Defaults to False.
-            success ([type], optional): [a success function]. Defaults to None.
-            error ([type], optional): [an error method]. Defaults to None.
-
-        Returns:
-            [type]: [the response]
-        """
-        r = º.ajax(
-            url=url,
-            type="GET",
-            data=data,
-            success=success,
-            error=error,
-        )
-        if r is None:
-            return None
-        return r.json() if dataType == "json" else r.content.decode("utf-8")
-
-    @staticmethod
-    def getJSON():
+    def getJSON(url, data=None, success=None, error=None):
         """Load JSON-encoded data from the server using a GET HTTP request."""
-        raise NotImplementedError
+        if callable(data) and success is None:
+            success = data
+            data = None
+        return º.get(url, data=data, dataType="json", success=success, error=error)
 
     @staticmethod
     def getScript(filename, *args):
@@ -2482,14 +2733,24 @@ class º(dQuery_el):
         return parseString(string)
 
     @staticmethod
-    def post(url, data, success):
+    def post(url, data=None, success=None, dataType=False, error=None):
         """Send data to the server using a HTTP POST request."""
-        import requests
-
-        r = requests.post(url, data, timeout=30)
-        # if r.ok:
-        #     succss()
-        return r.content.decode("utf-8")
+        if callable(data) and success is None:
+            success = data
+            data = None
+        response = º.ajax(
+            {
+                "url": url,
+                "type": "POST",
+                "data": data,
+                "dataType": dataType,
+                "success": success,
+                "error": error,
+            }
+        )
+        if response is None:
+            return None
+        return response.data
 
     @staticmethod
     def proxy(func):
@@ -2595,17 +2856,31 @@ class º(dQuery_el):
     def get(self, data=None, dataType=False, success=None, error=None):
         if isinstance(self, dQuery_el):
             return dQuery_el.get(self, data)
+        if callable(data) and success is None:
+            success = data
+            data = None
+            dataType = False
+        elif callable(dataType):
+            callback = dataType
+            if isinstance(success, str):
+                dataType = success
+            else:
+                dataType = False if success is None else success
+            success = callback
         url = self
         response = º.ajax(
-            url=url,
-            type="GET",
-            data=data,
-            success=success,
-            error=error,
+            {
+                "url": url,
+                "type": "GET",
+                "data": data,
+                "dataType": dataType,
+                "success": success,
+                "error": error,
+            }
         )
         if response is None:
             return None
-        return response.json() if dataType == "json" else response.content.decode("utf-8")
+        return response.data
 
     def map(self, func=None):
         if isinstance(self, dQuery_el):

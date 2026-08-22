@@ -57,6 +57,23 @@ You do not need a DOM fragment to use dQuery. It also contains useful static met
     print(º.now())
 
 
+Ajax helpers
+----------------
+
+``º.ajax()``, ``º.get()``, ``º.getJSON()`` and ``º.post()`` wrap ``requests`` with
+jQuery-like callbacks and global Ajax events.
+
+.. code-block :: python
+
+    from domonic.dQuery import º
+
+    º.ajaxStart(lambda event: print("loading"))
+    º.ajaxStop(lambda event: print("done"))
+
+    data = º.getJSON("https://example.com/api", {"q": "domonic"})
+    º.post("https://example.com/save", {"name": "Ada"})
+
+
 .. automodule:: domonic.dQuery
     :members:
     :noindex:

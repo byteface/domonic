@@ -5,15 +5,113 @@
 
 """
 
-import time
+import json
 import unittest
+from contextlib import contextmanager
+from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
 from domonic.dom import *
 from domonic.dQuery import *
 from domonic.html import *
 
 
+_TEST_AJAX_EVENTS = (
+    "ajaxStart",
+    "ajaxSend",
+    "ajaxSuccess",
+    "ajaxError",
+    "ajaxComplete",
+    "ajaxStop",
+)
+
+
+class _DQueryResponse:
+    def __init__(self, status_code=200, text="", reason="OK", payload=None):
+        self.status_code = status_code
+        self.reason = reason
+        self.text = json.dumps(payload) if payload is not None else text
+        self.content = self.text.encode("utf-8")
+
+    def json(self):
+        return json.loads(self.text)
+
+
+class _DQuerySession:
+    def __init__(self):
+        self.calls = []
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return None
+
+    def request(self, method, url, **kwargs):
+        method = method.upper()
+        self.calls.append((method, url, kwargs))
+        parsed = urlparse(url)
+        if parsed.path == "/html":
+            return _DQueryResponse(text="<strong>loaded</strong>")
+        if parsed.path == "/fail":
+            return _DQueryResponse(
+                status_code=500, text="bad news", reason="Internal Server Error"
+            )
+        if method == "POST":
+            raw_body = kwargs.get("data") or ""
+            if isinstance(raw_body, bytes):
+                raw_body = raw_body.decode("utf-8")
+            form = {
+                key: values[-1] if len(values) == 1 else values
+                for key, values in parse_qs(str(raw_body)).items()
+            }
+            return _DQueryResponse(
+                payload={"method": method, "path": parsed.path, "form": form}
+            )
+        query = dict(kwargs.get("params") or {})
+        query.update(
+            {
+                key: values[-1] if len(values) == 1 else values
+                for key, values in parse_qs(parsed.query).items()
+            }
+        )
+        return _DQueryResponse(payload={"method": method, "query": query})
+
+
+class _DQueryRequestsMock:
+    def __enter__(self):
+        self.session = _DQuerySession()
+        self.patch = patch("requests.Session", return_value=self.session)
+        self.patch.start()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.patch.stop()
+
+    def url(self, path):
+        return f"https://example.test{path}"
+
+
 class TestCase(unittest.TestCase):
+    @contextmanager
+    def _ajax_handlers_isolated(self):
+        handlers = {
+            event: list(callbacks)
+            for event, callbacks in getattr(º, "_ajax_event_handlers", {}).items()
+        }
+        prefilters = list(getattr(º, "_ajax_prefilters", []))
+        settings = getattr(º, "ajaxSettings", {}).copy()
+        active = getattr(º, "_ajax_active", 0)
+        º._ajax_event_handlers = {event: [] for event in _TEST_AJAX_EVENTS}
+        º._ajax_prefilters = []
+        º._ajax_active = 0
+        try:
+            yield
+        finally:
+            º._ajax_event_handlers = handlers
+            º._ajax_prefilters = prefilters
+            º.ajaxSettings = settings
+            º._ajax_active = active
 
     # domonic.dQuery.º
     def test_hello(self):
@@ -59,22 +157,102 @@ class TestCase(unittest.TestCase):
         # pass
 
     def test_ajaxComplete(self):
-        pass
+        with self._ajax_handlers_isolated():
+            with _DQueryRequestsMock() as server:
+                events = []
+                target = º("<div></div>")
+                target.ajaxStart(lambda event: events.append(event.type))
+                target.ajaxSend(
+                    lambda event, xhr, settings: events.append(settings["type"])
+                )
+                target.ajaxSuccess(
+                    lambda event, xhr, settings, data: events.append(data["query"]["q"])
+                )
+                target.ajaxComplete(
+                    lambda event, xhr, settings: events.append(event.type)
+                )
+                target.ajaxStop(lambda event: events.append(event.type))
+
+                success = []
+                complete = []
+                response = º.ajax(
+                    {
+                        "url": server.url("/echo"),
+                        "data": {"q": "domonic"},
+                        "dataType": "json",
+                        "success": lambda data, status, xhr: success.append(
+                            (data["method"], status, xhr.status_code)
+                        ),
+                        "complete": lambda xhr, status: complete.append(status),
+                    }
+                )
+
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data["query"], {"q": "domonic"})
+                self.assertEqual(success, [("GET", "success", 200)])
+                self.assertEqual(complete, ["success"])
+                self.assertEqual(
+                    events,
+                    ["ajaxStart", "GET", "domonic", "ajaxComplete", "ajaxStop"],
+                )
 
     def test_ajaxError(self):
-        pass
+        with self._ajax_handlers_isolated():
+            with _DQueryRequestsMock() as server:
+                errors = []
+                events = []
+                º("<div></div>").ajaxError(
+                    lambda event, xhr, settings, thrown: events.append(
+                        (event.type, xhr.status_code, thrown)
+                    )
+                )
+
+                response = º.ajax(
+                    {
+                        "url": server.url("/fail"),
+                        "error": lambda xhr, status, thrown: errors.append(
+                            (xhr.status_code, status, thrown)
+                        ),
+                    }
+                )
+
+                self.assertEqual(response.status_code, 500)
+                self.assertEqual(errors, [(500, "error", "Internal Server Error")])
+                self.assertEqual(
+                    events, [("ajaxError", 500, "Internal Server Error")]
+                )
 
     def test_ajaxSend(self):
-        pass
+        with self._ajax_handlers_isolated():
+            target = º("<div></div>")
+            handler = lambda event: event
+            self.assertIs(target.ajaxSend(handler), target)
+            self.assertEqual(º._ajax_event_handlers["ajaxSend"], [handler])
 
     def test_ajaxStart(self):
-        pass
+        with self._ajax_handlers_isolated():
+            target = º("<div></div>")
+            handler = lambda event: event
+            self.assertIs(target.ajaxStart(handler), target)
+            class_handler = lambda event: event
+            self.assertIs(º.ajaxStart(class_handler), class_handler)
+            self.assertEqual(
+                º._ajax_event_handlers["ajaxStart"], [handler, class_handler]
+            )
 
     def test_ajaxStop(self):
-        pass
+        with self._ajax_handlers_isolated():
+            target = º("<div></div>")
+            handler = lambda event: event
+            self.assertIs(target.ajaxStop(handler), target)
+            self.assertEqual(º._ajax_event_handlers["ajaxStop"], [handler])
 
     def test_ajaxSuccess(self):
-        pass
+        with self._ajax_handlers_isolated():
+            target = º("<div></div>")
+            handler = lambda event: event
+            self.assertIs(target.ajaxSuccess(handler), target)
+            self.assertEqual(º._ajax_event_handlers["ajaxSuccess"], [handler])
 
     def test_andSelf(self):
         pass
@@ -278,6 +456,30 @@ class TestCase(unittest.TestCase):
         assert things.get(-1).textContent == "b"
         assert things.get(99) is None
 
+        with self._ajax_handlers_isolated():
+            with _DQueryRequestsMock() as server:
+                success = []
+                data = º.get(
+                    server.url("/echo"),
+                    {"q": "hello"},
+                    "json",
+                    lambda payload: success.append(payload["query"]["q"]),
+                )
+                self.assertEqual(data["query"], {"q": "hello"})
+                self.assertEqual(success, ["hello"])
+
+                callback_shape = []
+                data = º.get(
+                    server.url("/echo"),
+                    {"q": "callback"},
+                    lambda payload, status: callback_shape.append(
+                        (payload["query"]["q"], status)
+                    ),
+                    "json",
+                )
+                self.assertEqual(data["query"], {"q": "callback"})
+                self.assertEqual(callback_shape, [("callback", "success")])
+
     def test_has(self):
         things = º('<div><span class="hit">x</span></div><div><b>y</b></div>')
         assert str(things.has(".hit")) == '<div><span class="hit">x</span></div>'
@@ -368,7 +570,16 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_load(self):
-        pass
+        with self._ajax_handlers_isolated():
+            with _DQueryRequestsMock() as server:
+                target = º("<div></div>")
+                complete = []
+                target.load(
+                    server.url("/html"),
+                    lambda response, status: complete.append((response, status)),
+                )
+                self.assertEqual(str(target), "<div><strong>loaded</strong></div>")
+                self.assertEqual(complete, [("<strong>loaded</strong>", "success")])
 
     def test_map(self):
         pass
@@ -885,6 +1096,30 @@ class TestCase(unittest.TestCase):
         assert º.htmlPrefilter("<div></div>") == "<div></div>"
         assert º.param({"a": 1, "b": ["x", "y"]}) == "a=1&b=x&b=y"
         assert º.param([{"name": "q", "value": "hello world"}]) == "q=hello%20world"
+
+        with self._ajax_handlers_isolated():
+            with _DQueryRequestsMock() as server:
+                º.ajaxSetup({"headers": {"X-Test": "yes"}})
+                º.ajaxPrefilter(lambda settings: settings["data"].update({"pf": "1"}))
+
+                json_seen = []
+                payload = º.getJSON(
+                    server.url("/echo"),
+                    {"q": "json"},
+                    lambda data: json_seen.append(data["query"]),
+                )
+                self.assertEqual(payload["query"], {"q": "json", "pf": "1"})
+                self.assertEqual(json_seen, [{"q": "json", "pf": "1"}])
+
+                posted = º.post(server.url("/echo"), {"name": "Ada"}, dataType="json")
+                self.assertEqual(
+                    posted,
+                    {
+                        "method": "POST",
+                        "path": "/echo",
+                        "form": {"name": "Ada", "pf": "1"},
+                    },
+                )
 
         # º.param()
         # º.parseHTML()
