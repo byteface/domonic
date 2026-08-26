@@ -1,0 +1,43 @@
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>domonic speculation rules</title><script type="speculationrules">{
+  "prefetch": [
+    {
+      "source": "list",
+      "urls": [
+        "/docs/",
+        "/examples/"
+      ],
+      "eagerness": "moderate"
+    }
+  ],
+  "prerender": [
+    {
+      "source": "document",
+      "where": {
+        "href_matches": "/checkout/*"
+      },
+      "eagerness": "conservative"
+    }
+  ]
+}</script><script src="/campaign.js" attributionsrc="https://example.com/register-source"></script><style>
+                body {
+                    font-family: system-ui, sans-serif;
+                    margin: 2rem;
+                    line-height: 1.5;
+                    color: #17202a;
+                }
+                main {
+                    max-width: 44rem;
+                }
+                nav {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: .75rem;
+                    margin-top: 1.5rem;
+                }
+                a {
+                    border: 1px solid #9aa8b8;
+                    color: #17202a;
+                    padding: .6rem .75rem;
+                    text-decoration: none;
+                }
+                </style></head><body><main><h1 elementtiming="hero-heading">Modern navigation hints</h1><p>This page renders a speculation rules block plus attribution-capable assets with domonic.</p><nav><a href="/docs/">Docs</a><a href="/examples/">Examples</a><a href="/checkout/demo" attributionsrc>Campaign link</a></nav></main></body></html>

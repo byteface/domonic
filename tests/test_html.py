@@ -175,6 +175,7 @@ class TestHTML(unittest.TestCase):
             "abbr",
             "alpha",
             "anchor",
+            "attributionsrc",
             "autocorrect",
             "blocking",
             "browsingtopics",
@@ -186,6 +187,7 @@ class TestHTML(unittest.TestCase):
             "credentialless",
             "decoding",
             "disablepictureinpicture",
+            "elementtiming",
             "exportparts",
             "fetchpriority",
             "formenctype",
@@ -315,6 +317,41 @@ class TestHTML(unittest.TestCase):
                 )
             ),
             '<input capture="user" list="values" max="10" minlength="2" min="1" popovertarget="picker" popovertargetaction="show"/>',
+        )
+        self.assertEqual(
+            str(
+                img(
+                    _src="hero.jpg",
+                    _alt="Hero",
+                    _elementtiming="hero-image",
+                    _fetchpriority="high",
+                )
+            ),
+            '<img src="hero.jpg" alt="Hero" elementtiming="hero-image" fetchpriority="high"/>',
+        )
+        self.assertEqual(
+            str(a("Ad", _href="/buy", _attributionsrc="")),
+            '<a href="/buy" attributionsrc>Ad</a>',
+        )
+        self.assertEqual(
+            str(
+                script(
+                    _src="/ad.js",
+                    _attributionsrc="https://a.example/register https://b.example/register",
+                )
+            ),
+            '<script src="/ad.js" attributionsrc="https://a.example/register https://b.example/register"></script>',
+        )
+        self.assertEqual(
+            str(
+                speculationrules(
+                    {
+                        "prefetch": [{"urls": ["/next"]}],
+                        "prerender": [{"urls": ["/checkout"]}],
+                    }
+                )
+            ),
+            '<script type="speculationrules">{"prefetch":[{"urls":["/next"]}],"prerender":[{"urls":["/checkout"]}]}</script>',
         )
 
     def test_create_element(self):

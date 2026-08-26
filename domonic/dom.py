@@ -856,6 +856,7 @@ class Node(EventTarget):
                 "default",  # Added
                 "allowfullscreen",  # Added
                 "playsinline",  # Added
+                "attributionsrc",  # Attribution Reporting API
                 "toolautosubmit",  # WebMCP declarative forms
                 "value",  # Added
                 "defer",  # Added

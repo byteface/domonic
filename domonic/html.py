@@ -8,6 +8,7 @@ Generate HTML using python.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from domonic.dom import Document  # HTMLOptionsCollection,
@@ -196,6 +197,7 @@ html_attributes = [
     "align",
     "alt",
     "async",
+    "attributionsrc",
     "autocomplete",
     "autofocus",
     "autoplay",
@@ -435,6 +437,7 @@ html_attributes = [
     "credentialless",
     "decoding",
     "disablepictureinpicture",
+    "elementtiming",
     "exportparts",
     "fetchpriority",
     "imagesizes",
@@ -494,6 +497,30 @@ def render(inp: Node, outp: str = "", to: str | None = None) -> str:
         with open(outp, "w+") as f:
             f.write(str(inp))
     return str(inp)
+
+
+def speculationrules(rules: Any, *, indent: int | None = None, **kwargs: Any) -> HTMLScriptElement:
+    """
+    Create a <script type="speculationrules"> block from JSON rules.
+
+    Args:
+        rules: A JSON-serializable rules object, or a pre-rendered JSON string.
+        indent: Optional JSON indentation for readable output.
+        **kwargs: Extra script attributes.
+
+    Returns:
+        HTMLScriptElement: A script element containing speculation rules JSON.
+    """
+    if isinstance(rules, str):
+        payload = rules
+    else:
+        dump_kwargs: dict[str, Any] = {"indent": indent}
+        if indent is None:
+            dump_kwargs["separators"] = (",", ":")
+        payload = json.dumps(rules, **dump_kwargs)
+
+    kwargs["_type"] = "speculationrules"
+    return script(payload, **kwargs)
 
 
 class TemplateError(IndexError):
