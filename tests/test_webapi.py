@@ -45,6 +45,13 @@ from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.geo import Geolocation, GeolocationCoordinates, GeolocationPosition
 from domonic.webapi.mediacapabilities import MediaCapabilities
+from domonic.webapi.mediadevices import (
+    InputDeviceInfo,
+    MediaDeviceInfo,
+    MediaDevices,
+    MediaStream,
+    MediaStreamTrack,
+)
 from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.netinfo import NetworkInformation
@@ -1100,7 +1107,72 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(BrowserWindow().navigator.mediaSession, MediaSession)
 
     def test_mediastream(self):
-        pass
+        devices = MediaDevices()
+        listed = devices.enumerateDevices()
+        self.assertEqual(listed.state, "fulfilled")
+        self.assertTrue(any(device.kind == "audioinput" for device in listed.data))
+        self.assertEqual(
+            MediaDeviceInfo("id", "videoinput", "Camera").toJSON()["label"],
+            "Camera",
+        )
+        self.assertEqual(
+            InputDeviceInfo(capabilities={"width": 1280}).getCapabilities()["width"],
+            1280,
+        )
+
+        changes = []
+        devices.addEventListener(
+            "devicechange", lambda event: changes.append(event.type)
+        )
+        custom = devices.addDevice(
+            MediaDeviceInfo("virtual-cam", "videoinput", "Virtual camera")
+        )
+        self.assertIs(devices.removeDevice(custom.deviceId), custom)
+        self.assertEqual(changes, ["devicechange", "devicechange"])
+
+        stream = devices.getUserMedia(
+            {"audio": {"echoCancellation": True}, "video": {"width": 1280}}
+        ).data
+        self.assertIsInstance(stream, MediaStream)
+        self.assertTrue(stream.active)
+        self.assertEqual(len(stream.getAudioTracks()), 1)
+        self.assertEqual(len(stream.getVideoTracks()), 1)
+
+        video_track = stream.getVideoTracks()[0]
+        self.assertIsInstance(video_track, MediaStreamTrack)
+        self.assertEqual(video_track.getConstraints(), {"width": 1280})
+        self.assertIs(stream.getTrackById(video_track.id), video_track)
+
+        track_events = []
+        stream.addEventListener(
+            "removetrack", lambda event: track_events.append(event.track)
+        )
+        stream.removeTrack(video_track)
+        self.assertEqual(track_events, [video_track])
+
+        clone = stream.clone()
+        self.assertIsInstance(clone, MediaStream)
+        self.assertNotEqual(clone.id, stream.id)
+        self.assertNotEqual(clone.getTracks()[0].id, stream.getTracks()[0].id)
+
+        ended = []
+        audio_track = stream.getAudioTracks()[0]
+        audio_track.addEventListener("ended", lambda event: ended.append(event.type))
+        audio_track.stop()
+        self.assertEqual(audio_track.readyState, "ended")
+        self.assertEqual(ended, ["ended"])
+        self.assertFalse(stream.active)
+
+        display = devices.getDisplayMedia().data
+        self.assertEqual(
+            display.getVideoTracks()[0].getSettings()["displaySurface"],
+            "monitor",
+        )
+        self.assertEqual(
+            devices.getUserMedia({"audio": False, "video": False}).state,
+            "rejected",
+        )
+        self.assertIsInstance(BrowserWindow().navigator.mediaDevices, MediaDevices)
 
     def test_messaging(self):
         channel = MessageChannel()

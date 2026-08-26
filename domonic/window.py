@@ -33,6 +33,7 @@ from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
 from domonic.webapi.mediacapabilities import MediaCapabilities
+from domonic.webapi.mediadevices import MediaDevices
 from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.permissions import Permissions
@@ -275,7 +276,7 @@ class Navigator:
         self.locks = None
         self.mediaCapabilities: MediaCapabilities = MediaCapabilities()
         self.mediaSession: MediaSession = MediaSession()
-        self.mediaDevices = None
+        self.mediaDevices: MediaDevices = MediaDevices()
         self.presentation = None
         self.permissions: Permissions = Permissions()
         self.serial = None
