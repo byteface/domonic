@@ -6003,9 +6003,12 @@ class Document(Element):
 
     @property
     def cookie(self) -> str:
-        return "; ".join(
-            f"{name}={value}" for name, value in self._cookie_store.items()
-        )
+        pairs = []
+        for name, value in self._cookie_store.items():
+            if isinstance(value, dict):
+                value = value.get("value", "")
+            pairs.append(f"{name}={value}")
+        return "; ".join(pairs)
 
     @cookie.setter
     def cookie(self, value: str) -> None:

@@ -19,6 +19,7 @@ from domonic.javascript import *
 from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
+from domonic.webapi.cookiestore import CookieChangeEvent, CookieListItem, CookieStore
 from domonic.webapi.credentials import (
     Credential,
     CredentialsContainer,
@@ -483,7 +484,43 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(win.navigator.clipboard, Clipboard)
 
     def test_cookiestore(self):
-        pass
+        store = CookieStore()
+        changes = []
+        store.addEventListener(
+            "change",
+            lambda event: changes.append((event.changed, event.deleted)),
+        )
+
+        self.assertEqual(store.set("theme", "dark").state, "fulfilled")
+        cookie = store.get("theme").data
+        self.assertIsInstance(cookie, CookieListItem)
+        self.assertEqual(cookie.name, "theme")
+        self.assertEqual(cookie.value, "dark")
+        self.assertEqual(cookie.path, "/")
+        self.assertIsInstance(changes[-1][0][0], CookieListItem)
+
+        store.set({"name": "session", "value": "abc", "secure": True})
+        self.assertEqual(
+            [cookie.name for cookie in store.getAll().data],
+            ["theme", "session"],
+        )
+        self.assertTrue(store.get({"name": "session"}).data.secure)
+
+        self.assertEqual(store.delete("theme").state, "fulfilled")
+        self.assertIsNone(store.get("theme").data)
+        self.assertEqual(changes[-1][1][0].name, "theme")
+        self.assertIsInstance(CookieChangeEvent("change"), CookieChangeEvent)
+
+        win = BrowserWindow()
+        win.document.cookie = "token=xyz; path=/"
+        self.assertEqual(win.cookieStore.get("token").data.value, "xyz")
+        win.cookieStore.set("mode", "test")
+        self.assertIn("mode=test", win.document.cookie)
+
+        replacement = Document()
+        win.document = replacement
+        win.cookieStore.set("fresh", "yes")
+        self.assertIn("fresh=yes", replacement.cookie)
 
     def test_credentialmanagement(self):
         credentials = CredentialsContainer()

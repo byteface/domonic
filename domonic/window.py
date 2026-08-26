@@ -26,9 +26,10 @@ from domonic.events import (CloseEvent, Event, EventTarget, FocusEvent,
 from domonic.javascript import Promise
 from domonic.javascript import Window as JavaScriptWindow
 from domonic.javascript import performance
-from domonic.webapi.console import Console
-from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.clipboard import Clipboard
+from domonic.webapi.console import Console
+from domonic.webapi.cookiestore import CookieStore
+from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
@@ -407,6 +408,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._location: Location = Location(url or "https://eventual.technology")
         self._document.URL = self._location.href
         self._console: Console = Console()
+        self.cookieStore: CookieStore = CookieStore(self._document._cookie_store)
         self.crypto: Crypto = Crypto()
         self.scheduler: Scheduler = Scheduler()
         self._history: History = History(self)
@@ -446,6 +448,8 @@ class Window(JavaScriptWindow, EventTarget):
         self._document = doc
         self._document.defaultView = self
         self._document.URL = self._location.href
+        if hasattr(self, "cookieStore"):
+            self.cookieStore = CookieStore(self._document._cookie_store)
 
         if referrer is not None:
             self._document.referrer = referrer
