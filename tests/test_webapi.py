@@ -64,6 +64,11 @@ from domonic.webapi.scheduler import (
     TaskSignal,
     scheduler,
 )
+from domonic.webapi.serviceworker import (
+    ServiceWorker,
+    ServiceWorkerContainer,
+    ServiceWorkerRegistration,
+)
 from domonic.webapi.streams import (
     CompressionStream,
     DecompressionStream,
@@ -1401,6 +1406,54 @@ onmessage = handle
         worker.terminate()
         self.assertTrue(worker.join(2))
         self.assertTrue(worker.terminated)
+
+    def test_serviceworker(self):
+        container = ServiceWorkerContainer("https://example.com/app/")
+        changes = []
+        container.addEventListener(
+            "controllerchange", lambda event: changes.append(event.type)
+        )
+
+        registered = container.register("sw.py", {"scope": "/app/"})
+        self.assertEqual(registered.state, "fulfilled")
+        registration = registered.data
+        self.assertIsInstance(registration, ServiceWorkerRegistration)
+        self.assertIsInstance(registration.active, ServiceWorker)
+        self.assertEqual(registration.scope, "/app/")
+        self.assertEqual(
+            registration.active.scriptURL,
+            "https://example.com/app/sw.py",
+        )
+        self.assertEqual(changes, ["controllerchange"])
+        self.assertIs(container.controller, registration.active)
+
+        messages = []
+        registration.active.addEventListener(
+            "message", lambda event: messages.append(event.data)
+        )
+        container.postMessage({"hello": "worker"})
+        self.assertEqual(messages, [{"hello": "worker"}])
+
+        updates = []
+        registration.addEventListener(
+            "updatefound", lambda event: updates.append(event.type)
+        )
+        self.assertIs(registration.update().data, registration)
+        self.assertEqual(updates, ["updatefound"])
+        self.assertIsNone(registration.installing)
+        self.assertEqual(registration.waiting.state, ServiceWorker.INSTALLED)
+
+        self.assertIs(container.ready.data, registration)
+        self.assertIs(container.getRegistration("/app/page").data, registration)
+        self.assertEqual(container.getRegistrations().data, [registration])
+
+        self.assertTrue(registration.unregister().data)
+        self.assertIsNone(container.controller)
+        self.assertEqual(container.getRegistrations().data, [])
+        self.assertIsInstance(
+            BrowserWindow().navigator.serviceWorker,
+            ServiceWorkerContainer,
+        )
 
     def test_networkinfo(self):
         info = NetworkInformation({"effectiveType": "3g", "downlink": 1.5})

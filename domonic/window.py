@@ -38,6 +38,7 @@ from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.permissions import Permissions
 from domonic.webapi.scheduler import Scheduler
+from domonic.webapi.serviceworker import ServiceWorkerContainer
 from domonic.webapi.webstorage import Storage
 
 
@@ -280,7 +281,7 @@ class Navigator:
         self.presentation = None
         self.permissions: Permissions = Permissions()
         self.serial = None
-        self.serviceWorker = None
+        self.serviceWorker: ServiceWorkerContainer = ServiceWorkerContainer()
         self.storage = None
         self.vendor = None
         self.webdriver = None
