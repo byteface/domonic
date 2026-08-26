@@ -28,6 +28,7 @@ from domonic.javascript import Window as JavaScriptWindow
 from domonic.javascript import performance
 from domonic.webapi.console import Console
 from domonic.webapi.credentials import CredentialsContainer
+from domonic.webapi.clipboard import Clipboard
 from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
@@ -262,6 +263,7 @@ class Navigator:
     appName = "domonic"
 
     def __init__(self, *args, **kwargs):
+        self.clipboard: Clipboard = Clipboard()
         self.connection: NetworkInformation = NetworkInformation()
         self.credentials: CredentialsContainer = CredentialsContainer()
         self.geolocation: Geolocation = Geolocation()

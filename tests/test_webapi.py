@@ -16,6 +16,7 @@ from domonic.dom import *
 from domonic.events import AbortController
 from domonic.html import *
 from domonic.javascript import *
+from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
 from domonic.webapi.encoding import (
@@ -54,12 +55,14 @@ from domonic.webapi.streams import (
 )
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
+from domonic.webapi.webstorage import Storage
 from domonic.webapi.webworkers import (
     DedicatedWorkerGlobalScope,
     Worker as WebWorker,
     get_current_worker_scope,
 )
 from domonic.webapi.xhr import FormData, XMLHttpRequest
+from domonic.window import Window as BrowserWindow
 
 # from domonic.decorators import silence
 
@@ -421,7 +424,40 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_clipboard(self):
-        pass
+        clipboard = Clipboard()
+
+        with patch("domonic.webapi.clipboard.pyperclip", None):
+            self.assertEqual(clipboard.writeText("hello"), "hello")
+            self.assertEqual(clipboard.readText(), "hello")
+
+            self.assertEqual(clipboard.writeHTML("<b>hi</b>"), "<b>hi</b>")
+            self.assertEqual(clipboard.readHTML(), "<b>hi</b>")
+
+            image = b"\x89PNG"
+            self.assertEqual(clipboard.writeImage(image), image)
+            self.assertEqual(clipboard.readImage(), image)
+
+            self.assertEqual(clipboard.writeBuffer(bytearray(b"abc")), b"abc")
+            self.assertEqual(clipboard.readBuffer(), b"abc")
+
+            item = ClipboardItem(
+                {"text/plain": "plain", "application/json": '{"ok": true}'}
+            )
+            self.assertEqual(item.types, ["text/plain", "application/json"])
+            self.assertEqual(item.getType("application/json"), '{"ok": true}')
+            self.assertTrue(ClipboardItem.supports("text/html"))
+
+            clipboard.write([item])
+            [read_item] = clipboard.read()
+            self.assertIsInstance(read_item, ClipboardItem)
+            self.assertEqual(read_item.getType("text/plain"), "plain")
+            self.assertEqual(
+                clipboard.readData("application/json"),
+                '{"ok": true}',
+            )
+
+        win = BrowserWindow()
+        self.assertIsInstance(win.navigator.clipboard, Clipboard)
 
     def test_cookiestore(self):
         pass
@@ -585,7 +621,35 @@ class TestCase(unittest.TestCase):
         self.assertEqual(data_response.text(), "hello data")
 
     def test_filesysmte(self):
-        pass
+        storage = Storage()
+        storage.setItem("theme", "dark")
+        storage["count"] = 2
+        storage.flag = True
+
+        self.assertEqual(storage.getItem("theme"), "dark")
+        self.assertEqual(storage["count"], "2")
+        self.assertEqual(storage.flag, "True")
+        self.assertEqual(storage.length, 3)
+        self.assertEqual(storage.key(0), "theme")
+        self.assertIsNone(storage.key(99))
+        self.assertIn("count", storage)
+        self.assertEqual(storage.toJSON()["flag"], "True")
+
+        storage.removeItem("count")
+        self.assertIsNone(storage.getItem("count"))
+        storage.clear()
+        self.assertEqual(storage.length, 0)
+
+        with tempfile.NamedTemporaryFile("w", delete=False) as handle:
+            path = handle.name
+        try:
+            persisted = Storage(path)
+            persisted.setItem("token", "abc")
+            self.assertEqual(Storage(path).getItem("token"), "abc")
+            persisted.clear()
+            self.assertEqual(Storage(path).length, 0)
+        finally:
+            os.unlink(path)
 
     def test_fetch(self):
         headers = Headers("Content-Type: text/plain\r\nX-Test: one")
