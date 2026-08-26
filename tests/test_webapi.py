@@ -19,6 +19,12 @@ from domonic.javascript import *
 from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
+from domonic.webapi.credentials import (
+    Credential,
+    CredentialsContainer,
+    FederatedCredential,
+    PasswordCredential,
+)
 from domonic.webapi.encoding import (
     TextDecoder,
     TextDecoderStream,
@@ -38,6 +44,7 @@ from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
+from domonic.webapi.permissions import Permissions, PermissionStatus
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.scheduler import (
     Scheduler,
@@ -463,7 +470,39 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_credentialmanagement(self):
-        pass
+        credentials = CredentialsContainer()
+        created = credentials.create(
+            {"password": {"id": "ada", "name": "Ada", "password": "lovelace"}}
+        )
+        self.assertEqual(created.state, "fulfilled")
+        self.assertIsInstance(created.data, PasswordCredential)
+        self.assertEqual(created.data.type, "password")
+
+        stored = credentials.store(created.data)
+        self.assertIs(stored.data, created.data)
+
+        fetched = credentials.get({"password": True, "id": "ada"})
+        self.assertIs(fetched.data, created.data)
+
+        federated = credentials.create(
+            {"federated": {"id": "grace", "provider": "https://id.example"}}
+        ).data
+        self.assertIsInstance(federated, FederatedCredential)
+        credentials.store(federated)
+        self.assertIs(
+            credentials.get({"federated": True, "id": "grace"}).data,
+            federated,
+        )
+
+        self.assertIsInstance(Credential("guest"), Credential)
+        credentials.preventSilentAccess()
+        self.assertIsNone(credentials.get({"password": True}).data)
+        self.assertIs(
+            credentials.get({"password": True, "mediation": "required"}).data,
+            created.data,
+        )
+        with self.assertRaises(TypeError):
+            credentials.store({"id": "not-a-credential"})
 
     def test_crypto(self):
         with patch(
@@ -1244,7 +1283,33 @@ onmessage = handle
         pass
 
     def test_permissions(self):
-        pass
+        permissions = Permissions()
+        status = permissions.query({"name": "geolocation"})
+        self.assertIsInstance(status, PermissionStatus)
+        self.assertEqual(status.state, "prompt")
+
+        changes = []
+        status.addEventListener(
+            "change", lambda event: changes.append(event.target.state)
+        )
+        status.state = "granted"
+        self.assertEqual(changes, ["granted"])
+
+        granted = permissions.request({"name": "clipboard-read"})
+        self.assertEqual(str(granted), "granted")
+        self.assertEqual(permissions.query("clipboard-read").state, "granted")
+
+        revoked = permissions.revoke({"name": "clipboard-read"})
+        self.assertEqual(revoked.state, "prompt")
+
+        requested = permissions.requestAll(
+            [{"name": "camera"}, {"name": "microphone"}]
+        )
+        self.assertEqual(requested["camera"].state, "granted")
+        self.assertEqual(permissions.revokeAll()["camera"].state, "prompt")
+
+        win = BrowserWindow()
+        self.assertIsInstance(win.navigator.permissions, Permissions)
 
     def test_serversentevents(self):
         # from domonic.webapi.sse import EventSource

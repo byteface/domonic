@@ -33,6 +33,7 @@ from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
 from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.permissions import Permissions
 from domonic.webapi.scheduler import Scheduler
 from domonic.webapi.webstorage import Storage
 
@@ -274,6 +275,7 @@ class Navigator:
         self.mediaSession = None
         self.mediaDevices = None
         self.presentation = None
+        self.permissions: Permissions = Permissions()
         self.serial = None
         self.serviceWorker = None
         self.storage = None
