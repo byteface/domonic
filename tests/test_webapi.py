@@ -37,6 +37,13 @@ from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.sanitizer import Sanitizer
+from domonic.webapi.streams import (
+    CompressionStream,
+    DecompressionStream,
+    ReadableStream,
+    TransformStream,
+    WritableStream,
+)
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
 from domonic.webapi.webworkers import (
@@ -281,6 +288,52 @@ class TestCase(unittest.TestCase):
         self.assertEqual(encoder_stream.write("ok"), b"ok")
         self.assertEqual(encoder_stream.read(), b"ok")
         self.assertEqual(repr(encoder_stream), "<TextEncoderStream encoding=utf-8>")
+
+    def test_streams_api(self):
+        source = ReadableStream(b"hello")
+        self.assertEqual(source.getReader(), b"hello")
+        self.assertEqual(source.read(2), b"he")
+        self.assertEqual(source.read(), b"llo")
+
+        writable = WritableStream()
+        source = ReadableStream(b"stored")
+        self.assertEqual(source.pipeTo(writable), b"stored")
+        self.assertEqual(writable.read(), b"stored")
+
+        upper = TransformStream(lambda chunk: chunk.upper())
+        self.assertEqual(ReadableStream(b"ok").pipeThrough(upper).read(), b"OK")
+
+        payload = b"domonic streams " * 32
+        for format in ("gzip", "deflate", "deflate-raw"):
+            with self.subTest(format=format):
+                compressed = CompressionStream(format).compress(payload)
+                self.assertEqual(
+                    DecompressionStream(format).decompress(compressed),
+                    payload,
+                )
+
+                compressor = CompressionStream(format)
+                compressor.write(payload[:18])
+                compressor.write(payload[18:])
+                compressor.close()
+
+                decompressor = DecompressionStream(format)
+                compressed_payload = compressor.read()
+                decompressor.write(compressed_payload[:7])
+                decompressor.write(compressed_payload[7:])
+                decompressor.close()
+                self.assertEqual(decompressor.read(), payload)
+
+        gzip_stream = ReadableStream("hello compression").pipeThrough(
+            CompressionStream("gzip")
+        )
+        self.assertEqual(
+            DecompressionStream("gzip").decompress(gzip_stream.read()),
+            b"hello compression",
+        )
+
+        with self.assertRaises(TypeError):
+            CompressionStream("brotli")
 
     def test_canvas(self):
         pass
