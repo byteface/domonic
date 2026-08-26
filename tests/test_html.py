@@ -353,6 +353,17 @@ class TestHTML(unittest.TestCase):
             ),
             '<script type="speculationrules">{"prefetch":[{"urls":["/next"]}],"prerender":[{"urls":["/checkout"]}]}</script>',
         )
+        self.assertEqual(
+            str(
+                importmap(
+                    {
+                        "imports": {"app/": "/static/app/"},
+                        "scopes": {"/admin/": {"app/": "/static/admin/"}},
+                    }
+                )
+            ),
+            '<script type="importmap">{"imports":{"app/":"/static/app/"},"scopes":{"/admin/":{"app/":"/static/admin/"}}}</script>',
+        )
 
     def test_create_element(self):
         assert (

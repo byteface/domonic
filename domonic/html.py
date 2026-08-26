@@ -499,7 +499,41 @@ def render(inp: Node, outp: str = "", to: str | None = None) -> str:
     return str(inp)
 
 
-def speculationrules(rules: Any, *, indent: int | None = None, **kwargs: Any) -> HTMLScriptElement:
+def _json_script(
+    type_value: str, payload: Any, *, indent: int | None = None, **kwargs: Any
+) -> HTMLScriptElement:
+    if isinstance(payload, str):
+        content = payload
+    else:
+        dump_kwargs: dict[str, Any] = {"indent": indent}
+        if indent is None:
+            dump_kwargs["separators"] = (",", ":")
+        content = json.dumps(payload, **dump_kwargs)
+
+    kwargs["_type"] = type_value
+    return script(content, **kwargs)
+
+
+def importmap(
+    mapping: Any, *, indent: int | None = None, **kwargs: Any
+) -> HTMLScriptElement:
+    """
+    Create a <script type="importmap"> block from JSON import map data.
+
+    Args:
+        mapping: A JSON-serializable import map object, or a pre-rendered JSON string.
+        indent: Optional JSON indentation for readable output.
+        **kwargs: Extra script attributes.
+
+    Returns:
+        HTMLScriptElement: A script element containing import map JSON.
+    """
+    return _json_script("importmap", mapping, indent=indent, **kwargs)
+
+
+def speculationrules(
+    rules: Any, *, indent: int | None = None, **kwargs: Any
+) -> HTMLScriptElement:
     """
     Create a <script type="speculationrules"> block from JSON rules.
 
@@ -511,16 +545,7 @@ def speculationrules(rules: Any, *, indent: int | None = None, **kwargs: Any) ->
     Returns:
         HTMLScriptElement: A script element containing speculation rules JSON.
     """
-    if isinstance(rules, str):
-        payload = rules
-    else:
-        dump_kwargs: dict[str, Any] = {"indent": indent}
-        if indent is None:
-            dump_kwargs["separators"] = (",", ":")
-        payload = json.dumps(rules, **dump_kwargs)
-
-    kwargs["_type"] = "speculationrules"
-    return script(payload, **kwargs)
+    return _json_script("speculationrules", rules, indent=indent, **kwargs)
 
 
 class TemplateError(IndexError):

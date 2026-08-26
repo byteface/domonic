@@ -39,6 +39,15 @@ def build_page():
             meta(_charset="utf-8"),
             meta(_name="viewport", _content="width=device-width, initial-scale=1"),
             title("domonic speculation rules"),
+            importmap(
+                {
+                    "imports": {
+                        "app/": "/static/app/",
+                        "lit": "https://cdn.jsdelivr.net/npm/lit/+esm",
+                    }
+                },
+                indent=2,
+            ),
             speculationrules(rules, indent=2),
             script(
                 _src="/campaign.js",
@@ -81,6 +90,7 @@ def build_page():
                     a("Examples", _href="/examples/"),
                     a("Campaign link", _href="/checkout/demo", _attributionsrc=""),
                 ),
+                script("import { boot } from 'app/boot.js'; boot();", _type="module"),
             )
         ),
     )
