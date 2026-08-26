@@ -43,7 +43,11 @@ from domonic.webapi.fetch import (
 from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
+from domonic.webapi.geo import Geolocation, GeolocationCoordinates, GeolocationPosition
+from domonic.webapi.mediacapabilities import MediaCapabilities
+from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
+from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.permissions import Permissions, PermissionStatus
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.scheduler import (
@@ -966,7 +970,26 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_geolocation(self):
-        pass
+        geo = Geolocation(GeolocationCoordinates(latitude=51.5, longitude=-0.12))
+        positions = []
+        geo.getCurrentPosition(lambda position: positions.append(position))
+        self.assertIsInstance(positions[0], GeolocationPosition)
+        self.assertEqual(positions[0].coords.latitude, 51.5)
+
+        watch_id = geo.watchPosition(lambda position: positions.append(position))
+        updated = geo.setPosition({"latitude": 40.7, "longitude": -74.0})
+        self.assertEqual(updated.coords.longitude, -74.0)
+        self.assertEqual(positions[-1].coords.latitude, 40.7)
+
+        geo.clearWatch(watch_id)
+        geo.setPosition({"latitude": 1, "longitude": 2})
+        self.assertEqual(positions[-1].coords.latitude, 40.7)
+
+        win = BrowserWindow()
+        self.assertIsInstance(win.navigator.geolocation, Geolocation)
+
+        with self.assertRaises(TypeError):
+            geo.getCurrentPosition(None)
 
     def test_history(self):
         from domonic.window import Window
@@ -1037,10 +1060,44 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_mediacapabilities(self):
-        pass
+        capabilities = MediaCapabilities()
+        result = capabilities.decodingInfo(
+            {"video": {"contentType": 'video/webm; codecs="vp9"'}}
+        )
+        self.assertEqual(
+            result,
+            {
+                "supported": True,
+                "smooth": True,
+                "powerEfficient": True,
+                "keySystemAccess": None,
+            },
+        )
+        self.assertFalse(capabilities.encodingInfo({})["supported"])
+        self.assertIsInstance(
+            BrowserWindow().navigator.mediaCapabilities,
+            MediaCapabilities,
+        )
 
     def test_mediasession(self):
-        pass
+        session = MediaSession()
+        seen = []
+        session.metadata = {"title": "Track"}
+        session.playbackState = "playing"
+        session.setActionHandler("play", lambda details: seen.append(details) or "ok")
+        session.setPositionState({"duration": 120, "position": 10})
+
+        self.assertEqual(session.dispatchAction("play", {"fastSeek": False}), "ok")
+        self.assertEqual(seen, [{"fastSeek": False}])
+        self.assertEqual(session.positionState["duration"], 120)
+        self.assertEqual(session.metadata["title"], "Track")
+        self.assertEqual(session.playbackState, "playing")
+
+        session.setActionHandler("play", None)
+        self.assertIsNone(session.dispatchAction("play"))
+        with self.assertRaises(TypeError):
+            session.setActionHandler("pause", "not-callable")
+        self.assertIsInstance(BrowserWindow().navigator.mediaSession, MediaSession)
 
     def test_mediastream(self):
         pass
@@ -1274,7 +1331,20 @@ onmessage = handle
         self.assertTrue(worker.terminated)
 
     def test_networkinfo(self):
-        pass
+        info = NetworkInformation({"effectiveType": "3g", "downlink": 1.5})
+        changes = []
+        info.addEventListener("change", lambda event: changes.append(event.target))
+        returned = info.update(effectiveType="4g", rtt=50)
+
+        self.assertIs(returned, info)
+        self.assertEqual(changes, [info])
+        self.assertEqual(info.effectiveType, "4g")
+        self.assertEqual(info.rtt, 50)
+        self.assertIn("effectiveType: 4g", str(info))
+        self.assertIsInstance(BrowserWindow().navigator.connection, NetworkInformation)
+
+        with self.assertRaises(AttributeError):
+            info.update(nope=True)
 
     def test_notifications(self):
         pass

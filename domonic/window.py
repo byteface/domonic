@@ -32,6 +32,8 @@ from domonic.webapi.clipboard import Clipboard
 from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
+from domonic.webapi.mediacapabilities import MediaCapabilities
+from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.permissions import Permissions
 from domonic.webapi.scheduler import Scheduler
@@ -271,8 +273,8 @@ class Navigator:
         self.hid = None
         self.keyboard = None
         self.locks = None
-        self.mediaCapabilities = None
-        self.mediaSession = None
+        self.mediaCapabilities: MediaCapabilities = MediaCapabilities()
+        self.mediaSession: MediaSession = MediaSession()
         self.mediaDevices = None
         self.presentation = None
         self.permissions: Permissions = Permissions()
