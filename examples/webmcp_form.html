@@ -1,0 +1,19 @@
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>domonic WebMCP form</title><style>
+                body {
+                    font-family: system-ui, sans-serif;
+                    margin: 2rem;
+                    line-height: 1.5;
+                    color: #202124;
+                }
+                form {
+                    display: grid;
+                    gap: .75rem;
+                    max-width: 32rem;
+                }
+                input,
+                select,
+                button {
+                    font: inherit;
+                    padding: .55rem .65rem;
+                }
+                </style></head><body><main><h1>Support request</h1><form action="/support" method="post" toolname="supportRequestTool" tooldescription="Submit a request for customer support." toolautosubmit><label for="firstName">First name</label><input type="text" name="firstName" id="firstName"/><label for="lastName">Last name</label><input type="text" name="lastName" id="lastName"/><label for="requestType">Request type</label><select name="requestType" id="requestType" required toolparamdescription="Determines what team this request is routed to."><option value="Customer happiness team">Return my purchase.</option><option value="Distribution team">Check where my package is.</option><option value="Website support team">Get help on the website.</option></select><button type="submit">Submit</button></form></main></body></html>

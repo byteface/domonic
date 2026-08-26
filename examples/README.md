@@ -85,6 +85,7 @@ python atom_feed.py
 python mathml.py
 python odf_content.py
 python rss_feed.py
+python webmcp_form.py
 ```
 
 Nested examples:

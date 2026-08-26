@@ -67,6 +67,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Event.REMOVETRACK, "removetrack")
         self.assertEqual(Event.SCROLLEND, "scrollend")
         self.assertEqual(Event.SLOTCHANGE, "slotchange")
+        self.assertEqual(Event.TOOLACTIVATED, "toolactivated")
+        self.assertEqual(Event.TOOLCANCEL, "toolcancel")
+        self.assertEqual(Event.TOOLCHANGE, "toolchange")
         self.assertEqual(Event.WEBGLCONTEXTLOST, "webglcontextlost")
         self.assertIn("onbeforematch", GlobalEventHandler._handler_names)
         self.assertIn("onbeforetoggle", GlobalEventHandler._handler_names)
@@ -78,6 +81,9 @@ class TestCase(unittest.TestCase):
         self.assertIn("onreadystatechange", GlobalEventHandler._handler_names)
         self.assertIn("onscrollend", GlobalEventHandler._handler_names)
         self.assertIn("onslotchange", GlobalEventHandler._handler_names)
+        self.assertIn("ontoolactivated", GlobalEventHandler._handler_names)
+        self.assertIn("ontoolcancel", GlobalEventHandler._handler_names)
+        self.assertIn("ontoolchange", WindowEventHandler._handler_names)
         self.assertIn("ontoggle", GlobalEventHandler._handler_names)
         self.assertIn("onvisibilitychange", WindowEventHandler._handler_names)
 
@@ -468,8 +474,21 @@ class TestCase(unittest.TestCase):
 
     def test_submit_event_submitter(self):
         submitter = object()
-        event = SubmitEvent("submit", {"submitter": submitter})
+        event = SubmitEvent("submit", {"submitter": submitter, "agentInvoked": True})
         self.assertIs(event.submitter, submitter)
+        self.assertTrue(event.agentInvoked)
+        self.assertEqual(event.respondWith({"ok": True}), {"ok": True})
+        self.assertEqual(event._responded_with, {"ok": True})
+
+    def test_tool_event(self):
+        event = ToolEvent(ToolEvent.TOOLACTIVATED, {"toolName": "search_site"})
+        self.assertEqual(event.toolName, "search_site")
+
+        target = EventTarget()
+        seen = []
+        target.addEventListener("toolactivated", lambda evt: seen.append(evt.toolName))
+        target.dispatchEvent(event)
+        self.assertEqual(seen, ["search_site"])
 
     def test_mouse_event_client_coordinates_and_modifiers(self):
         related = object()

@@ -519,6 +519,9 @@ class Event:
     STORAGE: str = "storage"  #:
     SUBMIT: str = "submit"  #:
     SUSPEND: str = "suspend"  #:
+    TOOLACTIVATED: str = "toolactivated"  #:
+    TOOLCANCEL: str = "toolcancel"  #:
+    TOOLCHANGE: str = "toolchange"  #:
     TOGGLE: str = "toggle"  #:
     TRANSITIONCANCEL: str = "transitioncancel"  #:
     TRANSITIONEND: str = "transitionend"  #:
@@ -1247,7 +1250,7 @@ class CloseEvent(Event):
 
 
 class SubmitEvent(Event):
-    """Form submission event with the submitting control."""
+    """Form submission event with submitting-control and WebMCP state."""
 
     SUBMIT: str = "submit"  #:
 
@@ -1256,6 +1259,28 @@ class SubmitEvent(Event):
     ) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.submitter = options.get("submitter", None)
+        self.agentInvoked = bool(options.get("agentInvoked", False))
+        self._responded_with = options.get("response", None)
+        super().__init__(_type, options, *args, **kwargs)
+
+    def respondWith(self, response: Any) -> Any:
+        """Store and return a response supplied for an agent-invoked submit."""
+        self._responded_with = response
+        return response
+
+
+class ToolEvent(Event):
+    """WebMCP tool lifecycle event carrying a tool name."""
+
+    TOOLACTIVATED: str = Event.TOOLACTIVATED  #:
+    TOOLCANCEL: str = Event.TOOLCANCEL  #:
+    TOOLCHANGE: str = Event.TOOLCHANGE  #:
+
+    def __init__(
+        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
+    ) -> None:
+        options = options or kwargs
+        self.toolName = options.get("toolName", "")
         super().__init__(_type, options, *args, **kwargs)
 
 
@@ -2038,6 +2063,9 @@ class GlobalEventHandler:
         "onsubmit",
         "onsuspend",
         "ontimeupdate",
+        "ontoolactivated",
+        "ontoolcancel",
+        "ontoolchange",
         "ontoggle",
         "ontouchcancel",
         "ontouchstart",
@@ -2134,6 +2162,9 @@ class WindowEventHandler:
         "onslotchange",
         "onstorage",
         "onsubmit",
+        "ontoolactivated",
+        "ontoolcancel",
+        "ontoolchange",
         "ontoggle",
         "onunhandledrejection",
         "onunload",

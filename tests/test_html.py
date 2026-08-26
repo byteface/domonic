@@ -222,6 +222,9 @@ class TestHTML(unittest.TestCase):
             "onscrollend",
             "onsecuritypolicyviolation",
             "onslotchange",
+            "ontoolactivated",
+            "ontoolcancel",
+            "ontoolchange",
             "onunhandledrejection",
             "ping",
             "popover",
@@ -234,6 +237,10 @@ class TestHTML(unittest.TestCase):
             "shadowrootmode",
             "shadowrootserializable",
             "shadowrootslotassignment",
+            "toolautosubmit",
+            "tooldescription",
+            "toolname",
+            "toolparamdescription",
             "writingsuggestions",
         ):
             self.assertIn(attr, html_attributes)
@@ -275,6 +282,25 @@ class TestHTML(unittest.TestCase):
         self.assertEqual(
             str(form(action="/signup", accept_charset="UTF-8", rel="external")),
             '<form action="/signup" accept-charset="UTF-8" rel="external"></form>',
+        )
+        self.assertEqual(
+            str(
+                form(
+                    input(
+                        _type="search",
+                        _name="query",
+                        _toolparamdescription="Search text to submit.",
+                    ),
+                    _toolname="search_site",
+                    _tooldescription="Search site content.",
+                    _toolautosubmit="",
+                )
+            ),
+            (
+                '<form toolname="search_site" tooldescription="Search site content." '
+                'toolautosubmit><input type="search" name="query" '
+                'toolparamdescription="Search text to submit."/></form>'
+            ),
         )
         self.assertEqual(
             str(
