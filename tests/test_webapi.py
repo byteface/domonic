@@ -1884,17 +1884,34 @@ onmessage = handle
         assert result.snapshotLength == 2
         # print(result.nodes)
 
-        try:
-            import requests
-        except ModuleNotFoundError:
-            self.skipTest("requests is not installed")
-
-        # TODO - dont eventual.technology to parse against
-        try:
-            r = requests.get("http://eventual.technology")
-        except requests.exceptions.RequestException as exc:
-            self.skipTest(f"external network is unavailable: {exc}")
-        page = domonic.parseString(r.text)
+        page = html(
+            body(
+                h1(
+                    "We are",
+                    span("Eventual Technology", _class="font-weight-bold d-block"),
+                    _class="text-uppercase hero-text text-black",
+                ),
+                div(
+                    p(
+                        "Welcome to the information age",
+                        _class="headings-font-family text-uppercase lead",
+                    )
+                ),
+                div(
+                    ul(
+                        li(a("Home", _href="/")),
+                        li(
+                            a(
+                                "Twitter",
+                                _href="https://twitter.com/eventualtech",
+                                _class="social-link social-link-instagram",
+                            )
+                        ),
+                    ),
+                    _id="contact",
+                ),
+            )
+        )
 
         # Selectors
 
@@ -1915,23 +1932,15 @@ onmessage = handle
 
         expression = evaluator.createExpression("//ul/li")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
+        self.assertEqual([node.tagName for node in result.nodes], ["li", "li"])
 
         expression = evaluator.createExpression("//ul/li/a")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
-
-        expression = evaluator.createExpression("//ul/li/a")
-        result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
-
-        expression = evaluator.createExpression("//ul/li/a")
-        result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
+        self.assertEqual([node.textContent for node in result.nodes], ["Home", "Twitter"])
 
         expression = evaluator.createExpression("//div/*")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
+        self.assertEqual([node.tagName for node in result.nodes], ["p", "ul"])
 
         # root fails?
         # expression = evaluator.createExpression("/")
@@ -1945,13 +1954,13 @@ onmessage = handle
         # NOTE - attributes reqiures underscores
         expression = evaluator.createExpression('//*[@_id="contact"]')
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
+        self.assertEqual(result.nodes[0].getAttribute("id"), "contact")
 
         expression = evaluator.createExpression(
             '//*[@_class="social-link social-link-instagram"]'
         )  # NOTE - requires all classes to match
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes))
+        self.assertEqual(result.nodes[0].textContent, "Twitter")
 
         # expression = evaluator.createExpression("//input[@type='submit']")
         # result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -1959,21 +1968,19 @@ onmessage = handle
 
         expression = evaluator.createExpression("//a[contains(@_href, 'twitter')]")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes[0]))
-        # wow. nice!
+        self.assertEqual(result.nodes[0].textContent, "Twitter")
 
         expression = evaluator.createExpression("//a[contains(@href, 'twitter')]")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print("NO UNDERSCORE", str(result.nodes[0]))
+        self.assertEqual(result.nodes[0].textContent, "Twitter")
 
-        expression = evaluator.createExpression('//*[last()][name()="a"]')
+        expression = evaluator.createExpression("//a[last()]")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes[0]))
-        # so cool this all works out of the box!
+        self.assertEqual(result.nodes[-1].textContent, "Twitter")
 
         expression = evaluator.createExpression("//span/text()")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes[0]))
+        self.assertEqual(str(result.nodes[0]), "Eventual Technology")
 
         somepage = html(
             head(), body(h1("some title"), p("some text"), div("some more text"))
@@ -1981,10 +1988,10 @@ onmessage = handle
 
         expression = evaluator.createExpression("//div/text()")
         result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        _debug_print(str(result.nodes[0]))
+        self.assertEqual(str(result.nodes[0]), "some more text")
 
         """
-        TODO - unit tests for the following so i know what works
+        XPath reference notes for future coverage ideas.
 
         Descendant selectors
         h1	//h1	?

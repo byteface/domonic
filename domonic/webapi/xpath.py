@@ -5,8 +5,8 @@ https://developer.mozilla.org/en-US/docs/Glossary/XPath
 
 uses elementpath lib.
 
-TODO - content strings must be TextNodes for it to work.
-    so will have to iterate and update them. i.e. Treewalker
+String children are upgraded to ``Text`` nodes before evaluation so text
+selectors work against normal domonic trees.
 
 """
 
@@ -37,9 +37,8 @@ class XPathException:
 
 class XPathExpression:
     def __init__(self, expr: str):  # , resolver):
-        # TODO - hack.
-        # need to allow non underscore accessors to get underscored.
-        # when that's fixed can remove this.
+        # domonic stores rendered attributes with leading underscores internally.
+        # Accept browser-style XPath attribute names and normalize them here.
         expr = expr.replace("[@", "[@_")
         expr = expr.replace("[@__", "[@_")
         expr = expr.replace("(@", "(@_")
@@ -52,7 +51,6 @@ class XPathExpression:
         self.expr = expr
         self.selector = elementpath.Selector(expr) if elementpath is not None else None
 
-    # TODO - DRY - make some utils . just stole this from Treewalker.
     @staticmethod
     def _upgrade_dom(node: Any) -> Any:
         def upgrade(el):
