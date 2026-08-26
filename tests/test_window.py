@@ -10,6 +10,7 @@ import unittest
 from domonic.events import CloseEvent
 from domonic.html import body, div
 from domonic.webapi.crypto import Crypto
+from domonic.webapi.scheduler import Scheduler
 from domonic.window import IdleDeadline, MediaQueryList, Window
 
 from unittest.mock import patch
@@ -24,6 +25,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(win.innerHeight, win.screen.height)
         self.assertFalse(win.closed)
         self.assertIsInstance(win.crypto, Crypto)
+        self.assertIsInstance(win.scheduler, Scheduler)
 
     def test_window_focus_close_and_name(self):
         win = Window()

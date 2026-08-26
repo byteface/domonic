@@ -18,6 +18,7 @@ from typing import Any, Callable
 from urllib.parse import unquote, urlparse
 
 from domonic.events import ErrorEvent, EventTarget, MessageEvent
+from domonic.webapi.scheduler import Scheduler, TaskController, TaskSignal
 
 
 _STOP = object()
@@ -128,6 +129,7 @@ class WorkerGlobalScope(EventTarget):
         self.onmessage = None
         self.onmessageerror = None
         self.onerror = None
+        self.scheduler = Scheduler()
         self._worker = worker
         self._closed = False
         self._base_path = base_path
@@ -147,6 +149,10 @@ class WorkerGlobalScope(EventTarget):
             "addEventListener": self.addEventListener,
             "removeEventListener": self.removeEventListener,
             "dispatchEvent": self.dispatchEvent,
+            "scheduler": self.scheduler,
+            "Scheduler": Scheduler,
+            "TaskController": TaskController,
+            "TaskSignal": TaskSignal,
         }
 
     def _sync_handlers_from_globals(self) -> None:

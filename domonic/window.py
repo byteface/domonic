@@ -32,6 +32,7 @@ from domonic.webapi.crypto import Crypto
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
 from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.scheduler import Scheduler
 from domonic.webapi.webstorage import Storage
 
 
@@ -399,6 +400,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._document.URL = self._location.href
         self._console: Console = Console()
         self.crypto: Crypto = Crypto()
+        self.scheduler: Scheduler = Scheduler()
         self._history: History = History(self)
         self._closed: bool = False
         self._focused: bool = True

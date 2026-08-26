@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 import threading
+import time
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -37,6 +38,13 @@ from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.sanitizer import Sanitizer
+from domonic.webapi.scheduler import (
+    Scheduler,
+    TaskController,
+    TaskPriorityChangeEvent,
+    TaskSignal,
+    scheduler,
+)
 from domonic.webapi.streams import (
     CompressionStream,
     DecompressionStream,
@@ -334,6 +342,80 @@ class TestCase(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             CompressionStream("brotli")
+
+    def test_scheduler_api(self):
+        immediate = scheduler.postTask(lambda: "ready")
+        self.assertEqual(immediate.state, "fulfilled")
+        self.assertEqual(immediate.data, "ready")
+        self.assertEqual(scheduler.yield_().state, "fulfilled")
+        self.assertEqual(getattr(scheduler, "yield")().state, "fulfilled")
+
+        queued = Scheduler(auto_run=False)
+        order = []
+        visible = queued.postTask(
+            lambda: order.append("visible") or "visible"
+        )
+        background = queued.postTask(
+            lambda: order.append("background") or "background",
+            {"priority": "background"},
+        )
+        blocking = queued.postTask(
+            lambda: order.append("blocking") or "blocking",
+            {"priority": "user-blocking"},
+        )
+
+        self.assertEqual(visible.state, "pending")
+        self.assertEqual(queued.run(), ["blocking", "visible", "background"])
+        self.assertEqual(order, ["blocking", "visible", "background"])
+        self.assertEqual(blocking.data, "blocking")
+        self.assertEqual(background.data, "background")
+
+        controller = TaskController({"priority": "user-blocking"})
+        self.assertIsInstance(controller.signal, TaskSignal)
+        changes = []
+        controller.signal.addEventListener(
+            "prioritychange",
+            lambda event: changes.append(
+                (event.previousPriority, event.target.priority, type(event))
+            ),
+        )
+
+        queued = Scheduler(auto_run=False)
+        mutable = queued.postTask(
+            lambda: order.append("mutable") or "mutable",
+            {"signal": controller.signal},
+        )
+        controller.setPriority("background")
+        self.assertEqual(
+            changes,
+            [("user-blocking", "background", TaskPriorityChangeEvent)],
+        )
+        queued.run()
+        self.assertEqual(mutable.data, "mutable")
+
+        controller = TaskController()
+        aborted = Scheduler(auto_run=False)
+        promise = aborted.postTask(lambda: "never", {"signal": controller.signal})
+        controller.abort("stop")
+        aborted.run()
+        self.assertEqual(promise.state, "rejected")
+        self.assertEqual(promise.data, "stop")
+
+        with self.assertRaises(TypeError):
+            scheduler.postTask(None)
+        with self.assertRaises(TypeError):
+            TaskController({"priority": "urgent"})
+
+        delayed = Scheduler()
+        done = threading.Event()
+        promise = delayed.postTask(
+            lambda: done.set() or "later",
+            {"delay": 1},
+        )
+        self.assertTrue(done.wait(1))
+        time.sleep(0.01)
+        self.assertEqual(promise.state, "fulfilled")
+        self.assertEqual(promise.data, "later")
 
     def test_canvas(self):
         pass
@@ -943,6 +1025,7 @@ class TestCase(unittest.TestCase):
         def worker_main(scope):
             self.assertIsInstance(scope, DedicatedWorkerGlobalScope)
             self.assertIs(get_current_worker_scope(), scope)
+            self.assertIsInstance(scope.scheduler, Scheduler)
 
             def handle(event):
                 data = event.data
