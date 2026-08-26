@@ -25,6 +25,7 @@ class TestCase(unittest.TestCase):
         sometag = div("asdfasdf", _id="test")
         sometag.style.alignContent = None
         assert sometag.style.alignContent == "none"
+        assert div().style.getPropertyValue("display") == ""
 
         sometag.style.backgroundColor = "black"
         sometag.style.fontSize = "12px"
@@ -33,6 +34,8 @@ class TestCase(unittest.TestCase):
         # huh.value = "wtf"
         # sometag.setAttributeNode(huh)
         assert sometag.style.fontSize == "12px"
+        sometag.style.display = "none"
+        assert sometag.style.getPropertyValue("display") == "none"
         assert "font-size:12px;" in str(sometag)
 
         # dom.select('#test' ).dostuff() # TODO -

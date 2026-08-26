@@ -5817,14 +5817,17 @@ class CSSStyleDeclaration(Style):
                 return priority
         return ""
 
-    def getPropertyValue(self, propertyName: str) -> str:  # TODO - test
+    def getPropertyValue(self, propertyName: str) -> str:
         """Returns the value of the property with the specified name."""
         target = self._to_kebab(propertyName)
         for name, value, _ in reversed(self._property_entries()):
             if name == target:
                 return value
-        value = getattr(self, self._to_camel(propertyName), "")
-        return "" if value is None or value == "none" else value
+        attribute_name = self._to_camel(propertyName)
+        if attribute_name not in getattr(self, "_declared_properties", set()):
+            return ""
+        value = getattr(self, attribute_name, "")
+        return "" if value is None else value
 
     def item(self, index: int) -> str:
         """Returns a CSS property name by its index, or the empty string if the index is out-of-bounds.

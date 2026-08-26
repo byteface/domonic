@@ -113,6 +113,16 @@ class TestCase(unittest.TestCase):
             º.ajaxSettings = settings
             º._ajax_active = active
 
+    def _assert_simple_event(self, method_name, event_name=None):
+        event_name = event_name or method_name
+        page = html(body(div("x", _id="target")))
+        º(page)
+        calls = []
+        target = º("#target")
+        getattr(target, method_name)(lambda event: calls.append(event.type))
+        getattr(target, method_name)()
+        self.assertEqual(calls, [event_name])
+
     # domonic.dQuery.º
     def test_hello(self):
         d = html(head(body(li(_class="things"), div(_id="test"))))
@@ -128,7 +138,15 @@ class TestCase(unittest.TestCase):
         assert str(test) == "<p></p><h1></h1><div></div>"
 
     def test_addBack(self):
-        pass
+        things = º(
+            '<li class="keep">a</li><li>b</li><li class="keep">c</li>'
+        )
+        selected = things.eq(1)
+
+        self.assertEqual(
+            str(selected.addBack(".keep")),
+            '<li class="keep">a</li><li class="keep">c</li>',
+        )
 
     def test_addClass(self):
         a = º('<div id="test2"></div><div id="test3"></div>')
@@ -255,7 +273,10 @@ class TestCase(unittest.TestCase):
             self.assertEqual(º._ajax_event_handlers["ajaxSuccess"], [handler])
 
     def test_andSelf(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        selected = things.eq(1).andSelf()
+
+        self.assertEqual(str(selected), "<li>b</li><li>a</li>")
 
     def test_animate(self):
         pass
@@ -293,13 +314,17 @@ class TestCase(unittest.TestCase):
         assert str(page) == '<html><body><p>before</p><div id="target">middle</div><p>after</p></body></html>'
 
     def test_bind(self):
-        pass
+        page = html(body(button("go", _id="btn")))
+        º(page)
+        called = []
+        º("#btn").bind("click", lambda event: called.append(event.type)).click()
+        self.assertEqual(called, ["click"])
 
     def test_blur(self):
-        pass
+        self._assert_simple_event("blur")
 
     def test_change(self):
-        pass
+        self._assert_simple_event("change")
 
     def test_children(self):
         page = html(body(div(span("one"), b("two"), _id="test")))
@@ -308,7 +333,11 @@ class TestCase(unittest.TestCase):
         assert str(children) == "<span>one</span><b>two</b>"
 
     def test_clearQueue(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.delay(10)
+        self.assertEqual(len(el.queue()), 1)
+        self.assertIs(el.clearQueue(), el)
+        self.assertEqual(el.queue(), [])
 
     def test_click(self):
         page = html(body(button("go", _id="btn")))
@@ -319,7 +348,12 @@ class TestCase(unittest.TestCase):
         assert called == ["click"]
 
     def test_clone(self):
-        pass
+        original = º('<div id="test"><span>x</span></div>')
+        cloned = original.clone()
+
+        cloned.find("span").text("y")
+        self.assertEqual(str(original), '<div id="test"><span>x</span></div>')
+        self.assertEqual(str(cloned), "<span>y</span>")
 
     def test_closest(self):
         page = html(body(div(span("x", _id="child"), _class="wrapper")))
@@ -332,13 +366,20 @@ class TestCase(unittest.TestCase):
         assert len(º("#test").contents().toArray()) == 2
 
     def test_context(self):
-        pass
+        page = html(body(div(_id="target")))
+        º(page)
+        self.assertIs(º("#target").context, page)
 
     def test_contextmenu(self):
-        pass
+        self._assert_simple_event("contextmenu")
 
     def test_css(self):
-        pass
+        el = º('<div id="test"></div>')
+        self.assertIs(el.css("width", "20px"), el)
+        self.assertEqual(el.css("width"), "20px")
+        el.css({"height": "10px", "display": "block"})
+        self.assertEqual(el.css("height"), "10px")
+        self.assertEqual(el.css("display"), "block")
 
     def test_data(self):
         el = º('<div id="test" data-enabled="true"></div>')
@@ -349,7 +390,7 @@ class TestCase(unittest.TestCase):
         assert el.data() == {"answer": 42, "enabled": True, "one": 1, "two": 2}
 
     def test_dblclick(self):
-        pass
+        self._assert_simple_event("dblclick")
 
     def test_delay(self):
         pass
@@ -367,7 +408,15 @@ class TestCase(unittest.TestCase):
         assert calls == ["ran"]
 
     def test_detach(self):
-        pass
+        page = html(body(div("keep", _id="keep"), div("drop", _id="drop")))
+        º(page)
+        detached = º("#drop").detach()
+
+        self.assertEqual(
+            str(page), '<html><body><div id="keep">keep</div></body></html>'
+        )
+        self.assertEqual(str(detached), '<div id="drop">drop</div>')
+        self.assertIsNone(detached[0].parentNode)
 
     def test_die(self):
         pass
@@ -385,7 +434,8 @@ class TestCase(unittest.TestCase):
         assert str(º("#target")) == '<div id="target"></div>'
 
     def test_end(self):
-        pass
+        things = º("<li>a</li><li>b</li><li>c</li>")
+        self.assertEqual(str(things.eq(1).end()), "<li>a</li><li>b</li><li>c</li>")
 
     def test_eq(self):
         things = º("<li>a</li><li>b</li><li>c</li>")
@@ -394,10 +444,11 @@ class TestCase(unittest.TestCase):
         assert things.eq(1).end().length == 3
 
     def test_error(self):
-        pass
+        self._assert_simple_event("error")
 
     def test_even(self):
-        pass
+        things = º("<li>a</li><li>b</li><li>c</li><li>d</li>")
+        self.assertEqual(str(things.even()), "<li>a</li><li>c</li>")
 
     def test_fadeIn(self):
         pass
@@ -424,7 +475,8 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_first(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        self.assertEqual(str(things.first()), "<li>a</li>")
 
     def test_focus(self):
         page = html(body(input(_id="field")))
@@ -496,7 +548,9 @@ class TestCase(unittest.TestCase):
         assert el.height() == 25
 
     def test_hide(self):
-        pass
+        el = º('<div id="test"></div>')
+        self.assertIs(el.hide(), el)
+        self.assertEqual(el.css("display"), "none")
 
     def test_hover(self):
         page = html(body(div("x", _id="test")))
@@ -513,19 +567,38 @@ class TestCase(unittest.TestCase):
         assert el.html() == "<span>x</span>"
 
     def test_index(self):
-        pass
+        page = html(body(div("zero"), div("one", _id="target"), div("two")))
+        º(page)
+        self.assertEqual(º("#target").index(), 1)
+        self.assertEqual(º("<span></span>").index(), 0)
 
     def test_innerHeight(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.css({"height": "20px", "paddingTop": "2px", "paddingBottom": "3px"})
+        self.assertEqual(el.innerHeight(), 25)
 
     def test_innerWidth(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.css({"width": "20px", "paddingLeft": "2px", "paddingRight": "3px"})
+        self.assertEqual(el.innerWidth(), 25)
 
     def test_insertAfter(self):
-        pass
+        page = html(body(div("one", _id="one"), div("three", _id="three")))
+        º(page)
+        º("<span>two</span>").insertAfter("#one")
+        self.assertEqual(
+            str(page),
+            '<html><body><div id="one">one</div><span>two</span><div id="three">three</div></body></html>',
+        )
 
     def test_insertBefore(self):
-        pass
+        page = html(body(div("one", _id="one"), div("three", _id="three")))
+        º(page)
+        º("<span>two</span>").insertBefore("#three")
+        self.assertEqual(
+            str(page),
+            '<html><body><div id="one">one</div><span>two</span><div id="three">three</div></body></html>',
+        )
 
     # def test_is(self):
     # pass
@@ -551,20 +624,20 @@ class TestCase(unittest.TestCase):
         assert calls == [("input", "x"), ("change", None), ("keydown", "Enter")]
 
     def test_keydown(self):
-        pass
+        self._assert_simple_event("keydown")
 
     def test_keypress(self):
-        pass
+        self._assert_simple_event("keypress")
 
     def test_keyup(self):
-        pass
+        self._assert_simple_event("keyup")
 
     def test_last(self):
         things = º('<li></li><li></li><li></li><li></li><li data-tag="me"></li>')
         assert str(things.last()) == '<li data-tag="me"></li>'
 
     def test_length(self):
-        pass
+        self.assertEqual(º("<li>a</li><li>b</li>").length, 2)
 
     def test_live(self):
         pass
@@ -582,28 +655,32 @@ class TestCase(unittest.TestCase):
                 self.assertEqual(complete, [("<strong>loaded</strong>", "success")])
 
     def test_map(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        mapped = things.map(lambda index, el: span(f"{index}:{el.textContent}"))
+
+        self.assertEqual(str(mapped), "<span>0:a</span><span>1:b</span>")
+        self.assertEqual(str(mapped.end()), "<li>a</li><li>b</li>")
 
     def test_mousedown(self):
-        pass
+        self._assert_simple_event("mousedown")
 
     def test_mouseenter(self):
-        pass
+        self._assert_simple_event("mouseenter")
 
     def test_mouseleave(self):
-        pass
+        self._assert_simple_event("mouseleave")
 
     def test_mousemove(self):
-        pass
+        self._assert_simple_event("mousemove")
 
     def test_mouseout(self):
-        pass
+        self._assert_simple_event("mouseout")
 
     def test_mouseover(self):
-        pass
+        self._assert_simple_event("mouseover")
 
     def test_mouseup(self):
-        pass
+        self._assert_simple_event("mouseup")
 
     def test_next(self):
         page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
@@ -625,7 +702,8 @@ class TestCase(unittest.TestCase):
     # pass
 
     def test_odd(self):
-        pass
+        things = º("<li>a</li><li>b</li><li>c</li><li>d</li>")
+        self.assertEqual(str(things.odd()), "<li>b</li><li>d</li>")
 
     def off(self, event):
         pass
@@ -697,10 +775,30 @@ class TestCase(unittest.TestCase):
         assert called == ["click"]
 
     def test_outerHeight(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.css(
+            {
+                "height": "20px",
+                "paddingTop": "2px",
+                "paddingBottom": "3px",
+                "borderTopWidth": "4px",
+                "borderBottomWidth": "5px",
+            }
+        )
+        self.assertEqual(el.outerHeight(), 34)
 
     def test_outerWidth(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.css(
+            {
+                "width": "20px",
+                "paddingLeft": "2px",
+                "paddingRight": "3px",
+                "borderLeftWidth": "4px",
+                "borderRightWidth": "5px",
+            }
+        )
+        self.assertEqual(el.outerWidth(), 34)
 
     def test_parent(self):
         page = html(body(div(span("x", _id="child"), _id="parent")))
@@ -726,7 +824,12 @@ class TestCase(unittest.TestCase):
         pass
 
     def test_prependTo(self):
-        pass
+        page = html(body(div(span("tail"), _id="target")))
+        º(page)
+        º("<b>head</b>").prependTo("#target")
+        self.assertEqual(
+            str(º("#target")), '<div id="target"><b>head</b><span>tail</span></div>'
+        )
 
     def test_prev(self):
         page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
@@ -754,7 +857,11 @@ class TestCase(unittest.TestCase):
         assert el.val() == "new"
 
     def test_pushStack(self):
-        pass
+        things = º("<li>a</li><li>b</li>")
+        stacked = things.pushStack([span("x")])
+
+        self.assertEqual(str(stacked), "<span>x</span>")
+        self.assertEqual(str(stacked.end()), "<li>a</li><li>b</li>")
 
     def test_queue(self):
         el = º('<div id="test"></div>')
@@ -773,7 +880,9 @@ class TestCase(unittest.TestCase):
         assert str(page) == '<html><body><div id="keep">keep</div></body></html>'
 
     def test_removeAttr(self):
-        pass
+        el = º('<div id="test" role="button"></div>')
+        self.assertIs(el.removeAttr("role"), el)
+        self.assertIsNone(el.attr("role"))
 
     def test_removeClass(self):
         a = º('<div id="test2"></div>')
@@ -790,13 +899,27 @@ class TestCase(unittest.TestCase):
         assert el.data("answer") is None
 
     def test_removeProp(self):
-        pass
+        el = º('<input id="field" value="old"></input>')
+        el.prop("customFlag", True)
+        self.assertTrue(el.prop("customFlag"))
+        self.assertIs(el.removeProp("customFlag"), el)
+        self.assertIsNone(el.prop("customFlag"))
 
     def test_replaceAll(self):
-        pass
+        page = html(body(div("one", _class="target"), div("two", _class="target")))
+        º(page)
+        º("<span>new</span>").replaceAll(".target")
+        self.assertEqual(
+            str(page), "<html><body><span>new</span><span>new</span></body></html>"
+        )
 
     def test_replaceWith(self):
-        pass
+        page = html(body(div("old", _id="target")))
+        º(page)
+        removed = º("#target").replaceWith("<span>new</span>")
+
+        self.assertEqual(str(page), "<html><body><span>new</span></body></html>")
+        self.assertEqual(str(removed), '<div id="target">old</div>')
 
     def test_resize(self):
         page = html(body(div("x", _id="test")))
@@ -864,7 +987,11 @@ class TestCase(unittest.TestCase):
         assert º("form").serializeArray() == [{"name": "lname", "value": "smith"}]
 
     def test_show(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.hide()
+        self.assertEqual(el.css("display"), "none")
+        self.assertIs(el.show(), el)
+        self.assertEqual(el.css("display"), "")
 
     def test_siblings(self):
         page = html(body(div("one", _class="match"), div("two", _id="target"), div("three", _class="match")))
@@ -872,7 +999,7 @@ class TestCase(unittest.TestCase):
         assert str(º("#target").siblings(".match")) == '<div class="match">one</div><div class="match">three</div>'
 
     def test_size(self):
-        pass
+        self.assertEqual(º("<li>a</li><li>b</li>").size(), 2)
 
     def test_slice(self):
         things = º("<li>a</li><li>b</li><li>c</li>")
@@ -922,7 +1049,11 @@ class TestCase(unittest.TestCase):
         assert [el.textContent for el in things.toArray()] == ["a", "b"]
 
     def test_toggle(self):
-        pass
+        el = º('<div id="test"></div>')
+        el.toggle()
+        self.assertEqual(el.css("display"), "none")
+        el.toggle()
+        self.assertEqual(el.css("display"), "")
 
     def test_toggleClass(self):
         a = º('<div id="test2"></div>')
@@ -969,7 +1100,13 @@ class TestCase(unittest.TestCase):
         assert calls == ["unload"]
 
     def test_unwrap(self):
-        pass
+        page = html(body(div(span("a", _class="item"), span("b"), _id="wrapper")))
+        º(page)
+        º(".item").unwrap()
+        self.assertEqual(
+            str(page),
+            '<html><body><span class="item">a</span><span>b</span></body></html>',
+        )
 
     def test_val(self):
         el = º('<input id="field" value="old"></input>')
@@ -989,7 +1126,13 @@ class TestCase(unittest.TestCase):
         assert el.width() == 30
 
     def test_wrap(self):
-        pass
+        page = html(body(span("x", _id="target")))
+        º(page)
+        º("#target").wrap('<section class="wrap"><article></article></section>')
+        self.assertEqual(
+            str(page),
+            '<html><body><section class="wrap"><article><span id="target">x</span></article></section></body></html>',
+        )
 
     def test_wrapAll(self):
         page = html(body(span("a", _class="item"), span("b", _class="item")))
@@ -998,7 +1141,13 @@ class TestCase(unittest.TestCase):
         assert str(page) == '<html><body><div><span class="item">a</span><span class="item">b</span></div></body></html>'
 
     def test_wrapInner(self):
-        pass
+        page = html(body(div(span("x"), b("y"), _id="target")))
+        º(page)
+        º("#target").wrapInner("<section></section>")
+        self.assertEqual(
+            str(page),
+            '<html><body><div id="target"><section><span>x</span><b>y</b></section></div></body></html>',
+        )
 
     def test_staticmethods(self):
         d = html()
@@ -1029,9 +1178,14 @@ class TestCase(unittest.TestCase):
         # º.data()
         # º.Deferred()
         # º.dequeue()
-        # º.each()
-        # º.error()
-        # º.escapeSelector()
+        each_seen = []
+        º.each(["a", "b"], lambda value: each_seen.append(value.upper()))
+        self.assertEqual(each_seen, ["A", "B"])
+
+        with self.assertRaisesRegex(Exception, "boom"):
+            º.error("boom")
+
+        self.assertEqual(º.escapeSelector("a.b#c[d]"), "a\\.b\\#c\\[d\\]")
 
         obj1 = {"a": 1, "b": 2}
         obj2 = {"c": 1, "b": 5}
@@ -1045,8 +1199,8 @@ class TestCase(unittest.TestCase):
         # º.get()
         # º.getJSON()
         # º.getScript()
-        # º.globalEval()
-        # º.grep()
+        self.assertEqual(º.globalEval("1 + 2"), 3)
+        self.assertEqual(º.grep([1, 2, 3, 4], lambda value: value % 2 == 0), [2, 4])
         # º.hasData()
         # º.holdReady()
         # º.htmlPrefilter()
@@ -1133,9 +1287,9 @@ class TestCase(unittest.TestCase):
         # º.sub()
         self.assertEqual(º.trim("  some tst \n   TEST."), "some tst    TEST.")
         # º.type()
-        # º.unique()
-        # º.uniqueSort()
-        # º.when()
+        self.assertEqual(set(º.unique(["a", "a", "b"])), {"a", "b"})
+        self.assertEqual(º.uniqueSort([3, 1, 3, 2]), [1, 2, 3])
+        self.assertEqual(º.when().state(), "resolved")
 
 
 if __name__ == "__main__":
