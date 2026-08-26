@@ -92,6 +92,38 @@ parent and worker, and both sides support ``onmessage``, ``messageerror`` and
 	worker.terminate()
 
 
+Canvas and WebGL
+----------------
+
+``HTMLCanvasElement.getContext()`` supports inspectable ``2d``, ``webgl`` and
+``webgl2`` contexts. These contexts record drawing/setup commands so generated
+examples and tests can verify canvas output without a browser renderer.
+
+.. code-block :: python
+
+	from domonic.html import canvas
+
+	surface = canvas(width=320, height=180)
+	ctx = surface.getContext("2d")
+	ctx.fillRect(0, 0, 20, 20)
+	print(ctx.commands)
+
+
+CSS Font Loading
+----------------
+
+``FontFace`` and ``FontFaceSet`` model the browser font-loading surface and are
+available through ``document.fonts``.
+
+.. code-block :: python
+
+	from domonic.dom import Document
+	from domonic.webapi.cssfontloading import FontFace
+
+	doc = Document()
+	doc.fonts.add(FontFace("Demo", "url(/demo.woff2)")).load("16px Demo")
+
+
 File API
 ----------------
 
@@ -132,6 +164,28 @@ aliases.
 	target = div()
 	target.setHTML('<a href="javascript:evil()">link</a>')
 	assert str(target) == "<div><a>link</a></div>"
+
+
+Notifications and Gamepad
+-------------------------
+
+``Notification`` provides browser-style notification objects without OS side
+effects, while ``GamepadManager`` backs ``navigator.getGamepads()`` for tests and
+interactive examples.
+
+.. code-block :: python
+
+	from domonic.webapi.gamepad import Gamepad
+	from domonic.webapi.notifications import Notification
+	from domonic.window import Window
+
+	Notification.requestPermission()
+	notice = Notification("Done", {"body": "Build finished"})
+	notice.show()
+
+	win = Window()
+	win.navigator.connectGamepad(Gamepad("Pad"))
+	print(win.navigator.getGamepads())
 
 
 URL
@@ -209,6 +263,22 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.sanitizer
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.canvas
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.cssfontloading
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.gamepad
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.notifications
     :members:
     :noindex:
 

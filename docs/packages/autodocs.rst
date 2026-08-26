@@ -78,3 +78,15 @@
 
 .. automodule:: domonic.webapi.sanitizer
     :members:
+
+.. automodule:: domonic.webapi.canvas
+    :members:
+
+.. automodule:: domonic.webapi.cssfontloading
+    :members:
+
+.. automodule:: domonic.webapi.gamepad
+    :members:
+
+.. automodule:: domonic.webapi.notifications
+    :members:

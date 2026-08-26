@@ -20,12 +20,19 @@ from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi import *
 from domonic.webapi.console import Console, console
 from domonic.webapi.cookiestore import CookieChangeEvent, CookieListItem, CookieStore
+from domonic.webapi.canvas import (
+    CanvasRenderingContext2D,
+    ImageData,
+    WebGL2RenderingContext,
+    WebGLRenderingContext,
+)
 from domonic.webapi.credentials import (
     Credential,
     CredentialsContainer,
     FederatedCredential,
     PasswordCredential,
 )
+from domonic.webapi.cssfontloading import FontFace, FontFaceSet
 from domonic.webapi.encoding import (
     TextDecoder,
     TextDecoderStream,
@@ -44,6 +51,7 @@ from domonic.webapi.fetch import (
 from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.dragndrop import DataTransfer
+from domonic.webapi.gamepad import Gamepad, GamepadButton, GamepadManager
 from domonic.webapi.geo import Geolocation, GeolocationCoordinates, GeolocationPosition
 from domonic.webapi.mediacapabilities import MediaCapabilities
 from domonic.webapi.mediadevices import (
@@ -56,6 +64,7 @@ from domonic.webapi.mediadevices import (
 from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.notifications import Notification
 from domonic.webapi.permissions import Permissions, PermissionStatus
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.scheduler import (
@@ -445,7 +454,38 @@ class TestCase(unittest.TestCase):
         self.assertEqual(promise.data, "later")
 
     def test_canvas(self):
-        pass
+        surface = canvas(width=320, height=150)
+        ctx = surface.getContext("2d")
+
+        self.assertIsInstance(ctx, CanvasRenderingContext2D)
+        self.assertIs(surface.getContext("2d"), ctx)
+        self.assertEqual((ctx.width, ctx.height), (320, 150))
+
+        ctx.fillStyle = "#f00"
+        ctx.fillRect(0, 0, 10, 10)
+        ctx.beginPath()
+        ctx.moveTo(0, 0)
+        ctx.lineTo(10, 10)
+        ctx.stroke()
+        ctx.fillText("domonic", 5, 20)
+
+        self.assertEqual(ctx.commands[-1]["name"], "fillText")
+        self.assertGreater(ctx.measureText("domonic").width, 0)
+        self.assertIsInstance(ctx.createImageData(2, 1), ImageData)
+        self.assertEqual(len(ctx.getImageData(0, 0, 2, 2).data), 16)
+        self.assertIsNone(surface.getContext("webgl"))
+
+        blob = surface.toBlob()
+        self.assertIsInstance(blob, Blob)
+        self.assertEqual(blob.type, "image/png")
+        self.assertTrue(surface.toDataURL().startswith("data:image/png;base64,"))
+
+        captured = surface.captureStream(30)
+        self.assertEqual(captured.getVideoTracks()[0].label, "Canvas capture")
+
+        offscreen = surface.transferControlToOffscreen()
+        self.assertEqual((offscreen.width, offscreen.height), (320, 150))
+        self.assertIsInstance(offscreen.getContext("2d"), CanvasRenderingContext2D)
 
     def test_clipboard(self):
         clipboard = Clipboard()
@@ -630,7 +670,39 @@ class TestCase(unittest.TestCase):
         self.assertEqual(key.usages, ("sign", "verify"))
 
     def test_cssfontloading(self):
-        pass
+        face = FontFace(
+            "Domonic Sans",
+            'url("/fonts/domonic.woff2")',
+            {"weight": "700", "display": "swap"},
+        )
+        loaded = []
+        face.addEventListener("load", lambda event: loaded.append(event.target.status))
+
+        self.assertEqual(face.status, "unloaded")
+        self.assertEqual(face.load().state, "fulfilled")
+        self.assertEqual(face.status, "loaded")
+        self.assertEqual(loaded, ["loaded"])
+        self.assertIn("font-display: swap", face.toCSS())
+
+        fonts = FontFaceSet([face])
+        events = []
+        fonts.addEventListener(
+            "loadingdone", lambda event: events.append(event.fontfaces)
+        )
+
+        self.assertTrue(fonts.check('700 16px "Domonic Sans"'))
+        self.assertEqual(fonts.load("16px Domonic Sans").data, [face])
+        self.assertEqual(events, [[face]])
+        self.assertEqual(fonts.ready.data, fonts)
+
+        seen = []
+        fonts.forEach(lambda value, key, owner: seen.append((value, key, owner)))
+        self.assertEqual(seen, [(face, face, fonts)])
+        self.assertTrue(fonts.delete(face))
+        self.assertFalse(fonts.check("16px Domonic Sans"))
+
+        doc = Document()
+        self.assertIsInstance(doc.fonts, FontFaceSet)
 
     def test_dragndrop(self):
         transfer = DataTransfer()
@@ -1016,7 +1088,48 @@ class TestCase(unittest.TestCase):
         self.assertEqual(errored, ["boom"])
 
     def test_gamepad(self):
-        pass
+        button = GamepadButton(0.25, pressed=True, touched=True)
+        pad = Gamepad(
+            "Test Pad",
+            axes=[0, 1],
+            buttons=[button, {"value": 1, "pressed": True}],
+            mapping="standard",
+        )
+        manager = GamepadManager()
+        events = []
+        manager.addEventListener(
+            "gamepadconnected",
+            lambda event: events.append(("connect", event.gamepad.id)),
+        )
+        manager.addEventListener(
+            "gamepaddisconnected",
+            lambda event: events.append(("disconnect", event.gamepad.id)),
+        )
+
+        manager.connect(pad, index=1)
+        self.assertTrue(pad.connected)
+        self.assertEqual(manager.getGamepads(), [None, pad])
+
+        pad.update(axes=[-1, 1], buttons=[0.5])
+        self.assertEqual(pad.axes, [-1.0, 1.0])
+        self.assertEqual(pad.buttons[0].value, 0.5)
+        self.assertTrue(pad.vibrationActuator.pulse(1, 25).data)
+
+        manager.disconnect(1)
+        self.assertFalse(pad.connected)
+        self.assertEqual(
+            events, [("connect", "Test Pad"), ("disconnect", "Test Pad")]
+        )
+
+        win = BrowserWindow()
+        window_events = []
+        win.addEventListener(
+            "gamepadconnected",
+            lambda event: window_events.append(event.gamepad.id),
+        )
+        win.navigator.connectGamepad(Gamepad("Window Pad"))
+        self.assertEqual(window_events, ["Window Pad"])
+        self.assertEqual(win.navigator.getGamepads()[0].id, "Window Pad")
 
     def test_geolocation(self):
         geo = Geolocation(GeolocationCoordinates(latitude=51.5, longitude=-0.12))
@@ -1103,10 +1216,79 @@ class TestCase(unittest.TestCase):
         self.assertIn(("popstate", {"page": 2}), events)
 
     def test_gl(self):
-        pass
+        surface = canvas(width=64, height=64)
+        gl = surface.getContext("webgl", {"alpha": False})
+
+        self.assertIsInstance(gl, WebGLRenderingContext)
+        self.assertEqual(gl.getContextAttributes()["alpha"], False)
+        self.assertEqual(gl.getParameter(gl.VIEWPORT), (0, 0, 64, 64))
+
+        gl.viewport(0, 0, 32, 32)
+        gl.clearColor(0.1, 0.2, 0.3, 1)
+        gl.clear(gl.COLOR_BUFFER_BIT)
+
+        buffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+        gl.bufferData(gl.ARRAY_BUFFER, [0, 1, 2, 3], gl.STATIC_DRAW)
+        self.assertEqual(buffer.data, b"\x00\x01\x02\x03")
+
+        vertex = gl.createShader(gl.VERTEX_SHADER)
+        fragment = gl.createShader(gl.FRAGMENT_SHADER)
+        gl.shaderSource(vertex, "void main() {}")
+        gl.shaderSource(fragment, "void main() {}")
+        gl.compileShader(vertex)
+        gl.compileShader(fragment)
+        self.assertTrue(gl.getShaderParameter(vertex, gl.COMPILE_STATUS))
+
+        program = gl.createProgram()
+        gl.attachShader(program, vertex)
+        gl.attachShader(program, fragment)
+        gl.linkProgram(program)
+        self.assertTrue(gl.getProgramParameter(program, gl.LINK_STATUS))
+        gl.useProgram(program)
+        self.assertEqual(gl.commands[-1]["name"], "useProgram")
+        self.assertIsNone(surface.getContext("2d"))
+
+        gl2 = canvas().getContext("webgl2")
+        self.assertIsInstance(gl2, WebGL2RenderingContext)
+        self.assertIn("WebGL 2.0", gl2.getParameter(gl2.VERSION))
 
     def test_intersectobserver(self):
-        pass
+        root = div()
+        root.style.left = "0px"
+        root.style.top = "0px"
+        root.style.width = "100px"
+        root.style.height = "100px"
+
+        target = div()
+        target.style.left = "20px"
+        target.style.top = "20px"
+        target.style.width = "20px"
+        target.style.height = "20px"
+        root.appendChild(target)
+
+        entries = []
+        observer = IntersectionObserver(
+            lambda records, obs: entries.extend(records), {"root": root}
+        )
+        observer.observe(target)
+
+        self.assertTrue(entries[-1].isIntersecting)
+        self.assertEqual(entries[-1].intersectionRatio, 1.0)
+        self.assertEqual(observer.takeRecords(), [])
+
+        target.style.left = "200px"
+        target.getBoundingClientRect()
+        self.assertFalse(entries[-1].isIntersecting)
+        self.assertEqual(entries[-1].intersectionRatio, 0.0)
+
+        observer.unobserve(target)
+        target.style.left = "10px"
+        target.getBoundingClientRect()
+        self.assertFalse(entries[-1].isIntersecting)
+
+        with self.assertRaises(TypeError):
+            IntersectionObserver(None)
 
     def test_mediacapabilities(self):
         capabilities = MediaCapabilities()
@@ -1509,10 +1691,85 @@ onmessage = handle
             info.update(nope=True)
 
     def test_notifications(self):
-        pass
+        previous_permission = Notification.permission
+        try:
+            Notification.setPermission("default")
+            callback_permissions = []
+            granted = Notification.requestPermission(callback_permissions.append)
+
+            self.assertEqual(granted.data, "granted")
+            self.assertEqual(callback_permissions, ["granted"])
+
+            notice = Notification(
+                "Build finished",
+                {
+                    "body": "Tests passed",
+                    "tag": "ci",
+                    "data": {"sha": "abc"},
+                    "actions": [
+                        {"action": "open"},
+                        {"action": "dismiss"},
+                        {"action": "extra"},
+                    ],
+                },
+            )
+            events = []
+            notice.addEventListener("show", lambda event: events.append(event.type))
+            notice.addEventListener("click", lambda event: events.append(event.type))
+            notice.addEventListener("close", lambda event: events.append(event.type))
+
+            self.assertTrue(notice.show())
+            notice.click()
+            notice.close()
+
+            self.assertEqual(events, ["show", "click", "close"])
+            self.assertTrue(notice.closed)
+            self.assertEqual(len(notice.actions), Notification.maxActions)
+            self.assertEqual(notice.toJSON()["data"], {"sha": "abc"})
+            self.assertIs(BrowserWindow().Notification, Notification)
+
+            with self.assertRaises(ValueError):
+                Notification.setPermission("maybe")
+
+            Notification.setPermission("denied")
+            denied = Notification("Blocked")
+            errors = []
+            denied.addEventListener("error", lambda event: errors.append(event.type))
+            self.assertFalse(denied.show())
+            self.assertEqual(errors, ["error"])
+        finally:
+            Notification.setPermission(previous_permission)
 
     def test_performance(self):
-        pass
+        performance.clearMarks()
+        performance.clearMeasures()
+
+        entries = []
+        observer = PerformanceObserver(lambda records, obs: entries.extend(records))
+        observer.observe({"entryTypes": ["mark", "measure"]})
+
+        mark = performance.mark("webapi-start")
+        measure = performance.measure("webapi-total", "webapi-start")
+
+        self.assertEqual(mark.toJSON()["entryType"], "mark")
+        self.assertEqual(measure.entryType, "measure")
+        self.assertEqual(
+            [entry.name for entry in entries], ["webapi-start", "webapi-total"]
+        )
+        self.assertIn("mark", PerformanceObserver.supportedEntryTypes)
+        self.assertIs(BrowserWindow().performance, performance)
+
+        buffered = []
+        buffered_observer = PerformanceObserver(
+            lambda records, obs: buffered.extend(records)
+        )
+        buffered_observer.observe({"entryTypes": ["mark"], "buffered": True})
+        self.assertIn("webapi-start", [entry.name for entry in buffered])
+
+        with self.assertRaises(TypeError):
+            PerformanceObserver(None)
+        with self.assertRaises(TypeError):
+            PerformanceObserver(lambda records, obs: None).observe({})
 
     def test_permissions(self):
         permissions = Permissions()

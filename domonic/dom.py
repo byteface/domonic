@@ -5838,6 +5838,7 @@ class Document(Element):
         self._designMode = "off"
         self._currentScript = None
         self._cookie_store: dict[str, str] = {}
+        self._fonts = None
         self._lastModified = formatdate(time.time(), usegmt=True)
         self._referrer = ""
         self._timeline = None
@@ -5897,6 +5898,15 @@ class Document(Element):
         # def activeElement():
         """ Returns the currently focused element in the document"""
         # return
+
+    @property
+    def fonts(self):
+        """The document's CSS Font Loading API ``FontFaceSet``."""
+        if self._fonts is None:
+            from domonic.webapi.cssfontloading import FontFaceSet
+
+            self._fonts = FontFaceSet()
+        return self._fonts
 
     # def adoptNode(self, node):
     #     """ Adopts a node from another document """
@@ -8917,10 +8927,59 @@ class HTMLCanvasElement(HTMLElement):
             height (int, optional): The width of the coordinate space in CSS pixels. Defaults to 300.
         """
         super().__init__(*args, **kwargs)
+        self._context_type = None
+        self._context = None
         if width is not None:
             self.setAttribute("width", width)
         if height is not None:
             self.setAttribute("height", height)
+
+    def getContext(self, contextId: str, options: dict[str, Any] | None = None) -> Any:
+        """Return a 2D, WebGL, or WebGL2 context for the canvas."""
+        from domonic.webapi.canvas import get_canvas_context
+
+        return get_canvas_context(self, contextId, options)
+
+    def toDataURL(self, type: str = "image/png", quality: Any | None = None) -> str:
+        """Return a data URL describing the current canvas command state."""
+        from domonic.webapi.canvas import canvas_to_data_url
+
+        return canvas_to_data_url(self, type, quality)
+
+    def toBlob(
+        self,
+        callback: Callable[[Any], Any] | None = None,
+        type: str = "image/png",
+        quality: Any | None = None,
+    ):
+        """Create a ``Blob`` for the canvas data and optionally pass it to a callback."""
+        from domonic.webapi.canvas import canvas_to_blob
+
+        blob = canvas_to_blob(self, type)
+        if callback is not None:
+            callback(blob)
+            return None
+        return blob
+
+    def captureStream(self, frameRate: float | None = None):
+        """Return a simple video ``MediaStream`` for canvas capture examples."""
+        from domonic.webapi.mediadevices import MediaStream, MediaStreamTrack
+
+        constraints = {}
+        if frameRate is not None:
+            constraints["frameRate"] = frameRate
+        return MediaStream(
+            [MediaStreamTrack("video", "Canvas capture", constraints=constraints)]
+        )
+
+    def transferControlToOffscreen(self):
+        """Return an ``OffscreenCanvas`` with the same dimensions."""
+        from domonic.webapi.canvas import OffscreenCanvas
+
+        return OffscreenCanvas(
+            int(self.getAttribute("width") or 300),
+            int(self.getAttribute("height") or 150),
+        )
 
 
 class HTMLContentElement(HTMLElement):

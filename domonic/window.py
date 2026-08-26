@@ -31,12 +31,15 @@ from domonic.webapi.console import Console
 from domonic.webapi.cookiestore import CookieStore
 from domonic.webapi.credentials import CredentialsContainer
 from domonic.webapi.crypto import Crypto
+from domonic.webapi.cssfontloading import FontFaceSet
+from domonic.webapi.gamepad import Gamepad, GamepadManager
 from domonic.webapi.geo import Geolocation
 from domonic.webapi.history import History
 from domonic.webapi.mediacapabilities import MediaCapabilities
 from domonic.webapi.mediadevices import MediaDevices
 from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.netinfo import NetworkInformation
+from domonic.webapi.notifications import Notification
 from domonic.webapi.permissions import Permissions
 from domonic.webapi.scheduler import Scheduler
 from domonic.webapi.serviceworker import ServiceWorkerContainer
@@ -273,6 +276,7 @@ class Navigator:
         self.connection: NetworkInformation = NetworkInformation()
         self.credentials: CredentialsContainer = CredentialsContainer()
         self.geolocation: Geolocation = Geolocation()
+        self._gamepads: GamepadManager = GamepadManager()
         self.hid = None
         self.keyboard = None
         self.locks = None
@@ -290,6 +294,19 @@ class Navigator:
         self.buildID = None
         self.contacts = None
         self._screen = Screen()
+
+    @property
+    def gamepads(self) -> GamepadManager:
+        return self._gamepads
+
+    def getGamepads(self) -> list[Gamepad | None]:
+        return self._gamepads.getGamepads()
+
+    def connectGamepad(self, gamepad: Gamepad, index: int | None = None) -> Gamepad:
+        return self._gamepads.connect(gamepad, index)
+
+    def disconnectGamepad(self, gamepad: Gamepad | int) -> Gamepad | None:
+        return self._gamepads.disconnect(gamepad)
 
     @property
     def onLine(self) -> bool:
@@ -402,6 +419,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._localStorage: Storage = Storage()
         self._sessionStorage: Storage = Storage()
         self._navigator: Navigator = Navigator()
+        self._navigator.gamepads.eventTarget = self
         self._screen: Screen = self._navigator._screen
         self._document: Document = doc if doc is not None else document
         self._document.defaultView = self
@@ -410,6 +428,8 @@ class Window(JavaScriptWindow, EventTarget):
         self._console: Console = Console()
         self.cookieStore: CookieStore = CookieStore(self._document._cookie_store)
         self.crypto: Crypto = Crypto()
+        self.FontFaceSet = FontFaceSet
+        self.Notification = Notification
         self.scheduler: Scheduler = Scheduler()
         self._history: History = History(self)
         self._closed: bool = False
