@@ -170,6 +170,38 @@ def _clamp_js_index(index: int, length: int) -> int:
     return min(index, length)
 
 
+_DECODE_URI_RESERVED_ESCAPES = {
+    "%23",
+    "%24",
+    "%26",
+    "%2B",
+    "%2C",
+    "%2F",
+    "%3A",
+    "%3B",
+    "%3D",
+    "%3F",
+    "%40",
+}
+
+
+def _decode_uri(value: Any) -> str:
+    saved: dict[str, str] = {}
+
+    def preserve_reserved(match: re.Match[str]) -> str:
+        token = match.group(0)
+        if token.upper() not in _DECODE_URI_RESERVED_ESCAPES:
+            return token
+        placeholder = f"\x00{len(saved)}\x00"
+        saved[placeholder] = token
+        return placeholder
+
+    decoded = unquote(re.sub(r"%[0-9A-Fa-f]{2}", preserve_reserved, str(value)))
+    for placeholder, token in saved.items():
+        decoded = decoded.replace(placeholder, token)
+    return decoded
+
+
 def _looks_like_regex_separator(value: str) -> bool:
     return (
         "\\" in value
@@ -1149,12 +1181,10 @@ class Global:
 
     __timers: dict[int, threading.Timer] = {}
 
-    # TODO - https://stackoverflow.com/questions/747641/what-is-the-difference-between-decodeuricomponent-and-decodeuri
-
     @staticmethod
     def decodeURI(x: str) -> str:
         """Decodes a URI"""
-        return unquote(x)
+        return _decode_uri(x)
 
     @staticmethod
     def decodeURIComponent(x: str) -> str:

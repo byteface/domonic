@@ -487,12 +487,23 @@ class TestCase(unittest.TestCase):
         self.assertIn("%20", encoded_uri)
         self.assertIn("?", encoded_uri)
         self.assertEqual(Global.decodeURI(encoded_uri), uri)
+        self.assertEqual(
+            Global.decodeURI(
+                "https://example.com/a%20path%3Fq%3Done%26two%3Dthree%23frag%2Ftail"
+            ),
+            "https://example.com/a path%3Fq%3Done%26two%3Dthree%23frag%2Ftail",
+        )
+        self.assertEqual(Global.decodeURI("%E2%9C%93%3F"), "✓%3F")
 
         component = "a path/with?symbols&more"
         encoded_component = Global.encodeURIComponent(component)
         self.assertIn("%2F", encoded_component)
         self.assertIn("%3F", encoded_component)
         self.assertEqual(Global.decodeURIComponent(encoded_component), component)
+        self.assertEqual(
+            Global.decodeURIComponent("a%2Fb%3Fq%3D1%26x%3D2"),
+            "a/b?q=1&x=2",
+        )
 
         self.assertEqual(Global.parseFloat("12.5"), 12.5)
         self.assertEqual(Global.parseInt("12"), 12)
