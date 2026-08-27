@@ -880,7 +880,7 @@ class DOMTest(unittest.TestCase):
         #     print(r)
         assert len(result) == 5
 
-        result = self.page.querySelectorAll("a[href$='technology']")
+        result = self.page.querySelectorAll("a[href$='user/']")
         self.assertEqual(len(result), 1)
 
         result = self.page.querySelectorAll("a[href*='twitter']")
@@ -995,7 +995,7 @@ class DOMTest(unittest.TestCase):
         result = self.page.getElementsBySelector("p.text-gray", self.page)
         self.assertEqual(len(result), 5)
 
-        result = self.page.getElementsBySelector("a[href$='technology']", self.page)
+        result = self.page.getElementsBySelector("a[href$='user/']", self.page)
         self.assertEqual(len(result), 1)
 
         result = self.page.getElementsBySelector("a[href*='twitter']", self.page)
@@ -1054,6 +1054,58 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(
             [node.textContent for node in page.querySelectorAll("[lang|=en]")],
             ["base", "regional"],
+        )
+
+    def test_get_elements_by_selector_supports_compound_attribute_selectors(self):
+        page = html(
+            body(
+                a(
+                    "Twitter",
+                    _id="social",
+                    _class="nav-link social",
+                    _href="https://twitter.com/domonic",
+                    _rel="external help",
+                    _lang="en-GB",
+                    **{"_data-state": "ready"},
+                ),
+                a("Docs", _class="nav-link", _href="/docs/index.html"),
+                a("Home", _href="/"),
+            )
+        )
+
+        self.assertEqual(
+            [
+                node.textContent
+                for node in page.getElementsBySelector(
+                    "a.nav-link[href*='twitter']", page
+                )
+            ],
+            ["Twitter"],
+        )
+        self.assertEqual(
+            [node.textContent for node in page.getElementsBySelector("[href^='/']", page)],
+            ["Docs", "Home"],
+        )
+        self.assertEqual(
+            [
+                node.textContent
+                for node in page.getElementsBySelector("a[rel~=help]", page)
+            ],
+            ["Twitter"],
+        )
+        self.assertEqual(
+            [
+                node.textContent
+                for node in page.getElementsBySelector("a[lang|=en]", page)
+            ],
+            ["Twitter"],
+        )
+        self.assertEqual(
+            [
+                node.textContent
+                for node in page.getElementsBySelector("[data-state=ready]", page)
+            ],
+            ["Twitter"],
         )
 
     def test_decorators(self):
@@ -3786,6 +3838,24 @@ class DOMTest(unittest.TestCase):
         self.assertFalse(partial.matches("li.foo.bar"))
         self.assertTrue(complete.matches(".foo.bar"))
         self.assertTrue(complete.matches("li.foo.bar"))
+
+    def test_matches_supports_compound_attribute_selectors(self):
+        link = a(
+            "Twitter",
+            _id="social",
+            _class="nav-link social",
+            _href="https://twitter.com/domonic",
+            _rel="external help",
+            _lang="en-GB",
+            **{"_data-state": "ready"},
+        )
+
+        self.assertTrue(link.matches("a#social.nav-link[href*=twitter]"))
+        self.assertTrue(link.matches("a[rel~=help]"))
+        self.assertTrue(link.matches("a[lang|=en]"))
+        self.assertTrue(link.matches("[data-state=ready]"))
+        self.assertFalse(link.matches("a[href^='/']"))
+        self.assertFalse(link.matches("a[rel~=hel]"))
 
     def test_getElementsByTagName(self):
         content = ul(_id="birds").html(

@@ -3385,48 +3385,145 @@ class Element(Node):
                 return match
         return False
 
+    @staticmethod
+    def _read_simple_selector_token(selector: str, start: int) -> tuple[str, int]:
+        end = start
+        while end < len(selector) and selector[end] not in ".#[":
+            end += 1
+        return selector[start:end], end
+
+    @staticmethod
+    def _find_selector_bracket(selector: str, start: int) -> int:
+        quote = None
+        for index in range(start + 1, len(selector)):
+            char = selector[index]
+            if quote is not None:
+                if char == quote:
+                    quote = None
+                continue
+            if char in ("'", '"'):
+                quote = char
+                continue
+            if char == "]":
+                return index
+        return -1
+
+    @staticmethod
+    def _strip_selector_quotes(value: str) -> str:
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+            return value[1:-1]
+        return value
+
+    @staticmethod
+    def _parse_simple_selector(query: str):
+        selector = query.strip()
+        if not selector:
+            return None
+
+        parsed = {"tag": "*", "id": None, "classes": [], "attributes": []}
+        position = 0
+        tag_match = re.match(r"^(\*|[A-Za-z_][\w:-]*)", selector)
+        if tag_match:
+            parsed["tag"] = tag_match.group(1)
+            position = tag_match.end()
+        elif selector[0] not in ".#[":
+            return None
+
+        while position < len(selector):
+            char = selector[position]
+            if char == "#":
+                token, position = Element._read_simple_selector_token(
+                    selector, position + 1
+                )
+                if not token:
+                    return None
+                parsed["id"] = token
+                continue
+            if char == ".":
+                token, position = Element._read_simple_selector_token(
+                    selector, position + 1
+                )
+                if not token:
+                    return None
+                parsed["classes"].append(token)
+                continue
+            if char == "[":
+                end = Element._find_selector_bracket(selector, position)
+                if end == -1:
+                    return None
+                content = selector[position + 1 : end]
+                attribute = re.match(
+                    r"^\s*([^\s~|^$*=\]]+)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(.*?)\s*)?$",
+                    content,
+                )
+                if not attribute:
+                    return None
+                parsed["attributes"].append(
+                    (
+                        attribute.group(1),
+                        attribute.group(2) or "",
+                        Element._strip_selector_quotes(attribute.group(3) or ""),
+                    )
+                )
+                position = end + 1
+                continue
+            return None
+
+        return parsed
+
+    @staticmethod
+    def _attribute_selector_matches(attr_value, operator: str, value: str) -> bool:
+        if attr_value is None:
+            return False
+        attr_value = str(attr_value)
+        if operator == "":
+            return True
+        if operator == "=":
+            return attr_value == value
+        if operator == "~=":
+            return value in attr_value.split()
+        if operator == "|=":
+            return attr_value == value or attr_value.startswith(value + "-")
+        if operator == "^=":
+            return attr_value.startswith(value)
+        if operator == "$=":
+            return attr_value.endswith(value)
+        if operator == "*=":
+            return value in attr_value
+        return False
+
     def _matchElement(self, element, query):
         """
-        tries to match an element based on the query
-        at moment very basic. i.e. single level. just checks between id/tag/class
+        Matches an element against a simple selector.
+
+        This intentionally handles the single-selector subset used by
+        ``matches()``, ``getElementsByTagName()``, and the legacy selector
+        fallback: tag, id, classes, and CSS attribute operators.
         """
         if not isinstance(element, Element):
             return False
 
-        query = query.strip()
-        if not query:
+        parsed = Element._parse_simple_selector(query)
+        if parsed is None:
             return False
 
-        if "." in query and not query.startswith(".") and "[" not in query:
-            tag_name, class_names = query.split(".", 1)
-            required_classes = [token for token in class_names.split(".") if token]
-            return element.tagName.lower() == tag_name.lower() and all(
-                class_name in element.classList for class_name in required_classes
-            )
+        tag_name = parsed["tag"]
+        if tag_name != "*" and element.tagName.lower() != tag_name.lower():
+            return False
+        if parsed["id"] is not None and element.getAttribute("id") != parsed["id"]:
+            return False
 
-        if "#" in query and not query.startswith("#") and "[" not in query:
-            tag_name, element_id = query.split("#", 1)
-            return (
-                element.tagName.lower() == tag_name.lower()
-                and element.getAttribute("id") == element_id
-            )
+        class_tokens = set(str(element.getAttribute("class") or "").split())
+        if not set(parsed["classes"]).issubset(class_tokens):
+            return False
 
-        if query[0] == "#":
-            if element.getAttribute("id") == query.split("#")[1]:
-                return True
-
-        if query == "*":
-            return True
-
-        if element.tagName.lower() == query.lower():
-            return True
-
-        if query[0] == ".":
-            required_classes = [token for token in query.split(".") if token]
-            if all(class_name in element.classList for class_name in required_classes):
-                return True
-
-        return False
+        for attr, operator, value in parsed["attributes"]:
+            if not Element._attribute_selector_matches(
+                element.getAttribute(attr), operator, value
+            ):
+                return False
+        return True
 
     def matches(self, s: str) -> bool:
         """[checks to see if the Element would be selected by the provided selectorString]
@@ -3448,9 +3545,12 @@ class Element(Node):
 
         root = self.ownerDocument if self.ownerDocument is not None else self.rootNode
         if hasattr(root, "querySelectorAll"):
-            for match in root.querySelectorAll(s):
-                if match is self:
-                    return True
+            try:
+                for match in root.querySelectorAll(s):
+                    if match is self:
+                        return True
+            except Exception:
+                return False
         return False
 
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
@@ -3473,10 +3573,8 @@ class Element(Node):
         - https://bin-co.com/python/scripts/getelementsbyselector-html-css-query.php (ported to Python 2, broken/bugs, BSD licensed)
 
         Note:
-        - Always include a tag in the query. For example, `'a.classname'` will work, but just `'.classname'` will not.
         - Preserved as a compatibility helper for older selector-style code.
-        - TODO: Needs to work in conjunction with `_matchElement` for better querySelector support, and to ensure dQuery compatibility.
-        - TODO: Implement support for `*=` (node content).
+        - Supports simple descendant selector chains plus tag, id, class, and attribute selectors.
 
         Args:
             all_selectors (str): The CSS selectors to query.
@@ -3529,6 +3627,8 @@ class Element(Node):
             # Get elements matching tag, filter them for class selector
             found = []
             for con in context:
+                if con is None or not hasattr(con, "getElementsByTagName"):
+                    continue
                 elements = con.getElementsByTagName(tag)
                 found.extend(elements)
             return found
@@ -3567,86 +3667,11 @@ class Element(Node):
 
         # Space
         for element in inheriters:
-            # This part is to make sure that it is not part of a CSS3 Selector
-            left_bracket = str.find(element, "[")
-            right_bracket = str.find(element, "]")
-            pos = str.find(element, "#")  # ID
-            if pos + 1 and not (pos > left_bracket and pos < right_bracket):
-                parts = str.split(element, "#")
-                tag = parts[0]
-                id = parts[1]
-                ele = document.getElementById(id)
-                context = [ele]  # [](ele)
-                continue
-
-            pos = str.find(element, ".")  # Class
-            if pos + 1 and not (pos > left_bracket and pos < right_bracket):
-                parts = str.split(element, ".")
-                tag = parts[0]
-                class_names = [part for part in parts[1:] if part]
-                found = getElements(context, tag)
-                # found = document.getElementsByClassName(class_name)
-                context = []
-                if not class_names:
-                    continue
-                for fnd in found:
-                    class_attribute = fnd.getAttribute("class")
-                    if class_attribute and all(
-                        class_name in class_attribute.split()
-                        for class_name in class_names
-                    ):
-                        context.append(fnd)
-
-                continue
-
-            # If the char '[' appears, that means it needs CSS 3 parsing
-            if str.find(element, "[") + 1:
-                # Code to deal with attribute selectors
-                m = re.match(
-                    r"^([\w\*-]*)\[([\w-]+)([=~\|\^\$\*]?)=?['\"]?([^\]'\"]*)['\"]?\]$",
-                    element,
-                )
-                if m:
-                    tag = m.group(1)
-                    attr = m.group(2)
-                    operator = m.group(3)
-                    value = m.group(4)
-                else:
-                    return []
-
-                found = getElements(context, tag)
-                context = []
-                for fnd in found:
-                    attr_value = fnd.getAttribute(attr)
-                    if attr_value is None:
-                        continue
-                    if operator == "=" and fnd.getAttribute(attr) != value:
-                        continue  # WORKING
-                    if operator == "~" and value not in str(attr_value).split():
-                        continue  # NOT WORKING?
-                    if (
-                        operator == "|"
-                        and attr_value != value
-                        and not str(attr_value).startswith(value + "-")
-                    ):
-                        continue
-                    if operator == "^" and str.find(attr_value, value) != 0:
-                        continue  # WORKING
-                    if operator == "$" and str.rfind(attr_value, value) != (
-                        len(attr_value) - len(value)
-                    ):
-                        continue  # kinda WORKING
-                    if operator == "*" and not (str.find(attr_value, value) + 1):
-                        continue  # WORKING
-                    elif not attr_value:
-                        continue
-                    context.append(fnd)
-
-                continue
-
-            # Tag selectors - no class or id specified.
-            found = getElements(context, element)
-            context = found
+            parsed = self._parse_simple_selector(element)
+            if parsed is None:
+                return []
+            found = getElements(context, parsed["tag"])
+            context = [fnd for fnd in found if self._matchElement(fnd, element)]
 
         selected.extend(context)
         return selected
