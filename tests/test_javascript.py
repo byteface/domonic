@@ -873,6 +873,28 @@ class TestCase(unittest.TestCase):
         )
         self.assertEqual(rejected.state, "rejected")
 
+        pending = Promise()
+        seen = []
+        pending.then(lambda value: seen.append(value) or f"{value}!")
+        self.assertEqual(seen, [])
+        pending.resolve("later")
+        self.assertEqual(seen, ["later"])
+        self.assertEqual(pending.data, "later!")
+        self.assertEqual(pending.state, "fulfilled")
+
+        caught_later = Promise()
+        caught_later.catch(lambda error: f"queued:{error}")
+        caught_later.reject("bad")
+        self.assertEqual(caught_later.data, "queued:bad")
+        self.assertEqual(caught_later.state, "rejected")
+
+        thrown = Promise()
+        thrown.then(lambda value: (_ for _ in ()).throw(RuntimeError("boom")))
+        thrown.catch(lambda error: f"handled:{error}")
+        thrown.resolve("start")
+        self.assertEqual(thrown.data, "handled:boom")
+        self.assertEqual(thrown.state, "rejected")
+
     def test_javascript_string(self):
         mystr = String("Some String")
 

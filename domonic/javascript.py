@@ -2274,31 +2274,62 @@ class Promise:
         # print('init')
         self.data = None
         self.state = "pending"  # fullfilled, rejected
+        self._then_callbacks: list[Callable[[Any], Any]] = []
+        self._catch_callbacks: list[Callable[[Any], Any]] = []
         if func is not None:
             func(self.resolve, self.reject)
 
     def then(self, func: Callable[[Any], Any] | None) -> Promise:
-        if func is not None:
+        if func is None:
+            return self
+        if self.state == "fulfilled":
             # print('--->',self.data)
-            self.data = func(self.data)
+            self._run_then(func)
             # print('-->',self.data)
+        elif self.state == "pending":
+            self._then_callbacks.append(func)
         return self
 
     def catch(self, error: Any) -> Promise:
-        if self.state == "rejected" and callable(error):
-            self.data = error(self.data)
+        if not callable(error):
+            return self
+        if self.state == "rejected":
+            self._run_catch(error)
+        elif self.state == "pending":
+            self._catch_callbacks.append(error)
         return self
 
     def resolve(self, data: Any) -> Promise:
         # print( 'resolve called::', data )
+        if self.state != "pending":
+            return self
         self.data = data
         self.state = "fulfilled"
+        for callback in list(self._then_callbacks):
+            if self.state != "fulfilled":
+                break
+            self._run_then(callback)
+        self._then_callbacks.clear()
         return self
 
     def reject(self, data: Any) -> Promise:
+        if self.state not in ("pending", "fulfilled"):
+            return self
         self.data = data
         self.state = "rejected"
+        for callback in list(self._catch_callbacks):
+            self._run_catch(callback)
+        self._catch_callbacks.clear()
         return self
+
+    def _run_then(self, func: Callable[[Any], Any]) -> None:
+        try:
+            self.data = func(self.data)
+        except Exception as exc:
+            self.reject(exc)
+
+    def _run_catch(self, func: Callable[[Any], Any]) -> None:
+        self.data = func(self.data)
 
     # def __str__(self):
     #     try:
