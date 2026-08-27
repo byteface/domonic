@@ -216,10 +216,15 @@ class TestCase(unittest.TestCase):
             ("cos", -1.2, math.cos(-1.2)),
             ("tan", -1.2, math.tan(-1.2)),
             ("sqrt", 100, math.sqrt(100)),
+            ("log2", 8, math.log2(8)),
+            ("log10", 1000, math.log10(1000)),
+            ("log1p", 4, math.log1p(4)),
+            ("loglp", 4, math.log1p(4)),
         ]
         for name, value, expected in cases:
             with self.subTest(name=name, value=value):
                 self.assertEqual(getattr(Math, name)(value), expected)
+        self.assertEqual(Math.hypot(3, 4), 5)
 
     def test_domonic_acos(self):
         self.assertEqual(Math.acos(0.5), math.acos(0.5))
@@ -539,7 +544,6 @@ class TestCase(unittest.TestCase):
         assert myarr[1] == "2"
         assert len(myarr) == 6
         assert myarr == Array("1", "2", 3, {"4": "four"}, 5, [6])
-        # print(myarr.join('---'))  #  TODO - test some js ones
         # assert myarr.join('---') == "1---2---3---[object Object]---5---6"
         assert myarr.join("---") == "1---2---3---{'4': 'four'}---5---[6]"
         # print(myarr.lastIndexOf("1"))
@@ -549,7 +553,6 @@ class TestCase(unittest.TestCase):
         myarr = Array([[6], 5, {"4": "four"}, 3, "2", "1"])
         assert myarr.slice(0, 1) == [[6]]
         assert myarr == Array([[6], 5, {"4": "four"}, 3, "2", "1"])
-        # print(myarr.splice(1))  # TODO - not passing but looks right?
         assert myarr.splice(1) == [5, {"4": "four"}, 3, "2", "1"]
         assert myarr[0][0] == 6
         # tests equality. Array == list
@@ -596,7 +599,7 @@ class TestCase(unittest.TestCase):
         assert myarr.fill(1) == [1, 1, 1, 1, 1, 1, 1]
         # print(myarr.fill(1, 1))
         assert myarr.fill(1, 1) == [1, 1, 1, 1, 1, 1, 1]
-        # print(myarr.fill(1, 1, 3))  # TODO - more fill tests
+        assert myarr.fill(7, 1, 3) == [1, 7, 7, 1, 1, 1, 1]
         # print(myarr.isArray()) # fails as it should as its a static method.
         assert Array.isArray(myarr) == True
 
@@ -1276,6 +1279,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual(regex.toString(), r"(foo)(bar)")
         self.assertEqual(str(regex), r"(foo)(bar)")
         self.assertIsNone(regex.compile())
+
+    def test_javascript_error_message(self):
+        err = Error("boom")
+
+        self.assertEqual(err.message, "boom")
+        self.assertEqual(str(err), "boom")
 
     def test_set(self):
 

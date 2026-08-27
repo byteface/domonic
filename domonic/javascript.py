@@ -1090,42 +1090,41 @@ class Math(Object):
         """Returns the integer part of a number."""
         return math.trunc(x)
 
-    # TODO - test
     @staticmethod
-    # @_force_number
     def hypot(*args: float) -> float:
-        """returns the square root of the sum of squares of its arguments"""
+        """Return the square root of the sum of squares of its arguments."""
         return math.hypot(*args)
 
-    # TODO - test
     @staticmethod
-    # @_force_number
-    def log2(*args: float) -> float:
-        """returns the square root of the sum of squares of its arguments"""
-        return math.log2(*args)
+    @_force_number
+    def log2(x: float) -> float:
+        """Return the base 2 logarithm of a number."""
+        return math.log2(x)
 
-    # TODO - test
     @staticmethod
-    # @_force_number
-    def loglp(*args: float) -> float:
-        """returns the natural logarithm (base e) of 1 + a number, that is"""
-        return math.loglp(*args)
+    @_force_number
+    def log1p(x: float) -> float:
+        """Return the natural logarithm of 1 plus a number."""
+        return math.log1p(x)
 
-    # TODO - test
+    @staticmethod
+    @_force_number
+    def loglp(x: float) -> float:
+        """Backward-compatible alias for the historical ``log1p`` typo."""
+        return Math.log1p(x)
+
     @staticmethod
     @_force_number
     def log10(x: float) -> float:
         """function returns the base 10 logarithm of a number, that is"""
         return math.log10(x)
 
-    # TODO - test
     @staticmethod
     @_force_number
     def fround(x: float) -> float:
         """returns the nearest 32-bit single precision float representation of a Number"""
         return struct.unpack(">f", struct.pack(">f", float(x)))[0]
 
-    # TODO - test
     @staticmethod
     @_force_number
     def clz32(x: float) -> int:
@@ -3666,10 +3665,7 @@ class String:
 
     # def test(self, pattern: str):? was this on string?
 
-    # TODO - test all these
     def anchor(self, name: str) -> str:
-        # from domonic.html import a
-        # return a(str(self), _name=name)  #TODO - no href bug
         return '<a name="{}">{}</a>'.format(name, self.x)
 
     def big(self) -> str:
@@ -3959,7 +3955,7 @@ class RegExp:
         """(Re-)compiles a regular expression during execution of a script."""
         pass
 
-    # def exec(self, s: str):  # TODO - test
+    # def exec(self, s: str):
     #     """ Executes a search for a match in its string parameter. """
     #     class Match:
     #         def __init__(self, index: int, match: str):
@@ -4353,7 +4349,7 @@ class TypedArray:
     # def length(self, value):
     #     self.buffer.length = value
 
-    @property  # TODO - test try this for sneaky way of binding to exsiting array methods?
+    @property
     def args(self) -> Any:
         return self.buffer
 
@@ -4689,7 +4685,6 @@ Float64Array.BYTES_PER_ELEMENT = 8
 # BigUint64Array.BYTES_PER_ELEMENT = 8
 
 
-# TODO - test
 class Error(Exception):
     """Raise Errors"""
 
