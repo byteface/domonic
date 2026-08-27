@@ -66,24 +66,24 @@ class TestCase(unittest.TestCase):
             # print(d.getFullYear(), year)
             assert d.getFullYear() == year
 
-        d.setHours(2)  # TODO - returns?
+        self.assertEqual(d.setHours(2), d.getTime())
         assert d.getHours() == 2
 
         # print( d.setItem() )
-        _debug_print(d.setMilliseconds(123))
+        self.assertEqual(d.setMilliseconds(123), d.getTime())
 
-        d.setMinutes(10)  # TODO - returns?
+        self.assertEqual(d.setMinutes(10), d.getTime())
         assert d.getMinutes() == 10
 
-        d.setMonth(0)  # TODO - returns?
+        self.assertEqual(d.setMonth(0), d.getTime())
         assert d.getMonth() == 0
 
-        d.setSeconds(10)  # TODO - returns?
+        self.assertEqual(d.setSeconds(10), d.getTime())
         assert d.getSeconds() == 10
 
-        # print(d.setTime(1000))  # TODO - more dates
+        self.assertEqual(d.setTime(1000, timezone.utc), 1000)
+        self.assertEqual(d.getTime(), 1000)
 
-        # TODO - go back over all these methods
         _debug_print(d.getUTCDate())
         _debug_print(d.getUTCDay())
         _debug_print(d.getUTCFullYear())
@@ -93,15 +93,15 @@ class TestCase(unittest.TestCase):
         _debug_print(d.getUTCMonth())
         _debug_print(d.getUTCSeconds())
 
-        # TODO - i think all these setters have supposed to have returns...
-        _debug_print(d.setUTCDate(1))
-        _debug_print(d.setUTCFullYear(1928))
-        _debug_print(d.setUTCHours(3))
-        _debug_print(d.setUTCMilliseconds(123))
-        _debug_print(d.setUTCMinutes(50))
-        _debug_print(d.setUTCMonth(3))
-        _debug_print(d.setUTCSeconds(11))
-        _debug_print(d.setYear(1987))
+        self.assertEqual(d.setUTCDate(1), d.getTime())
+        self.assertEqual(d.setUTCFullYear(1928), d.getTime())
+        self.assertEqual(d.setUTCHours(3), d.getTime())
+        self.assertEqual(d.setUTCMilliseconds(123), d.getTime())
+        self.assertEqual(d.setUTCMinutes(50), d.getTime())
+        self.assertEqual(d.setUTCMonth(3), d.getTime())
+        self.assertEqual(d.setUTCSeconds(11), d.getTime())
+        self.assertEqual(d.setYear(1987), d.getTime())
+        self.assertEqual(d.getFullYear(), 1987)
 
         _debug_print(d.toDateString())
         _debug_print(d.toGMTString())
@@ -223,7 +223,7 @@ class TestCase(unittest.TestCase):
         event.setUTCMonth(3)
         event.setUTCSeconds(11)
         event.setYear(1987)
-        self.assertEqual(event.getFullYear(), 1928)
+        self.assertEqual(event.getFullYear(), 1987)
         self.assertEqual(event.getHours(), 3)
         self.assertEqual(event.getMilliseconds(), 123)
         self.assertEqual(event.getMinutes(), 50)
@@ -278,26 +278,31 @@ class TestCase(unittest.TestCase):
         _debug_print(event2)
         # // expected output: Thu Jul 01 1999 00:00:00 GMT+0200 (CEST)
 
-    def setDate(self):
+    def test_setDate_rolls_across_month_boundaries(self):
         event = Date("August 19, 1975 23:15:30")
-        event.setDate(24)
-        _debug_print(event.getDate())
-        assert event.getDate() == 24
-        # // expected output: 24
-        event.setDate(32)
-        # // Only 31 days in August!
-        _debug_print(event.getDate())
-        assert event.getDate() == 31
-        # // expected output: 1
+        self.assertEqual(event.setDate(24), event.getTime())
+        self.assertEqual(event.getDate(), 24)
 
-        # TODO - make these work as described in the spec
-        # theBigDay = Date(1962, 6, 7, 12)  # noon of 1962-07-07 (7th of July 1962,  month is 0-indexed)
-        # theBigDay2 = Date(theBigDay).setDate(24)  # 1962-07-24 (24th of July 1962)
-        # theBigDay3 = Date(theBigDay).setDate(32)  # 1962-08-01 (1st of August 1962)
-        # theBigDay4 = Date(theBigDay).setDate(22)  # 1962-07-22 (22nd of July 1962)
-        # theBigDay5 = Date(theBigDay).setDate(0)  # 1962-06-30 (30th of June 1962)
-        # theBigDay6 = Date(theBigDay).setDate(98)  # 1962-10-06 (6th of October 1962)
-        # theBigDay7 = Date(theBigDay).setDate(-50)  # 1962-05-11 (11th of May 1962)
+        event.setDate(32)
+        self.assertEqual(event.getMonth(), 8)
+        self.assertEqual(event.getDate(), 1)
+
+        cases = [
+            (24, (1962, 6, 24)),
+            (32, (1962, 7, 1)),
+            (22, (1962, 6, 22)),
+            (0, (1962, 5, 30)),
+            (98, (1962, 9, 6)),
+            (-50, (1962, 4, 11)),
+        ]
+        for value, expected in cases:
+            with self.subTest(value=value):
+                big_day = Date("July 7, 1962 12:00:00")
+                big_day.setDate(value)
+                self.assertEqual(
+                    (big_day.getFullYear(), big_day.getMonth(), big_day.getDate()),
+                    expected,
+                )
 
     def setHours(self):
         event = Date("August 19, 1975 23:15:30")

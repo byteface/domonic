@@ -1711,20 +1711,8 @@ class Date(Object):
         Returns:
             int: milliseconds between epoch and updated date.
         """
-        days_in_the_month = lambda d: calendar.monthrange(d.year, d.month)[1]
-
-        while day < 0:
-            current_month = self.date.month
-            self.setMonth(current_month - 1)
-            day += days_in_the_month(self.date)
-
-        while day > days_in_the_month(self.date):
-            day -= days_in_the_month(self.date)
-            self.date = self.date.replace(day=int(1))
-            self.setMonth(self.getMonth() + 1)
-
-        if day > 0:
-            self.date = self.date.replace(day=int(day))
+        first_of_month = self.date.replace(day=1)
+        self.date = first_of_month + datetime.timedelta(days=int(day) - 1)
         return self.getTime()
 
     def setFullYear(
@@ -1787,15 +1775,18 @@ class Date(Object):
             self.setMilliseconds(msValue)
         return self.getTime()
 
-    def setMilliseconds(self, milliseconds: int) -> None:
+    def setMilliseconds(self, milliseconds: int) -> int:
         """Sets the milliseconds of a date object
 
         Args:
             milliseconds (int): Milliseconds to set i.e 123
+
+        Returns:
+            int: milliseconds between epoch and updated date.
         """
         microseconds = int(milliseconds) * 1000
         self.date = self.date.replace(microsecond=microseconds)
-        # return
+        return self.getTime()
 
     def setMinutes(
         self,
@@ -1903,7 +1894,7 @@ class Date(Object):
             self.date = datetime.datetime.now(tz)
         else:
             self.date = datetime.datetime.fromtimestamp(milliseconds / 1000, tz)
-        return milliseconds
+        return self.getTime()
 
     def setUTCDate(self, day: int) -> int:
         """Sets the day of the month of a date object, according to universal time"""
@@ -1942,9 +1933,8 @@ class Date(Object):
 
     def setYear(self, year: int) -> int:
         """Deprecated. Use the setFullYear() method instead"""
-        self.date.replace(year=int(year))
+        self.date = self.date.replace(year=int(year))
         return self.getTime()
-        # TODO - there may not be a date object already?
 
     def toDateString(self) -> str:
         """Converts the date portion of a Date object into a readable string"""
