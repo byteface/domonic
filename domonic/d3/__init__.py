@@ -34,7 +34,7 @@ from domonic.dom import document
 from domonic.html import *
 
 # from domonic.d3.shape import *
-# from domonic.d3.tile import *
+from domonic.d3.tile import *
 # from domonic.d3.time-format import *
 # from domonic.d3.time import *
 # from domonic.d3.timer import *

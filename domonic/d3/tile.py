@@ -2,11 +2,9 @@
 domonic.d3.tile
 ====================================
 
-# TODO - completely untested
-
 """
 
-from domonic.javascript import Math
+import math
 
 
 def defaultScale(t):
@@ -21,6 +19,15 @@ def constant(x):
     return lambda: x
 
 
+class Tiles(list):
+    """Tile coordinate list with d3-tile style metadata."""
+
+    def __init__(self, values=(), translate=None, scale=1):
+        super().__init__(values)
+        self.translate = translate or [0, 0]
+        self.scale = scale
+
+
 class tile:
     def __init__(self, *args):
         self.x0 = 0
@@ -29,59 +36,97 @@ class tile:
         self.y1 = 500
         self.clampX = True
         self.clampY = True
-        self.tileSize = 256
-        self.scale = defaultScale
-        self.translate = defaultTranslate
-        self.zoomDelta = 0
+        self._tileSize = 256
+        self._scale = defaultScale
+        self._translate = defaultTranslate
+        self._zoomDelta = 0
 
-    # def __call__(self, *args):
-    #     scale_ = self.scale.apply(self, args)
-    #     translate_ = self.translate.apply(self, args)
-    #     z = Math.log2(scale_ / self.tileSize)
-    #     z0 = Math.round(Math.max(z + self.zoomDelta, 0))
-    #     k = Math.pow(2, z - z0) * self.tileSize
-    #     x = translate_[0] - scale_ / 2
-    #     y = translate_[1] - scale_ / 2
-    #     xmin = Math.max(0 if self.clampX else -Infinity, Math.floor((self.x0 - x) / k))
-    #     xmax = Math.min(1 << z0 if self.clampX else Infinity, Math.ceil((self.x1 - x) / k))
-    #     ymin = Math.max(0 if self.clampY else -Infinity, Math.floor((self.y0 - y) / k))
-    #     ymax = Math.min(1 << z0 if self.clampY else Infinity, Math.ceil((self.y1 - y) / k))
-    #     tiles = []
+    def __call__(self, *args):
+        scale_ = self._scale(*args)
+        translate_ = self._translate(*args)
+        z = math.log2(scale_ / self._tileSize)
+        z0 = int(math.floor(max(z + self._zoomDelta, 0) + 0.5))
+        k = math.pow(2, z - z0) * self._tileSize
+        x = translate_[0] - scale_ / 2
+        y = translate_[1] - scale_ / 2
+        xmin = max(0 if self.clampX else -math.inf, math.floor((self.x0 - x) / k))
+        xmax = min(
+            1 << z0 if self.clampX else math.inf,
+            math.ceil((self.x1 - x) / k),
+        )
+        ymin = max(0 if self.clampY else -math.inf, math.floor((self.y0 - y) / k))
+        ymax = min(
+            1 << z0 if self.clampY else math.inf,
+            math.ceil((self.y1 - y) / k),
+        )
+        tiles = []
 
-    #     for y in range(ymin, ymax):
-    #         for x in range(xmin, xmax):
-    #             tiles.append([x, y, z0])
+        for ty in range(int(ymin), int(ymax)):
+            for tx in range(int(xmin), int(xmax)):
+                tiles.append([tx, ty, z0])
 
-    #     tiles.translate = [x / k, y / k]
-    #     tiles.scale = k
-    #     return tiles
+        return Tiles(tiles, translate=[x / k, y / k], scale=k)
 
-    # def size(_, *args):
-    #     return (x0 = y0 = 0, x1 = +_[0], y1 = +_[1], tile) if Global.Boolean(args) else [x1 - x0, y1 - y0]
+    def size(self, value=None):
+        if value is None:
+            return [self.x1 - self.x0, self.y1 - self.y0]
+        self.x0 = self.y0 = 0
+        self.x1 = float(value[0])
+        self.y1 = float(value[1])
+        return self
 
-    # def extent(_, *args):
-    #     return (x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1], tile) if Global.Boolean(args) else [[x0, y0], [x1, y1]]
+    def extent(self, value=None):
+        if value is None:
+            return [[self.x0, self.y0], [self.x1, self.y1]]
+        self.x0 = float(value[0][0])
+        self.y0 = float(value[0][1])
+        self.x1 = float(value[1][0])
+        self.y1 = float(value[1][1])
+        return self
 
-    # def scale(_, *args):
-    #     return Global.Boolean(args) ? (scale = typeof _ === "function" ? _ : constant(+_), tile) : scale
+    def scale(self, value=None):
+        if value is None:
+            return self._scale
+        self._scale = value if callable(value) else constant(float(value))
+        return self
 
-    # def translate(_, *args):
-    #     return Global.Boolean(args) ? (translate = typeof _ === "function" ? _ : constant([+_[0], +_[1]]), tile) : translate
+    def translate(self, value=None):
+        if value is None:
+            return self._translate
+        self._translate = (
+            value
+            if callable(value)
+            else constant([float(value[0]), float(value[1])])
+        )
+        return self
 
-    # def zoomDelta(_, *args):
-    #     return (zoomDelta = +_, tile) if Global.Boolean(args) else zoomDelta
+    def zoomDelta(self, value=None):
+        if value is None:
+            return self._zoomDelta
+        self._zoomDelta = float(value)
+        return self
 
-    # def tileSize(_, *args):
-    #     return (tileSize = +_, tile) if Global.Boolean(args) else tileSize
+    def tileSize(self, value=None):
+        if value is None:
+            return self._tileSize
+        self._tileSize = float(value)
+        return self
 
-    # def clamp(_, *args):
-    #     return (clampX = clampY = !!_, tile) if Global.Boolean(args) else clampX and clampY
+    def clamp(self, value=None):
+        if value is None:
+            return self.clampX and self.clampY
+        self.clampX = bool(value)
+        self.clampY = bool(value)
+        return self
 
-    # def clampX(_, *args):
-    #     return (clampX = !!_, tile) if Global.Boolean(args) else clampX
+    def clamp_x(self, value=None):
+        if value is None:
+            return self.clampX
+        self.clampX = bool(value)
+        return self
 
-    # def clampY(_, *args):
-    #     return (clampY = !!_, tile) if Global.Boolean(args) else clampY
-
-
-#   return tile
+    def clamp_y(self, value=None):
+        if value is None:
+            return self.clampY
+        self.clampY = bool(value)
+        return self

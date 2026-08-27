@@ -7,6 +7,7 @@ unit tests for domonic.d3
 
 import time
 import unittest
+from types import SimpleNamespace
 
 from domonic.CDN import CDN_CSS
 from domonic.dom import *
@@ -23,6 +24,7 @@ from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
 from domonic.d3.queue import queue
+from domonic.d3.tile import Tiles, tile
 
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
@@ -37,6 +39,41 @@ def _debug_print(*args, **kwargs):
 
 
 class TestCase(unittest.TestCase):
+    def test_d3_tile_generates_visible_tiles_and_metadata(self):
+        layout = tile().size([512, 512])
+        transform = SimpleNamespace(k=512, x=256, y=256)
+
+        tiles = layout(transform)
+
+        self.assertIsInstance(tiles, Tiles)
+        self.assertEqual(tiles, [[0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]])
+        self.assertEqual(tiles.translate, [0, 0])
+        self.assertEqual(tiles.scale, 256)
+
+    def test_d3_tile_chainable_configuration(self):
+        layout = (
+            tile()
+            .extent([[10, 20], [266, 276]])
+            .scale(256)
+            .translate([138, 148])
+            .tileSize(128)
+            .zoomDelta(1)
+            .clamp(False)
+        )
+
+        self.assertEqual(layout.size(), [256.0, 256.0])
+        self.assertEqual(layout.extent(), [[10.0, 20.0], [266.0, 276.0]])
+        self.assertEqual(layout.tileSize(), 128.0)
+        self.assertEqual(layout.zoomDelta(), 1.0)
+        self.assertFalse(layout.clamp())
+        self.assertIs(layout.clamp_x(True), layout)
+        self.assertTrue(layout.clamp_x())
+        self.assertIs(layout.clamp_y(False), layout)
+        self.assertFalse(layout.clamp_y())
+
+        tiles = layout()
+        self.assertEqual(tiles[0], [0, 0, 2])
+        self.assertEqual(tiles.scale, 64)
 
     def test_d3_queue(self):
         results = []
