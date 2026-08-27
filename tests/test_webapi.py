@@ -775,23 +775,51 @@ class TestCase(unittest.TestCase):
     def test_dragndrop(self):
         transfer = DataTransfer()
         file = File([b"hello"], "hello.txt")
+        image = div("drag preview")
 
         item = transfer.items.add(file)
         transfer.setData("text/plain", "dragged")
+        transfer.setDragImage(image, 12, 8)
 
         self.assertEqual(item.kind, "file")
         self.assertIs(item.getAsFile(), file)
         self.assertEqual(transfer.files.length, 1)
         self.assertIs(transfer.files.item(0), file)
+        self.assertIn("Files", transfer.types)
         self.assertEqual(transfer.items.item(1).getAsString(), "dragged")
         self.assertIn("text/plain", transfer.types)
+        self.assertEqual(transfer.getData("missing/type"), "")
+        self.assertIs(transfer.dragImage, image)
+        self.assertEqual((transfer.dragImageX, transfer.dragImageY), (12, 8))
+
+        seen = []
+        self.assertEqual(transfer.items.item(1).getAsString(seen.append), "dragged")
+        self.assertEqual(seen, ["dragged"])
+
+        transfer.setData("text/plain", "updated")
+        self.assertEqual(transfer.getData("text/plain"), "updated")
+        self.assertEqual(
+            [item.type for item in transfer.items if item.kind == "string"],
+            ["text/plain"],
+        )
+
+        drag_source = div("source")
+        self.assertIs(transfer.addElement(drag_source), drag_source)
+        self.assertIs(transfer.dragElement, drag_source)
 
         transfer.clearData("text/plain")
         self.assertNotIn("text/plain", transfer.types)
         self.assertEqual(transfer.files.length, 1)
 
-        transfer.items.remove(0)
+        transfer.clearData()
+        self.assertEqual(transfer.types, ["Files"])
+        self.assertEqual(transfer.items.length, 1)
+
+        self.assertIsNone(transfer.items.remove(99))
+        removed = transfer.items.remove(0)
+        self.assertIs(removed.getAsFile(), file)
         self.assertEqual(transfer.files.length, 0)
+        self.assertNotIn("Files", transfer.types)
 
     def test_filereader(self):
         blob = Blob(["hello", b" ", bytearray(b"world")], {"type": "text/plain"})

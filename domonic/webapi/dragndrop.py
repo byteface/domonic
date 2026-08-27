@@ -16,15 +16,25 @@ class DataTransfer:
         self.items = DataTransferItemList(self)
         self.dropEffect = ""
         self.effectAllowed = ""
+        self.dragImage = None
+        self.dragImageX = 0
+        self.dragImageY = 0
+        self.dragElement = None
 
     @property
     def length(self) -> int:
         return len(self.data)
 
+    def _sync_files_type(self) -> None:
+        if self.files.length and "Files" not in self.types:
+            self.types.append("Files")
+        elif not self.files.length and "Files" in self.types:
+            self.types.remove("Files")
+
     def clearData(self, type=None):
         if type is None:
             self.data = {}
-            self.types = []
+            self.types = ["Files"] if self.files.length else []
             self.items[:] = [item for item in self.items if item.kind == "file"]
             return
         if type in self.data:
@@ -38,9 +48,10 @@ class DataTransfer:
         ]
 
     def getData(self, type):
-        return self.data[type]
+        return self.data.get(type, "")
 
     def setData(self, type, data):
+        data = str(data)
         self.data[type] = data
         if type not in self.types:
             self.types.append(type)
@@ -51,10 +62,13 @@ class DataTransfer:
         list.append(self.items, DataTransferItem(data, type))
 
     def setDragImage(self, image, x, y):
-        pass
+        self.dragImage = image
+        self.dragImageX = int(x)
+        self.dragImageY = int(y)
 
     def addElement(self, element):
-        return self.items.add(element)
+        self.dragElement = element
+        return element
 
     def addFile(self, file):
         return self.items.add(file)
@@ -66,8 +80,13 @@ class DataTransferItem:
         self.type = type or getattr(data, "type", "text/plain")
         self._data = data
 
-    def getAsString(self):
-        return None if self.kind == "file" else str(self._data)
+    def getAsString(self, callback=None):
+        if self.kind == "file":
+            return None
+        value = str(self._data)
+        if callback is not None:
+            callback(value)
+        return value
 
     def getAsFile(self):
         return self._data if self.kind == "file" else None
@@ -93,6 +112,7 @@ class DataTransferItemList(list):
         self.append(item)
         if item.kind == "file":
             self._owner.files.append(item.getAsFile())
+            self._owner._sync_files_type()
         else:
             self._owner.data[item.type] = item.getAsString()
             if item.type not in self._owner.types:
@@ -112,12 +132,17 @@ class DataTransferItemList(list):
             return None
 
     def remove(self, index: int):
-        item = self.pop(int(index))
+        try:
+            item = self.pop(int(index))
+        except (IndexError, TypeError, ValueError):
+            return None
         if item.kind == "file":
             self._owner.files = FileList(
                 file for file in self._owner.files if file is not item.getAsFile()
             )
+            self._owner._sync_files_type()
         elif item.type in self._owner.data:
             self._owner.data.pop(item.type, None)
             if item.type in self._owner.types:
                 self._owner.types.remove(item.type)
+        return item
