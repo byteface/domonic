@@ -14,10 +14,12 @@ from domonic.style import *
 class TestCase(unittest.TestCase):
     def test_domonic_css(self):
 
-        test = div("huh?", _style="alignContent: center;")  # TODO - should be parsing these styles
+        test = div("huh?", _style="alignContent: center;")
+        assert test.style.alignContent == "center"
+        assert test.style.getPropertyValue("align-content") == "center"
         test.style.alignContent = "flex-start"
         assert test.style.alignContent == "flex-start"
-        # assert str(test) == '<div style="align-content: flex-start;">huh?</div>'
+        assert str(test) == '<div style="align-content:flex-start;">huh?</div>'
 
         atag = a("linky", _href="https://eventual.technology", _style="alignContent: center;")
         assert atag.style.alignContent is not None
@@ -38,7 +40,6 @@ class TestCase(unittest.TestCase):
         assert sometag.style.getPropertyValue("display") == "none"
         assert "font-size:12px;" in str(sometag)
 
-        # dom.select('#test' ).dostuff() # TODO -
         # print(sometag.style)
         # print(sometag.tagName)
         # s = Style()

@@ -238,7 +238,7 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
         if ":" not in declaration:
             continue
         name, value = declaration.split(":", 1)
-        name = name.strip()
+        name = _css_property_name(name.strip())
         value = value.strip()
         if not name:
             continue
