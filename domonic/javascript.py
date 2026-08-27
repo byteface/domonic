@@ -2342,7 +2342,10 @@ class Window:
         # globals()?
         # dir()?
         # locals()?
-        self.screen = Screen()
+        try:
+            self.screen = Screen()
+        except AttributeError:
+            return
 
     # TODO - tell users to use other window class if methods are called.
 

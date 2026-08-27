@@ -40,6 +40,19 @@ class TestCase(unittest.TestCase):
         assert sometag.style.getPropertyValue("display") == "none"
         assert "font-size:12px;" in str(sometag)
 
+        sometag.style = "color: red; font-size: 16px;"
+        self.assertIsInstance(sometag.style, CSSStyleDeclaration)
+        self.assertEqual(sometag.style.color, "red")
+        self.assertEqual(sometag.style.fontSize, "16px")
+        self.assertIn('style="color: red; font-size: 16px;"', str(sometag))
+
+        declaration = CSSStyleDeclaration()
+        declaration.setProperty("background-color", "green")
+        sometag.style = declaration
+        self.assertIs(sometag.style, declaration)
+        self.assertEqual(sometag.style.backgroundColor, "green")
+        self.assertIn("background-color: green;", str(sometag))
+
         # print(sometag.style)
         # print(sometag.tagName)
         # s = Style()

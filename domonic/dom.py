@@ -4668,8 +4668,21 @@ class Element(Node):
 
     @style.setter
     def style(self, style):
-        self.__style = style
-        self.__style.__init__(self)  # to set the parent
+        if style is None:
+            self.__style = None
+            return
+
+        if isinstance(style, Style):
+            self.__style = style
+            object.__setattr__(self.__style, "_parent_node", self)
+            if self.__style.cssText:
+                self.setAttribute("style", self.__style.cssText)
+            elif self.getAttribute("style"):
+                self.__style.cssText = self.getAttribute("style")
+            return
+
+        self.__style = Style(self)
+        self.__style.cssText = style
 
     # def tabIndex(self):
     # ''' Sets or returns the value of the tabindex attribute of an element'''
