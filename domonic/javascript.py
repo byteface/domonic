@@ -1671,9 +1671,71 @@ class Intl:
         return sorted(zones)
 
     class _Collator:
-        def __init__(self, locale: str) -> None:
-            self.locale = locale
-            print("Intl._Collator.__init__", locale)
+        def __init__(
+            self,
+            locales: str | list[str] | None = None,
+            options: Mapping[str, Any] | None = None,
+        ) -> None:
+            options = dict(options or {})
+            canonical = Intl.getCanonicalLocales(locales or "en-US")
+            self.locale = canonical[0] if canonical else "en-US"
+            self.usage = options.get("usage", "sort")
+            self.sensitivity = options.get("sensitivity", "variant")
+            self.ignorePunctuation = bool(options.get("ignorePunctuation", False))
+            self.numeric = bool(options.get("numeric", False))
+            self.caseFirst = options.get("caseFirst", "false")
+
+        @staticmethod
+        def supportedLocalesOf(locales: str | list[str]) -> list[str]:
+            return Intl.getCanonicalLocales(locales)
+
+        def compare(self, first: Any, second: Any) -> int:
+            left = self._prepare(str(first))
+            right = self._prepare(str(second))
+            if self.numeric:
+                left_key = self._numeric_key(left)
+                right_key = self._numeric_key(right)
+                return (left_key > right_key) - (left_key < right_key)
+
+            previous_locale = None
+            try:
+                previous_locale = pylocale.setlocale(pylocale.LC_COLLATE)
+                pylocale.setlocale(pylocale.LC_COLLATE, self.locale)
+                comparison = pylocale.strcoll(left, right)
+                return (comparison > 0) - (comparison < 0)
+            except Exception:
+                return (left > right) - (left < right)
+            finally:
+                if previous_locale is not None:
+                    try:
+                        pylocale.setlocale(pylocale.LC_COLLATE, previous_locale)
+                    except Exception:
+                        previous_locale = None
+
+        def resolvedOptions(self) -> dict[str, Any]:
+            return {
+                "locale": self.locale,
+                "usage": self.usage,
+                "sensitivity": self.sensitivity,
+                "ignorePunctuation": self.ignorePunctuation,
+                "numeric": self.numeric,
+                "caseFirst": self.caseFirst,
+            }
+
+        def _prepare(self, value: str) -> str:
+            if self.ignorePunctuation:
+                value = re.sub(r"[^\w\s]", "", value)
+            if self.sensitivity == "base":
+                value = value.casefold()
+            return value
+
+        @staticmethod
+        def _numeric_key(value: str) -> list[Any]:
+            return [
+                int(part) if part.isdigit() else part
+                for part in re.split(r"(\d+)", value)
+                if part != ""
+            ]
 
     Collator = _Collator
 

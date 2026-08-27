@@ -1118,6 +1118,25 @@ class TestCase(unittest.TestCase):
             ["en-US", "fr-FR"],
         )
 
+    def test_javascript_Intl_Collator(self):
+        collator = Intl.Collator(
+            "en-US", {"sensitivity": "base", "ignorePunctuation": True}
+        )
+        self.assertEqual(collator.compare("resume!", "Resume"), 0)
+        self.assertLess(collator.compare("apple", "banana"), 0)
+        self.assertGreater(collator.compare("banana", "apple"), 0)
+
+        numeric = Intl.Collator("en-US", {"numeric": True})
+        self.assertLess(numeric.compare("item2", "item10"), 0)
+        self.assertEqual(
+            numeric.resolvedOptions()["locale"],
+            "en-US",
+        )
+        self.assertEqual(
+            Intl.Collator.supportedLocalesOf(["en-us", "cy-gb"]),
+            ["en-US", "cy-GB"],
+        )
+
     def test_javascript_screen(self):
         screen = Screen(1280, 720, availWidth=1200, availHeight=700, colorDepth=30)
         self.assertEqual(screen.width, 1280)
