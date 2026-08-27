@@ -706,7 +706,7 @@ class Node(EventTarget):
                 new_kwargs[k] = v
         self.kwargs = new_kwargs
 
-        self.baseURI: str = ""  # TODO - if ownerdocument has a basetag, use that
+        self._baseURI: str = ""
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
         self.outerText: str = None
@@ -990,12 +990,12 @@ class Node(EventTarget):
 
     def __iadd__(self, item):
         """adds an item to the nodes of children. can also pass a list and it will unpack them"""
-        if isinstance(item, (list, tuple)):  # TODO - Documentfragment?
+        if isinstance(item, (list, tuple)):
             for i in item:
-                self.args = self.args + (i,)
+                self.appendChild(i)
             return self
 
-        self.args = self.args + (item,)
+        self.appendChild(item)
         return self
 
     def __isub__(self, item):
@@ -1318,10 +1318,10 @@ class Node(EventTarget):
     #     return super(Node, self).__getitem__(item)
 
     def _update_parents(self):
-        """private. - TODO < check these docstrings don't export in docs
-        loops all children and sets self as parent.
-        cant do as decorator for now as that seems to breaks potential for json serialisation (see Style)
-        so will have to call manually whenever self.args are ammended.
+        """Assign this node as parent for child nodes.
+
+        This is called manually when ``args`` are amended because a decorator
+        here would interfere with JSON serialisation in a few older helpers.
         """
         try:
             # print(self.args)
@@ -1334,10 +1334,10 @@ class Node(EventTarget):
             print("unable to update parent", e)
 
     def _iterate(self, element, callback) -> None:
-        """private. - TODO < check these docstrings don't export in docs
-        loops all children and sets self as parent.
-        cant do as decorator for now as that seems to breaks potential for json serialisation (see Style)
-        so will have to call manually whenever self.args are ammended.
+        """Walk descendant nodes and call ``callback`` for each node.
+
+        Lists are tolerated for backwards compatibility with older code that
+        passed child groups directly.
         """
         callback(element)  # TODO - this can block on failed attributes
         elements = []
@@ -1602,6 +1602,23 @@ class Node(EventTarget):
         elif removed_nodes:
             _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return content
+
+    @property
+    def baseURI(self) -> str:
+        """Returns the absolute base URL for this node."""
+        explicit_base = getattr(self, "_baseURI", "")
+        if explicit_base:
+            return explicit_base
+        if isinstance(self, Document):
+            return self._document_base_uri()
+        owner_document = self.ownerDocument
+        if isinstance(owner_document, Document):
+            return owner_document.baseURI
+        return ""
+
+    @baseURI.setter
+    def baseURI(self, value: str | None) -> None:
+        self._baseURI = "" if value is None else str(value)
 
     @property
     def ownerDocument(self) -> "Node | None":
@@ -2938,7 +2955,6 @@ class DocumentType(Node):
 
     def __str__(self) -> str:
         # return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
-        # TODO fix broken spacing when no publicId or systemId
         full_str = f"<!DOCTYPE {self.name}"
         if self.publicId:
             full_str += f" PUBLIC {self.publicId}"
@@ -5864,36 +5880,17 @@ class Document(Element):
             print("failed to set document", e)
         return instance
 
-    # TODO - still not great as it also returns 'links' when searching for 'li'
+    def _document_base_uri(self) -> str:
+        for base_element in self.getElementsByTagName("base"):
+            href = base_element.getAttribute("href")
+            if href is not None:
+                return href
+        return getattr(self, "URL", "") or ""
+
     # @property
-    def _get_tags(self, tag):  # TODO - still old
+    def _get_tags(self, tag):
         """returns the tags you want"""
-        reg = f"(<{tag}.*?>.+?</{tag}>)"
-
-        closed_tags = [
-            "base",
-            "link",
-            "meta",
-            "hr",
-            "br",
-            "wbr",
-            "img",
-            "embed",
-            "param",
-            "source",
-            "track",
-            "area",
-            "col",
-            "input",
-            "keygen",
-            "command",
-        ]
-        if tag in closed_tags:
-            reg = f"(<{tag}.*?/>)"
-
-        pattern = re.compile(reg)
-        tags = re.findall(pattern, str(self))
-        return tags
+        return [str(element) for element in self.getElementsByTagName(tag)]
 
         # def activeElement():
         """ Returns the currently focused element in the document"""

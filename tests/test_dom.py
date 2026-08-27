@@ -2957,6 +2957,31 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(page.URL, "")
         self.assertEqual(page.baseURI, "")
 
+    def test_document_baseuri_uses_base_href_and_inherits_to_children(self):
+        page = Document(
+            html(
+                head(base(_href="https://example.com/docs/")),
+                body(div("content", _id="content")),
+            )
+        )
+        content = page.getElementById("content")
+
+        self.assertEqual(page.baseURI, "https://example.com/docs/")
+        self.assertEqual(content.baseURI, "https://example.com/docs/")
+        page.baseURI = "https://static.example.com/"
+        self.assertEqual(content.baseURI, "https://static.example.com/")
+
+    def test_node_iadd_accepts_document_fragments(self):
+        items = DocumentFragment(li("one"), li("two"))
+        target = ul()
+
+        target += items
+
+        self.assertEqual([child.textContent for child in target.children], ["one", "two"])
+        self.assertEqual(items.childNodes.length, 0)
+        self.assertIs(target.children[0].parentNode, target)
+        self.assertIs(target.children[1].parentNode, target)
+
     def test_character_data_methods_validate_offsets(self):
         text = Text("abcdef")
 
@@ -3758,6 +3783,18 @@ class DOMTest(unittest.TestCase):
         assert len(titletag) == 1
         # print(titletag[0].textContent)
         assert titletag[0].textContent == "We areCOMPANY"
+
+    def test_private_get_tags_uses_exact_tag_name(self):
+        page = Document(
+            html(
+                head(link(_rel="stylesheet", _href="/main.css")),
+                body(ul(li("one")), input(_type="text")),
+            )
+        )
+
+        self.assertEqual(page._get_tags("li"), ["<li>one</li>"])
+        self.assertEqual(page._get_tags("input"), ['<input type="text"/>'])
+        self.assertEqual(page._get_tags("links"), [])
 
     # def test_domonic_closest(self):
 
