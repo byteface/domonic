@@ -79,6 +79,7 @@ from domonic.webapi.serviceworker import (
     ServiceWorkerContainer,
     ServiceWorkerRegistration,
 )
+from domonic.webapi.sse import EventSource
 from domonic.webapi.streams import (
     CompressionStream,
     DecompressionStream,
@@ -105,6 +106,73 @@ def _debug_print(*args, **kwargs):
 
 
 class TestCase(unittest.TestCase):
+    def test_eventsource_blocking_dispatches_messages_and_state(self):
+        class FakeSSEClient:
+            def __init__(self, url, **kwargs):
+                self.url = url
+                self.kwargs = kwargs
+                self.events = [
+                    SimpleNamespace(data="hello", event="message", id="1", retry=None),
+                    SimpleNamespace(data="ready", event="status", id="2", retry=1500),
+                ]
+
+            def __iter__(self):
+                return iter(self.events)
+
+        opened = []
+        states = []
+        messages = []
+        custom = []
+
+        with patch("domonic.webapi.sse.SSEClient", FakeSSEClient):
+            source = EventSource(
+                "/events",
+                {
+                    "auto_start": False,
+                    "lastEventId": "0",
+                    "onopen": lambda event: opened.append(event.type),
+                    "onmessage": lambda event: messages.append(("handler", event.data)),
+                    "onreadystatechange": lambda event: states.append(source.readyState),
+                },
+                timeout=10,
+            )
+            source.addEventListener(
+                "message", lambda event: messages.append(("listener", event.data))
+            )
+            source.addEventListener("status", lambda event: custom.append(event.data))
+
+            source.start(blocking=True)
+
+        self.assertEqual(opened, ["open"])
+        self.assertIn(EventSource.OPEN, states)
+        self.assertEqual(states[-1], EventSource.CLOSED)
+        self.assertEqual(messages, [("listener", "hello"), ("handler", "hello")])
+        self.assertEqual(custom, ["ready"])
+        self.assertEqual(source._lastEventId, "2")
+        self.assertEqual(source._retry, 1500)
+        self.assertEqual(source._client.kwargs["last_id"], "0")
+        self.assertEqual(source._client.kwargs["timeout"], 10)
+
+    def test_eventsource_error_callback_gets_exception(self):
+        class BrokenSSEClient:
+            def __init__(self, *args, **kwargs):
+                raise RuntimeError("stream broke")
+
+        errors = []
+
+        with patch("domonic.webapi.sse.SSEClient", BrokenSSEClient):
+            source = EventSource(
+                "/events",
+                {
+                    "auto_start": False,
+                    "onerror": lambda event: errors.append(event.error),
+                },
+            )
+            source.start(blocking=True)
+
+        self.assertEqual(str(errors[0]), "stream broke")
+        self.assertEqual(source.readyState, EventSource.CLOSED)
+
     def test_sanitizer_api(self):
         dirty = (
             '<p onclick="evil()">Hello <script>alert(1)</script>'
