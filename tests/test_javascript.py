@@ -1084,6 +1084,17 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Intl.supportedValuesOf("not-a-real-key")
 
+    def test_javascript_screen(self):
+        screen = Screen(1280, 720, availWidth=1200, availHeight=700, colorDepth=30)
+        self.assertEqual(screen.width, 1280)
+        self.assertEqual(screen.height, 720)
+        self.assertEqual(screen.availWidth, 1200)
+        self.assertEqual(screen.availHeight, 700)
+        self.assertEqual(screen.colorDepth, 30)
+        self.assertEqual(screen.pixelDepth, 30)
+        self.assertEqual(window.screen.width, 1024)
+        self.assertEqual(Window().screen.height, 768)
+
     def test_javascript_at(self):
         myarr = Array(["a", "b", "c", "d"])
         assert myarr.at(-1) == "d"

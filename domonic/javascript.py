@@ -2159,56 +2159,29 @@ class Date(Object):
 
 
 class Screen:
-    """screen"""
+    """Lightweight representation of the browser Screen object."""
 
-    # wrap a lib?
-    # https://github.com/rr-/screeninfo?
-
-    def __init__(self) -> None:
-        # from sys import platform
-        # if platform == "linux" or platform == "linux2":
-        #     # linux
-        # import subprocess
-        # resuls = subprocess.Popen(['xrandr'],stdout=subprocess.PIPE).communicate()[0].split("current")[1].split(",")[0]
-        # width = resuls.split("x")[0].strip()
-        # heigth = resuls.split("x")[1].strip()
-        # print width + "x" + heigth
-        # elif platform == "darwin":
-        #     # OS X
-        # results = str(subprocess.Popen(['system_profiler SPDisplaysDataType'],stdout=subprocess.PIPE, shell=True).communicate()[0])
-        # res = re.search('Resolution: \d* x \d*', results).group(0).split(' ')
-        # width, height = res[1], res[3]
-        # return width, height
-        # elif platform == "win32":
-        # from win32api import GetSystemMetrics
-        # print("Width =", GetSystemMetrics(0))
-        # print("Height =", GetSystemMetrics(1))
-        pass
-
-    def availHeight(self) -> int:
-        """Returns the height of the screen (excluding the Windows Taskbar)"""
-        # return self.height
-        raise NotImplementedError
-
-    def availWidth(self) -> int:
-        """Returns the width of the screen (excluding the Windows Taskbar)"""
-        raise NotImplementedError
-
-    def colorDepth(self) -> int:
-        """Returns the colorDepth"""
-        raise NotImplementedError
-
-    def height(self) -> int:
-        """Returns the total height of the screen"""
-        raise NotImplementedError
-
-    def pixelDepth(self) -> int:
-        """Returns the pixelDepth"""
-        raise NotImplementedError
-
-    def width(self) -> int:
-        """Returns the total width of the screen"""
-        raise NotImplementedError
+    def __init__(
+        self,
+        width: int = 1024,
+        height: int = 768,
+        *,
+        availWidth: int | None = None,
+        availHeight: int | None = None,
+        colorDepth: int = 24,
+        pixelDepth: int | None = None,
+    ) -> None:
+        self.availLeft = 0
+        self.availTop = 0
+        self.availWidth = width if availWidth is None else int(availWidth)
+        self.availHeight = height if availHeight is None else int(availHeight)
+        self.colorDepth = int(colorDepth)
+        self.height = int(height)
+        self.left = 0
+        self.pixelDepth = self.colorDepth if pixelDepth is None else int(pixelDepth)
+        self.top = 0
+        self.width = int(width)
+        self.orientation = None
 
 
 class ProgramKilled(Exception):
@@ -2361,6 +2334,7 @@ class Window:
 
     localStorage = Storage()
     location = ""
+    screen = Screen()
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # self.console = dom.console
@@ -2368,7 +2342,7 @@ class Window:
         # globals()?
         # dir()?
         # locals()?
-        pass
+        self.screen = Screen()
 
     # TODO - tell users to use other window class if methods are called.
 
