@@ -1927,7 +1927,12 @@ onmessage = handle
     def test_xpath(self):
 
         from domonic import domonic
-        from domonic.webapi.xpath import XPathEvaluator, XPathResult
+        from domonic.webapi.xpath import (
+            XPathEvaluator,
+            XPathException,
+            XPathNSResolver,
+            XPathResult,
+        )
 
         # api unit test based on mdn example
         # https://developer.mozilla.org/en-US/docs/Web/API/XPathEvaluator
@@ -2057,6 +2062,75 @@ onmessage = handle
         expression = evaluator.createExpression("//div/text()")
         result = expression.evaluate(somepage, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         self.assertEqual(str(result.nodes[0]), "some more text")
+
+        expression = evaluator.createExpression("//a")
+        result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        self.assertEqual(result.snapshotItem(0).textContent, "Home")
+        self.assertEqual(result.snapshotItem(1).textContent, "Twitter")
+        self.assertIsNone(result.snapshotItem(-1))
+        self.assertIsNone(result.snapshotItem(99))
+
+        result = expression.evaluate(page, XPathResult.ORDERED_NODE_ITERATOR_TYPE)
+        self.assertEqual(result.iterateNext().textContent, "Home")
+        self.assertEqual(result.iterateNext().textContent, "Twitter")
+        self.assertIsNone(result.iterateNext())
+
+        result = evaluator.evaluate(
+            "//a", page, None, XPathResult.FIRST_ORDERED_NODE_TYPE
+        )
+        self.assertEqual(result.singleNodeValue.textContent, "Home")
+
+        reusable = XPathResult([], XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        result = expression.evaluate(
+            page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, reusable
+        )
+        self.assertIs(result, reusable)
+        self.assertEqual(result.snapshotLength, 2)
+
+        self.assertEqual(XPathResult("hello", XPathResult.ANY_TYPE).stringValue, "hello")
+        self.assertFalse(XPathResult(False, XPathResult.ANY_TYPE).booleanValue)
+        self.assertEqual(XPathResult(3, XPathResult.ANY_TYPE).numberValue, 3.0)
+        with self.assertRaises(XPathException):
+            XPathResult([], 999)
+        with self.assertRaises(XPathException) as raised:
+            evaluator.createExpression("")
+        self.assertEqual(raised.exception.code, XPathException.INVALID_EXPRESSION_ERR)
+
+        resolver_node = div(
+            "namespaced",
+            **{"_xmlns:site": "https://example.com/site"},
+        )
+        resolver = XPathNSResolver(resolver_node)
+        self.assertEqual(
+            resolver.lookupNamespaceURI("site"), "https://example.com/site"
+        )
+        self.assertEqual(resolver.lookupNamespaceURI("svg"), "http://www.w3.org/2000/svg")
+        self.assertEqual(
+            XPathEvaluator({"custom": "urn:custom"})
+            .createNSResolver({"other": "urn:other"})
+            .lookupNamespaceURI("other"),
+            "urn:other",
+        )
+
+        fallback = evaluator.createExpression("//a[1]")
+        fallback.selector = None
+        result = fallback.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        self.assertEqual([node.textContent for node in result.nodes], ["Home"])
+
+        fallback = evaluator.createExpression("//a[position()=2]")
+        fallback.selector = None
+        result = fallback.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        self.assertEqual([node.textContent for node in result.nodes], ["Twitter"])
+
+        fallback = evaluator.createExpression("//a[starts-with(@href, '/')]")
+        fallback.selector = None
+        result = fallback.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        self.assertEqual([node.textContent for node in result.nodes], ["Home"])
+
+        fallback = evaluator.createExpression("//a[ends-with(@href, 'eventualtech')]")
+        fallback.selector = None
+        result = fallback.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+        self.assertEqual([node.textContent for node in result.nodes], ["Twitter"])
 
         """
         XPath reference notes for future coverage ideas.
