@@ -4289,9 +4289,14 @@ class Element(Node):
             return True
         return False
 
-    # def lang(self) -> str:
-    #     """ Sets or returns the value of the lang attribute of an element """ # TODO - prop?
-    #     return self.getAttribute('lang')
+    @property
+    def lang(self) -> str | None:
+        """Sets or returns the value of the lang attribute of an element."""
+        return self.getAttribute("lang")
+
+    @lang.setter
+    def lang(self, value: str) -> None:
+        self.setAttribute("lang", value)
 
     def lastElementChild(self) -> Node | None:
         """[Returns the last child element of an element]

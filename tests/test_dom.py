@@ -756,6 +756,13 @@ class DOMTest(unittest.TestCase):
         dom1 = div(div(), _dir="rtl")
         assert dom1.dir == "rtl"
 
+    def test_lang(self):
+        dom1 = div("Bonjour", _lang="fr")
+        self.assertEqual(dom1.lang, "fr")
+        dom1.lang = "fr-CA"
+        self.assertEqual(dom1.getAttribute("lang"), "fr-CA")
+        self.assertEqual(str(dom1), '<div lang="fr-CA">Bonjour</div>')
+
     def test_normalize(self):
         wrapper = Document.createElement("div")
         wrapper.appendChild(Document.createTextNode("Part 1 "))
