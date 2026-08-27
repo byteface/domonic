@@ -5,6 +5,7 @@ unit tests for domonic.javascript
 """
 
 import math
+import re
 import time
 import unittest
 from types import SimpleNamespace
@@ -1306,11 +1307,23 @@ class TestCase(unittest.TestCase):
         self.assertTrue(regex.unicode)
         self.assertEqual(regex.source, r"(foo)(bar)")
         self.assertEqual(regex.exec("xxfoobarxx"), ["foo", "bar"])
+        self.assertEqual(RegExp(r"foo").exec("xxfooxx"), ["foo"])
         self.assertTrue(regex.test("foobar"))
+        self.assertTrue(regex.test("xxFooBarxx"))
         self.assertFalse(regex.test("barfoo"))
         self.assertEqual(regex.toString(), r"(foo)(bar)")
         self.assertEqual(str(regex), r"(foo)(bar)")
-        self.assertIsNone(regex.compile())
+        self.assertIs(regex.compile(r"hello", "i"), regex)
+        self.assertEqual(regex.source, "hello")
+        self.assertTrue(regex.ignoreCase)
+        self.assertTrue(regex.test("well HELLO there"))
+        self.assertIs(regex.compile(RegExp(r"^bye$", "m")), regex)
+        self.assertEqual(regex.source, r"^bye$")
+        self.assertTrue(regex.multiline)
+        self.assertTrue(regex.test("hi\nbye"))
+        with self.assertRaises(re.error):
+            regex.compile("[")
+        self.assertEqual(regex.source, r"^bye$")
 
     def test_javascript_error_message(self):
         err = Error("boom")

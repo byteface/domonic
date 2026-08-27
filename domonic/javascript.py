@@ -4134,9 +4134,40 @@ class RegExp:
         if "u" not in self.flags:
             self.flags += "u" if value else ""
 
-    def compile(self) -> None:
+    def _re_flags(self) -> int:
+        flags = 0
+        if self.ignoreCase:
+            flags |= re.IGNORECASE
+        if self.multiline:
+            flags |= re.MULTILINE
+        if self.dotAll:
+            flags |= re.DOTALL
+        return flags
+
+    def compile(
+        self, expression: str | "RegExp" | None = None, flags: str | None = None
+    ) -> "RegExp":
         """(Re-)compiles a regular expression during execution of a script."""
-        pass
+        new_expression = self.expression
+        new_flags = self.flags
+        if isinstance(expression, RegExp):
+            new_expression = expression.expression
+            new_flags = expression.flags if flags is None else str(flags).lower()
+        elif expression is not None:
+            new_expression = str(expression)
+            if flags is not None:
+                new_flags = str(flags).lower()
+        elif flags is not None:
+            new_flags = str(flags).lower()
+
+        old_expression, old_flags = self.expression, self.flags
+        self.expression, self.flags = new_expression, new_flags
+        try:
+            re.compile(self.expression, self._re_flags())
+        except Exception:
+            self.expression, self.flags = old_expression, old_flags
+            raise
+        return self
 
     # def exec(self, s: str):
     #     """ Executes a search for a match in its string parameter. """
@@ -4158,10 +4189,11 @@ class RegExp:
     def exec(self, s: str) -> list[str] | None:
         """Executes a search for a match in its string parameter."""
         # print("exec:", self.expression, s)
-        m = re.search(self.expression, s)
+        m = re.search(self.expression, s, self._re_flags())
         # print(m)
         if m:
-            return [s for s in m.groups()]
+            groups = m.groups()
+            return [group for group in groups] if groups else [m.group(0)]
 
     def test(self, s: str) -> bool:
         """[Tests for a match in its string parameter.]
@@ -4172,7 +4204,7 @@ class RegExp:
         Returns:
             [bool]: [True if match else False]
         """
-        m = re.match(self.expression, s)
+        m = re.search(self.expression, s, self._re_flags())
         # print(m)
         if m:
             return True
