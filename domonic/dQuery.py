@@ -241,6 +241,15 @@ class dQuery_el:
             raise last_error
 
     @staticmethod
+    def _simple_match_selector(element, selector):
+        if selector.startswith("#"):
+            return element.getAttribute("id") == selector[1:]
+        if selector.startswith("."):
+            classes = (element.getAttribute("class") or "").split()
+            return all(token in classes for token in selector.split(".") if token)
+        return getattr(element, "tagName", "").lower() == selector.lower()
+
+    @staticmethod
     def _match_selector(element, selector, index=None):
         if selector is None:
             return True
@@ -262,13 +271,8 @@ class dQuery_el:
                 try:
                     return bool(element.matches(selector))
                 except Exception:
-                    pass
-            if selector.startswith("#"):
-                return element.getAttribute("id") == selector[1:]
-            if selector.startswith("."):
-                classes = (element.getAttribute("class") or "").split()
-                return all(token in classes for token in selector.split(".") if token)
-            return getattr(element, "tagName", "").lower() == selector.lower()
+                    return dQuery_el._simple_match_selector(element, selector)
+            return dQuery_el._simple_match_selector(element, selector)
         return element == selector
 
     @staticmethod
@@ -1563,7 +1567,8 @@ class dQuery_el:
                     delattr(el, prop)
                     continue
                 except Exception:
-                    pass
+                    el.removeAttribute(prop)
+                    continue
             el.removeAttribute(prop)
         return self
 
@@ -2509,7 +2514,7 @@ class º(dQuery_el):
     @staticmethod
     def noop():
         """An empty function."""
-        pass
+        return None
 
     @staticmethod
     def now():

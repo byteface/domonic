@@ -13,6 +13,7 @@ import time
 import urllib.parse
 import uuid
 from collections.abc import Iterable
+from contextlib import suppress
 from typing import Any
 
 from domonic.dom import DOMException
@@ -49,10 +50,8 @@ def _to_bytes(part: Any, endings: str = "transparent") -> bytes:
             return bytes(buffer)
         if isinstance(buffer, memoryview):
             return buffer.tobytes()
-        try:
+        with suppress(TypeError):
             return bytes(buffer)
-        except TypeError:
-            pass
     if hasattr(part, "read"):
         data = part.read()
         return _to_bytes(data, endings)

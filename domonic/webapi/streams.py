@@ -7,6 +7,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Streams_API
 from __future__ import annotations
 
 import zlib
+from contextlib import suppress
 from typing import Any
 
 
@@ -46,10 +47,8 @@ def _coerce_bytes(chunk: Any) -> bytes:
     buffer = getattr(chunk, "buffer", None)
     if buffer is not None:
         nested = getattr(buffer, "buffer", buffer)
-        try:
+        with suppress(TypeError):
             return bytes(nested)
-        except TypeError:
-            pass
 
     return bytes(chunk)
 

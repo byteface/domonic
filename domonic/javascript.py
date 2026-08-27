@@ -46,14 +46,18 @@ except ImportError:  # pragma: no cover - optional dependency
     def parse(date_string: Any, parser_info: Any = None) -> datetime.datetime:
         value = str(date_string).strip()
         try:
-            return datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
+            parsed = datetime.datetime.fromisoformat(value.replace("Z", "+00:00"))
         except ValueError:
-            pass
+            parsed = None
+        if parsed is not None:
+            return parsed
 
         try:
-            return parsedate_to_datetime(value)
+            parsed = parsedate_to_datetime(value)
         except (TypeError, ValueError, IndexError):
-            pass
+            parsed = None
+        if parsed is not None:
+            return parsed
 
         for fmt in (
             "%Y-%m-%d %H:%M:%S",
@@ -1479,7 +1483,7 @@ Global.performance = performance
 
 class Intl:
     def __init__(self) -> None:
-        pass
+        """Namespace object for internationalization constructors."""
 
     _supported_values: dict[str, tuple[str, ...]] = {
         "calendar": (
@@ -2426,7 +2430,7 @@ class Screen:
 
 
 class ProgramKilled(Exception):
-    pass
+    """Raised when a scheduled background job is asked to stop."""
 
 
 class Job(threading.Thread):
@@ -3748,7 +3752,7 @@ class String:
             try:
                 return re.split(expr, self.x)
             except re.error:
-                pass
+                return self.x.split(expr)
         return self.x.split(expr)
 
     def concat(self, *args, seperator: str = "") -> str:

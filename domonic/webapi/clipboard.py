@@ -72,7 +72,7 @@ class Clipboard:
             try:
                 pyperclip.copy(text)
             except Exception:
-                pass
+                return text
         return text
 
     def readText(self):
@@ -80,7 +80,7 @@ class Clipboard:
             try:
                 return pyperclip.paste()
             except Exception:
-                pass
+                return self._read_type("text/plain", "")
         return self._read_type("text/plain", "")
 
     def write(self, data):
