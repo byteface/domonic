@@ -12,7 +12,18 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
-from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
+from domonic.javascript import (
+    URL,
+    Array,
+    Date,
+    Global,
+    Math,
+    Object,
+    String,
+    Window,
+    globalThis,
+    performance,
+)
 
 # import requests
 # from mock import patch
@@ -370,6 +381,13 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Global.parseInt("0x10", 10), 0)
         self.assertEqual(Global.parseInt("ff", 16), 255)
         self.assertEqual(Global.parseInt("nope"), "NaN")
+
+    def test_domonic_global_this_alias(self):
+        self.assertIs(globalThis, Global)
+        self.assertIs(Global.globalThis, Global)
+        self.assertIs(Global.self, Global)
+        self.assertIs(Global.window, Window)
+        self.assertIs(globalThis.performance, performance)
 
     def test_domonic_window_console_log(self):
         # window = Window()

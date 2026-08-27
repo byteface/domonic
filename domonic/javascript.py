@@ -137,7 +137,6 @@ true: bool = True
 false: bool = False
 null: object = None
 undefined: object = None
-# globalThis # TODO - do i need to use inpect? or is globals() ok?
 
 # def typeof(v):
 #     return type(v).__name__
@@ -1479,6 +1478,9 @@ class Performance:
 
 performance = Performance()
 Global.performance = performance
+globalThis = Global
+Global.globalThis = globalThis
+Global.self = globalThis
 
 
 class Intl:
@@ -2787,6 +2789,7 @@ Global.setInterval = Window.setInterval
 Global.clearInterval = Window.clearInterval
 
 window = Window
+Global.window = window
 
 
 class Array:
