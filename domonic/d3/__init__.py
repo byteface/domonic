@@ -37,6 +37,6 @@ from domonic.html import *
 from domonic.d3.tile import *
 # from domonic.d3.time-format import *
 # from domonic.d3.time import *
-# from domonic.d3.timer import *
+from domonic.d3.timer import *
 # from domonic.d3.transition import *
 # from domonic.d3.zoom import *

@@ -2,208 +2,160 @@
 domonic.d3.timer
 ====================================
 
-# TODO - completely untested
-
 """
 
-from domonic.javascript import *
+from __future__ import annotations
 
-frame = 0  # is an animation frame pending?
-timeout = None  # 0  # is a timeout pending?
-interval = 0  # are any timers active?
-pokeDelay = 1000  # how frequently we check for clock skew
-taskHead = None
-taskTail = None
-clockLast = 0
-clockNow = 0
-clockSkew = 0
-clock = performance  # if isinstance(performance, object) and performance.now else Date
-# setFrame = window.requestAnimationFrame.bind(window)  # if isinstance( window, object) and window.requestAnimationFrame ?  : function(f) { setTimeout(f, 17); }
+import threading
+from typing import Any, Callable
+
+from domonic.javascript import Error, performance
+
+FRAME_DELAY = 17
+
+_timers: list["Timer"] = []
+_timers_lock = threading.RLock()
 
 
-def fr(f):
-    """framerate"""
-    setTimeout(f, 17)
+def now() -> float:
+    """Return the current high-resolution timestamp in milliseconds."""
+    return performance.now()
 
 
-setFrame = fr
+def _invoke(callback: Callable[..., Any], elapsed: float) -> Any:
+    if hasattr(callback, "call"):
+        return callback.call(None, elapsed)
+    return callback(elapsed)
 
 
-def now():
-    global clockNow
-    global clockSkew
-    clockNow = clock.now() + clockSkew
-    return clockNow or (setFrame(clearNow), clockNow)
+def _register(timer_: "Timer") -> None:
+    with _timers_lock:
+        if timer_ not in _timers:
+            _timers.append(timer_)
 
 
-def clearNow():
-    global clockNow
-    clockNow = 0
+def _unregister(timer_: "Timer") -> None:
+    with _timers_lock:
+        if timer_ in _timers:
+            _timers.remove(timer_)
 
 
 class Timer:
+    """A small d3-timer compatible timer."""
+
     def __init__(self):
-        self._call = None
-        self._time = None
-        self._next = None
+        self._call: Callable[..., Any] | None = None
+        self._time: float = 0
+        self._start: float = 0
+        self._delay: float = 0
+        self._repeat: float | None = FRAME_DELAY
+        self._handle: threading.Timer | None = None
+        self._active = False
 
-    def restart(self, callback, delay, time):
+    def restart(self, callback, delay=None, time=None):
+        """Restart this timer with a callback and optional delay/start time."""
+        self._restart(callback, delay, time, FRAME_DELAY)
 
-        global taskTail
-        global taskHead
-
+    def _restart(self, callback, delay=None, time=None, repeat=FRAME_DELAY):
         if not callable(callback):
             raise Error("callback is not a function")
-
-        b = 0 if delay == None else delay
-        time = now() if time == None else time + b
-
-        if not self._next and taskTail != self:
-            if taskTail:
-                taskTail._next = self
-        else:
-            taskHead = self
-
-        taskTail = self
-
+        self.stop()
         self._call = callback
-        self._time = time
-        sleep()
+        self._delay = 0 if delay is None else float(delay)
+        self._start = now() if time is None else float(time)
+        self._time = self._start + self._delay
+        self._repeat = repeat
+        self._active = True
+        _register(self)
+        self._schedule()
+
+    def _schedule(self) -> None:
+        if not self._active:
+            return
+        wait = max(0, (self._time - now()) / 1000)
+        self._handle = threading.Timer(wait, self._fire)
+        self._handle.daemon = True
+        self._handle.start()
+
+    def _fire(self) -> None:
+        if not self._active or self._call is None:
+            return
+        elapsed = max(0, now() - self._time)
+        _invoke(self._call, elapsed)
+        if not self._active:
+            return
+        if self._repeat is None:
+            self.stop()
+            return
+        self._time = now() + max(float(self._repeat), FRAME_DELAY)
+        self._schedule()
+
+    def _flush(self, timestamp: float) -> None:
+        if not self._active or self._call is None or timestamp < self._time:
+            return
+        elapsed = max(0, timestamp - self._time)
+        handle = self._handle
+        if handle is not None:
+            handle.cancel()
+            self._handle = None
+        _invoke(self._call, elapsed)
+        if not self._active:
+            return
+        if self._repeat is None:
+            self.stop()
+            return
+        self._time = timestamp + max(float(self._repeat), FRAME_DELAY)
+        self._schedule()
 
     def stop(self):
-        if self._call:
-            self._call = None
-            self._time = Infinity
-        sleep()
+        """Stop this timer."""
+        self._active = False
+        self._call = None
+        if self._handle is not None:
+            self._handle.cancel()
+            self._handle = None
+        _unregister(self)
 
 
-def timer(callback, delay, time):
-    t = Timer()
-    t.restart(callback, delay, time)
-    return t
+def timer(callback, delay=None, time=None):
+    """Schedule a callback every animation-frame-ish tick until stopped."""
+    timer_ = Timer()
+    timer_.restart(callback, delay, time)
+    return timer_
 
 
 def timerFlush():
-    global frame
-    now()  # Get the current time, if not already set.
-    frame += 1  # Pretend we’ve set an alarm, if we haven’t already.
-    t = taskHead
-    #   e
-    while t:
-        e = clockNow - t._time
-        if e >= 0:
-            t._call.call(None, e)
-        t = t._next
-    frame -= 1
+    """Immediately invoke all timers whose scheduled time has elapsed."""
+    timestamp = now()
+    with _timers_lock:
+        pending = list(_timers)
+    for timer_ in pending:
+        timer_._flush(timestamp)
 
 
-def wake():
-    global timeout
-    global clockLast
-    global clockNow
-    global frame
-    clockLast = clock.now()
-    clockNow = (clockLast) + clockSkew
-    frame = timeout = 0
-    try:
-        timerFlush()
-    finally:
-        frame = 0
-        nap()
-        clockNow = 0
+def timeout(callback, delay=None, time=None):
+    """Schedule a callback once."""
+    timer_ = Timer()
+    delay = 0 if delay is None else float(delay)
 
+    def elapsed_callback(elapsed):
+        timer_.stop()
+        return _invoke(callback, elapsed + delay)
 
-def poke():
-    global clockLast
-    global clockSkew
-    now = clock.now()
-    delay = now - clockLast
-    if delay > pokeDelay:
-        clockSkew -= delay
-        clockLast = now
-
-
-def nap():
-    global taskHead
-    global taskTail
-    # t0
-    t1 = taskHead
-    # t2
-    time = Infinity
-    while t1:
-        if t1._call:
-            if time > t1._time:
-                time = t1._time
-                t0 = t1
-                t1 = t1._next
-            else:
-                t2 = t1._next
-                t1._next = None
-                t0._next = t2
-                taskHead = t2
-                t1 = t0._next if t0 else taskHead
-        taskTail = t0
-        sleep(time)
-
-
-def sleep(time=0):
-    global frame
-    global clockNow
-    global clockLast
-    global timeout
-    global interval
-    if frame:
-        return  # Soonest alarm already set, or will be.
-    if timeout is not None:
-        timeout = Global.clearTimeout(timeout)
-    delay = time - clockNow  # Strictly less than if we recomputed clockNow.
-    if delay > 24:
-        if time < Infinity:
-            timeout = Global.setTimeout(wake, time - clock.now() - clockSkew)
-        if interval:
-            interval = Global.clearInterval(interval)
-        else:
-            if not interval:
-                clockLast = clock.now()
-                interval = Global.setInterval(poke, pokeDelay)
-        frame = 1
-        setFrame(wake)
-
-
-def timeout(callback, delay, time):
-    t = Timer()
-    delay = 0 if delay == None else delay
-
-    def elapsed():
-        t.stop()
-        callback(elapsed + delay)
-
-    t.restart(elapsed, delay, time)
-    return t
+    timer_._restart(elapsed_callback, delay, time, None)
+    return timer_
 
 
 def interval(callback, delay=None, time=None):
+    """Schedule a callback repeatedly."""
+    if delay is None:
+        return timer(callback, delay, time)
+    timer_ = Timer()
+    interval_delay = float(delay)
+    start_time = now() if time is None else float(time)
 
-    t = Timer()
-    total = delay
-    if delay == None:
-        t.restart(callback, delay, time)
-        return t
-    t._restart = t.restart
+    def tick(elapsed):
+        return _invoke(callback, elapsed + interval_delay)
 
-    def r(callback, delay, time):
-        delay = delay
-        time = now() if time == None else time
-
-        def tick(elapsed):
-            nonlocal total
-            elapsed += total
-            total += delay
-            t._restart(tick, total, time)
-            callback(elapsed)
-
-        t._restart(tick, delay, time)
-
-    t.restart = r
-    t.restart(callback, delay, time)
-    return t
+    timer_._restart(tick, interval_delay, start_time, interval_delay)
+    return timer_

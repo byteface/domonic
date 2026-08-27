@@ -6,6 +6,7 @@ unit tests for domonic.d3
 """
 
 import time
+import threading
 import unittest
 from types import SimpleNamespace
 
@@ -25,6 +26,13 @@ from domonic.d3.format import *
 from domonic.d3.format import format
 from domonic.d3.queue import queue
 from domonic.d3.tile import Tiles, tile
+from domonic.d3.timer import (
+    Timer,
+    interval as d3_interval,
+    now as d3_now,
+    timeout as d3_timeout,
+    timerFlush,
+)
 
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
@@ -39,6 +47,48 @@ def _debug_print(*args, **kwargs):
 
 
 class TestCase(unittest.TestCase):
+    def test_d3_timer_flush_runs_due_timer_and_stop_cleans_up(self):
+        fired = []
+        timer_ = Timer()
+
+        def callback(elapsed):
+            fired.append(elapsed)
+            timer_.stop()
+
+        timer_.restart(callback, 10000, d3_now())
+        timer_._time = d3_now() - 1
+        timerFlush()
+
+        self.assertEqual(len(fired), 1)
+        self.assertFalse(timer_._active)
+
+    def test_d3_timeout_runs_once(self):
+        fired = []
+        done = threading.Event()
+
+        timer_ = d3_timeout(lambda elapsed: (fired.append(elapsed), done.set()), 1)
+
+        self.assertTrue(done.wait(0.5))
+        self.assertEqual(len(fired), 1)
+        self.assertFalse(timer_._active)
+
+    def test_d3_interval_repeats_until_stopped(self):
+        fired = []
+        done = threading.Event()
+        holder = {}
+
+        def callback(elapsed):
+            fired.append(elapsed)
+            if len(fired) >= 2:
+                holder["timer"].stop()
+                done.set()
+
+        holder["timer"] = d3_interval(callback, 1)
+
+        self.assertTrue(done.wait(0.5))
+        self.assertGreaterEqual(len(fired), 2)
+        self.assertFalse(holder["timer"]._active)
+
     def test_d3_tile_generates_visible_tiles_and_metadata(self):
         layout = tile().size([512, 512])
         transform = SimpleNamespace(k=512, x=256, y=256)
