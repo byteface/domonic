@@ -3,6 +3,7 @@ test_terminal
 ~~~~~~~~~~~~~~~~
 """
 
+import os
 import unittest
 from tempfile import TemporaryDirectory
 
@@ -55,15 +56,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(result), "")
 
     def test_bash_cd(self):
-        pass  # TODO - need to change github action
-        # print(cd('../'))  # < CD does not run on terminal
-        # thedir_aftercd = pwd()
-        # print(thedir_aftercd)
-        # self.assertTrue('domonic' not in thedir_aftercd)
-        # print(cd('domonic'))
-        # thedir_aftercd = pwd()
-        # print(thedir_aftercd)
-        # self.assertTrue('domonic' in thedir_aftercd)
+        old_cwd = os.getcwd()
+        with TemporaryDirectory() as tmp:
+            try:
+                cd(tmp)
+                self.assertEqual(os.path.realpath(os.getcwd()), os.path.realpath(tmp))
+                self.assertEqual(os.path.realpath(pwd().strip()), os.path.realpath(tmp))
+            finally:
+                os.chdir(old_cwd)
 
     def test_bash_mkdir(self):
         with TemporaryDirectory() as tmp:
@@ -126,9 +126,7 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_bash(self):
-        print("ran")
-        print(ping("https://www.google.com"))  # < TODO - need to strean output
-        # print(wget('eventual.technology'))
+        self.assertEqual(command.run_args(["printf", "ran"]), "ran")
 
 
 if __name__ == "__main__":
