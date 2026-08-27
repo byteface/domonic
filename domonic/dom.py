@@ -2969,360 +2969,132 @@ class DocumentType(Node):
         return full_str
 
 
-"""
-def AriaMixin():  # ???
-
-    @property
-    def ariaAtomic(self):
-        return self.getAttribute('aria-atomic')
-
-    @ariaAtomic.setter
-    def ariaAtomic(self, value: str):
-        self.setAttribute('aria-atomic', value)
-
-    @property
-    def ariaAtomic(self):
-        return self.getAttribute('aria-atomic')
-
-    @property
-    def ariaAutoComplete(self):
-        return self.getAttribute('aria-autoComplete')
-
-    @ariaAutoComplete.setter
-    def ariaAutoComplete(self, value: str):
-        return self.getAttribute('aria-autoComplete')
-
-    @property
-    def ariaBusy(self):
-        return self.getAttribute('aria-busy')
-
-    @ariaBusy.setter
-    def ariaBusy(self, value: str):
-        return self.getAttribute('aria-busy')
-
-    @property
-    def ariaChecked(self):
-        return self.getAttribute('aria-checked')
-
-    @ariaChecked.setter
-    def ariaChecked(self, value: str):
-        return self.getAttribute('aria-checked')
-
-    @property
-    def ariaColCount(self):
-        return self.getAttribute('aria-colCount')
-
-    @ariaColCount.setter
-    def ariaColCount(self, value: str):
-        return self.getAttribute('aria-colCount')
-
-    @property
-    def ariaColIndex(self):
-        return self.getAttribute('aria-colIndex')
-
-    @ariaColIndex.setter
-    def ariaColIndex(self, value: str):
-        return self.getAttribute('aria-colIndex')
-
-    @property
-    def ariaColIndexText(self):
-        return self.getAttribute('aria-colIndexText')
-
-    @ariaColIndexText.setter
-    def ariaColIndexText(self, value: str):
-        return self.getAttribute('aria-colIndexText')
-
-    @property
-    def ariaColSpan(self):
-        return self.getAttribute('aria-colSpan')
-
-    @ariaColSpan.setter
-    def ariaColSpan(self, value: str):
-        return self.getAttribute('aria-colSpan')
-
-    @property
-    def ariaCurrent(self):
-        return self.getAttribute('aria-current')
-
-    @ariaCurrent.setter
-    def ariaCurrent(self, value: str):
-        return self.getAttribute('aria-current')
-
-    @property
-    def ariaDescription(self):
-        return self.getAttribute('aria-description')
-
-    @ariaDescription.setter
-    def ariaDescription(self, value: str):
-        return self.getAttribute('aria-description')
-
-    @property
-    def ariaDisabled(self):
-        return self.getAttribute('aria-disabled')
-
-    @ariaDisabled.setter
-    def ariaDisabled(self, value: str):
-        return self.getAttribute('aria-disabled')
-
-    @property
-    def ariaExpanded(self):
-        return self.getAttribute('aria-expanded')
-
-    @ariaExpanded.setter
-    def ariaExpanded(self, value: str):
-        return self.getAttribute('aria-expanded')
-
-    @property
-    def ariaHasPopup(self):
-        return self.getAttribute('aria-hasPopup')
-
-    @ariaHasPopup.setter
-    def ariaHasPopup(self, value: str):
-        return self.getAttribute('aria-hasPopup')
-
-    @property
-    def ariaHidden(self):
-        return self.getAttribute('aria-hidden')
-
-    @ariaHidden.setter
-    def ariaHidden(self, value: str):
-        return self.getAttribute('aria-hidden')
-
-    @property
-    def ariaKeyShortcuts(self):
-        return self.getAttribute('aria-keyShortcuts')
-
-    @ariaKeyShortcuts.setter
-    def ariaKeyShortcuts(self, value: str):
-        return self.getAttribute('aria-keyShortcuts')
-
-    @property
-    def ariaLabel(self):
-        return self.getAttribute('aria-label')
-
-    @ariaLabel.setter
-    def ariaLabel(self, value: str):
-        return self.getAttribute('aria-label')
-
-    @property
-    def ariaLevel(self):
-        return self.getAttribute('aria-level')
-
-    @ariaLevel.setter
-    def ariaLevel(self, value: str):
-        return self.getAttribute('aria-level')
-
-    @property
-    def ariaLive(self):
-        return self.getAttribute('aria-live')
-
-    @ariaLive.setter
-    def ariaLive(self, value: str):
-        return self.getAttribute('aria-live')
-
-    @property
-    def ariaModal(self):
-        return self.getAttribute('aria-modal')
-
-    @ariaModal.setter
-    def ariaModal(self, value: str):
-        return self.getAttribute('aria-modal')
-
-    @property
-    def ariaMultiline(self):
-        return self.getAttribute('aria-multiline')
-
-    @ariaMultiline.setter
-    def ariaMultiline(self, value: str):
-        return self.getAttribute('aria-multiline')
-
-    @property
-    def ariaMultiSelectable(self):
-        return self.getAttribute('aria-multiSelectable')
-
-    @ariaMultiSelectable.setter
-    def ariaMultiSelectable(self, value: str):
-        return self.getAttribute('aria-multiSelectable')
-
-    @property
-    def ariaOrientation(self):
-        return self.getAttribute('aria-orientation')
-
-    @ariaOrientation.setter
-    def ariaOrientation(self, value: str):
-        return self.getAttribute('aria-orientation')
-
-    @property
-    def ariaPlaceholder(self):
-        return self.getAttribute('aria-placeholder')
-
-    @ariaPlaceholder.setter
-    def ariaPlaceholder(self, value: str):
-        return self.getAttribute('aria-placeholder')
-
-    @property
-    def ariaPosInSet(self):
-        return self.getAttribute('aria-posInSet')
-
-    @ariaPosInSet.setter
-    def ariaPosInSet(self, value: str):
-        return self.getAttribute('aria-posInSet')
-
-    @property
-    def ariaPressed(self):
-        return self.getAttribute('aria-pressed')
-
-    @ariaPressed.setter
-    def ariaPressed(self, value: str):
-        return self.getAttribute('aria-pressed')
-
-    @property
-    def ariaReadOnly(self):
-        return self.getAttribute('aria-readOnly')
-
-    @ariaReadOnly.setter
-    def ariaReadOnly(self, value: str):
-        return self.getAttribute('aria-readOnly')
-
-    @property
-    def ariaRelevant(self):
-        return self.getAttribute('aria-relevant')
-
-    @ariaRelevant.setter
-    def ariaRelevant(self, value: str):
-        return self.getAttribute('aria-relevant')
-
-    @property
-    def ariaRequired(self):
-        return self.getAttribute('aria-required')
-
-    @ariaRequired.setter
-    def ariaRequired(self, value: str):
-        return self.getAttribute('aria-required')
-
-    @property
-    def ariaRoleDescription(self):
-        return self.getAttribute('aria-roleDescription')
-
-    @ariaRoleDescription.setter
-    def ariaRoleDescription(self, value: str):
-        return self.getAttribute('aria-roleDescription')
-
-    @property
-    def ariaRowCount(self):
-        return self.getAttribute('aria-rowCount')
-
-    @ariaRowCount.setter
-    def ariaRowCount(self, value: str):
-        return self.getAttribute('aria-rowCount')
-
-    @property
-    def ariaRowIndex(self):
-        return self.getAttribute('aria-rowIndex')
-
-    @ariaRowIndex.setter
-    def ariaRowIndex(self, value: str):
-        return self.getAttribute('aria-rowIndex')
-
-    @property
-    def ariaRowIndexText(self):
-        return self.getAttribute('aria-rowIndexText')
-
-    @ariaRowIndexText.setter
-    def ariaRowIndexText(self, value: str):
-        return self.getAttribute('aria-rowIndexText')
-
-    @property
-    def ariaRowSpan(self):
-        return self.getAttribute('aria-rowSpan')
-
-    @ariaRowSpan.setter
-    def ariaRowSpan(self, value: str):
-        return self.getAttribute('aria-rowSpan')
-
-    @property
-    def ariaSelected(self):
-        return self.getAttribute('aria-selected')
-
-    @ariaSelected.setter
-    def ariaSelected(self, value: str):
-        return self.getAttribute('aria-selected')
-
-    @property
-    def ariaSetSize(self):
-        return self.getAttribute('aria-setSize')
-
-    @ariaSetSize.setter
-    def ariaSetSize(self, value: str):
-        return self.getAttribute('aria-setSize')
-
-    @property
-    def ariaSort(self):
-        return self.getAttribute('aria-sort')
-
-    @ariaSort.setter
-    def ariaSort(self, value: str):
-        return self.getAttribute('aria-sort')
-
-    @property
-    def ariaValueMax(self):
-        return self.getAttribute('aria-valueMax')
-
-    @ariaValueMax.setter
-    def ariaValueMax(self, value: str):
-        return self.getAttribute('aria-valueMax')
-
-    @property
-    def ariaValueMin(self):
-        return self.getAttribute('aria-valueMin')
-
-    @ariaValueMin.setter
-    def ariaValueMin(self, value: str):
-        return self.getAttribute('aria-valueMin')
-
-    @property
-    def ariaValueNow(self):
-        return self.getAttribute('aria-valueNow')
-
-    @ariaValueNow.setter
-    def ariaValueNow(self, value: str):
-        return self.getAttribute('aria-valueNow')
-
-    @property
-    def ariaValueText(self):
-        return self.getAttribute('aria-valueText')
-
-    @ariaValueText.setter
-    def ariaValueText(self, value: str):
-        return self.getAttribute('aria-valueText')
-
-# class ElementInternals(object, AriaMixin):
-#     def __init__(self, element):
-#         self.element = element
-#         self.shadowRoot = None # Returns the ShadowRoot object associated with this element.
-#         self.form  # Returns the HTMLFormElement associated with this element.
-#         self.states  # Returns the CustomStateSet associated with this element.
-#         self.willValidate # A boolean value which returns true if the element is a submittable element that is a candidate for constraint validation.
-#         self.validity  # Returns a ValidityState object which represents the different validity states the element can be in, with respect to constraint validation.
-#         self.validationMessage  # A string containing the validation message of this element.
-#         self.labels  # Returns a NodeList of all of the label elements associated with this element.
+_ARIA_REFLECTED_ATTRIBUTES: tuple[tuple[str, str], ...] = (
+    ("role", "role"),
+    ("ariaAtomic", "aria-atomic"),
+    ("ariaAutoComplete", "aria-autocomplete"),
+    ("ariaBrailleLabel", "aria-braillelabel"),
+    ("ariaBrailleRoleDescription", "aria-brailleroledescription"),
+    ("ariaBusy", "aria-busy"),
+    ("ariaChecked", "aria-checked"),
+    ("ariaColCount", "aria-colcount"),
+    ("ariaColIndex", "aria-colindex"),
+    ("ariaColIndexText", "aria-colindextext"),
+    ("ariaColSpan", "aria-colspan"),
+    ("ariaCurrent", "aria-current"),
+    ("ariaDescription", "aria-description"),
+    ("ariaDisabled", "aria-disabled"),
+    ("ariaExpanded", "aria-expanded"),
+    ("ariaHasPopup", "aria-haspopup"),
+    ("ariaHidden", "aria-hidden"),
+    ("ariaInvalid", "aria-invalid"),
+    ("ariaKeyShortcuts", "aria-keyshortcuts"),
+    ("ariaLabel", "aria-label"),
+    ("ariaLevel", "aria-level"),
+    ("ariaLive", "aria-live"),
+    ("ariaModal", "aria-modal"),
+    ("ariaMultiLine", "aria-multiline"),
+    ("ariaMultiSelectable", "aria-multiselectable"),
+    ("ariaOrientation", "aria-orientation"),
+    ("ariaPlaceholder", "aria-placeholder"),
+    ("ariaPosInSet", "aria-posinset"),
+    ("ariaPressed", "aria-pressed"),
+    ("ariaReadOnly", "aria-readonly"),
+    ("ariaRelevant", "aria-relevant"),
+    ("ariaRequired", "aria-required"),
+    ("ariaRoleDescription", "aria-roledescription"),
+    ("ariaRowCount", "aria-rowcount"),
+    ("ariaRowIndex", "aria-rowindex"),
+    ("ariaRowIndexText", "aria-rowindextext"),
+    ("ariaRowSpan", "aria-rowspan"),
+    ("ariaSelected", "aria-selected"),
+    ("ariaSetSize", "aria-setsize"),
+    ("ariaSort", "aria-sort"),
+    ("ariaValueMax", "aria-valuemax"),
+    ("ariaValueMin", "aria-valuemin"),
+    ("ariaValueNow", "aria-valuenow"),
+    ("ariaValueText", "aria-valuetext"),
+)
+
+_ARIA_REFLECTED_ELEMENT_ATTRIBUTES: tuple[tuple[str, str, bool], ...] = (
+    ("ariaActiveDescendantElement", "aria-activedescendant", False),
+    ("ariaControlsElements", "aria-controls", True),
+    ("ariaDescribedByElements", "aria-describedby", True),
+    ("ariaDetailsElements", "aria-details", True),
+    ("ariaErrorMessageElements", "aria-errormessage", True),
+    ("ariaFlowToElements", "aria-flowto", True),
+    ("ariaLabelledByElements", "aria-labelledby", True),
+    ("ariaOwnsElements", "aria-owns", True),
+)
 
 
 class CustomStateSet:
+    """Set-like storage for custom element states."""
 
-    def __init__(self):
-        pass
+    def __init__(self, states: Iterable[str] | None = None) -> None:
+        self._states: list[str] = []
+        for state in states or ():
+            self.add(state)
 
-    def add(self, state):
-        pass
+    @property
+    def size(self) -> int:
+        return len(self._states)
 
-    def clear(self):
-        pass
+    def add(self, state: str) -> "CustomStateSet":
+        state = self._state_name(state)
+        if state not in self._states:
+            self._states.append(state)
+        return self
 
-    def delete(self, state):
-        pass
+    def clear(self) -> None:
+        self._states.clear()
 
-"""
+    def delete(self, state: str) -> bool:
+        state = self._state_name(state)
+        if state not in self._states:
+            return False
+        self._states.remove(state)
+        return True
+
+    def entries(self) -> Iterator[tuple[str, str]]:
+        for state in self._states:
+            yield state, state
+
+    def forEach(
+        self,
+        callback: Callable[[str, str, "CustomStateSet"], Any],
+        thisArg: Any = None,
+    ) -> None:
+        for state in list(self._states):
+            callback(state, state, self)
+
+    def has(self, state: str) -> bool:
+        return self._state_name(state) in self._states
+
+    def keys(self) -> Iterator[str]:
+        return iter(self._states)
+
+    def values(self) -> Iterator[str]:
+        return iter(self._states)
+
+    def __contains__(self, state: object) -> bool:
+        return isinstance(state, str) and self.has(state)
+
+    def __iter__(self) -> Iterator[str]:
+        return self.values()
+
+    def __len__(self) -> int:
+        return self.size
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self._states!r})"
+
+    @staticmethod
+    def _state_name(state: str) -> str:
+        state = str(state).strip()
+        if not state:
+            raise ValueError("custom state names cannot be empty")
+        return state
 
 
 class NodeList(list):
@@ -4927,6 +4699,83 @@ class Element(Node):
     def toString(self) -> str:
         """Converts an element to a string"""
         return str(self)
+
+
+def _aria_attribute_property(attribute: str) -> property:
+    def getter(self):
+        return self.getAttribute(attribute)
+
+    def setter(self, value):
+        self.setAttribute(attribute, value)
+
+    def deleter(self):
+        self.removeAttribute(attribute)
+
+    return property(getter, setter, deleter, f"Reflects the {attribute} attribute.")
+
+
+def _element_idrefs(element: "Element") -> str:
+    if not isinstance(element, Element):
+        return str(element)
+    element_id = element.id
+    if element_id is None:
+        raise ValueError("ARIA element references must have an id")
+    return element_id
+
+
+def _resolve_idrefs(context: "Element", attribute: str) -> list["Element"]:
+    value = context.getAttribute(attribute)
+    if not value:
+        return []
+    root = context.getRootNode({"composed": True})
+    resolver = getattr(root, "getElementById", None)
+    if resolver is None:
+        return []
+    found = []
+    for element_id in str(value).split():
+        element = resolver(element_id)
+        if isinstance(element, Element):
+            found.append(element)
+    return found
+
+
+def _aria_element_reference_property(attribute: str, multiple: bool) -> property:
+    def getter(self):
+        elements = _resolve_idrefs(self, attribute)
+        return elements if multiple else elements[0] if elements else None
+
+    def setter(self, value):
+        if value is None:
+            self.removeAttribute(attribute)
+            return
+        if multiple:
+            values = (
+                [value]
+                if isinstance(value, (str, Element))
+                else list(value)
+                if isinstance(value, IterableABC)
+                else [value]
+            )
+            idrefs = " ".join(_element_idrefs(item) for item in values)
+            self.setAttribute(attribute, idrefs)
+            return
+        self.setAttribute(attribute, _element_idrefs(value))
+
+    def deleter(self):
+        self.removeAttribute(attribute)
+
+    return property(getter, setter, deleter, f"Reflects the {attribute} ID reference.")
+
+
+for _property_name, _attribute_name in _ARIA_REFLECTED_ATTRIBUTES:
+    setattr(Element, _property_name, _aria_attribute_property(_attribute_name))
+
+for _property_name, _attribute_name, _is_multiple in _ARIA_REFLECTED_ELEMENT_ATTRIBUTES:
+    setattr(
+        Element,
+        _property_name,
+        _aria_element_reference_property(_attribute_name, _is_multiple),
+    )
 
 
 class DOMImplementation:

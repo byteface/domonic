@@ -4734,6 +4734,67 @@ class NodeTest(unittest.TestCase):
         del attrs["role"]
         self.assertFalse(node.hasAttribute("role"))
 
+    def test_aria_reflected_properties(self):
+        node = button("X")
+        node.role = "button"
+        node.ariaLabel = "Close dialog"
+        node.ariaMultiLine = "false"
+        node.ariaValueMax = "10"
+        node.ariaBrailleLabel = "cls"
+
+        self.assertEqual(node.getAttribute("role"), "button")
+        self.assertEqual(node.ariaLabel, "Close dialog")
+        self.assertEqual(node.getAttribute("aria-multiline"), "false")
+        self.assertEqual(node.getAttribute("aria-valuemax"), "10")
+        self.assertIn('aria-braillelabel="cls"', str(node))
+
+        del node.ariaLabel
+        self.assertIsNone(node.ariaLabel)
+        self.assertFalse(node.hasAttribute("aria-label"))
+
+    def test_aria_element_reference_properties(self):
+        target = div(_id="panel")
+        label = span("Preferences", _id="label")
+        control = button("Open", _id="control")
+        root = div(label, control, target)
+
+        control.ariaControlsElements = [target]
+        control.ariaLabelledByElements = label
+        control.ariaActiveDescendantElement = target
+
+        self.assertEqual(control.getAttribute("aria-controls"), "panel")
+        self.assertEqual(control.ariaControlsElements, [target])
+        self.assertEqual(control.getAttribute("aria-labelledby"), "label")
+        self.assertEqual(control.ariaLabelledByElements, [label])
+        self.assertIs(control.ariaActiveDescendantElement, target)
+
+        del control.ariaControlsElements
+        self.assertEqual(root.getElementById("control"), control)
+        self.assertFalse(control.hasAttribute("aria-controls"))
+
+    def test_custom_state_set(self):
+        states = CustomStateSet(["open", "active"])
+        self.assertEqual(states.size, 2)
+        self.assertTrue(states.has("open"))
+        self.assertEqual(list(states), ["open", "active"])
+        self.assertEqual(list(states.entries()), [("open", "open"), ("active", "active")])
+
+        self.assertIs(states.add("open"), states)
+        self.assertEqual(states.size, 2)
+        self.assertTrue(states.delete("open"))
+        self.assertFalse(states.delete("missing"))
+        self.assertEqual(list(states.keys()), ["active"])
+
+        seen = []
+        states.forEach(lambda value, key, owner: seen.append((value, key, owner)))
+        self.assertEqual(seen, [("active", "active", states)])
+
+        with self.assertRaises(ValueError):
+            states.add(" ")
+
+        states.clear()
+        self.assertEqual(len(states), 0)
+
     def test_textContent(self):
         node = Document.createElement("node")
         one = Document.createTextNode("one")
