@@ -1051,6 +1051,16 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             Worker("/worker.py")
 
+    def test_javascript_Intl_supportedValuesOf(self):
+        self.assertIn("gregory", Intl.supportedValuesOf("calendar"))
+        self.assertIn("GBP", Intl.supportedValuesOf("en-GB", "currency"))
+        self.assertIn("latn", Intl.supportedValuesOf("numberingSystem"))
+        self.assertIn("meter", Intl.supportedValuesOf("unit"))
+        self.assertIn("UTC", Intl.supportedValuesOf("timeZone"))
+
+        with self.assertRaises(ValueError):
+            Intl.supportedValuesOf("not-a-real-key")
+
     def test_javascript_at(self):
         myarr = Array(["a", "b", "c", "d"])
         assert myarr.at(-1) == "d"

@@ -1481,6 +1481,142 @@ class Intl:
     def __init__(self) -> None:
         pass
 
+    _supported_values: dict[str, tuple[str, ...]] = {
+        "calendar": (
+            "buddhist",
+            "chinese",
+            "coptic",
+            "dangi",
+            "ethioaa",
+            "ethiopic",
+            "gregory",
+            "hebrew",
+            "indian",
+            "islamic",
+            "islamic-civil",
+            "islamic-rgsa",
+            "islamic-tbla",
+            "islamic-umalqura",
+            "iso8601",
+            "japanese",
+            "persian",
+            "roc",
+        ),
+        "collation": (
+            "big5han",
+            "compat",
+            "dict",
+            "direct",
+            "ducet",
+            "emoji",
+            "eor",
+            "gb2312",
+            "phonebk",
+            "phonetic",
+            "pinyin",
+            "reformed",
+            "searchjl",
+            "stroke",
+            "trad",
+            "unihan",
+            "zhuyin",
+        ),
+        "currency": (
+            "AED",
+            "AUD",
+            "BRL",
+            "CAD",
+            "CHF",
+            "CNY",
+            "DKK",
+            "EUR",
+            "GBP",
+            "HKD",
+            "INR",
+            "JPY",
+            "KRW",
+            "MXN",
+            "NOK",
+            "NZD",
+            "PLN",
+            "SEK",
+            "SGD",
+            "TRY",
+            "USD",
+            "ZAR",
+        ),
+        "numberingsystem": (
+            "adlm",
+            "arab",
+            "arabext",
+            "bali",
+            "beng",
+            "deva",
+            "fullwide",
+            "gujr",
+            "guru",
+            "hanidec",
+            "khmr",
+            "knda",
+            "laoo",
+            "latn",
+            "limb",
+            "mlym",
+            "mong",
+            "mymr",
+            "orya",
+            "tamldec",
+            "telu",
+            "thai",
+            "tibt",
+        ),
+        "unit": (
+            "acre",
+            "bit",
+            "byte",
+            "celsius",
+            "centimeter",
+            "day",
+            "degree",
+            "fahrenheit",
+            "fluid-ounce",
+            "foot",
+            "gallon",
+            "gigabit",
+            "gigabyte",
+            "gram",
+            "hectare",
+            "hour",
+            "inch",
+            "kilobit",
+            "kilobyte",
+            "kilogram",
+            "kilometer",
+            "liter",
+            "megabit",
+            "megabyte",
+            "meter",
+            "mile",
+            "mile-scandinavian",
+            "milliliter",
+            "millimeter",
+            "millisecond",
+            "minute",
+            "month",
+            "ounce",
+            "percent",
+            "petabyte",
+            "pound",
+            "second",
+            "stone",
+            "terabit",
+            "terabyte",
+            "week",
+            "yard",
+            "year",
+        ),
+    }
+
     @staticmethod
     def getCanonicalLocales(locales: str | list[str]) -> list[str]:
         """Returns the canonicalized locales."""
@@ -1500,11 +1636,37 @@ class Intl:
         return locales
 
     @staticmethod
-    def supportedValuesOf(locales: str | list[str], property: str) -> None:
+    def supportedValuesOf(*args: Any) -> list[str]:
         """Returns a sorted array containing the supported unique calendar,
         collation, currency, numbering systems, or unit values supported by the implementation.
         """
-        pass
+        if len(args) == 1:
+            key = args[0]
+        elif len(args) == 2:
+            key = args[1]
+        else:
+            raise TypeError("supportedValuesOf() expects a key")
+
+        key = str(key)
+        normalized = key.replace("-", "").lower()
+        if normalized == "timezone":
+            return Intl._supported_time_zones()
+
+        try:
+            return sorted(Intl._supported_values[normalized])
+        except KeyError:
+            raise ValueError(f"Unsupported Intl key: {key}") from None
+
+    @staticmethod
+    def _supported_time_zones() -> list[str]:
+        try:
+            from zoneinfo import available_timezones
+
+            zones = set(available_timezones())
+        except Exception:
+            zones = set()
+        zones.update({"UTC", "Etc/UTC"})
+        return sorted(zones)
 
     class _Collator:
         def __init__(self, locale: str) -> None:
