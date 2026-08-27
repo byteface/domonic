@@ -2138,24 +2138,58 @@ class Date(Object):
         """Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time"""
         return datetime.datetime.now(timezone.utc)
 
-    # TODO - add all dunders and test
-    # def __eq__(self, other):
-    #     return self.date == other.date
+    def valueOf(self) -> int:
+        """Returns the primitive numeric value of the date."""
+        return self.getTime()
 
-    # def __ne__(self, other):
-    #     return self.date != other.date
+    def _comparison_value(self) -> float:
+        date = self.date
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=timezone.utc)
+        return date.timestamp()
 
-    # def __lt__(self, other):
-    #     return self.date < other.date
+    @staticmethod
+    def _coerce_comparison_value(other: Any) -> float | None:
+        if isinstance(other, Date):
+            return other._comparison_value()
+        if isinstance(other, datetime.datetime):
+            if other.tzinfo is None:
+                other = other.replace(tzinfo=timezone.utc)
+            return other.timestamp()
+        return None
 
-    # def __le__(self, other):
-    #     return self.date <= other.date
+    def __eq__(self, other: Any) -> bool:
+        other_value = self._coerce_comparison_value(other)
+        if other_value is None:
+            return False
+        return self._comparison_value() == other_value
 
-    # def __gt__(self, other):
-    #     return self.date > other.date
+    def __ne__(self, other: Any) -> bool:
+        return not self == other
 
-    # def __ge__(self, other):
-    #     return self.date >= other.date
+    def __lt__(self, other: Any) -> bool:
+        other_value = self._coerce_comparison_value(other)
+        if other_value is None:
+            return NotImplemented
+        return self._comparison_value() < other_value
+
+    def __le__(self, other: Any) -> bool:
+        other_value = self._coerce_comparison_value(other)
+        if other_value is None:
+            return NotImplemented
+        return self._comparison_value() <= other_value
+
+    def __gt__(self, other: Any) -> bool:
+        other_value = self._coerce_comparison_value(other)
+        if other_value is None:
+            return NotImplemented
+        return self._comparison_value() > other_value
+
+    def __ge__(self, other: Any) -> bool:
+        other_value = self._coerce_comparison_value(other)
+        if other_value is None:
+            return NotImplemented
+        return self._comparison_value() >= other_value
 
 
 class Screen:

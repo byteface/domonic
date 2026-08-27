@@ -6,6 +6,7 @@ unit tests for domonic.javascript.Date
 
 import time
 import unittest
+import datetime
 from inspect import stack
 from unittest.mock import Mock
 
@@ -179,6 +180,24 @@ class TestCase(unittest.TestCase):
         acopy = Date()
         acopy.setTime(birthday.getTime(), timezone.utc)
         assert acopy.getTime() == birthday.getTime()
+
+    def test_date_comparison_and_valueOf(self):
+        older = Date("January 1, 2020 00:00:00 GMT+00:00")
+        same = Date("January 1, 2020 00:00:00 GMT+00:00")
+        newer = Date("January 2, 2020 00:00:00 GMT+00:00")
+
+        self.assertEqual(older, same)
+        self.assertNotEqual(older, newer)
+        self.assertLess(older, newer)
+        self.assertLessEqual(older, same)
+        self.assertGreater(newer, older)
+        self.assertGreaterEqual(same, older)
+        self.assertEqual(older.valueOf(), older.getTime())
+        self.assertEqual(
+            older,
+            datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
+        )
+        self.assertFalse(older == "2020-01-01")
 
     # def test_getTimezoneOffset(self):
     #     date1 = Date('August 19, 1975 23:15:30 GMT+07:00')
