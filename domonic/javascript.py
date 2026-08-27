@@ -1740,9 +1740,68 @@ class Intl:
     Collator = _Collator
 
     class _DateTimeFormat:
+        def __init__(
+            self,
+            locales: str | list[str] | None = None,
+            options: Mapping[str, Any] | None = None,
+        ) -> None:
+            options = dict(options or {})
+            canonical = Intl.getCanonicalLocales(locales or "en-US")
+            self.locale = canonical[0] if canonical else "en-US"
+            self.dateStyle = options.get("dateStyle")
+            self.timeStyle = options.get("timeStyle")
+            self.timeZone = options.get("timeZone")
+
         @staticmethod
-        def supportedLocalesOf() -> Any:
-            raise NotImplementedError
+        def supportedLocalesOf(locales: str | list[str]) -> list[str]:
+            return Intl.getCanonicalLocales(locales)
+
+        def format(self, value: Any = None) -> str:
+            date = self._coerce_datetime(value)
+            date_parts = []
+            if self.dateStyle is not None or self.timeStyle is None:
+                date_parts.append(date.strftime(self._date_format()))
+            if self.timeStyle is not None:
+                date_parts.append(date.strftime(self._time_format()))
+            return ", ".join(part for part in date_parts if part)
+
+        def resolvedOptions(self) -> dict[str, Any]:
+            options = {"locale": self.locale}
+            if self.dateStyle is not None:
+                options["dateStyle"] = self.dateStyle
+            if self.timeStyle is not None:
+                options["timeStyle"] = self.timeStyle
+            if self.timeZone is not None:
+                options["timeZone"] = self.timeZone
+            return options
+
+        @staticmethod
+        def _coerce_datetime(value: Any) -> datetime.datetime:
+            if value is None:
+                return datetime.datetime.now()
+            if isinstance(value, Date):
+                return value.date
+            if isinstance(value, datetime.datetime):
+                return value
+            if isinstance(value, (int, float)):
+                return datetime.datetime.fromtimestamp(value / 1000)
+            return Date(value).date
+
+        def _date_format(self) -> str:
+            if self.dateStyle == "full":
+                return "%A, %B %d, %Y"
+            if self.dateStyle == "long":
+                return "%B %d, %Y"
+            if self.dateStyle == "medium":
+                return "%b %d, %Y"
+            return "%m/%d/%y"
+
+        def _time_format(self) -> str:
+            if self.timeStyle == "long":
+                return "%H:%M:%S %Z"
+            if self.timeStyle == "medium":
+                return "%H:%M:%S"
+            return "%H:%M"
 
     DateTimeFormat = _DateTimeFormat
 

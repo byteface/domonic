@@ -338,6 +338,28 @@ class TestCase(unittest.TestCase):
         from domonic.javascript import Intl
 
         mydtf = Intl.DateTimeFormat()
+        event = Date("January 2, 2020 03:04:05 GMT+00:00")
+        self.assertEqual(mydtf.format(event), "01/02/20")
+
+        readable = Intl.DateTimeFormat(
+            "en-us", {"dateStyle": "medium", "timeStyle": "short"}
+        )
+        self.assertEqual(readable.format(event), "Jan 02, 2020, 03:04")
+        self.assertEqual(readable.resolvedOptions()["locale"], "en-US")
+        self.assertEqual(
+            Intl.DateTimeFormat.supportedLocalesOf(["en-us", "fr-fr"]),
+            ["en-US", "fr-FR"],
+        )
+        self.assertEqual(
+            Intl.DateTimeFormat("en-US", {"timeStyle": "medium"}).format(
+                datetime.datetime(2020, 1, 2, 3, 4, 5)
+            ),
+            "03:04:05",
+        )
+        self.assertEqual(
+            Intl.DateTimeFormat("en-US", {"dateStyle": "short"}).format(1577934245000),
+            "01/02/20",
+        )
 
 
 if __name__ == "__main__":
