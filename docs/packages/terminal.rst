@@ -41,7 +41,7 @@ This package only works on Unix-like systems because it delegates to ``subproces
 	    print(thing)
 
 	print(find('.'))
-	# print(ping('eventual.technology'))  # TODO: stream output
+	# print(ping('eventual.technology'))
 	print(cowsay('moo'))
 	print(wget('eventual.technology'))
 	print(date())

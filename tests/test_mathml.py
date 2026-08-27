@@ -2,7 +2,6 @@
 test_domonic
 ~~~~~~~~~~~~
 - unit tests for domonic
-# TODO - tests for all bs5 pages
 """
 
 import unittest

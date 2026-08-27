@@ -196,25 +196,6 @@ def dump(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
     return stringify(data, filepath=filepath, **kwargs)
 
 
-"""
-def csv2json_hugefile(arr, infile="data.csv", start_row=0):
-
-    def _load_data(csv_fname):
-        with open(csv_fname, "r", encoding="latin-1") as records:
-            for row in csv.reader(records):
-                yield row
-
-    items = iter(load_data(infile))
-    headings = next(companies)
-
-    for i in range(start_row):
-        next(companies)
-
-    for item in items:
-        # TODO - streamwrite to json file.
-"""
-
-
 def flatten(b: Mapping[str, Any], delim: str = "__") -> dict[str, Any]:
     """
     # i.e. input = map( lambda x: JSON.flatten( x, "__" ), input )

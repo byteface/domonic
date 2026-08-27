@@ -126,8 +126,9 @@ async def move(request: Request, letter: str = Query(...)):
         if w in game.state.guessed_letters:
             word_completion[i] = w
 
-    # TODO - div('To Play Again Type (Y/N)')
     page.appendChild(" ".join(word_completion))
+    if game.state.guessed or game.state.tries < 1:
+        page.appendChild(p(a("Play again", _href="/play")))
     page.appendChild(board)
     request.session["game"] = {
         "word": game.state.word,

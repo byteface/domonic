@@ -7,8 +7,9 @@ from domonic.dom import DOMConfig
 from domonic.html import *
 from domonic.javascript import Math
 
-# DOMConfig.GLOBAL_AUTOESCAPE = True  # TODO - script tags shouldn't be escaped?
-DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False  # TODO - is it putting newlines instead?
+# Enable GLOBAL_AUTOESCAPE when rendering untrusted content.
+# This example keeps it disabled so the inline module script stays executable.
+DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False
 DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH = False
 DOMConfig.ATTRIBUTE_QUOTES = None
 

@@ -17,7 +17,9 @@ page = html(
     script(
         """
 const socket = new WebSocket('ws://0.0.0.0:5555');
-//socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
+socket.onmessage = function(event) {
+    document.getElementById('content').textContent = event.data;
+};
 """
     ),
     # track all mouse events
@@ -47,10 +49,6 @@ def on_page_clicked(evt):
     print("the page was just clicked", evt)
     print("mouseX", evt.x)
     print("mouseY", evt.y)
-    # content = page.getElementById('content')
-    # print(content)
-    # content.append( f"mouseX:{evt.x} mouseY:{evt.y}" )
-    # TODO - send msg so js can redraw the div
     # mything = {'x':0,'y':0}
     # twn = Tween( mything, { 'x':evt.x, 'y':evt.y }, 3 )
     # twn.equations = Linear.easeOut

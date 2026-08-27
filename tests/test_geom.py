@@ -9,9 +9,6 @@ from domonic.geom.shape import Circle, Line, Rect, Shape
 from domonic.geom.vec2 import vec2
 from domonic.geom.vec3 import vec3
 
-import unittest
-
-# TODO - make own class instead of piggy backing here
 class TestColor(unittest.TestCase):
     def test_color_from_vec3(self):
         from domonic.geom.vec3 import vec3

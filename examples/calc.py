@@ -41,7 +41,7 @@ except Exception as e:
     print("view calc.html in the browser")
     pass
 
-# // TODO - serve
+# To serve the generated file instead, run: python3 -m http.server
 
 # from domonic.terminal import ls, touch
 # import time

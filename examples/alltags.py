@@ -5,7 +5,7 @@ sys.path.insert(0, "..")
 from domonic.CDN import CDN_CSS
 from domonic.html import *
 
-# TODO - finish example using every tag
+# Broad HTML tag rendering example.
 # https://mblode.github.io/marx/documentation/
 # https://v4-alpha.getbootstrap.com/components/forms/ - bs docs
 
@@ -156,13 +156,11 @@ output = html(
 # print( "output.images:", output.images )
 # print( "output.scripts:", output.scripts )
 # print( "output.title:", output.title )
-print("output._get_tags:", output._get_tags("li"))
-print("output._get_tags:", output._get_tags("input"))
-print("output._get_tags:", output._get_tags("div"))
-print("output._get_tags:", output._get_tags("style"))
-
-
-# TODO - add some methods to do cool stuff
+for tag_name in ("li", "input", "div", "style"):
+    print(
+        f"output.getElementsByTagName({tag_name!r}):",
+        [str(element) for element in output.getElementsByTagName(tag_name)],
+    )
 
 # print(output[0])
 
@@ -183,6 +181,6 @@ print("output._get_tags:", output._get_tags("style"))
 print(render(output))
 print(f"{output}")
 
-# TODO - prettify by using newlines in returned content to save installing this?
+# Optional pretty-printing:
 # from html5print import HTMLBeautifier
 # render(HTMLBeautifier.beautify(render(output), 4), 'index.html')
