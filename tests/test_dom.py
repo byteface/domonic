@@ -1472,6 +1472,8 @@ class DOMTest(unittest.TestCase):
         r.selectNode(shadow_button)
         shadow_selection.addRange(r)
         self.assertEqual(shadow_selection.rangeCount, 1)
+        self.assertIs(shadow_button.getRootNode(), shadow)
+        self.assertIs(shadow_button.getRootNode({"composed": True}), page)
         self.assertEqual(
             shadow_selection.getRangeAt(0).toString(),
             '<button id="shadow-button" style="left:0px;top:0px;width:40px;height:20px;">go</button>',
@@ -2132,6 +2134,16 @@ class DOMTest(unittest.TestCase):
         self.assertIn("div", seen)
         self.assertIn("span", seen)
         self.assertIn("p", seen)
+
+    def test_treewalker_and_nodeiterator_coerce_what_to_show(self):
+        root = div("alpha", span("beta"))
+        walker = TreeWalker(root, "4")
+
+        self.assertEqual(walker.whatToShow, NodeFilter.SHOW_TEXT)
+        self.assertEqual(walker.firstChild().nodeType, Node.TEXT_NODE)
+        self.assertEqual(NodeIterator(root, -1).whatToShow, NodeFilter.SHOW_ALL)
+        with self.assertRaisesRegex(TypeError, "whatToShow"):
+            TreeWalker(root, "bad")
 
     def test_document_get_elements_by_name(self):
         page = html(
@@ -3571,11 +3583,18 @@ class DOMTest(unittest.TestCase):
         self.assertIsNone(items.item(2))
 
     def test_html_collection_named_item_skips_nodes_without_attributes(self):
-        items = HTMLCollection([Text("loose"), div(_id="hit"), span(_name="named")])
+        signup = form(input(_name="email"), _id="signup")
+        dotted = div(_id="named.item.with.periods")
+        items = HTMLCollection(
+            [Text("loose"), div(_id="hit"), span(_name="named"), dotted, signup]
+        )
 
         self.assertIs(items.namedItem("hit"), items[1])
         self.assertIs(items.namedItem("named"), items[2])
+        self.assertIs(items["named.item.with.periods"], dotted)
+        self.assertIs(items["signup.elements.email"], signup.elements.namedItem("email"))
         self.assertIsNone(items.namedItem("missing"))
+        self.assertIsNone(items["signup.elements.missing"])
 
     def test_select_options_returns_live_options_collection(self):
         picker = select(
@@ -4729,6 +4748,7 @@ class NodeTest(unittest.TestCase):
         res = node.textContent
         expected = "onethreefour"
         assert res == expected, f'"{res}" != "{expected}"'
+        self.assertEqual(node.nodeValue, expected)
 
         node.textContent = "plain"
         assert node.textContent == "plain"
@@ -4746,6 +4766,13 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(node.nodeValue, "plain")
         self.assertEqual(node.args, ("plain",))
         self.assertIsNone(old.parentNode)
+
+    def test_insert_before_missing_reference_gets_clear_error(self):
+        parent = div(span("one"))
+        missing = span("missing")
+
+        with self.assertRaisesRegex(ValueError, "reference_node is not a child"):
+            parent.insertBefore(em("new"), missing)
 
     def test_isSameNode(self):
         node = Document.createElement("node")

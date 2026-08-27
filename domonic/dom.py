@@ -1660,8 +1660,6 @@ class Node(EventTarget):
     def insertBefore(self, new_node: Node, reference_node: Node | None = None) -> Node:
         """inserts a node before a reference node as a child of a specified parent node.
         this will remove the node from its previous parent node, if any.
-
-        # TODO - can throw value error if wrong ordered params. may be helpful to catch to say so.
         """
         if reference_node is None:
             return self.appendChild(new_node)
@@ -1670,7 +1668,10 @@ class Node(EventTarget):
 
         items = _coerce_insertion_nodes(new_node)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        index = self.args.index(reference_node)
+        try:
+            index = self.args.index(reference_node)
+        except ValueError as exc:
+            raise ValueError("reference_node is not a child of this node") from exc
         previous_sibling = (
             self.args[index - 1]
             if index > 0 and isinstance(self.args[index - 1], Node)
@@ -1808,10 +1809,16 @@ class Node(EventTarget):
         return str(self) == str(node)
 
     def getRootNode(self, options=None):
-        # if options is not None:
-        # if options['composed'] = True:
-        # TODO - need to implement composed
-        return self.rootNode
+        composed = False
+        if isinstance(options, dict):
+            composed = bool(options.get("composed", False))
+        elif options is not None:
+            composed = bool(getattr(options, "composed", False))
+
+        root = self.rootNode
+        if composed and isinstance(root, ShadowRoot):
+            return root.host.getRootNode({"composed": True})
+        return root
 
     def isDefaultNamespace(self, ns):
         """Checks if a namespace is the default namespace"""
@@ -1873,8 +1880,6 @@ class Node(EventTarget):
     @property
     def textContent(self):
         """Returns the text content of a node and its descendants"""
-        # TODO - test- also check difference to nodeValue
-        # nodevalue is lvl 1 spec. textcontent is lvl 3 spec.
         outp = ""
         for each in self.args:
             if type(each) is str:
@@ -5266,8 +5271,6 @@ AbstractRange = AbastractRange
 
 
 class Range(AbastractRange):
-    # TODO - untested
-
     START_TO_START: ClassVar[int] = 0
     START_TO_END: ClassVar[int] = 1
     END_TO_END: ClassVar[int] = 2
@@ -7062,14 +7065,22 @@ class HTMLCollection(list):
         return None
 
     def __getitem__(self, index: int | str):
-        # can return dot notation i.e
-        # index = "named.item.with.periods" # TODO - test
         if isinstance(index, str):
+            direct = self.namedItem(index)
+            if direct is not None:
+                return direct
             names = index.split(".")
-            if len(names) > 1:
-                return self.namedItem(names[0]).namedItem(".".join(names[1:]))
-            else:
-                return self.namedItem(index)
+            current = self.namedItem(names[0])
+            for name in names[1:]:
+                if current is None:
+                    return None
+                if hasattr(current, "namedItem"):
+                    current = current.namedItem(name)
+                elif hasattr(current, name):
+                    current = getattr(current, name)
+                else:
+                    return None
+            return current
         else:
             return super().__getitem__(index)
 
@@ -8015,6 +8026,13 @@ class NodeFilter:
     # return result
 
 
+def _coerce_what_to_show(whatToShow: int | str | None) -> int:
+    try:
+        return int(0 if whatToShow is None else whatToShow) & 0xFFFFFFFF
+    except (TypeError, ValueError) as exc:
+        raise TypeError("whatToShow must be an integer bitmask") from exc
+
+
 class NodeIterator:
     """[NodeIterator is an iterator object that iterates over the descendants of a node, in tree order.]"""
 
@@ -8026,7 +8044,7 @@ class NodeIterator:
         entityReferenceExpansion: bool = False,
     ) -> None:
         self.root = root
-        self.whatToShow = whatToShow
+        self.whatToShow = _coerce_what_to_show(whatToShow)
         self._filter = filter
         self.entityReferenceExpansion = entityReferenceExpansion
         self.node = root
@@ -8127,9 +8145,7 @@ def str_to_TextNode(content_str: Any) -> Any:
 def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
     # var child, node, parent, result, sibling
     # print('mapChild[_type]', mapChild[_type])
-    node = getattr(
-        tw.currentNode, mapChild[_type]
-    )  # TODO - allow dict access to node props?.... tw.currentNode[mapChild[_type]]
+    node = getattr(tw.currentNode, mapChild[_type])
     # print('tw.currentNode', tw.currentNode)
     # node = str_to_TextNode(node)
     while node != None:
@@ -8245,10 +8261,7 @@ class TreeWalker:
         # print("test", type(self._root[0][0]))
 
         self.currentNode = node
-        # TODO - convert whatToShow to a number?
-        self.whatToShow = whatToShow
-        # self.whatToShow = self.whatToShow & 0xFFFFFFFF
-        self.whatToShow = whatToShow or 0
+        self.whatToShow = _coerce_what_to_show(whatToShow)
 
         self._filter = _filter
 
