@@ -1084,6 +1084,40 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             Intl.supportedValuesOf("not-a-real-key")
 
+    def test_javascript_Intl_NumberFormat(self):
+        formatter = Intl.NumberFormat(
+            "en-US", {"minimumFractionDigits": 0, "maximumFractionDigits": 2}
+        )
+        self.assertEqual(formatter.format(1234.567), "1,234.57")
+        self.assertEqual(formatter.format("1234.5"), "1,234.5")
+
+        no_grouping = Intl.NumberFormat("en-US", {"useGrouping": False})
+        self.assertEqual(no_grouping.format(1234), "1234")
+
+        currency = Intl.NumberFormat(
+            "en-GB", {"style": "currency", "currency": "GBP"}
+        )
+        self.assertEqual(currency.format(1234.5), "GBP 1,234.50")
+        self.assertEqual(
+            Intl.NumberFormat(
+                "en-US", {"style": "currency", "currency": "USD"}
+            ).format(-12.5),
+            "-$12.50",
+        )
+
+        percent = Intl.NumberFormat(
+            "en-US", {"style": "percent", "maximumFractionDigits": 1}
+        )
+        self.assertEqual(percent.format(0.123), "12.3%")
+        self.assertEqual(
+            currency.resolvedOptions()["currencyDisplay"],
+            "symbol",
+        )
+        self.assertEqual(
+            Intl.NumberFormat.supportedLocalesOf(["en-us", "fr-fr"]),
+            ["en-US", "fr-FR"],
+        )
+
     def test_javascript_screen(self):
         screen = Screen(1280, 720, availWidth=1200, availHeight=700, colorDepth=30)
         self.assertEqual(screen.width, 1280)

@@ -1622,6 +1622,7 @@ class Intl:
         """Returns the canonicalized locales."""
         if isinstance(locales, str):
             locales = [locales]
+        canonical = []
         for locale in locales:
             if locale.find("-") != -1:
                 locale = (
@@ -1633,7 +1634,8 @@ class Intl:
                 )
             else:
                 locale = locale.lower()
-        return locales
+            canonical.append(locale)
+        return canonical
 
     @staticmethod
     def supportedValuesOf(*args: Any) -> list[str]:
@@ -1683,8 +1685,92 @@ class Intl:
     DateTimeFormat = _DateTimeFormat
 
     class _NumberFormat:
-        def __init__(self, locales: str | list[str], options: dict[str, Any]) -> None:
-            pass
+        _currency_prefixes = {
+            "AUD": "$",
+            "CAD": "$",
+            "CNY": "CNY ",
+            "EUR": "EUR ",
+            "GBP": "GBP ",
+            "JPY": "JPY ",
+            "USD": "$",
+        }
+
+        def __init__(
+            self,
+            locales: str | list[str] | None = None,
+            options: Mapping[str, Any] | None = None,
+        ) -> None:
+            options = dict(options or {})
+            canonical = Intl.getCanonicalLocales(locales or "en-US")
+            self.locale = canonical[0] if canonical else "en-US"
+            self.style = options.get("style", "decimal")
+            self.currency = options.get("currency")
+            self.currencyDisplay = options.get("currencyDisplay", "symbol")
+            self.useGrouping = options.get("useGrouping", True)
+            default_fraction_digits = 2 if self.style == "currency" else 0
+            self.minimumFractionDigits = int(
+                options.get("minimumFractionDigits", default_fraction_digits)
+            )
+            self.maximumFractionDigits = int(
+                options.get("maximumFractionDigits", self.minimumFractionDigits)
+            )
+            if self.maximumFractionDigits < self.minimumFractionDigits:
+                self.maximumFractionDigits = self.minimumFractionDigits
+
+        @staticmethod
+        def supportedLocalesOf(locales: str | list[str]) -> list[str]:
+            return Intl.getCanonicalLocales(locales)
+
+        def format(self, value: int | float | str) -> str:
+            number = float(value)
+            suffix = ""
+            prefix = ""
+            if self.style == "percent":
+                number *= 100
+                suffix = "%"
+            elif self.style == "currency":
+                prefix = self._currency_prefix()
+
+            formatted = self._format_number(number)
+            if number < 0 and prefix:
+                return "-" + prefix + formatted.lstrip("-") + suffix
+            return prefix + formatted + suffix
+
+        def resolvedOptions(self) -> dict[str, Any]:
+            options = {
+                "locale": self.locale,
+                "style": self.style,
+                "useGrouping": self.useGrouping,
+                "minimumFractionDigits": self.minimumFractionDigits,
+                "maximumFractionDigits": self.maximumFractionDigits,
+            }
+            if self.currency is not None:
+                options["currency"] = self.currency
+                options["currencyDisplay"] = self.currencyDisplay
+            return options
+
+        def _currency_prefix(self) -> str:
+            if self.currency is None:
+                return ""
+            code = str(self.currency).upper()
+            if self.currencyDisplay == "code":
+                return f"{code} "
+            return self._currency_prefixes.get(code, f"{code} ")
+
+        def _format_number(self, number: float) -> str:
+            absolute = abs(number)
+            raw = f"{absolute:.{self.maximumFractionDigits}f}"
+            integer, _, fraction = raw.partition(".")
+            if self.maximumFractionDigits > self.minimumFractionDigits:
+                fraction = fraction.rstrip("0")
+                if len(fraction) < self.minimumFractionDigits:
+                    fraction = fraction.ljust(self.minimumFractionDigits, "0")
+            if self.useGrouping:
+                integer = f"{int(integer):,}"
+            sign = "-" if number < 0 else ""
+            if fraction:
+                return f"{sign}{integer}.{fraction}"
+            return f"{sign}{integer}"
 
     NumberFormat = _NumberFormat
 
