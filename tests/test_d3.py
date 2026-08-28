@@ -1893,6 +1893,31 @@ class TestCase(unittest.TestCase):
         assert [entry[1] for entry in seen] == [1, 2, 3]
         assert selection.filter("#three").nodes() == [three]
 
+    def test_selection_merge_enter_and_exit(self):
+        d = html(body(div(_id="one"), div(_id="two"), div(_id="three")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        three = d.querySelector("#three")
+        parent = d.querySelector("body")
+
+        update = Selection([[None, two], [three]], [parent, parent])
+        enter = Selection([[one, None], [None]], [parent, parent])
+
+        assert update.selection() is update
+        merged = enter.merge(update)
+        assert merged._groups == [[one, two], [three]]
+        assert merged._parents == enter._parents
+
+        left = Selection([[one], [two]], [parent, parent])
+        right = Selection([[None]], [parent])
+        assert left.merge(right)._groups == [[one], [two]]
+
+        empty_enter = update.enter()
+        empty_exit = update.exit()
+        assert len(empty_enter._groups) == len(update._groups)
+        assert len(empty_enter._groups[0]) == 2
+        assert len(empty_exit._groups[1]) == 1
+
     def test_property_classed_text_html_and_datum(self):
         d = html(body(p("old", _id="one", _class="alpha"), p("old", _id="two")))
         one = d.querySelector("#one")

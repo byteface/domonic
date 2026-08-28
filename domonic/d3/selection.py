@@ -434,31 +434,37 @@ class Selection:
     # import {Selection} from "./index.js";
 
     def enter(self):
-        return Selection(self._enter or self._groups.map(sparse), self._parents)
+        groups = getattr(self, "_enter", None)
+        if groups is None:
+            groups = [sparse(self, group) for group in self._groups]
+        return Selection(groups, self._parents, self.this)
 
     # import selection_exit from "./exit.js";
     # def exit: selection_exit,
     # import sparse from "./sparse.js";
     # import {Selection} from "./index.js";
     def exit(self):
-        return Selection(this._exit or self._groups.map(sparse), self._parents)
+        groups = getattr(self, "_exit", None)
+        if groups is None:
+            groups = [sparse(self, group) for group in self._groups]
+        return Selection(groups, self._parents, self.this)
 
     # import selection_join from "./join.js";
     # def join: selection_join,
-    def join(self, onenter, onupdate, onexit):
-        enter = this.enter()
-        update = this
+    def join(self, onenter, onupdate=None, onexit=None):
+        enter = self.enter()
+        update = self
         exit = self.exit()
         if callable(onenter):
             enter = onenter(enter)
-            if enter:
+            if enter and hasattr(enter, "selection"):
                 enter = enter.selection()
         else:
-            enter = enter.append(onenter + "")
+            enter = enter.append(str(onenter))
 
         if onupdate != None:
             update = onupdate(update)
-            if update:
+            if update and hasattr(update, "selection"):
                 update = update.selection()
         if onexit == None:
             exit.remove()
@@ -470,48 +476,28 @@ class Selection:
     # def merge: selection_merge,
     # import {Selection} from "./index.js";
     def merge(self, context):
-        selection = context.selection() if context.selection else context
-
-        # TODO - rewrite this as python
-        # for (var groups0 = this._groups, groups1 = selection._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
-        #     for (var group0 = groups0[j], group1 = groups1[j], n = group0.length, merge = merges[j] = new Array(n), node, i = 0; i < n; ++i) {
-        #     if (node = group0[i] || group1[i]) {
-        #         merge[i] = node;
-        #     }
-        #     }
-        # }
+        selection_method = getattr(context, "selection", None)
+        selection = selection_method() if callable(selection_method) else context
         groups0 = self._groups
-        groups1 = context.selection._groups
-        m0 = len(groups0)
-        m1 = len(groups1)
-        m = min(m0, m1)
+        groups1 = selection._groups
         merges = []
-        j = 0
-        for group0 in groups0:
-            group1 = groups1[j]
-            n = len(group0)
-            merge = []
-            for i in range(n):
-                node = group0[i]
-                if node is None:
-                    continue
-                if group1[i] is None:
-                    continue
-                merge.append(node)
-            merges.append(merge)
-            j += 1
 
-        # TODO - rewrite this as python
-        # for (; j < m0; ++j) {
-        #     merges[j] = groups0[j];
-        # }
-        while j < m0:
-            merges[j] = groups0[j]
-            j += 1
+        for j, group0 in enumerate(groups0):
+            if j >= len(groups1):
+                merges.append(group0)
+                continue
+
+            group1 = groups1[j]
+            merge = Array(len(group0))
+            for i, node0 in enumerate(group0):
+                node1 = group1[i] if i < len(group1) else None
+                merge[i] = node0 or node1
+            merges.append(merge)
 
         return Selection(merges, self._parents, self.this)
 
-    # def selection: selection_selection, # ---?? TODO - is this right?
+    def selection(self):
+        return self
 
     # import selection_order from "./order.js";
     # def order: selection_order,
