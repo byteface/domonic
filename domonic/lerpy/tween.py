@@ -46,6 +46,7 @@ class Tween(EventDispatcher):
     _loop = False
     _timeStart = 0
     _timePaused = 0
+    _timePausedAt = None
     _timePrevious = 0
 
     def __init__(
@@ -62,7 +63,7 @@ class Tween(EventDispatcher):
 
     @property
     def tweening(self):
-        return self._foo
+        return self._tweening
 
     @property
     def paused(self):
@@ -145,8 +146,9 @@ class Tween(EventDispatcher):
         self._loop = loop
 
     def start(self):
-        self._timeStart = get_timer()  # TODO!! ---
+        self._timeStart = get_timer()
         self._timePaused = 0
+        self._timePausedAt = None
         self._timePrevious = self._timeStart
         self._position = 0
 
@@ -168,19 +170,26 @@ class Tween(EventDispatcher):
         # NOTE
         # window.clearInterval(self._intID )
         # clearInt fails. because join won't allow as a 'return' happens just after the stop
-        self._intID.stopped.set()  # call stopped on the thread so program exits
+        if self._intID is not None and hasattr(self._intID, "stopped"):
+            self._intID.stopped.set()  # call stopped on the thread so program exits
 
     def pause(self):
         """Pauses the tween from changing the values"""
-        # TODO - pause should modify timer so it DOESNT jump frames. at mo does the opposite.
-        # seems to not increment. then suddenly jumps to catch up with where it should be
+        if self._paused:
+            return
         self._paused = True
-        self.dispatchEvent(
-            TweenEvent(TweenEvent.PAUSE if self._paused else TweenEvent.UNPAUSE, self)
-        )
+        self._timePausedAt = get_timer()
+        self.dispatchEvent(TweenEvent(TweenEvent.PAUSE, self))
 
     def unpause(self):
         """unpauses the tween"""
+        if not self._paused:
+            return
+        time_current = get_timer()
+        if self._timePausedAt is not None:
+            self._timePaused += time_current - self._timePausedAt
+        self._timePausedAt = None
+        self._timePrevious = time_current
         self._paused = False
         self.dispatchEvent(TweenEvent(TweenEvent.UNPAUSE, self))
 
@@ -232,7 +241,8 @@ class Tween(EventDispatcher):
                 self.dispatchEvent(TweenEvent(TweenEvent.UPDATE_END, self))
 
             else:
-                self._timePaused += timeCurrent - self._timePrevious
+                self._timePrevious = timeCurrent
+                return
 
             self._timePrevious = timeCurrent
 
