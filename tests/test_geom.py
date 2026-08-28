@@ -3,7 +3,9 @@
     ~~~~~~~~~~~~
 """
 
+import math
 import unittest
+
 from domonic.constants.color import Color
 from domonic.geom.shape import Circle, Line, Rect, Shape
 from domonic.geom.vec2 import vec2
@@ -105,10 +107,70 @@ class TestCase(unittest.TestCase):
         v = vec3(10, 10, 10)
         self.assertEqual(v * 2, vec3(20, 20, 20))
         self.assertEqual(v / 2, vec3(5, 5, 5))
+        self.assertEqual(v // 3, vec3(3, 3, 3))
         self.assertEqual(v - 2, vec3(8, 8, 8))
+        self.assertEqual(v + 2, vec3(12, 12, 12))
+        self.assertEqual(2 + v, vec3(12, 12, 12))
+        self.assertEqual(20 - v, vec3(10, 10, 10))
+        self.assertEqual(3 * v, vec3(30, 30, 30))
+        self.assertEqual(v // vec3(3, 4, 6), vec3(3, 2, 1))
         self.assertEqual(v + v, vec3(20, 20, 20))
         self.assertEqual(v * v, vec3(100, 100, 100))
         self.assertEqual(v - v, vec3(0, 0, 0))
+        self.assertEqual(-vec3(1, -2, 3), vec3(-1, 2, -3))
+        self.assertEqual((v[0], v[1], v[2]), (10, 10, 10))
+        self.assertEqual((v["x"], v["y"], v["z"]), (10, 10, 10))
+        self.assertEqual(tuple(v), (10, 10, 10))
+        self.assertEqual(v(), (10, 10, 10))
+        self.assertEqual(len(v), 3)
+
+        mutable = vec3(1, 2, 3)
+        mutable[0] = 4
+        mutable["y"] = 5
+        mutable["z"] = 6
+        self.assertEqual(mutable, vec3(4, 5, 6))
+
+        mutable += vec3(1, 1, 1)
+        self.assertEqual(mutable, vec3(5, 6, 7))
+        mutable -= 1
+        self.assertEqual(mutable, vec3(4, 5, 6))
+        mutable *= 2
+        self.assertEqual(mutable, vec3(8, 10, 12))
+        mutable /= 2
+        self.assertEqual(mutable, vec3(4, 5, 6))
+
+        with self.assertRaises(KeyError):
+            v["w"]
+        with self.assertRaises(KeyError):
+            v["w"] = 1
+        with self.assertRaises(ValueError):
+            v + object()
+
+    def test_vec3_geometry_helpers(self):
+        x_axis = vec3(1, 0, 0)
+        y_axis = vec3(0, 1, 0)
+        point = vec3(1, 2, 2)
+
+        self.assertEqual(x_axis.dot(y_axis), 0)
+        self.assertEqual(x_axis.cross(y_axis), vec3(0, 0, 1))
+        self.assertAlmostEqual(x_axis.angleBetween(y_axis), math.pi / 2)
+        self.assertEqual(point.squaredLength(), 9)
+        self.assertEqual(point.length(), 3)
+        self.assertEqual(point.distanceSquared(vec3(1, 2, 5)), 9)
+        self.assertEqual(point.squareDistance(vec3(1, 2, 5)), 9)
+        self.assertEqual(point.distance(vec3(1, 2, 5)), 3)
+        self.assertEqual(point.normalize(), vec3(1 / 3, 2 / 3, 2 / 3))
+        self.assertEqual(vec3().normalize(), vec3())
+        self.assertTrue(point.intersects(vec3(1, 2, 2)))
+        self.assertTrue(point.intersects(vec3(1, 2, 2.001), tolerance=0.01))
+        self.assertFalse(point.intersects(vec3(1, 2, 3)))
+        self.assertFalse(point.intersects((1, 2, 2)))
+        self.assertEqual(point.obj(), {"x": 1, "y": 2, "z": 2})
+        self.assertEqual(point.json(), "{'x': 1, 'y': 2, 'z': 2}")
+        self.assertEqual(hash(point), hash((1, 2, 2)))
+
+        with self.assertRaises(ValueError):
+            vec3().angleBetween(x_axis)
 
     def test_shape_color(self):
         s = Shape(color=Color.red)

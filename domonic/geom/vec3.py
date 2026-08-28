@@ -18,13 +18,22 @@ class vec3:
     def __add__(self, other):
         if isinstance(other, vec3):
             return vec3(self.x + other.x, self.y + other.y, self.z + other.z)
-        raise ValueError("Can only add vec3 to vec3")
+        if isinstance(other, (int, float)):
+            return vec3(self.x + other, self.y + other, self.z + other)
+        raise ValueError("Unsupported operand type for addition")
+
+    __radd__ = __add__
 
     def __sub__(self, other):
         if isinstance(other, vec3):
             return vec3(self.x - other.x, self.y - other.y, self.z - other.z)
         if isinstance(other, (int, float)):
             return vec3(self.x - other, self.y - other, self.z - other)
+        raise ValueError("Unsupported operand type for subtraction")
+
+    def __rsub__(self, other):
+        if isinstance(other, (int, float)):
+            return vec3(other - self.x, other - self.y, other - self.z)
         raise ValueError("Unsupported operand type for subtraction")
 
     def __mul__(self, other):
@@ -34,12 +43,24 @@ class vec3:
             return vec3(self.x * other.x, self.y * other.y, self.z * other.z)
         raise ValueError("Unsupported operand type for multiplication")
 
+    __rmul__ = __mul__
+
     def __truediv__(self, other):
         if isinstance(other, (int, float)):
             return vec3(self.x / other, self.y / other, self.z / other)
         if isinstance(other, vec3):
             return vec3(self.x / other.x, self.y / other.y, self.z / other.z)
         raise ValueError("Unsupported operand type for division")
+
+    def __floordiv__(self, other):
+        if isinstance(other, (int, float)):
+            return vec3(self.x // other, self.y // other, self.z // other)
+        if isinstance(other, vec3):
+            return vec3(self.x // other.x, self.y // other.y, self.z // other.z)
+        raise ValueError("Unsupported operand type for division")
+
+    def __neg__(self):
+        return vec3(-self.x, -self.y, -self.z)
 
     def __getitem__(self, item):
         if isinstance(item, int):
@@ -58,10 +79,78 @@ class vec3:
                 return self.z
         raise KeyError(f"Invalid key: {item}")
 
+    def __setitem__(self, key, value):
+        if key in (0, "x"):
+            self.x = value
+        elif key in (1, "y"):
+            self.y = value
+        elif key in (2, "z"):
+            self.z = value
+        else:
+            raise KeyError(f"Invalid key: {key}")
+
+    def __len__(self):
+        return 3
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+        yield self.z
+
+    def __call__(self):
+        return self.x, self.y, self.z
+
     def __iadd__(self, other):
-        self.x += other.x
-        self.y += other.y
-        self.z += other.z
+        if isinstance(other, vec3):
+            self.x += other.x
+            self.y += other.y
+            self.z += other.z
+        elif isinstance(other, (int, float)):
+            self.x += other
+            self.y += other
+            self.z += other
+        else:
+            raise ValueError("Unsupported operand type for addition")
+        return self
+
+    def __isub__(self, other):
+        if isinstance(other, vec3):
+            self.x -= other.x
+            self.y -= other.y
+            self.z -= other.z
+        elif isinstance(other, (int, float)):
+            self.x -= other
+            self.y -= other
+            self.z -= other
+        else:
+            raise ValueError("Unsupported operand type for subtraction")
+        return self
+
+    def __imul__(self, other):
+        if isinstance(other, vec3):
+            self.x *= other.x
+            self.y *= other.y
+            self.z *= other.z
+        elif isinstance(other, (int, float)):
+            self.x *= other
+            self.y *= other
+            self.z *= other
+        else:
+            raise ValueError("Unsupported operand type for multiplication")
+        return self
+
+    def __itruediv__(self, other):
+        if isinstance(other, vec3):
+            self.x /= other.x
+            self.y /= other.y
+            self.z /= other.z
+        elif isinstance(other, (int, float)):
+            self.x /= other
+            self.y /= other
+            self.z /= other
+        else:
+            raise ValueError("Unsupported operand type for division")
+        return self
 
     def add(self, point):
         self.x += point.x
@@ -80,10 +169,10 @@ class vec3:
         return self.x * other.x + self.y * other.y + self.z * other.z
 
     def cross(self, other):
-        return (
-            self.x * other.y - self.y * other.x,
+        return vec3(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
         )
 
     def mul(self, v):
@@ -94,26 +183,47 @@ class vec3:
         return vec3(self.x, self.y, self.z)
 
     def angleBetween(self, other):
-        dx = self.x - other.x
-        dy = self.y - other.y
-        dz = self.z - other.z
-        return math.sqrt(dx * dx + dy * dy + dz * dz)
+        length_product = self.length() * other.length()
+        if length_product == 0:
+            raise ValueError("Cannot calculate an angle with a zero-length vector")
+        cosine = self.dot(other) / length_product
+        cosine = max(-1, min(1, cosine))
+        return math.acos(cosine)
 
     def length(self):
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
 
+    def squaredLength(self):
+        return self.x * self.x + self.y * self.y + self.z * self.z
+
+    def normalize(self):
+        length = self.length()
+        if length == 0:
+            return vec3()
+        return self / length
+
     def distance(self, other):
         """Returns the distance between this point and another vector3."""
+        return math.sqrt(self.distanceSquared(other))
+
+    def distanceSquared(self, other):
+        """Returns the squared distance between this point and another vector3."""
         return (
             (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
         )
+
+    squareDistance = distanceSquared
 
     def equals(self, other):
         """Determine whether two objects are identical."""
         return self.x == other.x and self.y == other.y and self.z == other.z
 
-    def intersects(self, other):
-        pass
+    def intersects(self, other, tolerance=0):
+        """Returns True when another vector is at the same point."""
+        if not isinstance(other, vec3):
+            return False
+        tolerance = max(0, float(tolerance))
+        return self.distanceSquared(other) <= tolerance * tolerance
 
     def clone(self):
         """Returns a new instance of this vector3."""
@@ -127,13 +237,27 @@ class vec3:
             point.z + amount.z,
         )
 
-    # def __str__(self):
-    #     return str(self.x) + " " + str(self.y) + " " + str(self.z)
+    def obj(self):
+        """Returns a dict representation of this vector."""
+        return {"x": self.x, "y": self.y, "z": self.z}
 
-    # def __repr__(self):
-    #     return f"vec3({self.x}, {self.y}, {self.z})"
+    def json(self):
+        """Returns a string representation compatible with the old vec helpers."""
+        return str(self.obj())
+
+    def __str__(self):
+        return str(self.x) + " " + str(self.y) + " " + str(self.z)
+
+    def __repr__(self):
+        return f"vec3({self.x}, {self.y}, {self.z})"
 
     def __eq__(self, other):
         if isinstance(other, vec3):
             return self.x == other.x and self.y == other.y and self.z == other.z
         return False
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.z))
