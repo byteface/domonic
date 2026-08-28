@@ -10,7 +10,6 @@ from typing import Any
 
 from domonic.events import Event, EventTarget
 
-
 _VALID_STATES = {"granted", "denied", "prompt"}
 
 
@@ -97,7 +96,4 @@ class Permissions:
         """Reset all known permissions to ``prompt``."""
         for name in list(self._states):
             self._states[name] = "prompt"
-        return {
-            name: PermissionStatus("prompt", name=name)
-            for name in self._states
-        }
+        return {name: PermissionStatus("prompt", name=name) for name in self._states}

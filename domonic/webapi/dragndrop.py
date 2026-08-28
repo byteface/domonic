@@ -108,7 +108,9 @@ class DataTransferItemList(list):
         return len(self)
 
     def add(self, data, type: str | None = None):
-        item = data if isinstance(data, DataTransferItem) else DataTransferItem(data, type)
+        item = (
+            data if isinstance(data, DataTransferItem) else DataTransferItem(data, type)
+        )
         self.append(item)
         if item.kind == "file":
             self._owner.files.append(item.getAsFile())

@@ -5,16 +5,11 @@ test_parsers
 
 import unittest
 
-from domonic.parsers import (
-    add_cdata_tags_to_every_node,
-    add_xml_declaration_to_document,
-    create_element,
-    dent,
-    remove_cdata_tags_from_every_node,
-    remove_doctype,
-    remove_extra_whitespace,
-    remove_tags,
-)
+from domonic.parsers import (add_cdata_tags_to_every_node,
+                             add_xml_declaration_to_document, create_element,
+                             dent, remove_cdata_tags_from_every_node,
+                             remove_doctype, remove_extra_whitespace,
+                             remove_tags)
 
 
 class TestParsers(unittest.TestCase):
@@ -38,7 +33,9 @@ class TestParsers(unittest.TestCase):
     def test_string_cleanup_helpers(self):
         self.assertEqual(remove_extra_whitespace("a \n\t  b"), "a b")
         self.assertEqual(remove_doctype("<!doctype html><p>x</p>"), "<p>x</p>")
-        self.assertEqual(remove_tags("<p>x</p><script>bad()</script>", "js"), "<p>x</p>")
+        self.assertEqual(
+            remove_tags("<p>x</p><script>bad()</script>", "js"), "<p>x</p>"
+        )
         self.assertEqual(remove_tags("<style>x</style><p>ok</p>", "css"), "<p>ok</p>")
         self.assertEqual(remove_tags("<p>x</p><!--gone-->", "comments"), "<p>x</p>")
 

@@ -16,86 +16,58 @@ from domonic.dom import *
 from domonic.events import AbortController
 from domonic.html import *
 from domonic.javascript import *
-from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi import *
+from domonic.webapi.canvas import (CanvasRenderingContext2D, ImageData,
+                                   WebGL2RenderingContext,
+                                   WebGLRenderingContext)
+from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi.console import Console, console
-from domonic.webapi.cookiestore import CookieChangeEvent, CookieListItem, CookieStore
-from domonic.webapi.canvas import (
-    CanvasRenderingContext2D,
-    ImageData,
-    WebGL2RenderingContext,
-    WebGLRenderingContext,
-)
-from domonic.webapi.credentials import (
-    Credential,
-    CredentialsContainer,
-    FederatedCredential,
-    PasswordCredential,
-)
-from domonic.webapi.cssfontloading import FontFace, FontFaceSet
-from domonic.webapi.encoding import (
-    TextDecoder,
-    TextDecoderStream,
-    TextEncoder,
-    TextEncoderStream,
-)
-from domonic.webapi.fetch import (
-    Headers,
-    Request,
-    Response,
-    fetch,
-    fetch_pooled,
-    fetch_set,
-    fetch_threaded,
-)
+from domonic.webapi.cookiestore import (CookieChangeEvent, CookieListItem,
+                                        CookieStore)
+from domonic.webapi.credentials import (Credential, CredentialsContainer,
+                                        FederatedCredential,
+                                        PasswordCredential)
 from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
-from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
+from domonic.webapi.cssfontloading import FontFace, FontFaceSet
 from domonic.webapi.dragndrop import DataTransfer
+from domonic.webapi.encoding import (TextDecoder, TextDecoderStream,
+                                     TextEncoder, TextEncoderStream)
+from domonic.webapi.fetch import (Headers, Request, Response, fetch,
+                                  fetch_pooled, fetch_set, fetch_threaded)
+from domonic.webapi.file import (Blob, File, FileList, FileReader,
+                                 FileReaderSync)
 from domonic.webapi.gamepad import Gamepad, GamepadButton, GamepadManager
-from domonic.webapi.geo import Geolocation, GeolocationCoordinates, GeolocationPosition
+from domonic.webapi.geo import (Geolocation, GeolocationCoordinates,
+                                GeolocationPosition)
 from domonic.webapi.mediacapabilities import MediaCapabilities
-from domonic.webapi.mediadevices import (
-    InputDeviceInfo,
-    MediaDeviceInfo,
-    MediaDevices,
-    MediaStream,
-    MediaStreamTrack,
-)
+from domonic.webapi.mediadevices import (InputDeviceInfo, MediaDeviceInfo,
+                                         MediaDevices, MediaStream,
+                                         MediaStreamTrack)
 from domonic.webapi.mediasession import MediaSession
-from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
+from domonic.webapi.messaging import (BroadcastChannel, MessageChannel,
+                                      MessagePort)
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.notifications import Notification
 from domonic.webapi.permissions import Permissions, PermissionStatus
-from domonic.webapi.push import PushManager, PushSubscription, PushSubscriptionOptions
+from domonic.webapi.push import (PushManager, PushSubscription,
+                                 PushSubscriptionOptions)
 from domonic.webapi.sanitizer import Sanitizer
-from domonic.webapi.scheduler import (
-    Scheduler,
-    TaskController,
-    TaskPriorityChangeEvent,
-    TaskSignal,
-    scheduler,
-)
-from domonic.webapi.serviceworker import (
-    ServiceWorker,
-    ServiceWorkerContainer,
-    ServiceWorkerRegistration,
-)
+from domonic.webapi.scheduler import (Scheduler, TaskController,
+                                      TaskPriorityChangeEvent, TaskSignal,
+                                      scheduler)
+from domonic.webapi.serviceworker import (ServiceWorker,
+                                          ServiceWorkerContainer,
+                                          ServiceWorkerRegistration)
 from domonic.webapi.sse import EventSource
-from domonic.webapi.streams import (
-    CompressionStream,
-    DecompressionStream,
-    ReadableStream,
-    TransformStream,
-    WritableStream,
-)
+from domonic.webapi.streams import (CompressionStream, DecompressionStream,
+                                    ReadableStream, TransformStream,
+                                    WritableStream)
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
 from domonic.webapi.webstorage import Storage
-from domonic.webapi.webworkers import (
-    DedicatedWorkerGlobalScope,
-    Worker as WebWorker,
-    get_current_worker_scope,
-)
+from domonic.webapi.webworkers import DedicatedWorkerGlobalScope
+from domonic.webapi.webworkers import Worker as WebWorker
+from domonic.webapi.webworkers import get_current_worker_scope
 from domonic.webapi.xhr import FormData, XMLHttpRequest
 from domonic.window import Window as BrowserWindow
 
@@ -134,7 +106,9 @@ class TestCase(unittest.TestCase):
                     "lastEventId": "0",
                     "onopen": lambda event: opened.append(event.type),
                     "onmessage": lambda event: messages.append(("handler", event.data)),
-                    "onreadystatechange": lambda event: states.append(source.readyState),
+                    "onreadystatechange": lambda event: states.append(
+                        source.readyState
+                    ),
                 },
                 timeout=10,
             )
@@ -193,7 +167,9 @@ class TestCase(unittest.TestCase):
             '<p onclick="evil()">Hello <script>alert(1)</script>'
             '<a href="javascript:alert(1)" data-id="7">link</a></p>'
         )
-        self.assertEqual(Sanitizer().sanitizeToString(dirty), "<p>Hello <a>link</a></p>")
+        self.assertEqual(
+            Sanitizer().sanitizeToString(dirty), "<p>Hello <a>link</a></p>"
+        )
 
         custom = (
             "Some text <b><i>with</i></b> <blink>tags</blink>, "
@@ -224,7 +200,9 @@ class TestCase(unittest.TestCase):
 
         remover = Sanitizer({"removeElements": ["span"]}).removeAttribute("lang")
         self.assertEqual(
-            remover.sanitizeToString('<p lang="en">a<span>b</span><i lang="fr">c</i></p>'),
+            remover.sanitizeToString(
+                '<p lang="en">a<span>b</span><i lang="fr">c</i></p>'
+            ),
             "<p>a<i>c</i></p>",
         )
 
@@ -284,7 +262,9 @@ class TestCase(unittest.TestCase):
             keys={"auth": b"1234567890123456", "p256dh": b"x" * 65},
         )
         self.assertEqual(custom.getKey("auth"), b"1234567890123456")
-        self.assertEqual(custom.toJSON()["options"]["applicationServerKey"], "dGV4dC1rZXk")
+        self.assertEqual(
+            custom.toJSON()["options"]["applicationServerKey"], "dGV4dC1rZXk"
+        )
 
     def test_sanitizer_dom_integration(self):
         target = div()
@@ -298,7 +278,12 @@ class TestCase(unittest.TestCase):
 
         target.setHTMLUnsafe(
             '<p onclick="evil()">ok<script>bad</script></p>',
-            {"sanitizer": {"removeElements": ["script"], "removeAttributes": ["onclick"]}},
+            {
+                "sanitizer": {
+                    "removeElements": ["script"],
+                    "removeAttributes": ["onclick"],
+                }
+            },
         )
         self.assertEqual(str(target), "<div><p>ok</p></div>")
 
@@ -308,11 +293,13 @@ class TestCase(unittest.TestCase):
         )
         self.assertEqual(
             str(document),
-            '<html><head></head><body><main>ok<a>x</a></main></body></html>',
+            "<html><head></head><body><main>ok<a>x</a></main></body></html>",
         )
         self.assertEqual(document.body.querySelector("main").textContent, "okx")
 
-        unsafe_document = Document.parseHTMLUnsafe("<section><script>bad</script></section>")
+        unsafe_document = Document.parseHTMLUnsafe(
+            "<section><script>bad</script></section>"
+        )
         self.assertEqual(
             str(unsafe_document),
             "<html><head></head><body><section><script>bad</script></section></body></html>",
@@ -518,9 +505,7 @@ class TestCase(unittest.TestCase):
 
         queued = Scheduler(auto_run=False)
         order = []
-        visible = queued.postTask(
-            lambda: order.append("visible") or "visible"
-        )
+        visible = queued.postTask(lambda: order.append("visible") or "visible")
         background = queued.postTask(
             lambda: order.append("background") or "background",
             {"priority": "background"},
@@ -765,8 +750,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(digest.state, "fulfilled")
         self.assertEqual(
             digest.data.hex(),
-            "2cf24dba5fb0a30e26e83b2ac5b9e29e"
-            "1b161e5c1fa7425e73043362938b9824",
+            "2cf24dba5fb0a30e26e83b2ac5b9e29e" "1b161e5c1fa7425e73043362938b9824",
         )
 
         buffer = ArrayBuffer(5)
@@ -1196,7 +1180,9 @@ class TestCase(unittest.TestCase):
         file_data = FormData(file_form)
         self.assertIs(file_data.get("upload"), upload)
         self.assertEqual(str(file_data), "upload=report.txt")
-        self.assertEqual(list(file_data.entryDetails()), [("upload", upload, "report.txt")])
+        self.assertEqual(
+            list(file_data.entryDetails()), [("upload", upload, "report.txt")]
+        )
 
         events = []
 
@@ -1275,9 +1261,7 @@ class TestCase(unittest.TestCase):
 
         manager.disconnect(1)
         self.assertFalse(pad.connected)
-        self.assertEqual(
-            events, [("connect", "Test Pad"), ("disconnect", "Test Pad")]
-        )
+        self.assertEqual(events, [("connect", "Test Pad"), ("disconnect", "Test Pad")])
 
         win = BrowserWindow()
         window_events = []
@@ -1560,7 +1544,9 @@ class TestCase(unittest.TestCase):
         channel = MessageChannel()
         queued = []
 
-        channel.port1.addEventListener("message", lambda event: queued.append(event.data))
+        channel.port1.addEventListener(
+            "message", lambda event: queued.append(event.data)
+        )
         original = {"count": 1, "items": ["a"]}
         channel.port2.postMessage(original)
         original["items"].append("mutated")
@@ -1949,9 +1935,7 @@ onmessage = handle
         revoked = permissions.revoke({"name": "clipboard-read"})
         self.assertEqual(revoked.state, "prompt")
 
-        requested = permissions.requestAll(
-            [{"name": "camera"}, {"name": "microphone"}]
-        )
+        requested = permissions.requestAll([{"name": "camera"}, {"name": "microphone"}])
         self.assertEqual(requested["camera"].state, "granted")
         self.assertEqual(permissions.revokeAll()["camera"].state, "prompt")
 
@@ -2011,7 +1995,6 @@ onmessage = handle
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
-
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")
@@ -2054,12 +2037,8 @@ onmessage = handle
     def test_xpath(self):
 
         from domonic import domonic
-        from domonic.webapi.xpath import (
-            XPathEvaluator,
-            XPathException,
-            XPathNSResolver,
-            XPathResult,
-        )
+        from domonic.webapi.xpath import (XPathEvaluator, XPathException,
+                                          XPathNSResolver, XPathResult)
 
         # api unit test based on mdn example
         # https://developer.mozilla.org/en-US/docs/Web/API/XPathEvaluator
@@ -2136,7 +2115,9 @@ onmessage = handle
 
         expression = evaluator.createExpression("//ul/li/a")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-        self.assertEqual([node.textContent for node in result.nodes], ["Home", "Twitter"])
+        self.assertEqual(
+            [node.textContent for node in result.nodes], ["Home", "Twitter"]
+        )
 
         expression = evaluator.createExpression("//div/*")
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -2214,7 +2195,9 @@ onmessage = handle
         self.assertIs(result, reusable)
         self.assertEqual(result.snapshotLength, 2)
 
-        self.assertEqual(XPathResult("hello", XPathResult.ANY_TYPE).stringValue, "hello")
+        self.assertEqual(
+            XPathResult("hello", XPathResult.ANY_TYPE).stringValue, "hello"
+        )
         self.assertFalse(XPathResult(False, XPathResult.ANY_TYPE).booleanValue)
         self.assertEqual(XPathResult(3, XPathResult.ANY_TYPE).numberValue, 3.0)
         with self.assertRaises(XPathException):
@@ -2231,7 +2214,9 @@ onmessage = handle
         self.assertEqual(
             resolver.lookupNamespaceURI("site"), "https://example.com/site"
         )
-        self.assertEqual(resolver.lookupNamespaceURI("svg"), "http://www.w3.org/2000/svg")
+        self.assertEqual(
+            resolver.lookupNamespaceURI("svg"), "http://www.w3.org/2000/svg"
+        )
         self.assertEqual(
             XPathEvaluator({"custom": "urn:custom"})
             .createNSResolver({"other": "urn:other"})

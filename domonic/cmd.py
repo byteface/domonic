@@ -306,9 +306,7 @@ shutdown = type(
 )  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
 echo = type("echo", (Cmdcommand,), {"name": "echo"})  #: text output
 hostname = type("hostname", (Cmdcommand,), {"name": "hostname"})  #: display host name
-ver = type(
-    "ver", (Cmdcommand,), {"name": "ver"}
-)  #: display operating system version
+ver = type("ver", (Cmdcommand,), {"name": "ver"})  #: display operating system version
 # netstat = type('netstat', (Cmdcommand,), {'name': 'netstat'})  #: display TCP/IP connections and status
 ping = type("ping", (Cmdcommand,), {"name": "ping"})  #: pings the network
 

@@ -12,18 +12,8 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
-from domonic.javascript import (
-    URL,
-    Array,
-    Date,
-    Global,
-    Math,
-    Object,
-    String,
-    Window,
-    globalThis,
-    performance,
-)
+from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
+                                Window, globalThis, performance)
 
 # import requests
 # from mock import patch
@@ -844,9 +834,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(mapping.keys(), ["a", "b"])
         self.assertEqual(mapping.values(), [1, 2])
         visited = []
-        mapping.forEach(
-            lambda value, key, owner: visited.append((value, key, owner))
-        )
+        mapping.forEach(lambda value, key, owner: visited.append((value, key, owner)))
         self.assertEqual(visited, [(1, "a", mapping), (2, "b", mapping)])
         self.assertTrue(mapping.delete("a"))
         self.assertFalse(mapping.delete("a"))
@@ -1187,14 +1175,12 @@ class TestCase(unittest.TestCase):
         no_grouping = Intl.NumberFormat("en-US", {"useGrouping": False})
         self.assertEqual(no_grouping.format(1234), "1234")
 
-        currency = Intl.NumberFormat(
-            "en-GB", {"style": "currency", "currency": "GBP"}
-        )
+        currency = Intl.NumberFormat("en-GB", {"style": "currency", "currency": "GBP"})
         self.assertEqual(currency.format(1234.5), "GBP 1,234.50")
         self.assertEqual(
-            Intl.NumberFormat(
-                "en-US", {"style": "currency", "currency": "USD"}
-            ).format(-12.5),
+            Intl.NumberFormat("en-US", {"style": "currency", "currency": "USD"}).format(
+                -12.5
+            ),
             "-$12.50",
         )
 

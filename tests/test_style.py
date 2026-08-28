@@ -1,7 +1,7 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    unit tests for css
+test_domonic
+~~~~~~~~~~~~
+unit tests for css
 """
 
 import unittest
@@ -21,7 +21,9 @@ class TestCase(unittest.TestCase):
         assert test.style.alignContent == "flex-start"
         assert str(test) == '<div style="align-content:flex-start;">huh?</div>'
 
-        atag = a("linky", _href="https://eventual.technology", _style="alignContent: center;")
+        atag = a(
+            "linky", _href="https://eventual.technology", _style="alignContent: center;"
+        )
         assert atag.style.alignContent is not None
 
         sometag = div("asdfasdf", _id="test")
@@ -182,7 +184,9 @@ class TestCase(unittest.TestCase):
         # assert cssRules[0].style['display'] == 'flex'
         # assert cssRules[0].style['overflow'] == 'hidden'
         # assert cssRules[0].style['width'] == '100%'
-        assert cssRules[0].style.cssText == "display: flex; overflow: hidden; width: 100%;"
+        assert (
+            cssRules[0].style.cssText == "display: flex; overflow: hidden; width: 100%;"
+        )
 
         # CSSStyleRule
         assert cssRules[1].parentRule == None
@@ -199,7 +203,10 @@ class TestCase(unittest.TestCase):
         # assert cssRules[1].style['display'] == 'flex'
         # assert cssRules[1].style['flexDirection'] == 'column'
         # assert cssRules[1].style['overflow'] == 'hidden'
-        assert cssRules[1].style.cssText == "flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;"
+        assert (
+            cssRules[1].style.cssText
+            == "flex-grow: 1; display: flex; flex-direction: column; overflow: hidden;"
+        )
 
         # CSSMediaRule
         assert cssRules[2].parentRule == None
@@ -505,7 +512,9 @@ class TestCase(unittest.TestCase):
         style.cssText = "color: red; background-image: url('/important.png'); width: 10px !important;"
 
         self.assertEqual(style.getPropertyValue("color"), "red")
-        self.assertEqual(style.getPropertyValue("background-image"), "url('/important.png')")
+        self.assertEqual(
+            style.getPropertyValue("background-image"), "url('/important.png')"
+        )
         self.assertEqual(style.getPropertyPriority("background-image"), "")
         self.assertEqual(style.getPropertyPriority("width"), "important")
         self.assertEqual(list(style), ["color", "background-image", "width"])
@@ -527,7 +536,10 @@ class TestCase(unittest.TestCase):
         node.style.accentColor = "hotpink"
         node.style.containerType = "inline-size"
 
-        self.assertEqual(node.getAttribute("style"), "color:green;accent-color:hotpink;container-type:inline-size;")
+        self.assertEqual(
+            node.getAttribute("style"),
+            "color:green;accent-color:hotpink;container-type:inline-size;",
+        )
         self.assertEqual(node.style.getPropertyValue("color"), "green")
         self.assertEqual(node.style.getPropertyValue("accent-color"), "hotpink")
         self.assertEqual(node.style.getPropertyValue("container-type"), "inline-size")
@@ -590,7 +602,9 @@ class TestCase(unittest.TestCase):
 
     def test_css_parser_strips_comments(self):
         sheet = CSSStyleSheet()
-        rules = CSSParser.parseFromString(sheet, "/* heading */ div { color: red; } /* tail */")
+        rules = CSSParser.parseFromString(
+            sheet, "/* heading */ div { color: red; } /* tail */"
+        )
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0].selectorText, "div")
         self.assertEqual(rules[0].style.getPropertyValue("color"), "red")
@@ -657,13 +671,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(layer.name, "theme")
         self.assertIsInstance(layer.cssRules[0], CSSSupportsRule)
         self.assertEqual(layer.cssRules[0].conditionText, "(display: grid)")
-        self.assertEqual(layer.cssRules[0].cssRules[0].style.getPropertyValue("display"), "grid")
+        self.assertEqual(
+            layer.cssRules[0].cssRules[0].style.getPropertyValue("display"), "grid"
+        )
 
         container = sheet.cssRules[2]
         self.assertIsInstance(container, CSSContainerRule)
         self.assertEqual(container.containerName, "sidebar")
         self.assertEqual(container.containerQuery, "(width > 40rem)")
-        self.assertEqual(container.cssRules[0].style.getPropertyValue("container-type"), "inline-size")
+        self.assertEqual(
+            container.cssRules[0].style.getPropertyValue("container-type"),
+            "inline-size",
+        )
 
         multi_container = sheet.cssRules[3]
         self.assertIsInstance(multi_container, CSSContainerRule)
@@ -701,7 +720,9 @@ class TestCase(unittest.TestCase):
         when_rule = sheet.cssRules[7]
         self.assertIsInstance(when_rule, CSSWhenRule)
         self.assertEqual(when_rule.conditionText, "supports(display: flex)")
-        self.assertEqual(when_rule.cssRules[0].style.getPropertyValue("display"), "flex")
+        self.assertEqual(
+            when_rule.cssRules[0].style.getPropertyValue("display"), "flex"
+        )
 
         else_rule = sheet.cssRules[8]
         self.assertIsInstance(else_rule, CSSElseRule)
@@ -710,7 +731,9 @@ class TestCase(unittest.TestCase):
 
         font_face = sheet.cssRules[9]
         self.assertIsInstance(font_face, CSSFontFaceRule)
-        self.assertEqual(font_face.style.getPropertyValue("src"), 'url("fonts/a;b.woff2")')
+        self.assertEqual(
+            font_face.style.getPropertyValue("src"), 'url("fonts/a;b.woff2")'
+        )
 
         prop = sheet.cssRules[10]
         self.assertIsInstance(prop, CSSPropertyRule)
@@ -719,8 +742,7 @@ class TestCase(unittest.TestCase):
 
     def test_css_parser_nested_style_rules(self):
         sheet = CSSStyleSheet()
-        sheet.replaceSync(
-            """
+        sheet.replaceSync("""
             .card {
                 color: red;
                 &:hover {
@@ -733,8 +755,7 @@ class TestCase(unittest.TestCase):
                 }
                 background: white;
             }
-            """
-        )
+            """)
 
         rule = sheet.cssRules[0]
         self.assertEqual(rule.selectorText, ".card")
@@ -743,7 +764,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(rule.cssRules[0].style.getPropertyValue("color"), "blue")
         self.assertIsInstance(rule.cssRules[1], CSSMediaRule)
         self.assertEqual(rule.cssRules[1].cssRules[0].selectorText, "&")
-        self.assertEqual(rule.cssRules[1].cssRules[0].style.getPropertyValue("display"), "grid")
+        self.assertEqual(
+            rule.cssRules[1].cssRules[0].style.getPropertyValue("display"), "grid"
+        )
         self.assertIsInstance(rule.cssRules[2], CSSNestedDeclarations)
         self.assertEqual(rule.cssRules[2].style.getPropertyValue("background"), "white")
 
@@ -760,7 +783,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(CSS.escape("-"), "\\-")
         self.assertTrue(CSS.supports("display", "grid"))
         self.assertTrue(CSS.supports("container-type", "inline-size"))
-        self.assertTrue(CSS.supports("(display: grid) and (container-type: inline-size)"))
+        self.assertTrue(
+            CSS.supports("(display: grid) and (container-type: inline-size)")
+        )
         self.assertTrue(CSS.supports("at-rule(@container)"))
         self.assertFalse(CSS.supports(" display", "grid"))
         self.assertFalse(CSS.supports("display", "grid !important"))

@@ -11,8 +11,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from domonic.CDN import CDN_CSS, CDN_JS
 from domonic import attributes, domonic
+from domonic.CDN import CDN_CSS, CDN_JS
 
 
 def _debug_print(*args, **kwargs):

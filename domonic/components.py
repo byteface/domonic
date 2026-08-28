@@ -462,11 +462,13 @@ class DomonicJS:
         self.version = str(version)
 
     def __str__(self):
-        return str(script("""
+        return str(
+            script(
+                """
             window.domonic = window.domonic || {};
             window.domonic.version = """
-            + json.dumps(self.version)
-            + """;
+                + json.dumps(self.version)
+                + """;
             function print(msg){
                 console.log(msg);
             }
@@ -488,7 +490,9 @@ class DomonicJS:
             //        this.list.push(item);
             //    }
             //}
-            """))
+            """
+            )
+        )
 
 
 # class ImgButton():
@@ -650,7 +654,9 @@ class Input:
 class Modal:
     """Small renderable modal helper used by the examples."""
 
-    def __init__(self, reference=None, content=None, visible=False, close_text="&times;"):
+    def __init__(
+        self, reference=None, content=None, visible=False, close_text="&times;"
+    ):
         self.reference = reference or "modal"
         self.content = content
         self.visible = visible

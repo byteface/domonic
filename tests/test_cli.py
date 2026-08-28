@@ -43,7 +43,9 @@ class TestCLI(unittest.TestCase):
         mocked_evaluator = MagicMock()
         mocked_evaluator.createExpression.return_value = mocked_expression
         fake_requests = MagicMock()
-        fake_requests.get.return_value.text = "<html><body><a href='https://example.com'>Example</a></body></html>"
+        fake_requests.get.return_value.text = (
+            "<html><body><a href='https://example.com'>Example</a></body></html>"
+        )
 
         with (
             patch.dict(sys.modules, {"requests": fake_requests}),
@@ -60,7 +62,9 @@ class TestCLI(unittest.TestCase):
 
     def test_query_cli_outputs_matching_nodes(self):
         fake_document = MagicMock()
-        fake_document.querySelectorAll.return_value = ["<a class='cta'>Call to action</a>"]
+        fake_document.querySelectorAll.return_value = [
+            "<a class='cta'>Call to action</a>"
+        ]
 
         with (
             patch("domonic.window.window") as mock_window,
@@ -78,10 +82,15 @@ class TestCLI(unittest.TestCase):
         fake_node = MagicMock()
         fake_node.href = "https://example.com/docs"
         fake_page = MagicMock()
-        fake_page.querySelectorAll.return_value = [fake_node, MagicMock(href="https://example.com/ignored")]
+        fake_page.querySelectorAll.return_value = [
+            fake_node,
+            MagicMock(href="https://example.com/ignored"),
+        ]
 
         with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False) as handle:
-            handle.write("<html><body><a href='https://example.com/docs'>Docs</a></body></html>")
+            handle.write(
+                "<html><body><a href='https://example.com/docs'>Docs</a></body></html>"
+            )
             file_path = handle.name
 
         try:
@@ -114,7 +123,10 @@ class TestCLI(unittest.TestCase):
         with (
             patch("domonic.domonic.parseString", return_value=object()),
             patch("domonic.webapi.xpath.XPathEvaluator", return_value=mocked_evaluator),
-            patch("sys.stdin", io.StringIO("<html><body><a>One</a><a>Two</a></body></html>")),
+            patch(
+                "sys.stdin",
+                io.StringIO("<html><body><a>One</a><a>Two</a></body></html>"),
+            ),
             redirect_stdout(io.StringIO()) as stdout,
         ):
             do_things(self._base_args(xpath_stdin="//a", count=True))
@@ -131,7 +143,10 @@ class TestCLI(unittest.TestCase):
         with (
             patch("domonic.domonic.parseString", return_value=object()) as mock_parse,
             patch("domonic.webapi.xpath.XPathEvaluator", return_value=mocked_evaluator),
-            patch("sys.stdin", io.StringIO("<html><head><title>Example</title></head></html>")),
+            patch(
+                "sys.stdin",
+                io.StringIO("<html><head><title>Example</title></head></html>"),
+            ),
             patch("sys.stdin.isatty", return_value=False),
             redirect_stdout(io.StringIO()) as stdout,
         ):
@@ -147,7 +162,10 @@ class TestCLI(unittest.TestCase):
 
         with (
             patch("domonic.domonic.parseString", return_value=fake_page),
-            patch("sys.stdin", io.StringIO("<html><body><a class='cta'>CTA</a></body></html>")),
+            patch(
+                "sys.stdin",
+                io.StringIO("<html><body><a class='cta'>CTA</a></body></html>"),
+            ),
             patch("sys.stdin.isatty", return_value=False),
             redirect_stdout(io.StringIO()) as stdout,
         ):
@@ -158,12 +176,16 @@ class TestCLI(unittest.TestCase):
 
     def test_xpath_requires_url_and_expression(self):
         with patch("sys.stdin.isatty", return_value=True):
-            with self.assertRaisesRegex(ValueError, "xpath expects exactly 2 arguments"):
+            with self.assertRaisesRegex(
+                ValueError, "xpath expects exactly 2 arguments"
+            ):
                 do_things(self._base_args(xpath=["https://example.com"]))
 
     def test_query_requires_url_and_selector(self):
         with patch("sys.stdin.isatty", return_value=True):
-            with self.assertRaisesRegex(ValueError, "query expects exactly 2 arguments"):
+            with self.assertRaisesRegex(
+                ValueError, "query expects exactly 2 arguments"
+            ):
                 do_things(self._base_args(query=["https://example.com"]))
 
     def test_project_rejects_unknown_server_choice(self):

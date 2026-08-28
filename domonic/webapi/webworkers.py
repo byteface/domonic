@@ -20,7 +20,6 @@ from urllib.parse import unquote, urlparse
 from domonic.events import ErrorEvent, EventTarget, MessageEvent
 from domonic.webapi.scheduler import Scheduler, TaskController, TaskSignal
 
-
 _STOP = object()
 _CURRENT_SCOPE = threading.local()
 

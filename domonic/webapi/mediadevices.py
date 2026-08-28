@@ -197,9 +197,13 @@ class MediaDevices(EventTarget):
         constraints = constraints or {"audio": True, "video": True}
         tracks = []
         if constraints.get("audio"):
-            tracks.append(self._track_from_constraint("audio", constraints.get("audio")))
+            tracks.append(
+                self._track_from_constraint("audio", constraints.get("audio"))
+            )
         if constraints.get("video"):
-            tracks.append(self._track_from_constraint("video", constraints.get("video")))
+            tracks.append(
+                self._track_from_constraint("video", constraints.get("video"))
+            )
         if not tracks:
             return _create_promise().reject(ValueError("No media requested"))
         return _create_promise().resolve(MediaStream(tracks))

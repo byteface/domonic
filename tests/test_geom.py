@@ -1,6 +1,6 @@
 """
-    test_geom
-    ~~~~~~~~~~~~
+test_geom
+~~~~~~~~~~~~
 """
 
 import math
@@ -16,11 +16,13 @@ from domonic.geom.vec3 import vec3
 class TestColor(unittest.TestCase):
     def test_color_from_vec3(self):
         from domonic.geom.vec3 import vec3
+
         c = Color(vec3(255, 0, 0))
         self.assertEqual((c.r, c.g, c.b, c.a), (255, 0, 0, 1))
 
     def test_color_from_vec4(self):
         from domonic.geom.vec4 import vec4
+
         c = Color(vec4(255, 0, 0, 0.5))
         self.assertEqual((c.r, c.g, c.b, c.a), (255, 0, 0, 0.5))
 
@@ -66,7 +68,7 @@ class TestColor(unittest.TestCase):
         with self.assertRaises(ValueError):
             Color(255, 255)  # Missing blue
         with self.assertRaises(ValueError):
-            Color(255)       # Missing green and blue
+            Color(255)  # Missing green and blue
 
     def test_color_alpha_default(self):
         c = Color(100, 150, 200)

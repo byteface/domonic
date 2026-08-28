@@ -1,6 +1,6 @@
 """
-    test_rss
-    ~~~~~~~~
+test_rss
+~~~~~~~~
 """
 
 import unittest
@@ -16,7 +16,11 @@ class TestCase(unittest.TestCase):
                 title("Example Channel"),
                 link("https://example.com/"),
                 description("The latest from example.com"),
-                atom_link(_href="https://example.com/feed.xml", _rel="self", _type="application/rss+xml"),
+                atom_link(
+                    _href="https://example.com/feed.xml",
+                    _rel="self",
+                    _type="application/rss+xml",
+                ),
                 item(
                     title("An item"),
                     guid("https://example.com/items/1", **{"isPermaLink": "true"}),
@@ -30,8 +34,11 @@ class TestCase(unittest.TestCase):
         rendered = str(doc)
         self.assertIn('<rss version="2.0"', rendered)
         self.assertIn('xmlns:atom="http://www.w3.org/2005/Atom"', rendered)
-        self.assertIn('<atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"></atom:link>', rendered)
-        self.assertIn('<content:encoded>Full content</content:encoded>', rendered)
+        self.assertIn(
+            '<atom:link href="https://example.com/feed.xml" rel="self" type="application/rss+xml"></atom:link>',
+            rendered,
+        )
+        self.assertIn("<content:encoded>Full content</content:encoded>", rendered)
 
     def test_rss_generated_constructor_pattern(self):
         self.assertIn("content:encoded", rss_tags)
@@ -41,7 +48,12 @@ class TestCase(unittest.TestCase):
         self.assertIs(rss_module.__dict__["atom:link"], atom_link)
 
         doc = rss(
-            channel(item(guid("1", is_perma_link="false"), create_element("dc:creator", "byteface"))),
+            channel(
+                item(
+                    guid("1", is_perma_link="false"),
+                    create_element("dc:creator", "byteface"),
+                )
+            ),
             xmlns_atom=XMLNS_ATOM,
             xmlns_content=XMLNS_CONTENT,
             xmlns_dc=XMLNS_DC,

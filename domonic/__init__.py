@@ -28,14 +28,16 @@ except ImportError:  # pragma: no cover - optional dependency chain
 
 try:
     from domonic.javascript import *
+
     _HAS_JAVASCRIPT = True
 except ImportError:  # pragma: no cover - optional dependency chain
     _HAS_JAVASCRIPT = False
 
 try:
     # Keep package-root tag conflicts HTML-first; SVG versions are available from domonic.svg.
-    from domonic.svg import *
     from domonic.html import a, audio, canvas, iframe, script, style, video
+    from domonic.svg import *
+
     _HAS_SVG = True
 except ImportError:  # pragma: no cover - optional dependency chain
     _HAS_SVG = False

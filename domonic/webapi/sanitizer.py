@@ -14,7 +14,6 @@ from typing import Any
 
 from domonic.dom import Comment, Document, DocumentFragment, Element, Node
 
-
 _UNSAFE_ELEMENTS = frozenset({"script", "frame", "iframe", "embed", "object", "use"})
 _VOID_ELEMENTS = frozenset(
     {
@@ -305,9 +304,7 @@ class Sanitizer:
             "comments": self.comments,
             "dataAttributes": self.dataAttributes,
             "removeElements": sorted(self._remove_elements),
-            "replaceWithChildrenElements": sorted(
-                self._replace_with_children_elements
-            ),
+            "replaceWithChildrenElements": sorted(self._replace_with_children_elements),
             "removeAttributes": _attribute_rules_to_config(self._remove_attributes),
         }
         if self._allow_elements is not None:
@@ -422,7 +419,9 @@ class Sanitizer:
         """Allow an attribute globally or on selected elements."""
         if self._allow_attributes is None:
             self._allow_attributes = {}
-        rules = _normalize_attribute_rules({name: elements or ["*"]}, "attributes") or {}
+        rules = (
+            _normalize_attribute_rules({name: elements or ["*"]}, "attributes") or {}
+        )
         for attribute, targets in rules.items():
             self._allow_attributes.setdefault(attribute, set()).update(targets)
             if self._remove_attributes is not None:
@@ -644,7 +643,9 @@ def sanitize_html_fragment(
     return sanitizer.sanitize(input) if sanitizer is not None else DocumentFragment()
 
 
-def parse_html_document(input: Any, options: Any = None, *, safe: bool = True) -> Document:
+def parse_html_document(
+    input: Any, options: Any = None, *, safe: bool = True
+) -> Document:
     """Parse a sanitized HTML fragment into a domonic HTMLDocument."""
     from domonic.dom import HTMLDocument
     from domonic.html import body, head

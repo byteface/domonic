@@ -13,18 +13,10 @@ import sys
 import time
 
 from domonic.dom import *
-from domonic.events import (
-    CustomEvent,
-    Event,
-    FocusEvent,
-    InputEvent,
-    KeyboardEvent,
-    MouseEvent,
-    SubmitEvent,
-)
+from domonic.events import (CustomEvent, Event, FocusEvent, InputEvent,
+                            KeyboardEvent, MouseEvent, SubmitEvent)
 from domonic.html import *
 from domonic.javascript import *
-
 
 _UNSET = object()
 
@@ -125,7 +117,9 @@ class EventHandler:
                 return registered
         return None
 
-    def unbindEvent(self, event=None, targetElement=None, callback=None, selector=_UNSET):
+    def unbindEvent(
+        self, event=None, targetElement=None, callback=None, selector=_UNSET
+    ):
         """[unbinds an event]
 
         Args:
@@ -541,7 +535,9 @@ class dQuery_el:
                 self._copy_for_target(item, target_index)
                 for item in self._content_nodes(newnode)
             ]
-            p.args = tuple(siblings[:insertion_index] + items + siblings[insertion_index:])
+            p.args = tuple(
+                siblings[:insertion_index] + items + siblings[insertion_index:]
+            )
             p._update_parents()
         return self
 
@@ -630,7 +626,11 @@ class dQuery_el:
     def appendTo(self, target):
         """Insert every element in the set of matched elements to the end of the target."""
         target = º(target) if isinstance(target, str) else target
-        targets = target.toArray() if isinstance(target, dQuery_el) else self._coerce_nodes(target)
+        targets = (
+            target.toArray()
+            if isinstance(target, dQuery_el)
+            else self._coerce_nodes(target)
+        )
         for target_index, el in enumerate(targets):
             for item in self._ensure_list():
                 el.append(self._copy_for_target(item, target_index))
@@ -669,7 +669,9 @@ class dQuery_el:
                 self._copy_for_target(item, target_index)
                 for item in self._content_nodes(content)
             ]
-            p.args = tuple(siblings[:insertion_index] + items + siblings[insertion_index:])
+            p.args = tuple(
+                siblings[:insertion_index] + items + siblings[insertion_index:]
+            )
             p._update_parents()
         return self
 
@@ -790,7 +792,9 @@ class dQuery_el:
             if key in store:
                 return store.get(key)
             attr_value = elements[0].getAttribute(self._data_attribute_name(key))
-            return self._coerce_data_value(attr_value) if attr_value is not None else None
+            return (
+                self._coerce_data_value(attr_value) if attr_value is not None else None
+            )
         for el in elements:
             store = getattr(el, "_dquery_data", {}).copy()
             store[key] = value
@@ -903,7 +907,9 @@ class dQuery_el:
         for el in self._ensure_list():
             el.style.setProperty("opacity", 0)
             el.style.setProperty("display", "none")
-            setattr(el, "_dquery_animation", {"effect": "fadeOut", "duration": duration})
+            setattr(
+                el, "_dquery_animation", {"effect": "fadeOut", "duration": duration}
+            )
         self._run_effect_complete(complete)
         return self
 
@@ -1032,7 +1038,9 @@ class dQuery_el:
         tokens = self._class_tokens(classname)
         if not tokens:
             return False
-        return any(all(token in el.classList for token in tokens) for el in self._ensure_list())
+        return any(
+            all(token in el.classList for token in tokens) for el in self._ensure_list()
+        )
 
     def height(self):
         """Get the current computed height for the first element in the set of matched elements or set the height
@@ -1135,8 +1143,9 @@ class dQuery_el:
         return self
 
     def is_(self, selector):
-        """ Check the current matched set of elements against a selector, element,
-        or dQuery object and return true if at least one of these elements matches the given arguments."""
+        """Check the current matched set of elements against a selector, element,
+        or dQuery object and return true if at least one of these elements matches the given arguments.
+        """
         return any(
             self._match_selector(el, selector, index)
             for index, el in enumerate(self._ensure_list())
@@ -1169,7 +1178,9 @@ class dQuery_el:
     @property
     def length(self):
         """The number of elements in the dQuery object."""
-        return len(self._coerce_nodes(self.elements)) if self.elements is not None else 0
+        return (
+            len(self._coerce_nodes(self.elements)) if self.elements is not None else 0
+        )
 
     def live(self, event, handler=None):
         """Attach an event handler for all elements which match the current selector, now and in the future."""
@@ -1316,7 +1327,7 @@ class dQuery_el:
         return self
 
     def not_(self, selector):
-        """ Remove elements from the set of matched elements."""
+        """Remove elements from the set of matched elements."""
         self.elements = [
             el
             for index, el in enumerate(self._ensure_list())
@@ -1521,7 +1532,11 @@ class dQuery_el:
     def prependTo(self, target):
         """Insert every element in the set of matched elements to the beginning of the target."""
         target = º(target) if isinstance(target, str) else target
-        targets = target.toArray() if isinstance(target, dQuery_el) else self._coerce_nodes(target)
+        targets = (
+            target.toArray()
+            if isinstance(target, dQuery_el)
+            else self._coerce_nodes(target)
+        )
         for target_index, el in enumerate(targets):
             items = [
                 self._copy_for_target(item, target_index)
@@ -1704,7 +1719,9 @@ class dQuery_el:
             items = self._content_nodes(replacement)
             if not items:
                 continue
-            el.parentNode.replaceChild(self._copy_for_target(items[0], target_index), el)
+            el.parentNode.replaceChild(
+                self._copy_for_target(items[0], target_index), el
+            )
         return self
 
     def resize(self, callback=None):
@@ -1760,7 +1777,13 @@ class dQuery_el:
 
         node_name = getattr(el, "nodeName", "").upper()
         input_type = str(getattr(el, "type", "") or "").lower()
-        if node_name == "INPUT" and input_type in {"submit", "button", "image", "reset", "file"}:
+        if node_name == "INPUT" and input_type in {
+            "submit",
+            "button",
+            "image",
+            "reset",
+            "file",
+        }:
             return []
         if node_name == "BUTTON":
             return []
@@ -1771,7 +1794,9 @@ class dQuery_el:
             values = []
             options = list(el.getElementsByTagName("option"))
             selected_options = [
-                option for option in options if option.getAttribute("selected") is not None
+                option
+                for option in options
+                if option.getAttribute("selected") is not None
             ]
             if el.getAttribute("multiple") is None and not selected_options and options:
                 selected_options = [options[0]]
@@ -1840,7 +1865,9 @@ class dQuery_el:
         duration, _easing, complete = self._effect_args(duration, None, complete)
         for el in self._ensure_list():
             el.style.removeProperty("display")
-            setattr(el, "_dquery_animation", {"effect": "slideDown", "duration": duration})
+            setattr(
+                el, "_dquery_animation", {"effect": "slideDown", "duration": duration}
+            )
         self._run_effect_complete(complete)
         return self
 
@@ -1865,7 +1892,9 @@ class dQuery_el:
         duration, _easing, complete = self._effect_args(duration, None, complete)
         for el in self._ensure_list():
             el.style.setProperty("display", "none")
-            setattr(el, "_dquery_animation", {"effect": "slideUp", "duration": duration})
+            setattr(
+                el, "_dquery_animation", {"effect": "slideUp", "duration": duration}
+            )
         self._run_effect_complete(complete)
         return self
 
@@ -2059,6 +2088,7 @@ class dQuery_el:
             return self.trigger(name)
         else:
             return self.on(name, handler)
+
 
 def dproxy(q):
     el = dQuery_el(q)
@@ -2338,7 +2368,9 @@ class º(dQuery_el):
                 º._callback(status_handler, response, text_status)
 
             if text_status == "success":
-                º._callback(options.get("success"), response.data, text_status, response)
+                º._callback(
+                    options.get("success"), response.data, text_status, response
+                )
                 if use_global_events:
                     º._trigger_ajax_event(
                         "ajaxSuccess", response, options, response.data
@@ -2869,6 +2901,7 @@ class º(dQuery_el):
     def sub():
         """Creates a new copy of dQuery whose properties and methods can be modified without affecting
         the original dQuery object."""
+
         class dQuerySub(º):
             ajaxSettings = copy.deepcopy(º.ajaxSettings)
             _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}

@@ -8,9 +8,9 @@ https://developer.mozilla.org/en-US/docs/Web/API/Clipboard
 
 from __future__ import annotations
 
+import sys
 from copy import deepcopy
 from typing import Any
-import sys
 
 mac = sys.platform == "darwin"
 windows = sys.platform == "win32"

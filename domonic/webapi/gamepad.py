@@ -71,7 +71,9 @@ class Gamepad:
         *,
         index: int = 0,
         axes: list[float] | tuple[float, ...] | None = None,
-        buttons: list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None = None,
+        buttons: (
+            list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None
+        ) = None,
         mapping: str = "",
         connected: bool = False,
     ) -> None:
@@ -100,7 +102,9 @@ class Gamepad:
         self,
         *,
         axes: list[float] | tuple[float, ...] | None = None,
-        buttons: list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None = None,
+        buttons: (
+            list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None
+        ) = None,
     ) -> "Gamepad":
         if axes is not None:
             self.axes = [float(axis) for axis in axes]

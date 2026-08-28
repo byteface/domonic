@@ -1,13 +1,14 @@
 """
-    test_components
-    ~~~~~~~~~~~~
-    tests for components
+test_components
+~~~~~~~~~~~~
+tests for components
 """
 
-import unittest
 import json
+import unittest
 
-from domonic.components import DomonicJS, Modal, ProgressBar, Webpage, Websocket
+from domonic.components import (DomonicJS, Modal, ProgressBar, Webpage,
+                                Websocket)
 from domonic.events import KeyboardEvent, WheelEvent
 from domonic.html import *
 from domonic.JSON import *
@@ -80,7 +81,9 @@ class TestCase(unittest.TestCase):
         )
 
         rendered = str(websocket)
-        self.assertIn('const gameSocket = new WebSocket("ws://localhost:9999");', rendered)
+        self.assertIn(
+            'const gameSocket = new WebSocket("ws://localhost:9999");', rendered
+        )
         self.assertIn("function attach_domonic_listener", rendered)
         self.assertIn('attach_domonic_listener("#stage", "mousedown");', rendered)
         self.assertIn('attach_domonic_listener("window", "wheel");', rendered)

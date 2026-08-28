@@ -1804,7 +1804,9 @@ body(
         # print(render(root))
         rendered = render(test)
         self.assertEqual(root.getAttribute("lang"), "en")
-        self.assertEqual(test.querySelector("canvas").getAttribute("class"), "my-4 w-100")
+        self.assertEqual(
+            test.querySelector("canvas").getAttribute("class"), "my-4 w-100"
+        )
         self.assertIn('src="dashboard.js"', rendered)
 
     def test_domonic_render_a_tag(self):

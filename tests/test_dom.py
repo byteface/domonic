@@ -1064,7 +1064,10 @@ class DOMTest(unittest.TestCase):
             ["Twitter"],
         )
         self.assertEqual(
-            [node.textContent for node in page.getElementsBySelector("[href^='/']", page)],
+            [
+                node.textContent
+                for node in page.getElementsBySelector("[href^='/']", page)
+            ],
             ["Docs", "Home"],
         )
         self.assertEqual(
@@ -3052,7 +3055,9 @@ class DOMTest(unittest.TestCase):
 
         target += items
 
-        self.assertEqual([child.textContent for child in target.children], ["one", "two"])
+        self.assertEqual(
+            [child.textContent for child in target.children], ["one", "two"]
+        )
         self.assertEqual(items.childNodes.length, 0)
         self.assertIs(target.children[0].parentNode, target)
         self.assertIs(target.children[1].parentNode, target)
@@ -3655,7 +3660,9 @@ class DOMTest(unittest.TestCase):
         self.assertIs(items.namedItem("hit"), items[1])
         self.assertIs(items.namedItem("named"), items[2])
         self.assertIs(items["named.item.with.periods"], dotted)
-        self.assertIs(items["signup.elements.email"], signup.elements.namedItem("email"))
+        self.assertIs(
+            items["signup.elements.email"], signup.elements.namedItem("email")
+        )
         self.assertIsNone(items.namedItem("missing"))
         self.assertIsNone(items["signup.elements.missing"])
 
@@ -4851,7 +4858,9 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(states.size, 2)
         self.assertTrue(states.has("open"))
         self.assertEqual(list(states), ["open", "active"])
-        self.assertEqual(list(states.entries()), [("open", "open"), ("active", "active")])
+        self.assertEqual(
+            list(states.entries()), [("open", "open"), ("active", "active")]
+        )
 
         self.assertIs(states.add("open"), states)
         self.assertEqual(states.size, 2)

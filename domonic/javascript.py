@@ -11,13 +11,12 @@ from __future__ import annotations
 import array
 import builtins
 import calendar
-
 # import chunk
 import datetime
 import gc
-import inspect
 import importlib
 import importlib.util
+import inspect
 import json
 import locale as pylocale
 import math
@@ -90,8 +89,8 @@ except ImportError:  # pragma: no cover - optional dependency
 
 
 from domonic.webapi.url import URL, URLSearchParams
-from domonic.webapi.webworkers import Worker as _WebWorker
 from domonic.webapi.webstorage import Storage
+from domonic.webapi.webworkers import Worker as _WebWorker
 
 JSONScalar = str | int | float | bool | None
 PropertyDict = dict[str, Any]
@@ -645,7 +644,9 @@ class Object:
             key.startswith("_Object__") or key == "prototype"
         )
         if not is_internal:
-            if state.get("_Object__frozen", False) or state.get("_Object__sealed", False):
+            if state.get("_Object__frozen", False) or state.get(
+                "_Object__sealed", False
+            ):
                 raise TypeError("Cannot delete property from sealed Object")
         del self.__dict__[key]
 
@@ -4337,7 +4338,8 @@ class String:
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import body, h1, head, html, link, meta, script, style, title
+        from domonic.html import (body, h1, head, html, link, meta, script,
+                                  style, title)
 
         content = html(
             head(

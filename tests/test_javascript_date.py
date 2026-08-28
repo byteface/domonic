@@ -4,14 +4,15 @@ test_javascript_date
 unit tests for domonic.javascript.Date
 """
 
+import datetime
 import time
 import unittest
-import datetime
 from inspect import stack
 from unittest.mock import Mock
 
 from domonic.javascript import *
-from domonic.javascript import URL, Array, Date, Global, Math, Object, String, Window
+from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
+                                Window)
 
 
 def _debug_print(*args, **kwargs):

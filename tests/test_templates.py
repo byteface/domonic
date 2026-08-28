@@ -1,19 +1,13 @@
 """
-    test_templates
-    ~~~~~~~~~~~~
-    tests for templates
+test_templates
+~~~~~~~~~~~~
+tests for templates
 """
 
 import unittest
 
-from domonic.templates import (
-    blank_page,
-    maintenance_page,
-    message_page,
-    redirect_page,
-    runtime_page,
-    status_page,
-)
+from domonic.templates import (blank_page, maintenance_page, message_page,
+                               redirect_page, runtime_page, status_page)
 
 
 class TestTemplates(unittest.TestCase):
@@ -35,7 +29,9 @@ class TestTemplates(unittest.TestCase):
         self.assertIn("Hi there", page)
 
     def test_message_page(self):
-        page = str(message_page("Heads Up", "Notice", "Something happened", "Traceback info"))
+        page = str(
+            message_page("Heads Up", "Notice", "Something happened", "Traceback info")
+        )
         self.assertIn("<title>Heads Up</title>", page)
         self.assertIn("Something happened", page)
         self.assertIn("Traceback info", page)

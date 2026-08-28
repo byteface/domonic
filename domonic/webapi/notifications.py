@@ -61,7 +61,9 @@ class Notification(EventTarget):
     @classmethod
     def setPermission(cls, permission: str) -> str:
         if permission not in {"default", "granted", "denied"}:
-            raise ValueError("Notification permission must be default, granted, or denied")
+            raise ValueError(
+                "Notification permission must be default, granted, or denied"
+            )
         cls.permission = permission
         return cls.permission
 

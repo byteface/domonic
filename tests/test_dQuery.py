@@ -1,7 +1,7 @@
 """
-    test_dQuery
-    ~~~~~~~~~~~~~~~
-    unit tests for domonic.dQuery
+test_dQuery
+~~~~~~~~~~~~~~~
+unit tests for domonic.dQuery
 
 """
 
@@ -14,7 +14,6 @@ from urllib.parse import parse_qs, urlparse
 from domonic.dom import *
 from domonic.dQuery import *
 from domonic.html import *
-
 
 _TEST_AJAX_EVENTS = (
     "ajaxStart",
@@ -134,13 +133,11 @@ class TestCase(unittest.TestCase):
         self.assertIn('class="things"', str(d))
 
     def test_add(self):
-        test = º('<p></p>').add('<h1></h1>').add(div())
+        test = º("<p></p>").add("<h1></h1>").add(div())
         assert str(test) == "<p></p><h1></h1><div></div>"
 
     def test_addBack(self):
-        things = º(
-            '<li class="keep">a</li><li>b</li><li class="keep">c</li>'
-        )
+        things = º('<li class="keep">a</li><li>b</li><li class="keep">c</li>')
         selected = things.eq(1)
 
         self.assertEqual(
@@ -152,13 +149,17 @@ class TestCase(unittest.TestCase):
         a = º('<div id="test2"></div><div id="test3"></div>')
         assert str(a) == '<div id="test2"></div><div id="test3"></div>'
         a.addClass("one")
-        assert str(a) == '<div id="test2" class="one"></div><div id="test3" class="one"></div>'
+        assert (
+            str(a)
+            == '<div id="test2" class="one"></div><div id="test3" class="one"></div>'
+        )
         # print("1:",a)
         # print("2:",str(a))
         # print(str(a))
         a.addClass("one").addClass("two").addClass("three")
         assert (
-            str(a) == '<div id="test2" class="one two three"></div><div id="test3" class="one two three"></div>'
+            str(a)
+            == '<div id="test2" class="one two three"></div><div id="test3" class="one two three"></div>'
         )
         # for el in a.elements:
         # print(el.getAttribute("class"))
@@ -236,9 +237,7 @@ class TestCase(unittest.TestCase):
 
                 self.assertEqual(response.status_code, 500)
                 self.assertEqual(errors, [(500, "error", "Internal Server Error")])
-                self.assertEqual(
-                    events, [("ajaxError", 500, "Internal Server Error")]
-                )
+                self.assertEqual(events, [("ajaxError", 500, "Internal Server Error")])
 
     def test_ajaxSend(self):
         with self._ajax_handlers_isolated():
@@ -309,7 +308,7 @@ class TestCase(unittest.TestCase):
             box.animate("width:20px")
 
     def test_append(self):
-        d = º('<div></div>').append("some text")
+        d = º("<div></div>").append("some text")
         self.assertEqual(str(d), "<div>some text</div>")
 
     def test_appendTo(self):
@@ -317,7 +316,9 @@ class TestCase(unittest.TestCase):
         º(page)
         º("<span>last</span>").appendTo("#target")
         º("<b>first</b>").prependTo("#target")
-        assert str(º("#target")) == '<div id="target"><b>first</b><span>last</span></div>'
+        assert (
+            str(º("#target")) == '<div id="target"><b>first</b><span>last</span></div>'
+        )
 
     def test_attr(self):
         a = º('<div id="test2"></div>')
@@ -338,7 +339,10 @@ class TestCase(unittest.TestCase):
         page = html(body(div("middle", _id="target")))
         º(page)
         º("#target").before("<p>before</p>").after("<p>after</p>")
-        assert str(page) == '<html><body><p>before</p><div id="target">middle</div><p>after</p></body></html>'
+        assert (
+            str(page)
+            == '<html><body><p>before</p><div id="target">middle</div><p>after</p></body></html>'
+        )
 
     def test_bind(self):
         page = html(body(button("go", _id="btn")))
@@ -385,7 +389,10 @@ class TestCase(unittest.TestCase):
     def test_closest(self):
         page = html(body(div(span("x", _id="child"), _class="wrapper")))
         º(page)
-        assert str(º("#child").closest(".wrapper")) == '<div class="wrapper"><span id="child">x</span></div>'
+        assert (
+            str(º("#child").closest(".wrapper"))
+            == '<div class="wrapper"><span id="child">x</span></div>'
+        )
 
     def test_contents(self):
         page = html(body(div("hi", span("there"), _id="test")))
@@ -432,7 +439,9 @@ class TestCase(unittest.TestCase):
         º("#root").delegate(
             ".child",
             "click",
-            lambda event: calls.append((event.currentTarget.id, event.delegateTarget.id)),
+            lambda event: calls.append(
+                (event.currentTarget.id, event.delegateTarget.id)
+            ),
         )
         º("#btn").click()
 
@@ -539,7 +548,10 @@ class TestCase(unittest.TestCase):
 
     def test_filter(self):
         things = º('<li class="keep"></li><li></li><li class="keep"></li>')
-        assert str(things.filter(".keep")) == '<li class="keep"></li><li class="keep"></li>'
+        assert (
+            str(things.filter(".keep"))
+            == '<li class="keep"></li><li class="keep"></li>'
+        )
 
     def test_find(self):
         page = html(body(div(span("a"), p("b"), _id="test")))
@@ -778,18 +790,40 @@ class TestCase(unittest.TestCase):
         self._assert_simple_event("mouseup")
 
     def test_next(self):
-        page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
+        page = html(
+            body(
+                div("one", _id="first"),
+                div("two", _id="second"),
+                div("three", _id="third"),
+            )
+        )
         º(page)
         assert str(º("#first").next()) == '<div id="second">two</div>'
         assert str(º("#first").next("#third")) == ""
 
     def test_nextAll(self):
-        page = html(body(div("one", _id="first"), div("two", _class="match"), div("three", _class="match")))
+        page = html(
+            body(
+                div("one", _id="first"),
+                div("two", _class="match"),
+                div("three", _class="match"),
+            )
+        )
         º(page)
-        assert str(º("#first").nextAll(".match")) == '<div class="match">two</div><div class="match">three</div>'
+        assert (
+            str(º("#first").nextAll(".match"))
+            == '<div class="match">two</div><div class="match">three</div>'
+        )
 
     def test_nextUntil(self):
-        page = html(body(div("one", _id="first"), div("two"), div("stop", _id="stop"), div("three")))
+        page = html(
+            body(
+                div("one", _id="first"),
+                div("two"),
+                div("stop", _id="stop"),
+                div("three"),
+            )
+        )
         º(page)
         assert str(º("#first").nextUntil("#stop")) == "<div>two</div>"
 
@@ -892,17 +926,30 @@ class TestCase(unittest.TestCase):
     def test_parent(self):
         page = html(body(div(span("x", _id="child"), _id="parent")))
         º(page)
-        assert str(º("#child").parent()) == '<div id="parent"><span id="child">x</span></div>'
+        assert (
+            str(º("#child").parent())
+            == '<div id="parent"><span id="child">x</span></div>'
+        )
 
     def test_parents(self):
-        page = html(body(div(section(span("x", _id="child"), _id="inner"), _id="outer")))
+        page = html(
+            body(div(section(span("x", _id="child"), _id="inner"), _id="outer"))
+        )
         º(page)
-        assert str(º("#child").parents("#outer")) == '<div id="outer"><section id="inner"><span id="child">x</span></section></div>'
+        assert (
+            str(º("#child").parents("#outer"))
+            == '<div id="outer"><section id="inner"><span id="child">x</span></section></div>'
+        )
 
     def test_parentsUntil(self):
-        page = html(body(div(section(span("x", _id="child"), _id="inner"), _id="outer")))
+        page = html(
+            body(div(section(span("x", _id="child"), _id="inner"), _id="outer"))
+        )
         º(page)
-        assert str(º("#child").parentsUntil("#outer")) == '<section id="inner"><span id="child">x</span></section>'
+        assert (
+            str(º("#child").parentsUntil("#outer"))
+            == '<section id="inner"><span id="child">x</span></section>'
+        )
 
     def test_position(self):
         el = º('<div id="test"></div>')
@@ -918,12 +965,25 @@ class TestCase(unittest.TestCase):
         )
 
     def test_prev(self):
-        page = html(body(div("one", _id="first"), div("two", _id="second"), div("three", _id="third")))
+        page = html(
+            body(
+                div("one", _id="first"),
+                div("two", _id="second"),
+                div("three", _id="third"),
+            )
+        )
         º(page)
         assert str(º("#third").prev()) == '<div id="second">two</div>'
 
     def test_prevAll(self):
-        page = html(body(div("one", _class="match"), div("two"), div("three", _id="third"), div("four", _class="match")))
+        page = html(
+            body(
+                div("one", _class="match"),
+                div("two"),
+                div("three", _id="third"),
+                div("four", _class="match"),
+            )
+        )
         º(page)
         assert str(º("#third").prevAll(".match")) == '<div class="match">one</div>'
 
@@ -956,7 +1016,7 @@ class TestCase(unittest.TestCase):
 
     def test_ready(self):
         calls = []
-        º('<div></div>').ready(lambda: calls.append("ready"))
+        º("<div></div>").ready(lambda: calls.append("ready"))
         assert calls == ["ready"]
 
     def test_remove(self):
@@ -1060,7 +1120,10 @@ class TestCase(unittest.TestCase):
             )
         )
         º(page)
-        assert º("form").serialize() == "single=Single&multiple=Multiple&multiple=Multiple3&lname=&agree=yes"
+        assert (
+            º("form").serialize()
+            == "single=Single&multiple=Multiple&multiple=Multiple3&lname=&agree=yes"
+        )
 
     def test_serializeArray(self):
         page = html(
@@ -1080,9 +1143,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(el.css("display"), "")
 
     def test_siblings(self):
-        page = html(body(div("one", _class="match"), div("two", _id="target"), div("three", _class="match")))
+        page = html(
+            body(
+                div("one", _class="match"),
+                div("two", _id="target"),
+                div("three", _class="match"),
+            )
+        )
         º(page)
-        assert str(º("#target").siblings(".match")) == '<div class="match">one</div><div class="match">three</div>'
+        assert (
+            str(º("#target").siblings(".match"))
+            == '<div class="match">one</div><div class="match">three</div>'
+        )
 
     def test_size(self):
         self.assertEqual(º("<li>a</li><li>b</li>").size(), 2)
@@ -1258,7 +1330,10 @@ class TestCase(unittest.TestCase):
         page = html(body(span("a", _class="item"), span("b", _class="item")))
         º(page)
         º(".item").wrapAll("div")
-        assert str(page) == '<html><body><div><span class="item">a</span><span class="item">b</span></div></body></html>'
+        assert (
+            str(page)
+            == '<html><body><div><span class="item">a</span><span class="item">b</span></div></body></html>'
+        )
 
     def test_wrapInner(self):
         page = html(body(div(span("x"), b("y"), _id="target")))
@@ -1311,9 +1386,7 @@ class TestCase(unittest.TestCase):
         callbacks = º.Callbacks("unique memory")
         callbacks.add(remember, remember).fire("first")
         callbacks.add(lambda value: callback_seen.append(("late", value)))
-        self.assertEqual(
-            callback_seen, [("remember", "first"), ("late", "first")]
-        )
+        self.assertEqual(callback_seen, [("remember", "first"), ("late", "first")])
         self.assertTrue(callbacks.has(remember))
         callbacks.remove(remember)
         self.assertFalse(callbacks.has(remember))
@@ -1323,9 +1396,9 @@ class TestCase(unittest.TestCase):
         self.assertEqual(once_seen, [1])
 
         stop_seen = []
-        º.Callbacks("stopOnFalse").add(
-            lambda: stop_seen.append("first") is None
-        ).add(lambda: False).add(lambda: stop_seen.append("third")).fire()
+        º.Callbacks("stopOnFalse").add(lambda: stop_seen.append("first") is None).add(
+            lambda: False
+        ).add(lambda: stop_seen.append("third")).fire()
         self.assertEqual(stop_seen, ["first"])
 
         with self.assertRaisesRegex(RuntimeError, "ready boom"):

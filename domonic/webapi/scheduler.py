@@ -13,7 +13,6 @@ from typing import Any, Callable
 
 from domonic.events import AbortSignal, Event
 
-
 _PRIORITIES = ("user-blocking", "user-visible", "background")
 _PRIORITY_ORDER = {priority: index for index, priority in enumerate(_PRIORITIES)}
 
@@ -61,9 +60,7 @@ class TaskSignal(AbortSignal):
             return None
         self.priority = priority
         self.dispatchEvent(
-            TaskPriorityChangeEvent(
-                "prioritychange", {"previousPriority": previous}
-            )
+            TaskPriorityChangeEvent("prioritychange", {"previousPriority": previous})
         )
         return None
 
@@ -126,9 +123,7 @@ class Scheduler:
         signal = options.get("signal")
         delay = max(0, int(options.get("delay", 0) or 0))
 
-        mutable_priority = (
-            "priority" not in options and isinstance(signal, TaskSignal)
-        )
+        mutable_priority = "priority" not in options and isinstance(signal, TaskSignal)
         priority = _normalize_priority(
             getattr(signal, "priority", None)
             if mutable_priority

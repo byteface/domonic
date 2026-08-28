@@ -1,7 +1,7 @@
 """
-    test_svg
-    ~~~~~~~~~~~~
-    - unit tests for svg
+test_svg
+~~~~~~~~~~~~
+- unit tests for svg
 """
 
 import unittest
@@ -17,14 +17,28 @@ class TestCase(unittest.TestCase):
         mysvg = svg()
         assert str(mysvg) == "<svg></svg>"
         mysvg.appendChild(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow")
+            circle(
+                _cx="50",
+                _cy="50",
+                _r="40",
+                _stroke="green",
+                **{"_stroke-width": "4"},
+                _fill="yellow",
+            )
         )
         assert (
             str(mysvg)
             == '<svg><circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow"></circle></svg>'
         )
         mysvg.appendChild(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow")
+            circle(
+                _cx="50",
+                _cy="50",
+                _r="40",
+                _stroke="green",
+                **{"_stroke-width": "4"},
+                _fill="yellow",
+            )
         )
         assert (
             str(mysvg)
@@ -34,7 +48,14 @@ class TestCase(unittest.TestCase):
 
     def test_domonic_cirlce(self):
         test = svg(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
+            circle(
+                _cx="50",
+                _cy="50",
+                _r="40",
+                _stroke="green",
+                **{"_stroke-width": "4"},
+                _fill="yellow",
+            ),
             _width="100",
             _height="100",
         )
@@ -46,7 +67,14 @@ class TestCase(unittest.TestCase):
 
     def test_domonic_node(self):
         circ = svg(
-            circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
+            circle(
+                _cx="50",
+                _cy="50",
+                _r="40",
+                _stroke="green",
+                **{"_stroke-width": "4"},
+                _fill="yellow",
+            ),
             _width="100",
             _height="100",
         )
@@ -90,14 +118,21 @@ class TestCase(unittest.TestCase):
         self.assertIs(dot.viewportElement, drawing)
         self.assertTrue(drawing.getScreenCTM().isIdentity)
 
-        point = drawing.createSVGPoint(10, 20).matrixTransform(drawing.createSVGMatrix().translate(5, 7))
+        point = drawing.createSVGPoint(10, 20).matrixTransform(
+            drawing.createSVGMatrix().translate(5, 7)
+        )
         self.assertEqual((point.x, point.y), (15.0, 27.0))
 
         bbox = dot.getBBox()
-        self.assertEqual((bbox.x, bbox.y, bbox.width, bbox.height), (3.0, 4.0, 4.0, 4.0))
+        self.assertEqual(
+            (bbox.x, bbox.y, bbox.width, bbox.height), (3.0, 4.0, 4.0, 4.0)
+        )
 
         points_box = polyline(_points="0,0 10,4 -2,8").getBBox()
-        self.assertEqual((points_box.x, points_box.y, points_box.width, points_box.height), (-2.0, 0.0, 12.0, 8.0))
+        self.assertEqual(
+            (points_box.x, points_box.y, points_box.width, points_box.height),
+            (-2.0, 0.0, 12.0, 8.0),
+        )
 
     def test_svg_legacy_and_filter_exports(self):
         icon = svg(
@@ -114,7 +149,9 @@ class TestCase(unittest.TestCase):
         for tag_name in svg_tags:
             python_name = tag_name.replace("-", "_")
             self.assertIn(python_name, globals())
-            self.assertEqual(str(globals()[python_name]()), f"<{tag_name}></{tag_name}>")
+            self.assertEqual(
+                str(globals()[python_name]()), f"<{tag_name}></{tag_name}>"
+            )
 
     # def test_hyphen_elements(self):
     #     test = svg(

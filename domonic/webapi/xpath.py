@@ -76,9 +76,7 @@ class XPathExpression:
         expr = expr.replace("/@__", "/@_")
 
         if len(expr) <= 0:
-            raise XPathException(
-                "no expression", XPathException.INVALID_EXPRESSION_ERR
-            )
+            raise XPathException("no expression", XPathException.INVALID_EXPRESSION_ERR)
         self.expr = expr
         self.resolver = resolver
         self.namespaces = self._resolver_namespaces(resolver, expr)

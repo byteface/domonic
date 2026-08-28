@@ -57,7 +57,8 @@ class PushSubscription:
             else PushSubscriptionOptions(**(options or {}))
         )
         self._keys = {
-            "p256dh": _coerce_key((keys or {}).get("p256dh")) or secrets.token_bytes(65),
+            "p256dh": _coerce_key((keys or {}).get("p256dh"))
+            or secrets.token_bytes(65),
             "auth": _coerce_key((keys or {}).get("auth")) or secrets.token_bytes(16),
         }
         self._manager = manager

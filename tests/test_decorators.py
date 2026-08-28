@@ -1,22 +1,14 @@
 """
-    test_decorators
-    ~~~~~~~~~~~~
-    unit tests for the decorator methods
+test_decorators
+~~~~~~~~~~~~
+unit tests for the decorator methods
 """
 
 import unittest
 from unittest.mock import Mock
-from domonic.decorators import (
-    el,
-    called,
-    accepts,
-    silence,
-    check,
-    log,
-    instead,
-    deprecated,
-    as_json
-)
+
+from domonic.decorators import (accepts, as_json, called, check, deprecated,
+                                el, instead, log, silence)
 
 
 class TestDecorators(unittest.TestCase):
@@ -25,22 +17,22 @@ class TestDecorators(unittest.TestCase):
         @el("span")
         def return_text():
             return "Hello"
-        
+
         result = return_text()
         self.assertTrue(result.startswith("<span>"))
         self.assertTrue(result.endswith("</span>"))
         self.assertIn("Hello", result)
-    
+
     def test_el_with_string(self):
         @el("div", string=True)
         def return_text():
             return "Hello"
-        
+
         result = return_text()
         self.assertTrue(result.startswith("<div>"))
         self.assertTrue(result.endswith("</div>"))
         self.assertIn("Hello", result)
-    
+
     def test_called_decorator(self):
         before = Mock()
         after = Mock()
@@ -64,7 +56,7 @@ class TestDecorators(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             function_with_error()
-        
+
         before.assert_called_once()
         error_handler.assert_called_once()
 
@@ -72,10 +64,10 @@ class TestDecorators(unittest.TestCase):
         @accepts(int, str)
         def accept_types(x, y):
             return x, y
-        
+
         result = accept_types(10, "Hello")
         self.assertEqual(result, (10, "Hello"))
-        
+
         with self.assertRaises(AssertionError):
             accept_types("string", 10)
 
@@ -83,25 +75,26 @@ class TestDecorators(unittest.TestCase):
         @silence()
         def noisy_function():
             print("This should not print")
-        
+
         noisy_function()  # Should not raise an exception or print anything
 
     def test_check_decorator(self):
         @check
         def sample_function():
             return "Checking"
-        
-        with self.assertLogs(level='INFO') as log:
+
+        with self.assertLogs(level="INFO") as log:
             result = sample_function()
             self.assertIn("Entering", log.output[0])
             self.assertIn("Exited", log.output[1])
 
     def test_log_decorator(self):
         logger = Mock()
+
         @log(logger, level="warning")
         def simple_function():
             return "Logged"
-        
+
         simple_function()
         logger.warning.assert_called_once_with("simple_function")
 
@@ -125,7 +118,7 @@ class TestDecorators(unittest.TestCase):
         @as_json
         def return_dict():
             return {"key": "value"}
-        
+
         result = return_dict()
         self.assertEqual(result, '{"key": "value"}')
 

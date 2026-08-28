@@ -10,7 +10,6 @@ import zlib
 from contextlib import suppress
 from typing import Any
 
-
 _FORMAT_WBITS = {
     "gzip": zlib.MAX_WBITS | 16,
     "deflate": zlib.MAX_WBITS,

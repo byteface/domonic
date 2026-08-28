@@ -5,39 +5,34 @@ unit tests for domonic.d3
 
 """
 
-import time
 import threading
+import time
 import unittest
 from types import SimpleNamespace
 
-from domonic.CDN import CDN_CSS
-from domonic.dom import *
-from domonic.html import *
-from domonic.svg import *  # lowercase path is in here
-
 import domonic.d3 as d3
-
 # from mock import patch
 # from domonic.javascript import Math
 from domonic import domonic
+from domonic.CDN import CDN_CSS
 from domonic.d3 import *
 from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
-from domonic.d3.queue import queue
-from domonic.d3.tile import Tiles, tile
-from domonic.d3.timer import (
-    Timer,
-    interval as d3_interval,
-    now as d3_now,
-    timeout as d3_timeout,
-    timerFlush,
-)
-
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
+from domonic.d3.queue import queue
 from domonic.d3.selection import *
+from domonic.d3.tile import Tiles, tile
+from domonic.d3.timer import Timer
+from domonic.d3.timer import interval as d3_interval
+from domonic.d3.timer import now as d3_now
+from domonic.d3.timer import timeout as d3_timeout
+from domonic.d3.timer import timerFlush
 from domonic.decorators import silence
+from domonic.dom import *
+from domonic.html import *
+from domonic.svg import *  # lowercase path is in here
 
 # from domonic.d3.timer import *
 
@@ -524,8 +519,7 @@ class TestCase(unittest.TestCase):
             == "00,000,02.00"
         )
         assert (
-            formatLocale({"numerals": list("abcdefghij")}).format("d")(12345)
-            == "bcdef"
+            formatLocale({"numerals": list("abcdefghij")}).format("d")(12345) == "bcdef"
         )
         assert (
             formatLocale(
@@ -1462,7 +1456,8 @@ class TestCase(unittest.TestCase):
         _debug_print("body", d.doctype)
         _debug_print("bodyx", domonic.dom.document.doctype)
         _debug_print("body", document.doctype)
-        from domonic.dom import document  # re-import to get the updated document
+        from domonic.dom import \
+            document  # re-import to get the updated document
 
         _debug_print("body", document.doctype)
         assert type(select(document.body).append("h1")) == Selection
@@ -2060,9 +2055,7 @@ class TestCase(unittest.TestCase):
         selection.on("custom.release", replacement, {"once": True})
         assert select(one).on("custom.release") is replacement
 
-        selection.dispatch(
-            "custom", lambda data, i, group: {"detail": f"{data}:{i}"}
-        )
+        selection.dispatch("custom", lambda data, i, group: {"detail": f"{data}:{i}"})
         assert calls == [
             ("custom", "first", "button-0", "one"),
             ("custom", "first", "button-1", "two"),

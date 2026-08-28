@@ -28,12 +28,8 @@ from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
 from domonic.webapi.url import URL
-from domonic.webapi.xpath import (
-    XPathEvaluator,
-    XPathException,
-    XPathExpression,
-    XPathResult,
-)
+from domonic.webapi.xpath import (XPathEvaluator, XPathException,
+                                  XPathExpression, XPathResult)
 
 # from xml.dom.pulldom import END_ELEMENT
 
@@ -4804,9 +4800,7 @@ def _aria_element_reference_property(attribute: str, multiple: bool) -> property
             values = (
                 [value]
                 if isinstance(value, (str, Element))
-                else list(value)
-                if isinstance(value, IterableABC)
-                else [value]
+                else list(value) if isinstance(value, IterableABC) else [value]
             )
             idrefs = " ".join(_element_idrefs(item) for item in values)
             self.setAttribute(attribute, idrefs)
@@ -6016,48 +6010,23 @@ class Document(Element):
         Returns:
             Event: A new event object.
         """
-        from domonic.events import (
-            AnimationEvent,
-            BeforeUnloadEvent,
-            BlobEvent,
-            ClipboardEvent,
-            CloseEvent,
-            CommandEvent,
-            CompositionEvent,
-            CustomEvent,
-            DeviceLightEvent,
-            DeviceMotionEvent,
-            DeviceOrientationEvent,
-            DeviceProximityEvent,
-            DOMContentLoadedEvent,
-            DragEvent,
-            ErrorEvent,
-            ExtendableEvent,
-            FetchEvent,
-            FocusEvent,
-            FormDataEvent,
-            GamePadEvent,
-            HashChangeEvent,
-            InputEvent,
-            KeyboardEvent,
-            MessageEvent,
-            PageTransitionEvent,
-            PointerEvent,
-            PopStateEvent,
-            ProgressEvent,
-            SecurityPolicyViolationEvent,
-            StorageEvent,
-            SubmitEvent,
-            SVGEvent,
-            SyncEvent,
-            TimerEvent,
-            ToggleEvent,
-            TrackEvent,
-            TransitionEvent,
-            UIEvent,
-            WebGLContextEvent,
-            WheelEvent,
-        )
+        from domonic.events import (AnimationEvent, BeforeUnloadEvent,
+                                    BlobEvent, ClipboardEvent, CloseEvent,
+                                    CommandEvent, CompositionEvent,
+                                    CustomEvent, DeviceLightEvent,
+                                    DeviceMotionEvent, DeviceOrientationEvent,
+                                    DeviceProximityEvent,
+                                    DOMContentLoadedEvent, DragEvent,
+                                    ErrorEvent, ExtendableEvent, FetchEvent,
+                                    FocusEvent, FormDataEvent, GamePadEvent,
+                                    HashChangeEvent, InputEvent, KeyboardEvent,
+                                    MessageEvent, PageTransitionEvent,
+                                    PointerEvent, PopStateEvent, ProgressEvent,
+                                    SecurityPolicyViolationEvent, StorageEvent,
+                                    SubmitEvent, SVGEvent, SyncEvent,
+                                    TimerEvent, ToggleEvent, TrackEvent,
+                                    TransitionEvent, UIEvent,
+                                    WebGLContextEvent, WheelEvent)
 
         if event_type is None:
             return Event()
@@ -9611,7 +9580,9 @@ class HTMLInputElement(HTMLElement):
     def files(self, new_files: Any) -> None:
         from domonic.webapi.file import FileList
 
-        self._files = new_files if isinstance(new_files, FileList) else FileList(new_files)
+        self._files = (
+            new_files if isinstance(new_files, FileList) else FileList(new_files)
+        )
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
         if dispatch_events and not _dispatch_before_input_event(self, new_value):

@@ -174,7 +174,9 @@ class TestCase(unittest.TestCase):
         )
 
         self.assertEqual(index.tagName, "sitemapindex")
-        self.assertEqual(index.querySelector("loc").text, "https://example.com/sitemap.xml")
+        self.assertEqual(
+            index.querySelector("loc").text, "https://example.com/sitemap.xml"
+        )
         self.assertIn("<sitemapindex", str(index))
 
         self.assertEqual(urls.tagName, "urlset")

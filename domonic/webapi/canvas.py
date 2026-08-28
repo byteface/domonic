@@ -99,7 +99,9 @@ class CanvasGradient:
     def addColorStop(self, offset: float, color: str) -> None:
         offset = float(offset)
         if offset < 0 or offset > 1:
-            raise DOMException(DOMException.INDEX_SIZE_ERR, "Color stop is out of range")
+            raise DOMException(
+                DOMException.INDEX_SIZE_ERR, "Color stop is out of range"
+            )
         self.colorStops.append((offset, str(color)))
 
 
@@ -533,7 +535,9 @@ class WebGLRenderingContext:
             self.VERTEX_SHADER in shader_types and self.FRAGMENT_SHADER in shader_types
         )
         program.infoLog = (
-            "" if program.linked else "Program requires compiled vertex and fragment shaders"
+            ""
+            if program.linked
+            else "Program requires compiled vertex and fragment shaders"
         )
         self._record("linkProgram", program)
 

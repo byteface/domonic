@@ -1,20 +1,13 @@
 import unittest
 
-from domonic.constants import (
-    HTTPStatus,
-    doctypes,
-    file_extensions,
-    get_doctype,
-    get_mime_type,
-    get_namespace,
-    get_status_text,
-    http_response_status_codes,
-    mime_types,
-    namespaces,
-)
+from domonic.constants import (HTTPStatus, doctypes, file_extensions,
+                               get_doctype, get_mime_type, get_namespace,
+                               get_status_text, http_response_status_codes,
+                               mime_types, namespaces)
 from domonic.constants.color import Color
 from domonic.constants.entities import Char, Entity
-from domonic.constants.keyboard import Code, Key, KeyCode, KeyLocation, normalize_code, normalize_key
+from domonic.constants.keyboard import (Code, Key, KeyCode, KeyLocation,
+                                        normalize_code, normalize_key)
 
 
 class ConstantsTest(unittest.TestCase):
@@ -22,8 +15,12 @@ class ConstantsTest(unittest.TestCase):
         self.assertEqual(namespaces["svg"], "http://www.w3.org/2000/svg")
         self.assertEqual(namespaces["html"], "http://www.w3.org/1999/xhtml")
         self.assertEqual(namespaces["atom"], "http://www.w3.org/2005/Atom")
-        self.assertEqual(namespaces["news"], "http://www.google.com/schemas/sitemap-news/0.9")
-        self.assertEqual(namespaces["video"], "http://www.google.com/schemas/sitemap-video/1.1")
+        self.assertEqual(
+            namespaces["news"], "http://www.google.com/schemas/sitemap-news/0.9"
+        )
+        self.assertEqual(
+            namespaces["video"], "http://www.google.com/schemas/sitemap-video/1.1"
+        )
         self.assertEqual(get_namespace("svg"), "http://www.w3.org/2000/svg")
         self.assertEqual(get_namespace("missing", "fallback"), "fallback")
 

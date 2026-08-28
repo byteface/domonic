@@ -1,11 +1,12 @@
 """
-    test_window
-    ~~~~~~~~~~~~~~~~
+test_window
+~~~~~~~~~~~~~~~~
 """
 
 import threading
 import time
 import unittest
+from unittest.mock import patch
 
 from domonic.events import CloseEvent
 from domonic.html import body, div
@@ -13,7 +14,6 @@ from domonic.webapi.crypto import Crypto
 from domonic.webapi.scheduler import Scheduler
 from domonic.window import IdleDeadline, MediaQueryList, Window
 
-from unittest.mock import patch
 
 class TestCase(unittest.TestCase):
     def test_window_core_properties(self):
@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
             self.assertEqual(win.document.URL, "https://example.com")
             self.assertEqual(win.document.referrer, "https://eventual.technology")
             self.assertEqual(win.history.state, "https://example.com")
-            
+
     def test_document_metadata_properties_are_window_backed(self):
         win = Window()
 
@@ -99,21 +99,32 @@ class TestCase(unittest.TestCase):
         win = Window()
         events = []
 
-        win.addEventListener("hashchange", lambda event: events.append((event.type, event.oldURL, event.newURL)))
-        win.addEventListener("popstate", lambda event: events.append((event.type, event.state)))
+        win.addEventListener(
+            "hashchange",
+            lambda event: events.append((event.type, event.oldURL, event.newURL)),
+        )
+        win.addEventListener(
+            "popstate", lambda event: events.append((event.type, event.state))
+        )
 
         win.location = "https://example.com#one"
         win.location = "https://example.com#two"
         win.history.back()
 
-        self.assertIn(("hashchange", "https://example.com#one", "https://example.com#two"), events)
+        self.assertIn(
+            ("hashchange", "https://example.com#one", "https://example.com#two"), events
+        )
         self.assertIn(("popstate", "https://example.com#one"), events)
 
     def test_navigator_basic_specish_helpers(self):
         win = Window()
 
-        self.assertEqual(win.navigator.registerProtocolHandler("mailto", "/compose", "Mail"), None)
-        self.assertEqual(win.navigator.requestMediaKeySystemAccess("org.example", []), None)
+        self.assertEqual(
+            win.navigator.registerProtocolHandler("mailto", "/compose", "Mail"), None
+        )
+        self.assertEqual(
+            win.navigator.requestMediaKeySystemAccess("org.example", []), None
+        )
         self.assertEqual(win.navigator.clearAppBadge(), None)
         self.assertEqual(win.navigator.getBattery()["level"], 1.0)
         self.assertFalse(win.navigator.vibrate([100]))
@@ -131,7 +142,9 @@ class TestCase(unittest.TestCase):
 
         changes = []
         query = win.matchMedia("(min-width: 700px) and (orientation: landscape)")
-        query.addEventListener("change", lambda event: changes.append((event.matches, event.media)))
+        query.addEventListener(
+            "change", lambda event: changes.append((event.matches, event.media))
+        )
         self.assertTrue(query.matches)
 
         resize_events = []
@@ -143,10 +156,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(win.outerHeight, 800)
         self.assertEqual(resize_events, ["resize"])
         self.assertFalse(query.matches)
-        self.assertEqual(changes, [(False, "(min-width: 700px) and (orientation: landscape)")])
+        self.assertEqual(
+            changes, [(False, "(min-width: 700px) and (orientation: landscape)")]
+        )
 
         scroll_events = []
-        win.addEventListener("scroll", lambda event: scroll_events.append((win.scrollX, win.scrollY)))
+        win.addEventListener(
+            "scroll", lambda event: scroll_events.append((win.scrollX, win.scrollY))
+        )
         win.scrollTo({"left": 10, "top": 20})
         win.scrollBy(5, -10)
         win.scrollByLines(1)
@@ -160,7 +177,9 @@ class TestCase(unittest.TestCase):
         win = Window()
         messages = []
         printed = []
-        win.onmessage = lambda event: messages.append((event.data, event.origin, event.source))
+        win.onmessage = lambda event: messages.append(
+            (event.data, event.origin, event.source)
+        )
         win.addEventListener("beforeprint", lambda event: printed.append(event.type))
         win.addEventListener("afterprint", lambda event: printed.append(event.type))
 
@@ -187,31 +206,44 @@ class TestCase(unittest.TestCase):
         win = Window()
         order = []
         win.queueMicrotask(lambda: order.append("first"))
-        win.queueMicrotask(lambda: (order.append("second"), win.queueMicrotask(lambda: order.append("third"))))
+        win.queueMicrotask(
+            lambda: (
+                order.append("second"),
+                win.queueMicrotask(lambda: order.append("third")),
+            )
+        )
         self.assertEqual(order, ["first", "second", "third"])
 
         raf_done = threading.Event()
         raf_times = []
-        win.requestAnimationFrame(lambda timestamp: (raf_times.append(timestamp), raf_done.set()))
+        win.requestAnimationFrame(
+            lambda timestamp: (raf_times.append(timestamp), raf_done.set())
+        )
         self.assertTrue(raf_done.wait(0.25))
         self.assertEqual(len(raf_times), 1)
         self.assertGreaterEqual(raf_times[0], 0)
 
         cancelled = []
-        request_id = win.requestAnimationFrame(lambda timestamp: cancelled.append(timestamp))
+        request_id = win.requestAnimationFrame(
+            lambda timestamp: cancelled.append(timestamp)
+        )
         win.cancelAnimationFrame(request_id)
         time.sleep(0.05)
         self.assertEqual(cancelled, [])
 
         idle_done = threading.Event()
         idle_deadlines = []
-        win.requestIdleCallback(lambda deadline: (idle_deadlines.append(deadline), idle_done.set()))
+        win.requestIdleCallback(
+            lambda deadline: (idle_deadlines.append(deadline), idle_done.set())
+        )
         self.assertTrue(idle_done.wait(0.25))
         self.assertIsInstance(idle_deadlines[0], IdleDeadline)
         self.assertGreaterEqual(idle_deadlines[0].timeRemaining(), 0)
 
         idle_cancelled = []
-        callback_id = win.requestIdleCallback(lambda deadline: idle_cancelled.append(deadline))
+        callback_id = win.requestIdleCallback(
+            lambda deadline: idle_cancelled.append(deadline)
+        )
         win.cancelIdleCallback(callback_id)
         time.sleep(0.05)
         self.assertEqual(idle_cancelled, [])

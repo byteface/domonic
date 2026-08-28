@@ -123,8 +123,12 @@ class NumberUtils:
     def clamp(value: Any, min_value: Any = None, max_value: Any = None) -> int | float:
         """Clamp ``value`` between optional minimum and maximum bounds."""
         number = NumberUtils._as_float(value)
-        minimum = None if min_value is None else NumberUtils._as_float(min_value, "min_value")
-        maximum = None if max_value is None else NumberUtils._as_float(max_value, "max_value")
+        minimum = (
+            None if min_value is None else NumberUtils._as_float(min_value, "min_value")
+        )
+        maximum = (
+            None if max_value is None else NumberUtils._as_float(max_value, "max_value")
+        )
 
         if minimum is not None and maximum is not None and minimum > maximum:
             raise ValueError("min_value cannot be greater than max_value")
@@ -135,7 +139,9 @@ class NumberUtils:
         return NumberUtils._coerce_number(number)
 
     @staticmethod
-    def normalize(value: Any, min_value: Any, max_value: Any, clamp_result: bool = False) -> float:
+    def normalize(
+        value: Any, min_value: Any, max_value: Any, clamp_result: bool = False
+    ) -> float:
         """Map ``value`` from the given range to a ratio between ``0`` and ``1``."""
         number = NumberUtils._as_float(value)
         minimum = NumberUtils._as_float(min_value, "min_value")
@@ -236,7 +242,9 @@ class NumberUtils:
         return NumberUtils.to_port(value, allow_zero=allow_zero) is not None
 
     @staticmethod
-    def to_port(value: Any, default: D | None = None, allow_zero: bool = True) -> int | D | None:
+    def to_port(
+        value: Any, default: D | None = None, allow_zero: bool = True
+    ) -> int | D | None:
         """Convert ``value`` to a port number, returning ``default`` when invalid."""
         if isinstance(value, bool):
             return default

@@ -62,7 +62,9 @@ class Blob:
     """Immutable file-like byte sequence."""
 
     def __init__(
-        self, blobParts: Iterable[Any] | None = None, options: dict[str, Any] | None = None
+        self,
+        blobParts: Iterable[Any] | None = None,
+        options: dict[str, Any] | None = None,
     ) -> None:
         options = dict(options or {})
         endings = options.get("endings", "transparent")
@@ -226,7 +228,9 @@ class FileReader(EventTarget):
                 lengthComputable=True,
             )
             self.readyState = self.DONE
-            self._dispatch("load", loaded=blob.size, total=blob.size, lengthComputable=True)
+            self._dispatch(
+                "load", loaded=blob.size, total=blob.size, lengthComputable=True
+            )
         except Exception as exc:
             self.error = exc
             self.readyState = self.DONE

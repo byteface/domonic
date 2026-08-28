@@ -1,7 +1,7 @@
 """
-    test_domonic
-    ~~~~~~~~~~~~
-    unit tests for JSON helpers
+test_domonic
+~~~~~~~~~~~~
+unit tests for JSON helpers
 """
 
 import json
@@ -62,9 +62,7 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(table_from_string, Element)
         self.assertEqual(table_from_string.tagName, "table")
 
-        table_from_dict = JSON.tablify(
-            OrderedDict([("id", 1), ("name", "test")])
-        )
+        table_from_dict = JSON.tablify(OrderedDict([("id", 1), ("name", "test")]))
         self.assertIsInstance(table_from_dict, Element)
         self.assertEqual(table_from_dict.tagName, "table")
 
@@ -220,9 +218,7 @@ class TestCase(unittest.TestCase):
                 [
                     (
                         "user",
-                        OrderedDict(
-                            [("name", "domonic"), ("meta", {"role": "admin"})]
-                        ),
+                        OrderedDict([("name", "domonic"), ("meta", {"role": "admin"})]),
                     )
                 ]
             )

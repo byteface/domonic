@@ -28,8 +28,9 @@ This avoids all the overhead of SAX and pulldom to gain performance.
 #      nice speedup is achieved this way as well!)
 
 from typing import Final
-from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node, xmlbuilder
 from xml.dom import minidom  # nosec B408
+from xml.dom import (EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, Node,
+                     xmlbuilder)
 from xml.dom.minidom import _append_child, _set_attribute_node  # nosec B408
 from xml.dom.NodeFilter import NodeFilter
 from xml.parsers import expat

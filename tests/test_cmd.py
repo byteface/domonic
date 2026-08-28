@@ -3,13 +3,13 @@ test_cmd
 ~~~~~~~~~~~~~~~~
 """
 
-import unittest
 import sys
+import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from domonic.cmd import CmdException, Cmdcommand
-from domonic.cmd import copy, del_, dir, erase, md, move, rd, rename, type_
+from domonic.cmd import (Cmdcommand, CmdException, copy, del_, dir, erase, md,
+                         move, rd, rename, type_)
 
 
 class TestCase(unittest.TestCase):

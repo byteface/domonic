@@ -1,6 +1,6 @@
 """
-    test_collada
-    ~~~~~~~~~~~~
+test_collada
+~~~~~~~~~~~~
 """
 
 import unittest
@@ -20,9 +20,11 @@ class TestCase(unittest.TestCase):
             head(
                 meta(**{"_http-equiv": "X-UA-Compatible"}, _content="IE=edge"),
                 title("My first X3DOM page"),
-                script(_type="text/javascript", _src="https://www.x3dom.org/download/x3dom.js"),
                 script(
-                    """
+                    _type="text/javascript",
+                    _src="https://www.x3dom.org/download/x3dom.js",
+                ),
+                script("""
 				$(document).ready(function(){
 				    var screenshotCount = 0;
 
@@ -48,20 +50,37 @@ class TestCase(unittest.TestCase):
 				        $('#screenshotCount').html(screenshotCount);
 				    });
 				});
-		    	"""
+		    	"""),
+                link(
+                    _rel="stylesheet",
+                    _type="text/css",
+                    _href="https://www.x3dom.org/download/x3dom.css",
                 ),
-                link(_rel="stylesheet", _type="text/css", _href="https://www.x3dom.org/download/x3dom.css"),
             ),
             body(
                 h1("Animate Objects with X3DOM!"),
                 p("Learn how to animate objects."),
                 x3d(_width="500px", _height="400px").append(
                     scene(
-                        transform(_DEF="ball").append(shape(appearance(material(_diffuseColor="1 0 0")), sphere())),
+                        transform(_DEF="ball").append(
+                            shape(appearance(material(_diffuseColor="1 0 0")), sphere())
+                        ),
                         timeSensor(_DEF="time", _cycleInterval="2", _loop="true"),
-                        PositionInterpolator(_DEF="move", _key="0 0.5 1", _keyValue="0 0 0  0 3 0  0 0 0"),
-                        Route(_fromNode="time", _fromField="fraction_changed", _toNode="move", _toField="set_fraction"),
-                        Route(_fromNode="move", _fromField="value_changed", _toNode="ball", _toField="translation"),
+                        PositionInterpolator(
+                            _DEF="move", _key="0 0.5 1", _keyValue="0 0 0  0 3 0  0 0 0"
+                        ),
+                        Route(
+                            _fromNode="time",
+                            _fromField="fraction_changed",
+                            _toNode="move",
+                            _toField="set_fraction",
+                        ),
+                        Route(
+                            _fromNode="move",
+                            _fromField="value_changed",
+                            _toNode="ball",
+                            _toField="translation",
+                        ),
                     )
                 ),
             ),

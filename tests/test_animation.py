@@ -1,20 +1,20 @@
 import unittest
 
-from domonic.animation import (
-    Animation,
-    AnimationPlaybackEvent,
-    ComputedEffectTiming,
-    EffectTiming,
-    KeyframeEffect,
-)
+from domonic.animation import (Animation, AnimationPlaybackEvent,
+                               ComputedEffectTiming, EffectTiming,
+                               KeyframeEffect)
 from domonic.dom import DocumentTimeline
 from domonic.html import div
 
 
 class TestCase(unittest.TestCase):
     def test_effect_timing_and_computed_effect_timing(self):
-        timing = EffectTiming(duration=200, delay=50, iterations=2, fill="forwards", easing="ease-in")
-        effect = KeyframeEffect(div(), [{"opacity": 0, "offset": 0}, {"opacity": 1, "offset": 1}], timing)
+        timing = EffectTiming(
+            duration=200, delay=50, iterations=2, fill="forwards", easing="ease-in"
+        )
+        effect = KeyframeEffect(
+            div(), [{"opacity": 0, "offset": 0}, {"opacity": 1, "offset": 1}], timing
+        )
 
         raw = effect.getTiming()
         computed = effect.getComputedTiming(150)
@@ -62,12 +62,20 @@ class TestCase(unittest.TestCase):
 
     def test_animation_finish_cancel_and_playback_events(self):
         target = div()
-        effect = KeyframeEffect(target, [{"offset": 0, "opacity": 0}, {"offset": 1, "opacity": 1}], {"duration": 100})
+        effect = KeyframeEffect(
+            target,
+            [{"offset": 0, "opacity": 0}, {"offset": 1, "opacity": 1}],
+            {"duration": 100},
+        )
         animation = Animation(effect, DocumentTimeline())
         events = []
 
-        animation.addEventListener("finish", lambda event: events.append(("finish", event.currentTime)))
-        animation.addEventListener("cancel", lambda event: events.append(("cancel", event.currentTime)))
+        animation.addEventListener(
+            "finish", lambda event: events.append(("finish", event.currentTime))
+        )
+        animation.addEventListener(
+            "cancel", lambda event: events.append(("cancel", event.currentTime))
+        )
 
         animation.play()
         animation.finish()

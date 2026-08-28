@@ -1,6 +1,6 @@
 """
-    test_atom
-    ~~~~~~~~~
+test_atom
+~~~~~~~~~
 """
 
 import unittest
@@ -37,7 +37,9 @@ class TestCase(unittest.TestCase):
         entry_el = create_element("entry", title("Generated"), xml_lang="en")
         self.assertIsInstance(entry_el, AtomElement)
         self.assertEqual(entry_el.namespaceURI, XMLNS)
-        self.assertEqual(str(entry_el), '<entry xml:lang="en"><title>Generated</title></entry>')
+        self.assertEqual(
+            str(entry_el), '<entry xml:lang="en"><title>Generated</title></entry>'
+        )
 
         custom = create_element("app:edited", "now")
         self.assertEqual(str(custom), "<app:edited>now</app:edited>")
