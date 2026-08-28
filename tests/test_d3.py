@@ -1842,6 +1842,131 @@ class TestCase(unittest.TestCase):
         assert one.nextSibling == None
         assert two.nextSibling == None
 
+    def test_select_child_and_select_children(self):
+        d = html(
+            body(
+                section(
+                    h1("Title", _id="title"),
+                    p("First", _class="lead", _id="first"),
+                    p("Second", _id="second"),
+                )
+            )
+        )
+        section_ = d.querySelector("section")
+        title = d.querySelector("#title")
+        first = d.querySelector("#first")
+        second = d.querySelector("#second")
+
+        self.assertIs(select(section_).selectChild().node(), title)
+        self.assertIs(select(section_).selectChild("p.lead").node(), first)
+
+        selected = select(section_).selectChildren("p")
+        assert selected.nodes() == [first, second]
+        assert selected._parents == [section_]
+
+        callback_hits = []
+
+        def match_second(node, data, i, group):
+            callback_hits.append((node, i, group))
+            return node.getAttribute("id") == "second"
+
+        selected = select(section_).selectChildren(match_second)
+        assert selected.nodes() == [second]
+        assert callback_hits[0][0] is title
+        assert callback_hits[0][1] == 0
+
+    def test_filter_preserves_groups_and_supports_callbacks(self):
+        d = html(body(h1(_id="one"), h1(_id="two"), h2(_id="three")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        three = d.querySelector("#three")
+        selection = Selection([[None, one, two, three]], [d.querySelector("body")])
+        seen = []
+
+        filtered = selection.filter(
+            lambda node, data, i, group: seen.append((node, i, group))
+            or node.tagName == "h1"
+        )
+
+        assert filtered._groups == [[one, two]]
+        assert filtered._parents == selection._parents
+        assert [entry[1] for entry in seen] == [1, 2, 3]
+        assert selection.filter("#three").nodes() == [three]
+
+    def test_property_classed_text_html_and_datum(self):
+        d = html(body(p("old", _id="one", _class="alpha"), p("old", _id="two")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([one, two])
+
+        assert selection.property("customValue", 42) == selection
+        assert one.customValue == 42
+        assert two.customValue == 42
+        assert selection.property("customValue") == 42
+
+        selection.property("customValue", lambda data, i, group: i)
+        assert one.customValue == 0
+        assert two.customValue == 1
+        selection.property("customValue", None)
+        assert not hasattr(one, "customValue")
+        assert not hasattr(two, "customValue")
+
+        assert selection.datum({"bound": True}) == selection
+        assert selection.datum() == {"bound": True}
+        selection.datum(None)
+        assert selection.datum() is None
+
+        assert select(one).classed("alpha")
+        assert selection.classed("beta gamma", True) == selection
+        assert select(one).classed("beta gamma")
+        selection.classed("beta", False)
+        assert not select(one).classed("beta")
+        selection.classed("gamma", lambda data, i, group: i == 0)
+        assert select(one).classed("gamma")
+        assert not select(two).classed("gamma")
+
+        selection.text(lambda data, i, group: f"text-{i}")
+        assert one.textContent == "text-0"
+        assert two.textContent == "text-1"
+        selection.text(None)
+        assert one.textContent is None
+        assert two.textContent is None
+
+        selection.html("<span>fresh</span>")
+        assert one.querySelector("span").textContent == "fresh"
+        selection.html(None)
+        assert one.innerHTML == ""
+        assert two.innerHTML == ""
+
+    def test_insert_lower_remove_and_clone(self):
+        d = html(body(ul(li("one", _id="one"), li("two", _id="two"))))
+        ul_ = d.querySelector("ul")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+
+        inserted = select(ul_).insert("li", "#two").text("middle")
+        middle = inserted.node()
+        assert middle.tagName == "li"
+        assert [node.textContent for node in ul_.children] == ["one", "middle", "two"]
+
+        assert select(two).lower().node() is two
+        assert [node.getAttribute("id") for node in ul_.children] == [
+            "two",
+            "one",
+            None,
+        ]
+
+        shallow = select(one).clone(False).node()
+        assert shallow.tagName == "li"
+        assert shallow.textContent is None
+
+        deep = select(one).clone(True).node()
+        assert deep.textContent == "one"
+
+        assert select(middle).remove().node() is middle
+        assert middle.parentNode is None
+        assert middle not in ul_.children
+
     @silence
     def test_iterator(self):
         # selection are iterable over the selected nodes

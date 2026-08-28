@@ -151,19 +151,17 @@ class ClassList:
         self._names = classArray(node.getAttribute("class") or "")
 
     def add(self, name):
-        i = String(self._names).indexOf(name)
-        if i < 0:
+        if name not in self._names:
             self._names.append(name)
             self._node.setAttribute("class", " ".join(self._names))
 
     def remove(self, name):
-        i = self._names.indexOf(name)
-        if i >= 0:
-            self._names.splice(i, 1)
+        if name in self._names:
+            self._names.remove(name)
             self._node.setAttribute("class", " ".join(self._names))
 
     def contains(self, name):
-        return self._names.indexOf(name) >= 0
+        return name in self._names
 
 
 def classArray(string):
@@ -180,20 +178,14 @@ def classList(node):
 
 def classedAdd(node, names):
     mylist = classList(node)
-    i = -1
-    n = len(names)
-    while i < n:
-        mylist.add(names[i])
-        i += 1
+    for name in names:
+        mylist.add(name)
 
 
 def classedRemove(node, names):
-    list = classList(node)
-    i = -1
-    n = len(names)
-    while i < n:
-        list.remove(names[i])
-        i += 1
+    mylist = classList(node)
+    for name in names:
+        mylist.remove(name)
 
 
 # import selection_append from "./append.js";
@@ -220,6 +212,56 @@ def _invoke_callback(callback, *args):
         in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     ]
     return callback(*args[: len(positional)])
+
+
+def _children_of(node):
+    children = getattr(node, "children", [])
+    if callable(children):
+        children = children()
+    return list(children or [])
+
+
+def _first_element_child(node):
+    child = getattr(node, "firstElementChild", None)
+    return child() if callable(child) else child
+
+
+def _set_property(node, name, value):
+    setattr(node, name, value)
+
+
+def _get_property(node, name):
+    if node is None:
+        return None
+    if name in getattr(node, "__dict__", {}):
+        return node.__dict__[name]
+    if hasattr(type(node), name):
+        return getattr(node, name)
+    kwargs = getattr(node, "kwargs", {})
+    if name in kwargs:
+        return kwargs[name]
+    storage_name = name if str(name).startswith("_") else f"_{name}"
+    if storage_name in kwargs:
+        return kwargs[storage_name]
+    return None
+
+
+def _remove_property(node, name):
+    if name in getattr(node, "__dict__", {}):
+        delattr(node, name)
+        return
+    kwargs = getattr(node, "kwargs", None)
+    if kwargs is None:
+        return
+    candidates = [name]
+    if str(name).startswith("_"):
+        candidates.append(str(name)[1:])
+    else:
+        candidates.append(f"_{name}")
+    for candidate in candidates:
+        if candidate in kwargs:
+            del kwargs[candidate]
+            return
 
 
 class Selection:
@@ -308,21 +350,28 @@ class Selection:
 
     # import selection_selectChild from "./selectChild.js";
     # import {childMatcher} from "../matcher.js";
-    find = Array.prototype.find
 
     def childFind(self, match):
-        return lambda: find.call(this.children, match)
+        def find_child(node, *args):
+            children = _children_of(node)
+            for i, child in enumerate(children):
+                if _invoke_callback(
+                    match, child, getattr(child, "__data__", None), i, children
+                ):
+                    return child
+            return None
 
-    def childFirst(self):
-        return this.firstElementChild
+        return find_child
 
-    def selectChild(self, match):
-        # return this.select(match == null ? childFirst : childFind(typeof match === "function" ? match : childMatcher(match)))
-        if callable(match):
-            match = childFind(match)
+    def childFirst(self, node, *args):
+        return _first_element_child(node)
+
+    def selectChild(self, match=None):
+        if match is None:
+            select = self.childFirst
         else:
-            match = childMatcher(match)
-        return this.select(match)
+            select = self.childFind(match if callable(match) else childMatcher(match))
+        return self.select(select)
 
     # import selection_selectChildren from "./selectChildren.js";
     # def selectChildren: selection_selectChildren,
@@ -330,20 +379,28 @@ class Selection:
 
     # filter = Array.prototype.filter
 
-    def children(self):
-        return Array.from_(self.this.children)
+    def children(self, node, *args):
+        return _children_of(node)
 
     def childrenFilter(self, match):
-        return lambda: Array.filter.call(self.this.children, match)
+        def filter_children(node, *args):
+            children = _children_of(node)
+            return [
+                child
+                for i, child in enumerate(children)
+                if _invoke_callback(
+                    match, child, getattr(child, "__data__", None), i, children
+                )
+            ]
 
-    def selectChildren(self, match):
-        # TODO - rewrite this as python
-        # return this.selectAll(match == None ? children : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
-        # return self.selectAll(match == None ? self.children : self.childrenFilter(typeof match == "function" ? match : childMatcher(match)))
+        return filter_children
+
+    def selectChildren(self, match=None):
         if match is None:
-            return self.selectAll(self.this.children)
-        else:
-            return self.selectAll(self.childrenFilter(match))
+            return self.selectAll(self.children)
+        return self.selectAll(
+            self.childrenFilter(match if callable(match) else childMatcher(match))
+        )
 
     # import selection_filter from "./filter.js";
     # def filter: selection_filter,
@@ -351,30 +408,21 @@ class Selection:
     # import matcher from "../matcher.js"; # TODO - might not be in yet
 
     def filter(self, match):
-        if callable(match):
+        if not callable(match):
             match = matcher(match)
 
-        # TODO - rewrite this as python
-        # for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
-        #     for (var group = groups[j], n = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n; ++i) {
-        #     if ((node = group[i]) && match.call(node, node.__data__, i, group)) {
-        #         subgroup.push(node);
-        #     }
-        #     }
-        # }
         groups = self._groups
-        m = len(groups)
         subgroups = []
-        j = 0
         for group in groups:
-            n = len(group)
-            for i in range(n):
+            subgroup = []
+            for i in range(len(group)):
                 node = group[i]
                 if node is None:
                     continue
-                if match.call(node, node.__data__, i, group):
-                    subgroups.append(node)
-            j += 1
+                data = getattr(node, "__data__", None)
+                if _invoke_callback(match, node, data, i, group):
+                    subgroup.append(node)
+            subgroups.append(subgroup)
         return Selection(subgroups, self._parents, self.this)
 
     # import selection_data from "./data.js";
@@ -752,14 +800,14 @@ class Selection:
 
     # import selection_property from "./property.js";
     def propertyRemove(self, name):
-        def anon(this):
-            del this[name]
+        def anon(this, *args):
+            _remove_property(this, name)
 
         return anon
 
     def propertyConstant(self, name, value):
-        def anon(this):
-            this[name] = value
+        def anon(this, *args):
+            _set_property(this, name, value)
 
         return anon
 
@@ -767,29 +815,26 @@ class Selection:
         def anon(this, *args):
             v = _invoke_callback(value, *args)
             if v == None:
-                del this[name]
+                _remove_property(this, name)
             else:
-                this[name] = v
+                _set_property(this, name, v)
 
         return anon
 
-    def property(self, name, value):
+    def property(self, name, value=_MISSING):
+        if value is _MISSING:
+            return _get_property(self.node(), name)
 
-        # TODO write this commented out javascript as python instead
-        # return arguments.length > 1
-        #     ? this.each((value == null
-        #         ? propertyRemove : typeof value === "function"
-        #         ? propertyFunction
-        #         : propertyConstant)(name, value))
-        #     : this.node()[name]
         if value == None:
-            func = propertyRemove
+            func = self.propertyRemove
         elif callable(value):
-            func = propertyFunction
+            func = self.propertyFunction
         else:
-            func = propertyConstant
+            func = self.propertyConstant
 
-        return func(name, value)
+        callback = func(name) if value == None else func(name, value)
+        self.each(callback)
+        return self
 
     # import selection_text from "./text.js";
     # import selection_classed from "./classed.js";
@@ -804,59 +849,43 @@ class Selection:
         return lambda this, *args: classedRemove(this, names)
 
     def classedFunction(self, names, value):
-        # TODO write this commented out javascript as python instead
-        # return function() {
-        # (value.apply(this, arguments) ? classedAdd : classedRemove)(this, names)
-        # }
         def anon(this, *args):
-            nonlocal names
-            nonlocal value
-            # nonlocal this
-            # nonlocal args
-            # print('classedFunction', names, value)
             v = _invoke_callback(value, *args)
-            if v == None:
-                classedRemove(this, names)
-            else:
+            if v:
                 classedAdd(this, names)
+            else:
+                classedRemove(this, names)
 
         return anon
 
-    def classed(self, name, value, *args):
+    def classed(self, name, value=_MISSING, *args):
         names = classArray(str(name))
-        # print(names)
-        # if (args.length < 2):
-        if value == None:
-            list = classList(self.node())
-            i = -1
-            n = len(names)
-            while i < n:
-                if not list.contains(names[i]):
+        if value is _MISSING:
+            node = self.node()
+            if node is None:
+                return False
+            mylist = classList(node)
+            for class_name in names:
+                if not mylist.contains(class_name):
                     return False
-                i += 1
             return True
 
-        # TODO write this commented out javascript as python instead
-        # return this.each((typeof value === "function"
-        #     ? classedFunction : value
-        #     ? classedTrue
-        #     : classedFalse)(names, value));
-        # }
-        # print( 'hey',value, callable(value) )
-
-        if value == None:
-            func = self.classedFalse
-        elif callable(value):
+        if callable(value):
             func = self.classedFunction
-        else:
+        elif value:
             func = self.classedTrue
+        else:
+            func = self.classedFalse
 
         self.each(func(names, value))
         return self
 
     # def text: selection_text,
     def _textRemove(self):
-        self.this.textContent = ""
+        def anon(this, *args):
+            this.textContent = ""
+
+        return anon
 
     def _textConstant(self, value):
         def anon(this, *args):
@@ -871,16 +900,11 @@ class Selection:
 
         return anon
 
-    def text(self, value=None):
-        if value == None:
+    def text(self, value=_MISSING):
+        if value is _MISSING:
             node = self.node()
             return None if node is None else node.textContent
-        # return arguments.length
-        #     ? this.each(value == null
-        #         ? textRemove : (typeof value === "function"
-        #         ? textFunction
-        #         : textConstant)(value))
-        #     : this.node().textContent
+
         if value == None:
             func = self._textRemove
         elif callable(value):
@@ -888,15 +912,19 @@ class Selection:
         else:
             func = self._textConstant
 
-        self.each(func(value))
+        callback = func() if value == None else func(value)
+        self.each(callback)
         return self
 
     # import selection_html from "./html.js";
     def htmlRemove(self):
-        self.this.innerHTML = ""
+        def anon(this, *args):
+            this.innerHTML = ""
+
+        return anon
 
     def htmlConstant(self, value):
-        def anon(this):
+        def anon(this, *args):
             this.innerHTML = value
 
         return anon
@@ -908,24 +936,19 @@ class Selection:
 
         return anon
 
-    def html(self, value=None):
-        # TODO write this commented out javascript as python instead
-        # return arguments.length
-        #     ? this.each(value == null
-        #         ? htmlRemove : (typeof value === "function"
-        #         ? htmlFunction
-        #         : htmlConstant)(value))
-        #     : this.node().innerHTML;
-        if value == None:
+    def html(self, value=_MISSING):
+        if value is _MISSING:
             node = self.node()
             return None if node is None else node.innerHTML
+
         if value == None:
             func = self.htmlRemove
         elif callable(value):
             func = self.htmlFunction
         else:
             func = self.htmlConstant
-        self.each(func(value))
+        callback = func() if value == None else func(value)
+        self.each(callback)
         return self
 
     # import selection_raise from "./raise.js";
@@ -938,14 +961,12 @@ class Selection:
 
     # import selection_lower from "./lower.js";
     # def lower: selection_lower,
-    def _lower(self):
-        if self.this.previousSibling:
-            self.this.parentNode.insertBefore(
-                self.this, self.this.parentNode.firstChild
-            )
+    def _lower(self, node, *args):
+        if node.previousSibling and node.parentNode:
+            node.parentNode.insertBefore(node, node.parentNode.firstChild)
 
     def lower(self):
-        return self.each(lower)
+        return self.each(self._lower)
 
     # import selection_insert from "./insert.js";
     # import creator from "../creator.js"; # already in?
@@ -954,59 +975,50 @@ class Selection:
     def constantNull(self):
         return None
 
-    def insert(self, name, before, *args):
-        # TODO write this commented out javascript as python instead
-        # var create = typeof name === "function" ? name : creator(name),
-        #     select = before == null ? constantNull : typeof before === "function" ? before : selector(before);
-        # return this.select(function() {
-        #     return this.insertBefore(create.apply(this, arguments), select.apply(this, arguments) || null);
-        # })
+    def insert(self, name, before=None, *args):
         create = name if callable(name) else creator(name)
-        select = (
-            before == None
-            or before == "null"
-            or before == "undefined"
-            or before == "null"
-        )
-        return self.select(
-            lambda: self.this.insertBefore(Function(create).apply(self, args), select)
-        )
+        select = self.constantNull if before is None else before
+        if not callable(select):
+            select = selector(select)
+
+        def insert_node(node, data, i, group):
+            new_node = _invoke_callback(create, node, data, i, group)
+            reference_node = _invoke_callback(select, node, data, i, group)
+            return node.insertBefore(new_node, reference_node)
+
+        return self.select(insert_node)
 
     # import selection_remove from "./remove.js";
     # def remove: selection_remove,
-    def _remove(self):
-        parent = self.this.parentNode
+    def _remove(self, node, *args):
+        parent = node.parentNode
         if parent:
-            parent.removeChild(self.this)
+            parent.removeChild(node)
 
     def remove(self):
-        return self.each(remove)
+        return self.each(self._remove)
 
     # import selection_clone from "./clone.js";
-    def selection_cloneShallow(self):
-        clone = this.cloneNode(False)
-        parent = self.this.parentNode
-        return parent.insertBefore(clone, this.nextSibling) if parent else clone
+    def selection_cloneShallow(self, node, *args):
+        clone = node.cloneNode(False)
+        parent = node.parentNode
+        return parent.insertBefore(clone, node.nextSibling) if parent else clone
 
-    def selection_cloneDeep(self):
-        clone = this.cloneNode(False)
-        parent = self.this.parentNode
-        return parent.insertBefore(clone, self.this.nextSibling) if parent else clone
+    def selection_cloneDeep(self, node, *args):
+        clone = node.cloneNode(True)
+        parent = node.parentNode
+        return parent.insertBefore(clone, node.nextSibling) if parent else clone
 
-    def clone(self, deep):
-        return this.select(selection_cloneDeep if deep else selection_cloneShallow)
+    def clone(self, deep=True):
+        return self.select(
+            self.selection_cloneDeep if deep else self.selection_cloneShallow
+        )
 
     # import selection_datum from "./datum.js";
-    def datum(self, value=None, *args):
-        # return arguments.length
-        #     ? this.property("__data__", value)
-        #     : this.node().__data__;
-        # }
-        return (
-            self.this.property("__data__", value)
-            if value is not None
-            else self.node().__data__
-        )
+    def datum(self, value=_MISSING, *args):
+        if value is _MISSING:
+            return _get_property(self.node(), "__data__")
+        return self.property("__data__", value)
 
     # import selection_on from "./on.js";
     def contextListener(self, listener):
