@@ -1082,10 +1082,8 @@ class MediaList(list):
 
     def deleteMedium(self, oldMedium: str) -> None:
         """Removes medium in the media list. If the medium is not found nothing happens."""
-        try:
+        if oldMedium in self:
             self.remove(oldMedium)
-        except ValueError:
-            pass
 
 
 class CSSRuleList(list):

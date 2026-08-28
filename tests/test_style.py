@@ -553,6 +553,24 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(DOMException):
             sheet.deleteRule(0)
 
+    def test_cssom_list_helpers(self):
+        media = MediaList(["screen"])
+        media.appendMedium("print")
+        media.deleteMedium("screen")
+        media.deleteMedium("missing")
+
+        self.assertEqual(media.length, 1)
+        self.assertEqual(media.mediaText, "print")
+        self.assertEqual(media.item(0), "print")
+        self.assertIsNone(media.item(1))
+
+        sheet = CSSStyleSheet()
+        sheet.insertRule("main { display: block; }")
+        rules = sheet.cssRules
+
+        self.assertIs(rules.item(0), rules[0])
+        self.assertIsNone(rules.item(1))
+
     def test_stylesheet_list_populates_from_document(self):
         page = html(
             head(
