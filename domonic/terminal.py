@@ -7,6 +7,7 @@ domonic.terminal
 import os
 import shlex
 import subprocess  # nosec B404
+import sys
 from os import PathLike
 from typing import Any, Iterable, Sequence
 
@@ -323,9 +324,7 @@ nohup = type("nohup", (command,), {"name": "nohup"})
 python = type("python", (command,), {"name": "python"})
 npm = type("npm", (command,), {"name": "npm"})
 cowsay = type("cowsay", (command,), {"name": "cowsay"})
-pip = type(
-    "pip", (command,), {"name": "pip"}
-)  # TODO - change to 'python3 -m pip'? # TODO - both iterable and not
+pip = type("pip", (command,), {"name": f"{shlex.quote(sys.executable)} -m pip"})
 say = type("say", (command,), {"name": "say"})  # Mac only?
 gcc = type("gcc", (command,), {"name": "gcc"})
 jq = type("jq", (command,), {"name": "jq"})

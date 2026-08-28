@@ -4,6 +4,7 @@ test_terminal
 """
 
 import os
+import sys
 import unittest
 from tempfile import TemporaryDirectory
 
@@ -122,6 +123,10 @@ class TestCase(unittest.TestCase):
         result = history()
         self.assertIsInstance(str(result), str)
         self.assertEqual(list(result), str(result).splitlines())
+
+    def test_pip_uses_current_python(self):
+        self.assertIn(sys.executable, pip.name)
+        self.assertIn("-m pip", pip.name)
 
     @silence
     def test_bash(self):
