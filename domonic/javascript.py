@@ -3528,10 +3528,10 @@ class Number(float):
     MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
     NEGATIVE_INFINITY = float(
-        "inf"
+        "-inf"
     )  #: Represents negative infinity (returned on overflow) Number
     POSITIVE_INFINITY = float(
-        "-inf"
+        "inf"
     )  #: Represents infinity (returned on overflow)  Number
 
     # prototype Allows you to add properties and methods to an object   Number
@@ -3682,20 +3682,16 @@ class Number(float):
         else:
             exp = "{:e}".format(self.x)
 
-        if "e" in str(self.x):
+        if num is None and "e" in str(self.x):
             exp = str(self.x)  # python already converts.
 
-        n = exp.split("e")[0].rstrip("0")
-        e = exp.split("e")[1].replace("00", "0")
+        n, e = exp.split("e")
+        if num is None:
+            n = n.rstrip("0")
+        e = f"{int(e):+d}"
 
         if n == "0.":
             n = "0"
-
-        if int(e) != 0:
-            if (
-                int(e) < 10 and int(e) > -10
-            ):  # TODO - not correct. lazy way to strip left 0s only
-                e = e.replace("0", "")
 
         # print(  "AND:", n, "e" , e )
         if n.endswith("."):
