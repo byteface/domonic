@@ -5,6 +5,7 @@ domonic.constants.color
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Literal
 
 from domonic.geom.vec3 import vec3
@@ -60,7 +61,7 @@ class Color:
             return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
         raise ValueError(f"Unsupported color string: #{h}")
 
-    # rgb = hex2rgb  # TODO - as static. but can also check if instance has value? so can get/set.
+    rgb = hex2rgb
 
     # @staticmethod
     # def hsl2rgb(h, s, l):
@@ -103,20 +104,27 @@ class Color:
     #     return h, s, l
 
     @staticmethod
-    def rgb2hex(r: int, g: int, b: int) -> str:
+    def rgb2hex(
+        r: int | Sequence[int],
+        g: int | None = None,
+        b: int | None = None,
+    ) -> str:
         """Convert RGB channel values to a CSS hex color.
 
         Args:
-            r: Red channel value between ``0`` and ``255``.
+            r: Red channel value, or an ``(r, g, b)`` sequence.
             g: Green channel value between ``0`` and ``255``.
             b: Blue channel value between ``0`` and ``255``.
 
         Returns:
             A color string in ``#rrggbb`` format.
         """
-        #  TODO - pass tuples or
-        # if isinstance(a, (int, float)):
-        # elif isinstance(a, (tuple, list)):
+        if isinstance(r, Sequence) and not isinstance(r, (str, bytes, bytearray)):
+            if len(r) < 3:
+                raise ValueError("RGB sequence must contain at least three values")
+            r, g, b = r[:3]
+        if g is None or b is None:
+            raise ValueError("rgb2hex requires red, green and blue values")
         return "#%02x%02x%02x" % (r, g, b)
 
     # deprecated
@@ -168,6 +176,16 @@ class Color:
                 self.r = args[0][0]  # or args[0].x
                 self.g = args[0][1]  # or args[0].y
                 self.b = args[0][2]  # or args[0].z
+                return
+            if isinstance(args[0], (list, tuple)):
+                values = args[0]
+                if len(values) not in (3, 4) or not all(
+                    isinstance(c, (int, float)) for c in values
+                ):
+                    raise ValueError(f"Unsupported color sequence: {values}")
+                self.r, self.g, self.b = values[:3]
+                if len(values) == 4:
+                    self.a = values[3]
                 return
             if isinstance(args[0], str):  # Hex or named color
                 color_str = args[0]

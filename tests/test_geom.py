@@ -42,6 +42,16 @@ class TestColor(unittest.TestCase):
         c = Color(255, 0, 0, 0.5)
         self.assertEqual((c.r, c.g, c.b, c.a), (255, 0, 0, 0.5))
 
+    def test_color_from_sequences(self):
+        c = Color((10, 20, 30))
+        self.assertEqual((c.r, c.g, c.b, c.a), (10, 20, 30, 1))
+
+        c = Color([10, 20, 30, 0.25])
+        self.assertEqual((c.r, c.g, c.b, c.a), (10, 20, 30, 0.25))
+
+        with self.assertRaises(ValueError):
+            Color((10, 20))
+
     def test_invalid_hex_color(self):
         with self.assertRaises(ValueError):
             Color("#12345")
@@ -77,8 +87,12 @@ class TestColor(unittest.TestCase):
 
     def test_hex_to_rgb(self):
         self.assertEqual(Color.hex2rgb("#ff0000"), (255, 0, 0))
+        self.assertEqual(Color.rgb("#ff0000"), (255, 0, 0))
+        self.assertEqual(Color.rgb2hex((255, 0, 255)), "#ff00ff")
         with self.assertRaises(ValueError):
             Color.hex2rgb("#12345")
+        with self.assertRaises(ValueError):
+            Color.rgb2hex((255, 0))
 
     # def test_named_colors(self):
     #     named_colors = Color.named_colors()
