@@ -729,8 +729,21 @@ def set_locale(code):
     return formatLocale(loc)
 
 
-# formatDefaultLocale
-# format
-# precisionFixed
-# precisionPrefix
-# precisionRound
+def precisionFixed(step):
+    """Return suggested decimal precision for fixed-point notation."""
+    return Math.max(0, -int(exponent(Math.abs(step))))
+
+
+def precisionPrefix(step, value):
+    """Return suggested decimal precision for SI-prefix notation."""
+    prefix_exponent = (
+        Math.max(-8, Math.min(8, Math.floor(int(exponent(value)) / 3))) * 3
+    )
+    return Math.max(0, prefix_exponent - int(exponent(Math.abs(step))))
+
+
+def precisionRound(step, max):
+    """Return suggested significant-digit precision for rounded notation."""
+    step = Math.abs(step)
+    max = Math.abs(max) - step
+    return Math.max(0, int(exponent(max)) - int(exponent(step))) + 1

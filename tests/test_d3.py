@@ -671,6 +671,14 @@ class TestCase(unittest.TestCase):
         assert format("012")(123.456) == "00000123.456"
         # assert format("0=12")(123.456) == "00000123.456"
 
+    def test_d3_format_precision_helpers(self):
+        self.assertEqual(precisionFixed(0.01), 2)
+        self.assertEqual(precisionFixed(0.5), 1)
+        self.assertEqual(precisionFixed(1), 0)
+        self.assertEqual(precisionPrefix(1e5, 1.3e6), 1)
+        self.assertEqual(precisionRound(0.01, 1.01), 3)
+        self.assertEqual(precisionRound(0.5, 10), 2)
+
     def test_d3_dispatch(self):
 
         d = dispatch("foo", "bar")
