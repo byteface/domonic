@@ -16,6 +16,8 @@ import calendar
 import datetime
 import gc
 import inspect
+import importlib
+import importlib.util
 import json
 import locale as pylocale
 import math
@@ -764,7 +766,12 @@ class Function(Object):
 
     def toString(self) -> str:
         """[Returns a string representing the source code of the function. Overrides the]"""
-        raise NotImplementedError
+        try:
+            return inspect.getsource(self.func).strip()
+        except (OSError, TypeError):
+            name = getattr(self.func, "__name__", "")
+            name = "" if name == "<lambda>" else f" {name}"
+            return f"function{name}() {{ [native code] }}"
 
 
 class Map:
@@ -1409,11 +1416,27 @@ class Global:
     @staticmethod
     def require(path: str) -> Any:
         """Loads a script from a file"""
-        # '.'.join(path.split('/'))
-        # module = __import__(path)  # app.components.{component}
-        # my_class = getattr(module, component.title())
-        # return my_class()
-        raise NotImplementedError
+        module_path = str(path).strip()
+        if not module_path:
+            raise ImportError("require() needs a module name or Python file path")
+
+        if module_path.endswith(".py") or os.path.sep in module_path:
+            file_path = os.path.abspath(os.path.expanduser(module_path))
+            if os.path.exists(file_path):
+                module_name = os.path.splitext(os.path.basename(file_path))[0]
+                spec = importlib.util.spec_from_file_location(module_name, file_path)
+                if spec is None or spec.loader is None:
+                    raise ImportError(f"Cannot load module from {module_path!r}")
+                module = importlib.util.module_from_spec(spec)
+                sys.modules[module_name] = module
+                spec.loader.exec_module(module)
+                return module
+
+        module_name = module_path
+        if module_name.endswith(".py"):
+            module_name = module_name[:-3]
+        module_name = module_name.replace("/", ".").replace("\\", ".")
+        return importlib.import_module(module_name)
 
     @staticmethod
     def setTimeout(
@@ -3406,8 +3429,7 @@ class Set:
     @property
     def species(self) -> Any:
         """The constructor function that is used to create derived objects."""
-        # return self.args
-        raise NotImplementedError
+        return Set
 
     @property
     def size(self) -> int:
@@ -3612,7 +3634,18 @@ class Number(float):
 
     def isSafeInteger(self) -> bool:
         """Checks whether a value is a safe integer"""
-        raise NotImplementedError
+        value = self.x
+        if isinstance(value, bool) or value == "NaN":
+            return False
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return False
+        return (
+            math.isfinite(numeric)
+            and numeric.is_integer()
+            and -(2**53 - 1) <= numeric <= 2**53 - 1
+        )
 
     def toExponential(self, num: int | None = None) -> str:
         """Converts a number into an exponential notation"""

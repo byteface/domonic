@@ -153,6 +153,15 @@ class TestCase(unittest.TestCase):
         self.assertIsNotNone(getter_holder.__lookupGetter__("greet"))
         self.assertIsNotNone(getter_holder.__lookupSetter__("target"))
         self.assertEqual(getter_holder.toLocaleString(), getter_holder.toString())
+
+        def sample_function(value):
+            return value + 1
+
+        source = Function(sample_function).toString()
+        self.assertIn("sample_function", source)
+        self.assertIn("return value + 1", source)
+        self.assertEqual(Function(len).toString(), "function len() { [native code] }")
+        self.assertEqual(Global.require("math").sqrt(9), 3)
         self.assertIs(getter_holder.valueOf(), getter_holder)
         Object.freeze(getter_holder)
         self.assertTrue(getattr(getter_holder, "_Object__isFrozen"))
@@ -1327,10 +1336,15 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Number(10).toFixed(-2), "10")
         self.assertEqual(Number(0).toString(16), "0")
         self.assertEqual(Number(float("inf")).toPrecision(2), "inf")
+        self.assertTrue(Number(5).isSafeInteger())
+        self.assertTrue(Number(5.0).isSafeInteger())
+        self.assertTrue(Number(str(2**53 - 1)).isSafeInteger())
+        self.assertFalse(Number(5.5).isSafeInteger())
+        self.assertFalse(Number(2**53).isSafeInteger())
+        self.assertFalse(Number(float("inf")).isSafeInteger())
+        self.assertFalse(Number("NaN").isSafeInteger())
         with self.assertRaises(ValueError):
             Number(1).toPrecision(0)
-        with self.assertRaises(NotImplementedError):
-            Number(1).isSafeInteger()
 
     def test_javascript_string_extended_surface(self):
         text = String("Hello.World")
@@ -1442,6 +1456,7 @@ class TestCase(unittest.TestCase):
     def test_set(self):
 
         mySet1 = Set()
+        self.assertIs(mySet1.species, Set)
 
         mySet1.add(1)  # Set [ 1 ]
         assert mySet1.size == 1
