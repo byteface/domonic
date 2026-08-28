@@ -10,6 +10,7 @@ import codecs
 import re
 import time
 import warnings
+from urllib.parse import urlsplit
 
 import requests
 import six
@@ -59,10 +60,15 @@ class SSEClient(object):
         self.resp_iterator = self.iter_content()
         encoding = self.resp.encoding or self.resp.apparent_encoding
         self.decoder = codecs.getincrementaldecoder(encoding)(errors="replace")
-
-        # TODO: Ensure we're handling redirects.  Might also stick the 'origin'
-        # attribute on Events like the Javascript spec requires.
+        self.origin = self._origin_from_url(getattr(self.resp, "url", self.url))
         self.resp.raise_for_status()
+
+    @staticmethod
+    def _origin_from_url(url):
+        parsed = urlsplit(url)
+        if not parsed.scheme or not parsed.netloc:
+            return ""
+        return "%s://%s" % (parsed.scheme, parsed.netloc)
 
     def iter_content(self):
         def generate():
@@ -119,6 +125,7 @@ class SSEClient(object):
         # for next time.
         event_string, self.buf = re.split(end_of_field, self.buf, maxsplit=1)
         msg = Event.parse(event_string)
+        msg.origin = self.origin
 
         # If the server requests a specific retry delay, we need to honor it.
         if msg.retry is not None:
@@ -139,13 +146,14 @@ class Event(object):
 
     sse_line_pattern = re.compile("(?P<name>[^:]*):?( ?(?P<value>.*))?")
 
-    def __init__(self, data="", event="message", id=None, retry=None):
+    def __init__(self, data="", event="message", id=None, retry=None, origin=""):
         if not isinstance(data, six.string_types):
             raise TypeError("Data must be text")
         self.data = data
         self.event = event
         self.id = id
         self.retry = retry
+        self.origin = origin
 
     def dump(self):
         lines = []

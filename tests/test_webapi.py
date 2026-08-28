@@ -1960,6 +1960,7 @@ onmessage = handle
 
     def test_serversentevents(self):
         from domonic.ext.sseclient import Event as ServerSentEvent
+        from domonic.ext.sseclient import SSEClient
 
         parsed = ServerSentEvent.parse(
             ": keepalive\nid:\nevent: update\nretry: 0\ndata: one\ndata: two"
@@ -1979,6 +1980,33 @@ onmessage = handle
         )
         with self.assertRaises(TypeError):
             ServerSentEvent(b"not text")
+
+        class FakeRaw:
+            def __init__(self):
+                self.chunks = [b"data: redirected\n\n", b""]
+
+            def read(self, size):
+                return self.chunks.pop(0)
+
+        class FakeResponse:
+            encoding = "utf-8"
+            apparent_encoding = "utf-8"
+            url = "https://example.test/stream"
+
+            def __init__(self):
+                self.raw = FakeRaw()
+
+            def raise_for_status(self):
+                return None
+
+        class FakeSession:
+            def get(self, url, **kwargs):
+                return FakeResponse()
+
+        client = SSEClient("http://example.test/events", session=FakeSession())
+        event = next(client)
+        self.assertEqual(event.data, "redirected")
+        self.assertEqual(event.origin, "https://example.test")
 
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
