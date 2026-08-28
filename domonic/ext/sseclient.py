@@ -121,12 +121,12 @@ class SSEClient(object):
         msg = Event.parse(event_string)
 
         # If the server requests a specific retry delay, we need to honor it.
-        if msg.retry:
+        if msg.retry is not None:
             self.retry = msg.retry
 
         # last_id should only be set if included in the message.  It's not
         # forgotten if a message omits it.
-        if msg.id:
+        if msg.id is not None:
             self.last_id = msg.id
 
         return msg
@@ -194,7 +194,12 @@ class Event(object):
             elif name == "id":
                 msg.id = value
             elif name == "retry":
-                msg.retry = int(value)
+                try:
+                    retry = int(value)
+                except (TypeError, ValueError):
+                    continue
+                if retry >= 0:
+                    msg.retry = retry
 
         return msg
 

@@ -114,6 +114,7 @@ class TestCase(unittest.TestCase):
                 self.events = [
                     SimpleNamespace(data="hello", event="message", id="1", retry=None),
                     SimpleNamespace(data="ready", event="status", id="2", retry=1500),
+                    SimpleNamespace(data="reset", event="message", id="", retry=0),
                 ]
 
             def __iter__(self):
@@ -137,19 +138,32 @@ class TestCase(unittest.TestCase):
                 timeout=10,
             )
             source.addEventListener(
-                "message", lambda event: messages.append(("listener", event.data))
+                "message",
+                lambda event: messages.append(
+                    ("listener", event.data, event.lastEventId)
+                ),
             )
-            source.addEventListener("status", lambda event: custom.append(event.data))
+            source.addEventListener(
+                "status", lambda event: custom.append((event.data, event.lastEventId))
+            )
 
             source.start(blocking=True)
 
         self.assertEqual(opened, ["open"])
         self.assertIn(EventSource.OPEN, states)
         self.assertEqual(states[-1], EventSource.CLOSED)
-        self.assertEqual(messages, [("listener", "hello"), ("handler", "hello")])
-        self.assertEqual(custom, ["ready"])
-        self.assertEqual(source._lastEventId, "2")
-        self.assertEqual(source._retry, 1500)
+        self.assertEqual(
+            messages,
+            [
+                ("listener", "hello", "1"),
+                ("handler", "hello"),
+                ("listener", "reset", ""),
+                ("handler", "reset"),
+            ],
+        )
+        self.assertEqual(custom, [("ready", "2")])
+        self.assertEqual(source._lastEventId, "")
+        self.assertEqual(source._retry, 0)
         self.assertEqual(source._client.kwargs["last_id"], "0")
         self.assertEqual(source._client.kwargs["timeout"], 10)
 
@@ -1897,17 +1911,26 @@ onmessage = handle
         self.assertIsInstance(win.navigator.permissions, Permissions)
 
     def test_serversentevents(self):
-        # from domonic.webapi.sse import EventSource
-        # es = EventSource('/sse')
-        # es.onmessage = lambda event: print(event.data)
-        # es.onopen = lambda event: print('open')
-        # es.onclose = lambda event: print('close')
-        # es.onerror = lambda event: print('error')
-        # es.send('Hello')
+        from domonic.ext.sseclient import Event as ServerSentEvent
 
-        # TESTING - useage example... clone this and point at the stream
-        # https://github.com/byteface/SSELoggerDemo
-        pass
+        parsed = ServerSentEvent.parse(
+            ": keepalive\nid:\nevent: update\nretry: 0\ndata: one\ndata: two"
+        )
+        self.assertEqual(parsed.id, "")
+        self.assertEqual(parsed.event, "update")
+        self.assertEqual(parsed.retry, 0)
+        self.assertEqual(parsed.data, "one\ntwo")
+
+        invalid_retry = ServerSentEvent.parse("retry: nope\ndata: ok")
+        self.assertIsNone(invalid_retry.retry)
+        self.assertEqual(invalid_retry.data, "ok")
+
+        self.assertEqual(
+            ServerSentEvent("payload", event="tick", id="42", retry=10).dump(),
+            "id: 42\nevent: tick\nretry: 10\ndata: payload\n\n",
+        )
+        with self.assertRaises(TypeError):
+            ServerSentEvent(b"not text")
 
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input

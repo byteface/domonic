@@ -91,12 +91,13 @@ class EventSource(EventTarget):
 
     def _event_from_message(self, message: Any) -> MessageEvent:
         event_type = getattr(message, "event", None) or MessageEvent.MESSAGE
-        last_event_id = getattr(message, "id", None) or self._lastEventId or ""
+        message_id = getattr(message, "id", None)
+        last_event_id = self._lastEventId if message_id is None else message_id
         return MessageEvent(
             event_type,
             {
                 "data": getattr(message, "data", None),
-                "lastEventId": last_event_id,
+                "lastEventId": last_event_id or "",
                 "origin": self._url,
                 "source": self,
             },
@@ -125,9 +126,9 @@ class EventSource(EventTarget):
             for message in self._client:
                 if self._closed:
                     break
-                if getattr(message, "retry", None):
+                if getattr(message, "retry", None) is not None:
                     self._retry = message.retry
-                if getattr(message, "id", None):
+                if getattr(message, "id", None) is not None:
                     self._lastEventId = message.id
                 self.dispatchEvent(self._event_from_message(message))
         except Exception as exc:
