@@ -19,8 +19,6 @@ from domonic.html import *
 class Websocket:
     """Render a browser websocket helper with optional event listeners.
 
-    # TODO - collect other or all Window data and pass to a window object
-
     Args:
         reference: JavaScript variable name assigned to the socket.
         address: Websocket URL to connect to.
@@ -95,7 +93,6 @@ class Websocket:
             evt.deltaY = dom_event["deltaY"]
             evt.deltaZ = dom_event["deltaZ"]
             evt.deltaMode = dom_event["deltaMode"]
-            # ?? TODO - no deltaX? - myabe stripped by stringify? was on wrong target
 
         return evt
 
@@ -128,8 +125,9 @@ class Websocket:
         progress_events=False,
     ):
 
-        self.reference = reference
-        self.address = address
+        self.reference = str(reference)
+        self.address = str(address)
+        self.target = target
         self.mouse_events = mouse_events
         self.keyboard_events = keyboard_events
         self.ui_events = ui_events
@@ -153,19 +151,15 @@ class Websocket:
         self.transition_events = transition_events
         self.progress_events = progress_events
 
-    def _add_listener(self, event, target="body"):
-        return str(
-            '''
-            $("'''
-            + target
-            + '''").on("'''
-            + event
-            + """", function(event){
-                socket.send( stringify_object(event) );
-            });
-            """
+    def _add_listener(self, event, target=None):
+        target = self.target if target is None else target
+        return (
+            "                attach_domonic_listener("
+            + json.dumps(str(target))
+            + ", "
+            + json.dumps(str(event))
+            + ");\n"
         )
-        # TODO - no jquery. detect targets and use # addEventListener
 
     def __str__(self):
         events = ""
@@ -196,31 +190,15 @@ class Websocket:
             events += self._add_listener("touchmove")
             events += self._add_listener("touchcancel")
         if self.wheel_events:
-            # events += self._add_listener('wheel')
-            events += """
-            window.addEventListener('wheel', function(){
-                socket.send( stringify_object(event) );
-            }, false);
-            """
+            events += self._add_listener("wheel", "window")
         if self.animation_events:
             events += self._add_listener("animationend")
             events += self._add_listener("animationiteration")
             events += self._add_listener("animationstart")
         if self.clipboard_events:
-            # events += self._add_listener('copy')
-            # events += self._add_listener('cut')
-            # events += self._add_listener('paste')
-            events += """
-            window.addEventListener('cut', function(){
-                socket.send( stringify_object(event) );
-            }, false);
-            window.addEventListener('copy', function(){
-                socket.send( stringify_object(event) );
-            }, false);
-            window.addEventListener('paste', function(){
-                socket.send( stringify_object(event) );
-            }, false);
-            """
+            events += self._add_listener("cut", "window")
+            events += self._add_listener("copy", "window")
+            events += self._add_listener("paste", "window")
         # if self.error_events:
         # events += self._add_listener('')
         if self.submit_events:
@@ -270,12 +248,7 @@ class Websocket:
             events += self._add_listener("dragstart")
             events += self._add_listener("drop")
         if self.hashchange_events:
-            # events += self._add_listener('hashchange', "window")
-            events += """
-            window.addEventListener('hashchange', function(){
-                socket.send( stringify_object(event) );
-            }, false);
-            """
+            events += self._add_listener("hashchange", "window")
         if self.input_events:
             events += self._add_listener("input")
         if self.page_transition_events:
@@ -293,10 +266,12 @@ class Websocket:
 
         return str(
             script(
-                '''
-            const socket = new WebSocket("'''
-                + self.address
-                + """");
+                """
+            const """
+                + self.reference
+                + """ = new WebSocket("""
+                + json.dumps(self.address)
+                + """);
 
             function stringify_object(object, depth=0, max_depth=2) {
                 //console.log;
@@ -323,11 +298,39 @@ class Websocket:
                 return depth? obj: JSON.stringify(obj);
             }
 
-            $(document).ready(function(){
-            """
+            function resolve_domonic_socket_target(target) {
+                if (!target || target === "body")
+                    return document.body;
+                if (target === "window")
+                    return window;
+                if (target === "document")
+                    return document;
+                if (typeof target === "string")
+                    return document.querySelector(target);
+                return target;
+            }
+
+            function attach_domonic_listener(target, event_name) {
+                const resolved = resolve_domonic_socket_target(target);
+                if (!resolved || !resolved.addEventListener)
+                    return;
+                resolved.addEventListener(event_name, function(event) {
+                    """
+                + self.reference
+                + """.send(stringify_object(event));
+                }, false);
+            }
+
+            function register_domonic_socket_events(){
+"""
                 + events
-                + """
-            });"""
+                + """            }
+
+            if (document.readyState === "loading")
+                document.addEventListener("DOMContentLoaded", register_domonic_socket_events);
+            else
+                register_domonic_socket_events();
+"""
             )
         )
 
@@ -452,12 +455,18 @@ class SpriteCSS:
 
 
 class DomonicJS:
-    def __init__(self):
-        pass
+    def __init__(self, version=None):
+        if version is None:
+            from domonic import __version__ as version
+
+        self.version = str(version)
 
     def __str__(self):
-        return script("""
-            window.domonic = {'version':'0.0.3'}; // || domonic.js
+        return str(script("""
+            window.domonic = window.domonic || {};
+            window.domonic.version = """
+            + json.dumps(self.version)
+            + """;
             function print(msg){
                 console.log(msg);
             }
@@ -479,7 +488,7 @@ class DomonicJS:
             //        this.list.push(item);
             //    }
             //}
-            """)
+            """))
 
 
 # class ImgButton():
@@ -529,20 +538,69 @@ class Sound:
 class ProgressBar:
     def __init__(
         self,
+        value=100,
+        min_value=0,
+        max_value=100,
+        _id="progress_bar",
+        _class="meter",
+        label_text=None,
+        **kwargs,
     ):
         """
         a progress bar for loading or health / mana etc
         """
-        # self.direction # the fill direction for the progress bar.
-        # self.max
-        # self.min
-        self.percent
-        self.value
-        # self.style =
+        min_value = kwargs.pop("min", min_value)
+        max_value = kwargs.pop("max", max_value)
+        _id = kwargs.pop("id", _id)
+        _class = kwargs.pop("className", kwargs.pop("class_name", _class))
+        label_text = kwargs.pop("label", label_text)
+
+        self.id = _id
+        self.className = _class
+        self.label = label_text
+        self.min = float(min_value)
+        self.max = float(max_value)
+        if self.max <= self.min:
+            raise ValueError("max_value must be greater than min_value")
+        self.attrs = kwargs
+        self.setValue(value)
+
+    @staticmethod
+    def _format_number(value):
+        return str(int(value)) if float(value).is_integer() else f"{value:g}"
+
+    def setValue(self, value):
+        """Set the current value and clamp it to the configured range."""
+        value = float(value)
+        self.value = min(max(value, self.min), self.max)
+        self.percent = ((self.value - self.min) / (self.max - self.min)) * 100
+        return self
+
+    def increment(self, amount=1):
+        """Increase the progress bar value by ``amount``."""
+        return self.setValue(self.value + float(amount))
+
+    def decrement(self, amount=1):
+        """Decrease the progress bar value by ``amount``."""
+        return self.setValue(self.value - float(amount))
 
     def __str__(self):
-        # $('#progress_bar span').css('width', somevalue);
-        return str(div(span(_style="width:100%"), _id="progress_bar", _class="meter"))
+        attrs = {
+            "_id": self.id,
+            "_class": self.className,
+            "_role": "progressbar",
+            "_aria-valuemin": self._format_number(self.min),
+            "_aria-valuemax": self._format_number(self.max),
+            "_aria-valuenow": self._format_number(self.value),
+        }
+        attrs.update(self.attrs)
+        fill = span(
+            _style=f"width:{self._format_number(self.percent)}%",
+            **{"_aria-hidden": "true"},
+        )
+        if self.label is None:
+            return str(div(fill, **attrs))
+        return str(div(label(str(self.label), _for=self.id), fill, **attrs))
 
 
 class Input:
