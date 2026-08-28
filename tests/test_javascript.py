@@ -139,13 +139,23 @@ class TestCase(unittest.TestCase):
 
         configured = Object({"name": "Jane"})
         Object.defineProperty(configured.__dict__, "role", "admin")
+        Object.defineProperties(
+            configured,
+            {
+                "level": {"value": 7},
+                "active": True,
+            },
+        )
+        self.assertEqual(configured.level, 7)
+        self.assertTrue(configured.active)
         self.assertEqual(Object.getOwnPropertyDescriptor(configured, "name"), "Jane")
         self.assertIn("name", list(Object.getOwnPropertyNames(configured)))
         self.assertTrue("name" in Object.getOwnPropertySymbols(configured))
         self.assertTrue(configured.hasOwnProperty("name"))
         self.assertFalse(configured.hasOwnProperty("missing"))
-        created = Object.create(configured)
+        created = Object.create(configured, {"created": {"value": "yes"}})
         self.assertEqual(created.name, "Jane")
+        self.assertEqual(created.created, "yes")
         self.assertEqual(Object.getPrototypeOf(created), Object)
         getter_holder = Object()
         getter_holder.__defineGetter__("greet", lambda: "hi")

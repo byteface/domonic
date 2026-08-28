@@ -366,35 +366,27 @@ class Object:
     @staticmethod
     def create(proto: Any, propertiesObject: Any = None) -> Any:
         """Creates a new object with the specified prototype object and properties."""
-        if propertiesObject is None:
-            return Object(proto)
-
-        if isinstance(propertiesObject, dict):
-            return Object(propertiesObject)
-        elif isinstance(propertiesObject, Object):
-            return propertiesObject
-        elif isinstance(propertiesObject, list):
-            return Object.fromEntries(propertiesObject)
-        else:
-            return propertiesObject
-
-        # return Object(propertiesObject)
-
-    #     obj = {}
-    #     for key in proto.keys():
-    #         obj[key] = propertiesObject[key]
-    #     return obj
+        obj = Object(proto)
+        if propertiesObject is not None:
+            Object.defineProperties(obj, propertiesObject)
+        return obj
 
     @staticmethod
-    def defineProperty(obj: dict[str, Any], prop: str, descriptor: Any) -> None:
+    def defineProperty(obj: Any, prop: str, descriptor: Any) -> Any:
         """Adds the named property described by a given descriptor to an object."""
-        obj[prop] = descriptor
+        value = descriptor.get("value") if isinstance(descriptor, dict) else descriptor
+        if isinstance(obj, dict):
+            obj[prop] = value
+        else:
+            setattr(obj, prop, value)
+        return obj
 
-    # @staticmethod
-    # def defineProperties(obj, props):
-    #     """ Adds the named properties described by the given descriptors to an object. """
-    #     for prop, desc in props.items():
-    #         obj.__define_property__(prop, desc)  # TODO - obviously that wont work
+    @staticmethod
+    def defineProperties(obj: Any, props: Mapping[str, Any]) -> Any:
+        """Adds named properties described by descriptors to an object."""
+        for prop, desc in props.items():
+            Object.defineProperty(obj, prop, desc)
+        return obj
 
     @staticmethod
     def entries(obj: Any) -> list[list[Any]]:
