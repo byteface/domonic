@@ -181,12 +181,6 @@ class Cmdcommand:
             cmd = f"{_resolve_command_name(self.name)} {self.params}"
             cmd = cmd.strip()
 
-            """
-            # TODO - after doing all this. think i may have decided to go for 2 base commands instead
-            # one iterable and one normal. its still hidden from user as just a different inhereted command
-            # but would keep both simpler and can have more types. so will have to refactor all this again
-            # for now this behaves how i want despite the _new_ hack and double call on this command
-            """
             if self.has_wait is not True:
                 completed = self._execute(cmd, **self.kwargs)
                 self.result = completed.stdout
@@ -310,16 +304,13 @@ ipconfig = type(
 shutdown = type(
     "shutdown", (Cmdcommand,), {"name": "shutdown"}
 )  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
-# date = type('date', (Cmdcommand,), {'name': 'date'})  #: show/set date - TODO seemed to hang. needs a param
 echo = type("echo", (Cmdcommand,), {"name": "echo"})  #: text output
 hostname = type("hostname", (Cmdcommand,), {"name": "hostname"})  #: display host name
-# time = type('time', (Cmdcommand,), {'name': 'time'})  #: display/edit the system time - TODO seemed to hang
 ver = type(
     "ver", (Cmdcommand,), {"name": "ver"}
-)  #: display operating system version - TODO seemed to hang
+)  #: display operating system version
 # netstat = type('netstat', (Cmdcommand,), {'name': 'netstat'})  #: display TCP/IP connections and status
 ping = type("ping", (Cmdcommand,), {"name": "ping"})  #: pings the network
-# ping = type('ping', (Cmdcommand,), {'name': 'ping', 'wait': True, 'iterable': True})  # < TODO - need to stream feedback
 
 move = type("move", (Cmdcommand,), {"name": "move"})  #: move/rename files
 rename = type("rename", (Cmdcommand,), {"name": "rename"})  #: rename files
@@ -331,7 +322,6 @@ systeminfo = type(
 )  #: displays computer-specific properties and configurations
 
 attrib = type("attrib", (Cmdcommand,), {"name": "attrib"})  #: display file attributes
-# tree = type('tree', (Cmdcommand,), {'name': 'tree'})  #: display folder structure graphically - TODO - return not utf-8
 type_ = type("type_", (Cmdcommand,), {"name": "type"})  #: display content of text files
 comp = type("comp", (Cmdcommand,), {"name": "comp"})  #: compare file contents
 del_ = type("del_", (Cmdcommand,), {"name": "del"})  #: delete files

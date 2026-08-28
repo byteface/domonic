@@ -4,11 +4,10 @@ domonic.i18n
 
 make the dom universal
 
-# TODO - start with just tags.
-# TODO - then see how to tackle attributes?
-# TODO - this wont do docstrings or params
+Initial language modules localise common tag names. Attributes, docstrings,
+parameters, DOM method names, and event APIs may be added by each locale over
+time where they are useful.
 
-# TODO - also consider mapping dom method names and classes to localised counterparts?
 # i.e. localiseTemplates per lang
 # xxx = Event Target
 # xxx.xxx = add Event Listener

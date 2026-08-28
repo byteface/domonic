@@ -146,12 +146,6 @@ class command:
             cmd = f"{self.name} {self.params}"
             cmd = cmd.strip()
 
-            """
-            # TODO - after doing all this. think i may have decided to go for 2 base commands instead
-            # one iterable and one normal. its still hidden from user as just a different inhereted command
-            # but would keep both simpler and can have more types. so will have to refactor all this again
-            # for now this behaves how i want despite the _new_ hack and double call on this command
-            """
             if self.has_wait is not True:
                 completed = self._execute(cmd, **self.kwargs)
                 self.result = completed.stdout
@@ -292,9 +286,7 @@ class history(command):
         self.result = ""
 
 
-ping = type(
-    "ping", (command,), {"name": "ping", "wait": True, "iterable": True}
-)  # < TODO - need to stream feedback
+ping = type("ping", (command,), {"name": "ping", "wait": True, "iterable": True})
 man = type("man", (command,), {"name": "man"})
 find = type("find", (command,), {"name": "find"})
 awk = type("awk", (command,), {"name": "awk"})
@@ -337,7 +329,7 @@ banner = type("banner", (command,), {"name": "banner"})
 # asciiview
 # toilet
 # figlet
-# youtube-dl = type('youtube-dl', (command,), {'name': 'youtube-dl'}) # TODO - illegal chars
+# youtube_dl = type("youtube_dl", (command,), {"name": "youtube-dl"})
 # tree = type('tree', (command,), {'name': 'tree'})
 # vim = type('vim', (command,), {'name': 'vim'})
 # mail = type('mail', (command,), {'name': 'mail'})
@@ -453,7 +445,7 @@ uuencode = type("uuencode", (command,), {"name": "uuencode"})
 uustat = type("uustat", (command,), {"name": "uustat"})
 uux = type("uux", (command,), {"name": "uux"})
 val = type("val", (command,), {"name": "val"})
-wc = type("wc", (command,), {"name": "wc"})  # < TODO - stream. plus figure out piping
+wc = type("wc", (command,), {"name": "wc"})
 what = type("what", (command,), {"name": "what"})
 who = type("who", (command,), {"name": "who"})
 write = type("write", (command,), {"name": "write"})
