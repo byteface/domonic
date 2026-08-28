@@ -1016,14 +1016,7 @@ class Node(EventTarget):
         # super(Node, self).__getitem__(index)
 
         if isinstance(index, str):
-            # call props on self
-            # print('erk!')
-            try:
-                # return Node.__dict__[index]
-                return getattr(self, index)
-            except Exception as e:
-                print(e)
-                # return None
+            return getattr(self, index, None)
         # return super(Node, self).__getitem__(index)
 
     def __rshift__(self, item):
@@ -1074,11 +1067,7 @@ class Node(EventTarget):
         if retry in kwargs:
             return kwargs[retry]
 
-        # TODO - think of solution for other MIA attributes as when it would fail silently
-        # it was a nightmare. But having to catch the raised errors may also be sluggish
-        # maybe specific tags can override this method and provide default values when not present?
         if self.__class__.__name__ == "a" and attr == "href":
-            print("    Warning: No 'href' attribute was defined for this 'a' tag.")
             return ""
 
         try:
@@ -1090,8 +1079,7 @@ class Node(EventTarget):
             )  # means overrideing for style etc in element?
             # return getattr(Element, attr)
         except AttributeError as e:
-            # print(e) # TODO - careful. better on for debugging.
-            raise e  # ("attribute does not exist:", attr)
+            raise e
 
         raise AttributeError
 
@@ -1104,7 +1092,6 @@ class Node(EventTarget):
                 params += f'**\u007b"{key}":{value}\u007d,'
             else:
                 params += f'{key}="{value}", '
-        # TODO - will need to loop args and call __pyml__ on each one
         for arg in self.args:
             try:
                 if isinstance(arg, Text):
@@ -1113,7 +1100,6 @@ class Node(EventTarget):
                     params += f"{arg.__pyml__()}, "
             except Exception as e:
                 params += str(arg) + ", "
-        # TODO - if self is document do dentage
         return f"{self.name}({params[:-2]})"
         # return f"{self.name}({params})"
         # return f"{self.name}({args}, {params})"

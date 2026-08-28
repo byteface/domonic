@@ -5,7 +5,9 @@ test_domonic
 """
 
 import importlib
+import io
 import unittest
+from contextlib import redirect_stdout
 
 from domonic import domonic
 from domonic.decorators import silence
@@ -26,6 +28,11 @@ class TestHTMLRendering(unittest.TestCase):
     def test_anchor_tag(self):
         tag = a(_href="http://example.com")
         self.assertEqual(str(tag), '<a href="http://example.com"></a>')
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(a(_name="test").href, "")
+            self.assertIsNone(div()["missing"])
+        self.assertEqual(output.getvalue(), "")
 
         tag = a()
         self.assertEqual(str(tag), "<a></a>")
