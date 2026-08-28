@@ -888,9 +888,6 @@ class DOMTest(unittest.TestCase):
 
         result = dom1.querySelectorAll(".fa-twitter")
         self.assertEqual(result, [])
-        # TODO - failing. however this is now running through qselectorall
-        # return
-        # assert result.className == 'test this thing'
 
     def test_getElementsBySelector(self):
         dom1 = html(
@@ -929,18 +926,13 @@ class DOMTest(unittest.TestCase):
         # print("RESULT>>>>>", result)
         assert result.id == "fun"
 
-        # result = dom1.getElementsBySelector('.test', dom1)#[0]  # [0] #?? no class called test?
-        # print('--')
-        # print("RESULT>>>>>", result)
-        # TODO - failing. however this is now running through qselectorall
-        # return
-        # assert result.className == 'test this thing'
+        result = dom1.getElementsBySelector(".test", dom1)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].className, "test this thing")
 
-        # result = dom1.getElementsBySelector('.this', dom1)[0]
-        # print('--')
-        # print("RESULT>>>>>", result)
-        # assert len(result) == 1
-        # assert result[0].className == 'test this thing'
+        result = dom1.getElementsBySelector(".this", dom1)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].className, "test this thing")
 
         from domonic.dQuery import º
 
