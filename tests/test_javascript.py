@@ -1455,33 +1455,45 @@ class TestCase(unittest.TestCase):
         self.assertFalse(mySet1.contains(5))
         self.assertTrue(all(left == right for left, right in mySet1.entries()))
 
-        """
-        # TODO - make the following work. js sets can have dictionaries in them
-        o = {'a': 1, 'b': 2}
-        mySet1.add(o)  # TODO - ok. so we learned something. i nearly never use sets so this is a nice example of difference between python and javascript sets.
+        self.assertIs(mySet1.add(5), mySet1)
+        o = {"a": 1, "b": 2}
+        mySet1.add(o)
         assert mySet1.size == 4
-        assert mySet1.contains(a) == True
+        assert mySet1.contains(o) == True
 
-        mySet1.add({a: 1, b: 2})   # o is referencing a different object, so this is okay
+        mySet1.add({"a": 1, "b": 2})
+        assert mySet1.size == 5
 
         assert mySet1.has(1) == True
         assert mySet1.has(3) == False
         assert mySet1.has(5) == True
         assert mySet1.has(Math.sqrt(25)) == True
-        assert mySet1.has('Some Text'.toLowerCase()) == True
+        assert mySet1.has(String("Some Text").toLowerCase()) == True
         assert mySet1.has(o) == True
 
-        mySet1.size == 5
-
-        mySet1.delete(5)    # removes 5 from the set
+        mySet1.delete(5)
         assert mySet1.has(5) == False
+        assert mySet1.size == 4
 
-        mySet1.size == 4
+        nan = float("nan")
+        mySet1.add(nan).add(float("nan"))
+        assert mySet1.size == 5
+        assert mySet1.has(nan) == True
+        mySet1.add(True)
+        assert mySet1.has(True) == True
+        assert mySet1.size == 6
 
-        console.log(mySet1)
-        # logs Set(4) [ 1, "some text", {…}, {…} ] in Firefox
-        # logs Set(4) { 1, "some text", {…}, {…} } in Chrome
-        """
+        visited = []
+        mySet1.forEach(lambda value, key, owner: visited.append((value, key, owner)))
+        self.assertEqual([item[0] for item in visited], list(mySet1.values()))
+        self.assertTrue(all(value is key for value, key, owner in visited))
+        self.assertTrue(all(owner is mySet1 for value, key, owner in visited))
+
+        constructed = Set(["first", "second", "first"])
+        self.assertEqual(list(constructed.keys()), ["first", "second"])
+        self.assertEqual(
+            list(constructed.entries()), [["first", "first"], ["second", "second"]]
+        )
 
     def test_setTimeout(self):
         """Test the Global.setTimeout function calls the callback."""

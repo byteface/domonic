@@ -15,6 +15,7 @@ import calendar
 # import chunk
 import datetime
 import gc
+import inspect
 import json
 import locale as pylocale
 import math
@@ -28,6 +29,8 @@ import sys
 import threading
 import time
 import urllib.parse
+from collections.abc import Iterable as IterableABC
+from collections.abc import Mapping as MappingABC
 from datetime import timezone
 from email.utils import parsedate_to_datetime
 from multiprocessing.pool import ThreadPool as Pool
@@ -146,6 +149,16 @@ def _is_nan(value: Any) -> bool:
     return isinstance(value, float) and math.isnan(value)
 
 
+def _is_js_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _is_js_value_type(value: Any) -> bool:
+    return value is None or isinstance(
+        value, (str, bool, int, float, bytes, tuple, frozenset)
+    )
+
+
 def _js_same_value_zero(left: Any, right: Any) -> bool:
     if _is_nan(left) and _is_nan(right):
         return True
@@ -153,6 +166,41 @@ def _js_same_value_zero(left: Any, right: Any) -> bool:
         return left == right
     except Exception:
         return False
+
+
+def _js_set_same_value_zero(left: Any, right: Any) -> bool:
+    if _is_nan(left) and _is_nan(right):
+        return True
+    if _is_js_number(left) and _is_js_number(right):
+        return left == right
+    if isinstance(left, bool) or isinstance(right, bool):
+        return type(left) is type(right) and left == right
+    if _is_js_value_type(left) and _is_js_value_type(right):
+        if type(left) is not type(right):
+            return False
+        return left == right
+    if _is_js_value_type(left) or _is_js_value_type(right):
+        return False
+    return left is right
+
+
+def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
+    try:
+        signature = inspect.signature(callback)
+    except (TypeError, ValueError):
+        return callback(*args)
+
+    parameters = list(signature.parameters.values())
+    if any(param.kind == inspect.Parameter.VAR_POSITIONAL for param in parameters):
+        return callback(*args)
+
+    positional = [
+        param
+        for param in parameters
+        if param.kind
+        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+    ]
+    return callback(*args[: len(positional)])
 
 
 def _js_strictish_equal(left: Any, right: Any) -> bool:
@@ -3331,14 +3379,17 @@ Array.prototype = Array
 
 class Set:
     def __init__(self, *args: Any) -> None:
-        """[The Set object lets you store unique values of any type, whether primitive values or object references.
-
-        TODO - will need to store dictionaries unlike a python set
-        https://stackoverflow.com/questions/34097959/add-a-dictionary-to-a-set-with-union
-
-        ]
-        """
-        self.args = set(args)
+        """Store unique values of any type in insertion order."""
+        self.args = []
+        values = args
+        if (
+            len(args) == 1
+            and isinstance(args[0], IterableABC)
+            and not isinstance(args[0], (str, bytes, bytearray, MappingABC))
+        ):
+            values = tuple(args[0])
+        for value in values:
+            self.add(value)
 
     def __iter__(self) -> Iterator[Any]:
         return iter(self.args)
@@ -3347,7 +3398,7 @@ class Set:
         return len(self.args)
 
     def __contains__(self, item: Any) -> bool:
-        return item in self.args
+        return self.has(item)
 
     def __repr__(self) -> str:
         return repr(self.args)
@@ -3366,11 +3417,11 @@ class Set:
         """Returns the number of values in the Set object."""
         return len(self.args)
 
-    def add(self, value: Any) -> set[Any]:
-        """Appends value to the Set object. Returns the Set object with added value."""
-        # print(type(self.args), value)
-        self.args.add(value)
-        return self.args
+    def add(self, value: Any) -> "Set":
+        """Append a value and return this Set."""
+        if not self.has(value):
+            self.args.append(value)
+        return self
 
     def clear(self) -> None:
         """Removes all elements from the Set object."""
@@ -3380,18 +3431,19 @@ class Set:
         """Removes the element associated to the value
         returns a boolean asserting whether an element was successfully removed or not.
         """
-        if value in self.args:
-            self.args.remove(value)
-            return True
+        for index, item in enumerate(self.args):
+            if _js_set_same_value_zero(item, value):
+                del self.args[index]
+                return True
         return False
 
     def has(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
-        return value in self.args
+        return any(_js_set_same_value_zero(item, value) for item in self.args)
 
     def contains(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
-        return value in self.args
+        return self.has(value)
 
     # Set.prototype[@@iterator]()
     # Returns a new iterator object that yields the values for each element in the Set object in insertion order.
@@ -3401,14 +3453,14 @@ class Set:
         in the Set object in insertion order."""
         return iter(self.args)
 
-    # def keys(self):
-    #     """ An alias for values """ #?
-    #     return self.values()
+    def keys(self) -> Iterator[Any]:
+        """Alias for values, matching JavaScript Set."""
+        return self.values()
 
     def entries(self) -> Iterator[list[Any]]:
         """Returns a new iterator object that contains an array of [value, value] for each element in the Set object,
         in insertion order."""
-        return iter([[i, i] for i in self.args])
+        return iter([[value, value] for value in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
     def forEach(
@@ -3417,8 +3469,8 @@ class Set:
         """Calls callbackFn once for each value present in the Set object, in insertion order.
         If a thisArg parameter is provided, it will be used as the this value for each invocation of callbackFn.
         """
-        for i in self.args:
-            callbackFn(i, thisArg)
+        for value in list(self.args):
+            _invoke_js_callback(callbackFn, value, value, self)
 
 
 class Number(float):
