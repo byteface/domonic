@@ -20,6 +20,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Utils.case_kebab("dataUserId"), "data-user-id")
         self.assertEqual(Utils.digits("size: 1,280px"), "1280")
         self.assertEqual(Utils.numberToBase(255, 16), [15, 15])
+        self.assertRegex(Utils.random_color(), r"^#[0-9A-F]{6}$")
 
     def test_parse_unit(self):
         self.assertEqual(NumberUtils.parse_unit("12px"), NumberUnit(12.0, "px"))

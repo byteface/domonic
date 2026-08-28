@@ -503,8 +503,8 @@ class Utils:
 
         return ["".join(perm) for perm in list(permutations(word))]
 
-    @staticmethod  # TODO - remove as we have color class. (might be getting used in examples)
-    def random_color(self):
+    @staticmethod
+    def random_color() -> str:
         """Return a random hex color string."""
         r = lambda: _random.randint(0, 255)
         return str("#%02X%02X%02X" % (r(), r(), r()))
