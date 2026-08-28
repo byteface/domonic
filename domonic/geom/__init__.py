@@ -8,42 +8,7 @@ written by.ai
 
 import math
 
-# from domonic.geom.shape import Triangle
-# from domonic.geom.shape import Quad
-# from domonic.geom.shape import Hexagon
-# from domonic.geom.shape import Rectangle
-# from domonic.geom.shape import Plane
-# from domonic.geom.shape import Circle, Line, Point, Polygon, Rect, Shape
-# from domonic.vector import vector
 from domonic.geom.vec2 import vec2
-
-# from domonic.geom.vec3 import vec3
-# from domonic.geom.vec4 import vec4
-# from domonic.javascript import Math
-
-# from domonic.mat4 import mat4
-# from domonic.mat3 import mat3
-# from domonic.quat import quat
-
-# from domonic.color import color
-
-# from domonic.point import point
-# from domonic.matrix import matrix
-# from domonic.transform import transform
-# from domonic.matrix_utils import *
-# from domonic.geom_utils import *
-# from domonic.geom_math import *
-# from domonic.geom_shader import *
-# from domonic.geom_shader_utils import *
-# from domonic.geom_shader_math import *
-# from domonic.geom_shader_math_utils import *
-
-# from domonic.geom.shape import Ellipse
-# from domonic.geom.shape import BoundingBox
-# from domonic.geom.shape import BoundingCircle
-
-
-# __all__ # TODO - i think this is i need to use
 
 
 class matrix:
@@ -84,13 +49,26 @@ class Plotter:
 
     def add_point(self, point):
         self.points.append(point)
+        return self
 
-    # def clear(self):
-    #     pass
+    def clear(self):
+        self.points.clear()
+        self.color = self.starting_color
+        if self.canvas is not None and hasattr(self.canvas, "clear"):
+            self.canvas.clear()
+        return self
 
-    # def plot(self):
-    #     for p in self.points:
-    #         self.canvas.draw_point(p)
+    def plot(self):
+        if self.canvas is None:
+            return list(self.points)
+
+        draw_point = getattr(self.canvas, "draw_point", None)
+        if not callable(draw_point):
+            raise AttributeError("Plotter canvas must provide draw_point(point)")
+
+        for point in self.points:
+            draw_point(point)
+        return self
 
 
 class Path:
@@ -137,6 +115,12 @@ class Layer:
         self.color = (0, 0, 0)
         self.alpha = 1.0
 
+    def _index_of(self, shape):
+        for index, candidate in enumerate(self.shapes):
+            if candidate is shape:
+                return index
+        return -1
+
     def add(self, shape):
         self.shapes.append(shape)
         return self
@@ -146,7 +130,7 @@ class Layer:
         return self
 
     def has(self, shape):
-        return shape in self.shapes
+        return self._index_of(shape) != -1
 
     def get_at(self, index):
         return self.shapes[index]
@@ -161,7 +145,10 @@ class Layer:
         return [shape for shape in self.shapes if shape.has_property(property)]
 
     def remove(self, shape):
-        self.shapes.remove(shape)
+        index = self._index_of(shape)
+        if index == -1:
+            raise ValueError("shape is not in layer")
+        self.shapes.pop(index)
         return self
 
     def remove_at(self, index):
@@ -169,7 +156,15 @@ class Layer:
         return self
 
     def swap(self, shape1, shape2):
-        self.shapes[self.shapes.index(shape1)] = shape2
+        index1 = self._index_of(shape1)
+        index2 = self._index_of(shape2)
+        if index1 == -1 or index2 == -1:
+            raise ValueError("both shapes must be in layer")
+        self.shapes[index1], self.shapes[index2] = (
+            self.shapes[index2],
+            self.shapes[index1],
+        )
+        return self
 
     def swap_at(self, index1, index2):
         self.shapes[index1], self.shapes[index2] = (
@@ -210,7 +205,9 @@ class Layer:
         return self
 
     def __sub__(self, other):
-        self.shapes -= other.shapes
+        for shape in other.shapes:
+            if self.has(shape):
+                self.remove(shape)
         return self
 
     def __mul__(self, other):
@@ -226,8 +223,7 @@ class Layer:
         return self
 
     def __isub__(self, other):
-        self.shapes -= other.shapes
-        return self
+        return self.__sub__(other)
 
     def __imul__(self, other):
         self.shapes *= other
@@ -284,6 +280,68 @@ class Timeline:
 
     def stop(self):
         self.is_playing = False
+
+
+__all__ = [
+    "Circle",
+    "Ellipse",
+    "Group",
+    "Layer",
+    "Line",
+    "Oval",
+    "Particle",
+    "Particle3D",
+    "Path",
+    "Plane",
+    "Plotter",
+    "Point",
+    "Polygon",
+    "Polyline",
+    "Quaternion",
+    "Rect",
+    "Shape",
+    "Square",
+    "Timeline",
+    "matrix",
+    "vec2",
+    "vec3",
+    "vec4",
+    "vertex",
+]
+
+_LAZY_EXPORTS = {
+    "Circle": ("domonic.geom.shape", "Circle"),
+    "Ellipse": ("domonic.geom.shape", "Ellipse"),
+    "Line": ("domonic.geom.shape", "Line"),
+    "Oval": ("domonic.geom.shape", "Oval"),
+    "Particle": ("domonic.geom.particles", "Particle"),
+    "Particle3D": ("domonic.geom.particles", "Particle3D"),
+    "Plane": ("domonic.geom.shape", "Plane"),
+    "Point": ("domonic.geom.shape", "Point"),
+    "Polygon": ("domonic.geom.shape", "Polygon"),
+    "Polyline": ("domonic.geom.shape", "Polyline"),
+    "Rect": ("domonic.geom.shape", "Rect"),
+    "Shape": ("domonic.geom.shape", "Shape"),
+    "Square": ("domonic.geom.shape", "Square"),
+    "vec3": ("domonic.geom.vec3", "vec3"),
+    "vec4": ("domonic.geom.vec4", "vec4"),
+    "vertex": ("domonic.geom.shape", "vertex"),
+}
+
+
+def __getattr__(name):
+    if name not in _LAZY_EXPORTS:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    module_name, attr_name = _LAZY_EXPORTS[name]
+    module = __import__(module_name, fromlist=[attr_name])
+    value = getattr(module, attr_name)
+    globals()[name] = value
+    return value
+
+
+def __dir__():
+    return sorted(set(globals()) | set(__all__))
 
 
 # class Interactive:#??

@@ -6,10 +6,12 @@
 import math
 import unittest
 
+import domonic.geom as geom
 from domonic.constants.color import Color
-from domonic.geom.shape import Circle, Line, Rect, Shape
+from domonic.geom.shape import Circle, Ellipse, Line, Rect, Shape
 from domonic.geom.vec2 import vec2
 from domonic.geom.vec3 import vec3
+
 
 class TestColor(unittest.TestCase):
     def test_color_from_vec3(self):
@@ -102,6 +104,119 @@ class TestColor(unittest.TestCase):
 
 
 class TestCase(unittest.TestCase):
+
+    def test_geom_public_exports(self):
+        expected = {
+            "Circle",
+            "Ellipse",
+            "Group",
+            "Layer",
+            "Line",
+            "Oval",
+            "Particle",
+            "Particle3D",
+            "Path",
+            "Plane",
+            "Plotter",
+            "Point",
+            "Polygon",
+            "Polyline",
+            "Quaternion",
+            "Rect",
+            "Shape",
+            "Square",
+            "Timeline",
+            "matrix",
+            "vec2",
+            "vec3",
+            "vec4",
+            "vertex",
+        }
+        self.assertTrue(expected.issubset(set(geom.__all__)))
+        for name in expected:
+            self.assertTrue(hasattr(geom, name), name)
+
+        namespace = {}
+        exec("from domonic.geom import *", namespace)
+        for name in expected:
+            self.assertIn(name, namespace)
+
+    def test_shape_instances_do_not_share_default_vertices(self):
+        a = Shape()
+        b = Shape()
+
+        a.vertices.append(vec2(1, 1))
+
+        self.assertEqual(a.vertices, [vec2(1, 1)])
+        self.assertEqual(b.vertices, [])
+
+    def test_shape_constructors_keep_position_and_color(self):
+        self.assertEqual(Rect(1, 2, 3, 4, "blue").color, "blue")
+        self.assertEqual(Circle(5, 6, 7, "green").center, (5, 6))
+        self.assertEqual(Circle(5, 6, 7, "green").color, "green")
+        self.assertEqual(Line(vec2(0, 0), vec2(1, 1), "black").color, "black")
+
+        ellipse = Ellipse(1, 2, 3, 4, "orange")
+        self.assertEqual(
+            (ellipse.x, ellipse.y, ellipse.width, ellipse.height), (1, 2, 3, 4)
+        )
+        self.assertEqual(ellipse.color, "orange")
+
+    def test_circle_operations_include_radius(self):
+        circle = Circle(1, 2, 3, "red")
+
+        self.assertEqual(circle * 2, Circle(2, 4, 6))
+        self.assertEqual(circle + Circle(2, 3, 4), Circle(3, 5, 7))
+        self.assertEqual(circle - Circle(1, 1, 1), Circle(0, 1, 2))
+        self.assertNotEqual(Circle(1, 2, 3), Circle(1, 2, 4))
+
+        circle.center = vec2(8, 9)
+        self.assertEqual(circle.center, (8, 9))
+
+    def test_plotter_clear_and_plot(self):
+        class Canvas:
+            def __init__(self):
+                self.cleared = 0
+                self.points = []
+
+            def clear(self):
+                self.cleared += 1
+
+            def draw_point(self, point):
+                self.points.append(point)
+
+        canvas = Canvas()
+        plotter = geom.Plotter(canvas)
+
+        self.assertEqual(canvas.cleared, 1)
+        self.assertIs(plotter.add_point(vec2(1, 2)), plotter)
+        self.assertIs(plotter.plot(), plotter)
+        self.assertEqual(canvas.points, [vec2(1, 2)])
+        self.assertIs(plotter.clear(), plotter)
+        self.assertEqual(plotter.points, [])
+        self.assertEqual(canvas.cleared, 2)
+        self.assertEqual(geom.Plotter().add_point(vec2(3, 4)).plot(), [vec2(3, 4)])
+
+    def test_layer_shape_helpers(self):
+        a = Shape()
+        b = Shape()
+        c = Shape()
+        a.name = "first"
+
+        layer = geom.Layer().add(a).add(b)
+        other = geom.Layer().add(b).add(c)
+
+        self.assertTrue(layer.has(a))
+        self.assertEqual(layer.get_by_name("first"), a)
+        self.assertEqual(layer.get_by_property("color"), [a, b])
+        self.assertIs(layer.hide(), layer)
+        self.assertFalse(a.visible)
+        self.assertFalse(b.visible)
+        self.assertIs(layer.show(), layer)
+        self.assertTrue(a.visible)
+        self.assertTrue(b.visible)
+        self.assertIs(layer - other, layer)
+        self.assertEqual(list(layer), [a])
 
     def test_vec2_operations(self):
         v = vec2(10, 10)

@@ -38,15 +38,21 @@ Point = vertex
 
 
 class Shape(Point):
-    def __init__(self, x=0, y=0, color="red", vertices=[]):
+    def __init__(self, x=0, y=0, color="red", vertices=None):
         super().__init__(x, y)
 
-        if isinstance(vertices, list):
+        if vertices is None:
+            self.vertices = []
+        elif isinstance(vertices, list):
             self.vertices = vertices
+        else:
+            self.vertices = list(vertices)
 
         self.color = color
         self.scale = 1
         self.rotation = 0
+        self._width = None
+        self._height = None
         # self.pivot = (0, 0)
         self.id = None
         self.name = None
@@ -87,22 +93,51 @@ class Shape(Point):
     @property
     def width(self):
         """determine the width of the shape"""
+        if not self.vertices:
+            return self._width
         return (
             max(self.vertices, key=lambda v: v.x).x
             - min(self.vertices, key=lambda v: v.x).x
         )
 
+    @width.setter
+    def width(self, value):
+        self._width = value
+
     @property
     def height(self):
         """determine the height of the shape"""
+        if not self.vertices:
+            return self._height
         return (
             max(self.vertices, key=lambda v: v.y).y
             - min(self.vertices, key=lambda v: v.y).y
         )
 
+    @height.setter
+    def height(self, value):
+        self._height = value
+
     def rotate(self, angle):
         """rotate the shape"""
         self.rotation += angle
+        return self
+
+    def show(self):
+        self.visible = True
+        return self
+
+    def hide(self):
+        self.visible = False
+        return self
+
+    def delete(self):
+        self.visible = False
+        self.selected = False
+        return self
+
+    def has_property(self, name):
+        return hasattr(self, name)
 
     def draw(self, svg):
         """draw the shape"""
@@ -188,7 +223,7 @@ class Shape(Point):
 
 class Line(Shape):
     def __init__(self, start, end, color=None, *args):
-        super().__init__(color)
+        super().__init__(color=color)
         # if isinstance(p1, vec2):
         self.start = start
         self.end = end
@@ -337,7 +372,7 @@ class Plane:
 
 class Rect(Shape):
     def __init__(self, x=0, y=0, width=1, height=1, color=None):
-        super().__init__(color)
+        super().__init__(x=x, y=y, color=color)
         self.x = x
         self.y = y
         self.width = width
@@ -849,7 +884,7 @@ class Circle(Shape):
             radius (float, optional): [description]. Defaults to 1.0.
             color ([type], optional): [description]. Defaults to None.
         """
-        super().__init__(color)
+        super().__init__(x=x, y=y, color=color)
         self.radius = radius  # Create an instance variable radius
 
     @property
@@ -876,12 +911,12 @@ class Circle(Shape):
 
     @property
     def center(self):
-        x, y = self.center = [self.radius, self.radius]
-        return x, y
+        return (self.x, self.y)
 
     @center.setter
     def center(self, center):
-        self._center = center
+        self.x = center.x if hasattr(center, "x") else center[0]
+        self.y = center.y if hasattr(center, "y") else center[1]
 
     def __str__(self):
         return f"Circle({self.center}, {self.radius}, {self.color})"
@@ -894,10 +929,10 @@ class Circle(Shape):
         self.radius = state["radius"]
 
     def __copy__(self):
-        return Circle(self.center, self.radius, self.color)
+        return Circle(self.x, self.y, self.radius, self.color)
 
     def __deepcopy__(self, memo):
-        return Circle(self.center, self.radius, self.color)
+        return Circle(self.x, self.y, self.radius, self.color)
 
     def __contains__(self, other):
         return other in self.center
@@ -915,21 +950,47 @@ class Circle(Shape):
         return iter(self.center)
 
     def __add__(self, other):
-        return Circle(self.center + other.center, self.radius + other.radius)
+        return Circle(
+            self.x + other.x,
+            self.y + other.y,
+            self.radius + other.radius,
+            self.color,
+        )
 
     def __sub__(self, other):
-        return Circle(self.center - other.center, self.radius - other.radius)
+        return Circle(
+            self.x - other.x,
+            self.y - other.y,
+            self.radius - other.radius,
+            self.color,
+        )
 
     def __mul__(self, other):
-        return Circle(self.center * other, self.radius * other)
+        return Circle(self.x * other, self.y * other, self.radius * other, self.color)
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, Circle)
+            and self.x == other.x
+            and self.y == other.y
+            and self.radius == other.radius
+        )
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.radius))
 
     # def __rmul__(self, other):
     #     return Circle(self.center * other, self.radius * other
 
 
 class Oval(Circle):
-    def __init__(self, radius=2.5, size=3):
-        super().__init__(size, "green")
+    def __init__(self, radius=2.5, size=3, color="green"):
+        super().__init__(0, 0, radius, color)
+        self.width = size
+        self.height = size
         self.radius = radius
         self.x = self.width / 2 - self.radius / 2
         self.y = self.width / 2 + self.radius / 2
@@ -937,7 +998,7 @@ class Oval(Circle):
 
 class Ellipse(Shape):
     def __init__(self, x, y, width, height, color=None):
-        super().__init__(color)
+        super().__init__(x=x, y=y, color=color)
         self.x = x
         self.y = y
         self.width = width
