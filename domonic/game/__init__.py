@@ -7,6 +7,12 @@ domonic.game
 import random
 
 _random = random.SystemRandom()
+_SUITS = ["♠", "♥", "♦", "♣"]
+_CARDS = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
+
+
+def _deck() -> list[str]:
+    return [card + suit for suit in _SUITS for card in _CARDS]
 
 
 class Game:
@@ -29,13 +35,11 @@ class Game:
         Returns:
             A card string such as ``"A♠"``.
         """
-        suits = ["♠", "♥", "♦", "♣"]
-        cards = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
-        return _random.choice(cards) + _random.choice(suits)
+        return _random.choice(_deck())
 
     @staticmethod
     def deal_cards(n: int = 1) -> list:
-        """Deal a list of random card labels.
+        """Deal unique random card labels from a standard deck.
 
         Args:
             n: Number of cards to deal. Defaults to ``1``.
@@ -43,13 +47,17 @@ class Game:
         Returns:
             A list of card strings.
         """
-        return [
-            Game.pick_a_card() for _ in range(n)
-        ]  # TODO - this could have duplicates
+        n = int(n)
+        if n < 0:
+            raise ValueError("n must be greater than or equal to 0")
+        deck = _deck()
+        if n > len(deck):
+            raise ValueError("cannot deal more cards than are in the deck")
+        return _random.sample(deck, n)
 
     @staticmethod
     def random_bool() -> bool:
-        #  (https://6b.eleuther.ai/) TODO - test
+        """Return a cryptographically strong random boolean."""
         return bool(_random.getrandbits(1))
 
     @staticmethod
