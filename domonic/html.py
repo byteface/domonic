@@ -565,7 +565,7 @@ class TemplateError(IndexError):
         super().__init__(self.message)
 
 
-tag = Node  # legacy support?. TODO - remove in future? 0.0.9
+tag = Node  # legacy support
 
 
 class closed_tag(Node):
@@ -726,12 +726,8 @@ time = type("time", (HTMLTimeElement,), {"name": "time"})
 data = type("data", (HTMLDataElement,), {"name": "data"})
 
 base = type("base", (closed_tag, HTMLBaseElement), {"name": "base"})
-link = type(
-    "link", (closed_tag, HTMLLinkElement), {"name": "link"}
-)  # HTMLLinkElement TODO - closed tags
-meta = type(
-    "meta", (closed_tag, HTMLMetaElement), {"name": "meta"}
-)  # HTMLMetaElement TODO - closed tags
+link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})
+meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})
 hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
 br = type(
     "br",

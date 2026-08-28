@@ -440,12 +440,11 @@ class TestCase(unittest.TestCase):
         assert format("$c")("☃") == "$☃"
 
         f = format("~%")
-        # assert f(0) == "0%"
-        # print("???", f(0.1)) # TODO y are percentages using the default precision
-        # assert f(0.1) == "10%"
-        # assert f(0.01) == "1%"
-        # assert f(0.001) == "0.1%"
-        # assert f(0.0001) == "0.01%"
+        assert f(0) == "0%"
+        assert f(0.1) == "10%"
+        assert f(0.01) == "1%"
+        assert f(0.001) == "0.1%"
+        assert f(0.0001) == "0.01%"
 
         f = format(",~g")
         _debug_print(f(10000.0))
@@ -850,21 +849,30 @@ class TestCase(unittest.TestCase):
         # assert foos == 0
         # assert bars == 1
 
-        #  removes an existing callback, if present
-        # foo = 0
-        # d = dispatch("foo", "bar")
+        # removes an existing callback, if present
+        foo = 0
+        d = dispatch("foo", "bar")
 
-        # def _foo():
-        #     nonlocal foo
-        #     foo += 1
+        def _foo():
+            nonlocal foo
+            foo += 1
 
-        # d.on("foo", _foo)
-        # d.call("foo")
-        # assert foo == 1
-        # d.on("foo", None)
-        # d.call("foo")
-        # print(foo)
-        # assert foo == 1 # TODO - fails
+        d.on("foo", _foo)
+        d.call("foo")
+        assert foo == 1
+        d.on("foo", None)
+        assert d.on("foo") is None
+        d.call("foo")
+        assert foo == 1
+
+    def test_dispatch_call_passes_arguments(self):
+        seen = []
+        d = dispatch("foo")
+        d.on("foo", lambda a, b: seen.append((a, b)))
+
+        d.call("foo", None, "alpha", "beta")
+
+        assert seen == [("alpha", "beta")]
 
     def test_select(self):
 
@@ -1345,10 +1353,10 @@ class TestCase(unittest.TestCase):
         # assertSelection(selectAll([one, two]).selectAll("child").select(function(d, i) { return i & 1 ? this : None; }).select("span"), {groups: [[, three], [, four]], parents: [one, two]})
 
         # selection.selection() returns itself
-        # d = html(head(domonic.load("<h1>hello</h1>")))
-        # sel = select(d).select("h1")
-        # assert sel == sel.selection() # TODO - check back
-        # assert sel == sel.selection().selection()
+        d = html(head(domonic.load("<h1>hello</h1>")))
+        sel = select(d).select("h1")
+        assert sel is sel.selection()
+        assert sel is sel.selection().selection()
 
     @silence
     def test_select_all(self):
@@ -1516,15 +1524,15 @@ class TestCase(unittest.TestCase):
         # assertSelection(selection, {groups: [[three, four]]});
 
         # selection.append(name) observes the inherited namespace, if any
-        # d = html(body(div(_id='one'), div(_id='two')))
-        # one = d.querySelector("#one")
-        # two = d.querySelector("#two")
-        # selection = selectAll([one, two]).append("svg").append("g") # TODO - append ... not shiffting.
-        # three = one.querySelector("g")
-        # four = two.querySelector("g")
-        # assert three.namespaceURI == "http://www.w3.org/2000/svg"
-        # assert four.namespaceURI == "http://www.w3.org/2000/svg"
-        # assertSelection(selection, {groups: [[three, four]]})
+        d = html(body(div(_id="one"), div(_id="two")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([one, two]).append("svg").append("g")
+        three = one.querySelector("g")
+        four = two.querySelector("g")
+        assert three.namespaceURI == "http://www.w3.org/2000/svg"
+        assert four.namespaceURI == "http://www.w3.org/2000/svg"
+        assert selection.nodes() == [three, four]
 
         # selection.append(name) observes a custom namespace, if any
         d = html(body(div(_id="one"), div(_id="two")))

@@ -4,9 +4,10 @@ domonic.d3.dispatch
 
 """
 
-from domonic.javascript import Array, Function, Object, RegExp, String
+from domonic.javascript import Array, Object, RegExp, String
 
 noop = {"value": lambda *args: {}}
+_MISSING = object()
 
 
 def dispatch(*args):
@@ -25,52 +26,43 @@ def parseTypenames(typenames, types):
         if i >= 0:
             name = String(t).slice(i + 1)
             t = String(t).slice(0, i)
-        if types.get(t, None) == None:
+        if t and types.get(t, None) == None:
             raise Exception("unknown type: " + t)
         return {"type": t, "name": name}
 
-    import re
-
-    return Array(re.split(r"/^|\s+/", String(typenames).trim())).map(anon)
+    return Array(String(typenames).trim().split()).map(anon)
 
 
 class Dispatch:
     def __init__(self, _) -> None:
         self._ = _
 
-    def on(self, typename: str, callback=None, *args):
+    def on(self, typename: str, callback=_MISSING, *args):
         _ = self._
         T = parseTypenames(str(typename), _)
-        t = None
-        i = -1
-        n = len(T)
 
         # If no callback was specified, return the callback of the given type and name.
-        if callback is None:
-            while i < n:
-                typename = T[i]
+        if callback is _MISSING:
+            for typename in T:
+                if not typename["type"]:
+                    continue
                 t = self.get(_[typename["type"]], typename["name"])
                 if t is not None:
                     return t
-                i += 1
-            return self
+            return None
 
         # If a type was specified, set the callback for the given type and name.
         # Otherwise, if a None callback was specified, remove callbacks of the given name.
         if callback != None and not callable(callback):
             raise Exception("invalid callback: " + callback)
-        while i < n:
-            typename = T[i]
+        for typename in T:
             if typename["type"] is not None:
                 _[typename["type"]] = self.set(
                     _[typename["type"]], typename["name"], callback
                 )
             elif callback == None:
                 for t in _:
-                    _[typename["type"]] = self.set(
-                        _[typename["type"]], typename["name"], None
-                    )
-            i += 1
+                    _[t] = self.set(_[t], typename["name"], None)
 
         return self
 
@@ -82,26 +74,19 @@ class Dispatch:
         return Dispatch(copy)
 
     def call(self, type, that=None, *args):
-        arguments = Array()
-        n = len(args)
-        if (n - 2) > 0:
-            arguments = Array(n)
-            for i in range(n):
-                arguments[i] = arguments[i + 2]
-
         if not Object(self._).hasOwnProperty(type):
             raise Exception("unknown type: " + type)
 
         t = self._[type]
         for i in t:
-            Function(i["value"]).apply(that, arguments)
+            i["value"](*args)
 
     def apply(self, type, that, *args):
-        if not self._.hasOwnProperty(type):
+        if not Object(self._).hasOwnProperty(type):
             raise Exception("unknown type: " + type)
         t = self._[type]
         for i in t:
-            Function(i["value"]).apply(that, args)
+            i["value"](*args)
 
     def get(self, type, name):
         n = len(type)

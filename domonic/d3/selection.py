@@ -44,16 +44,15 @@ def namespace(name):
 
 
 def creatorInherit(name):
-    def anon(this):
-        # document = this.ownerDocument
+    def anon(this, *args):
         from domonic.dom import document
 
-        # uri = this.namespaceURI
-        uri = document.namespaceURI
+        owner_document = this.ownerDocument or document
+        uri = getattr(this, "namespaceURI", xhtml)
         return (
-            document.createElement(name)
-            if uri == xhtml and document.documentElement.namespaceURI == xhtml
-            else document.createElementNS(uri, name)
+            owner_document.createElement(name)
+            if uri == xhtml and owner_document.documentElement.namespaceURI == xhtml
+            else owner_document.createElementNS(uri, name)
         )
 
     return anon
@@ -404,9 +403,6 @@ class Selection:
 
     # import selection_filter from "./filter.js";
     # def filter: selection_filter,
-    # import {Selection} from "./index.js";
-    # import matcher from "../matcher.js"; # TODO - might not be in yet
-
     def filter(self, match):
         if not callable(match):
             match = matcher(match)
@@ -768,21 +764,12 @@ class Selection:
 
     def append(self, name, *args):
         create = name if callable(name) else creator(name)
-        # print(create)
 
         def anon(this, *args):
-            # print("THIS", this, args)
-            nonlocal create
-            # nonlocal self
-            # print("self is::", self)
-            n = Function(create).apply(self, args)
-            # print('n is::', n)
-            # print("self this is::", self.this)
-            # self.this = this
+            n = create(this, *args)
             return this.appendChild(n)
 
-        self.select(anon)
-        return self
+        return self.select(anon)
 
     # import selection_property from "./property.js";
     def propertyRemove(self, name):
