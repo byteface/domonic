@@ -7,7 +7,7 @@
 import unittest
 import json
 
-from domonic.components import DomonicJS, ProgressBar, Websocket
+from domonic.components import DomonicJS, Modal, ProgressBar, Webpage, Websocket
 from domonic.events import KeyboardEvent, WheelEvent
 from domonic.html import *
 from domonic.JSON import *
@@ -49,6 +49,23 @@ class TestCase(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ProgressBar(max=0)
+
+    def test_modal_renders_content_and_visibility(self):
+        modal = Modal("settings", div("Hello"), visible=True)
+        rendered = str(modal)
+
+        self.assertIn('id="settings"', rendered)
+        self.assertIn('data-ref="settings"', rendered)
+        self.assertIn("display:block", rendered)
+        self.assertIn("<div>Hello</div>", rendered)
+
+    def test_webpage_renders_document_shell(self):
+        rendered = str(Webpage(div("Hello"), title_text="Demo"))
+
+        self.assertTrue(rendered.startswith("<!DOCTYPE html>"))
+        self.assertIn("<title>Demo</title>", rendered)
+        self.assertIn('class="domonic-container"', rendered)
+        self.assertNotIn("<html><!DOCTYPE HTML>", rendered)
 
     def test_websocket_uses_native_event_listeners(self):
         websocket = Websocket(

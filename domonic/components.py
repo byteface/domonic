@@ -647,31 +647,43 @@ class Input:
 # You should build your own components libaries using domonic
 
 
-class Modal:  # TODO - shouldn't this extend dom?
-    def __init__(self, reference=None, content=None):
-        self.reference = reference
+class Modal:
+    """Small renderable modal helper used by the examples."""
+
+    def __init__(self, reference=None, content=None, visible=False, close_text="&times;"):
+        self.reference = reference or "modal"
         self.content = content
+        self.visible = visible
+        self.close_text = close_text
 
     def __str__(self):
+        display = "block" if self.visible else "none"
         return str(
             div(
                 div(
-                    span("&times;", _class="close", **{"_data-ref": self.reference}),
+                    span(
+                        self.close_text,
+                        _class="close",
+                        **{"_data-ref": self.reference},
+                    ),
                     div(self.content),
                     _class="modal-content",
                     _style="background-color:#fefefe;margin:15% auto;padding:20px;border:1px solid;width:80%;",
                 ),
                 _class="modal",
-                _style="display:none;position:fixed;z-index:1;left:0;top:0;width:100%;height:100%; \
-                    overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4);",
+                _style=f"display:{display};position:fixed;z-index:1;left:0;top:0;width:100%;height:100%;"
+                "overflow:auto;background-color:rgb(0,0,0);background-color:rgba(0,0,0,0.4);",
                 _id=self.reference,
             )
         )
 
 
-class Webpage:  # TODO - shouldn't this extend html?
-    def __init__(self, content=None):
+class Webpage:
+    """Render a complete demo page with the component helper scripts."""
+
+    def __init__(self, content=None, title_text="webpage"):
         self.content = content
+        self.title_text = title_text
 
     def __str__(self):
         classless_css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
@@ -739,13 +751,10 @@ class Webpage:  # TODO - shouldn't this extend html?
             }
 
         """)
-        return str(
-            html(
-                "<!DOCTYPE HTML>",
-                head(classless_css, jquery, code, styles),
-                body(div(self.content, _class="domonic-container")),
-            )
-        )
+        return f"{HTMLDocument(
+            head(title(self.title_text), classless_css, jquery, code, styles),
+            body(div(self.content, _class='domonic-container')),
+        )}"
 
 
 # quick templates
