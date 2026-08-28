@@ -66,6 +66,7 @@ from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePo
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.notifications import Notification
 from domonic.webapi.permissions import Permissions, PermissionStatus
+from domonic.webapi.push import PushManager, PushSubscription, PushSubscriptionOptions
 from domonic.webapi.sanitizer import Sanitizer
 from domonic.webapi.scheduler import (
     Scheduler,
@@ -246,6 +247,44 @@ class TestCase(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             Sanitizer({"attributes": ["id"], "removeAttributes": ["class"]})
+
+    def test_push_api(self):
+        manager = PushManager(permission="granted", endpoint_base="https://push.test")
+
+        subscription = manager.subscribe(
+            {"userVisibleOnly": True, "applicationServerKey": b"server-key"}
+        )
+
+        self.assertIs(manager.getSubscription(), subscription)
+        self.assertEqual(manager.permissionState(), "granted")
+        self.assertTrue(subscription.endpoint.startswith("https://push.test/"))
+        self.assertTrue(subscription.options.userVisibleOnly)
+        self.assertEqual(subscription.options.applicationServerKey, b"server-key")
+        self.assertEqual(len(subscription.getKey("auth")), 16)
+        self.assertEqual(len(subscription.getKey("p256dh")), 65)
+        self.assertIsNone(subscription.getKey("missing"))
+
+        payload = subscription.toJSON()
+        self.assertEqual(payload["endpoint"], subscription.endpoint)
+        self.assertIn("auth", payload["keys"])
+        self.assertEqual(payload["options"]["applicationServerKey"], "c2VydmVyLWtleQ")
+
+        self.assertTrue(subscription.unsubscribe())
+        self.assertFalse(subscription.unsubscribe())
+        self.assertIsNone(manager.getSubscription())
+        self.assertFalse(manager.unsubscribe())
+
+        denied = PushManager(permission="denied")
+        with self.assertRaises(PermissionError):
+            denied.subscribe()
+
+        custom = PushSubscription(
+            "https://push.test/manual",
+            PushSubscriptionOptions(applicationServerKey="text-key"),
+            keys={"auth": b"1234567890123456", "p256dh": b"x" * 65},
+        )
+        self.assertEqual(custom.getKey("auth"), b"1234567890123456")
+        self.assertEqual(custom.toJSON()["options"]["applicationServerKey"], "dGV4dC1rZXk")
 
     def test_sanitizer_dom_integration(self):
         target = div()
