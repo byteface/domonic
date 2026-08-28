@@ -1022,187 +1022,145 @@ class Selection:
 
     # import selection_on from "./on.js";
     def contextListener(self, listener):
-        return lambda event: listener.call(self.this, event, self.this.__data__)
+        def wrapped(event):
+            data = getattr(getattr(event, "currentTarget", None), "__data__", None)
+            return _invoke_callback(listener, event, data)
+
+        return wrapped
 
     def parseTypenames(self, typenames):
-        # TODO - write this as python
-        # return typenames.trim().split(/^|\s+/).map(function(t) {
-        #     var name = "", i = t.indexOf(".");
-        #     if (i >= 0) name = t.slice(i + 1), t = t.slice(0, i)
-        #     return {type: t, name: name}
-        # });
-        return [
-            {"type": t[0], "name": t[1]} for t in re.findall(r"\.([^\.]+)", typenames)
-        ]
+        parsed = []
+        for typename in str(typenames).strip().split():
+            event_type = typename
+            name = ""
+            if "." in typename:
+                event_type, name = typename.split(".", 1)
+            parsed.append({"type": event_type, "name": name})
+        return parsed
 
     def onRemove(self, typename):
-        # TODO - write this as python
-        # return function() {
-        #     var on = this.__on;
-        #     if (!on) return;
-        #     for (var j = 0, i = -1, m = on.length, o; j < m; ++j) {
-        #     if (o = on[j], (!typename.type || o.type === typename.type) && o.name === typename.name) {
-        #         this.removeEventListener(o.type, o.listener, o.options);
-        #     } else {
-        #         on[++i] = o;
-        #     }
-        #     }
-        #     if (++i) on.length = i;
-        #     else delete this.__on;
-        # }
-        def anon(this):
-            on = this.__on
-            if not on:
+        def anon(this, *args):
+            listeners = list(getattr(this, "__on", []))
+            if not listeners:
                 return
-            for j in range(0, len(on)):
-                o = on[j]
-                if not typename:
-                    on[j] = o
-                    return
-                if o.type and o.type == typename.type:
-                    if o.name == typename.name:
-                        this.removeEventListener(o.type, o.listener, o.options)
-                    else:
-                        on[j] = o
+
+            kept = []
+            for listener in listeners:
+                matches_type = (
+                    not typename["type"] or listener["type"] == typename["type"]
+                )
+                matches_name = listener["name"] == typename["name"]
+                if matches_type and matches_name:
+                    this.removeEventListener(
+                        listener["type"], listener["listener"], listener["options"]
+                    )
                 else:
-                    on[j] = o
-            on.length = len(on)
-            del this.__on
+                    kept.append(listener)
+
+            if kept:
+                setattr(this, "__on", kept)
+            elif hasattr(this, "__on"):
+                delattr(this, "__on")
 
         return anon
 
     def onAdd(self, typename, value, options):
-        # TODO - write this as python
-        # return function() {
-        #     var on = this.__on, o, listener = contextListener(value);
-        #     if (on) for (var j = 0, m = on.length; j < m; ++j) {
-        #     if ((o = on[j]).type === typename.type && o.name === typename.name) {
-        #         this.removeEventListener(o.type, o.listener, o.options);
-        #         this.addEventListener(o.type, o.listener = listener, o.options = options);
-        #         o.value = value;
-        #         return;
-        #     }
-        #     }
-        #     this.addEventListener(typename.type, listener, options);
-        #     o = {type: typename.type, name: typename.name, value: value, listener: listener, options: options};
-        #     if (!on) this.__on = [o];
-        #     else on.push(o);
-        # }
-        def anon(this):
-            on = this.__on
-            if on:
-                for j in range(0, len(on)):
-                    o = on[j]
-                    if o.type == typename.type and o.name == typename.name:
-                        this.removeEventListener(o.type, o.listener, o.options)
-                        this.addEventListener(o.type, o.listener, o.options)
-                        o.value = value
-                        return
-                this.addEventListener(typename.type, value, options)
-                o = {
-                    "type": typename.type,
-                    "name": typename.name,
+        def anon(this, *args):
+            if not typename["type"]:
+                return
+
+            listener = self.contextListener(value)
+            listeners = list(getattr(this, "__on", []))
+
+            for existing in listeners:
+                if (
+                    existing["type"] == typename["type"]
+                    and existing["name"] == typename["name"]
+                ):
+                    this.removeEventListener(
+                        existing["type"],
+                        existing["listener"],
+                        existing["options"],
+                    )
+                    this.addEventListener(typename["type"], listener, options)
+                    existing.update(
+                        {
+                            "value": value,
+                            "listener": listener,
+                            "options": options,
+                        }
+                    )
+                    setattr(this, "__on", listeners)
+                    return
+
+            this.addEventListener(typename["type"], listener, options)
+            listeners.append(
+                {
+                    "type": typename["type"],
+                    "name": typename["name"],
                     "value": value,
-                    "listener": value,
+                    "listener": listener,
                     "options": options,
                 }
-                if not on:
-                    this.__on = [o]
-                else:
-                    on.push(o)
+            )
+            setattr(this, "__on", listeners)
 
         return anon
 
-    def on(self, typename, value, options, *args):
-        typenames = parseTypenames(str(typename))
-        i = None
-        n = len(typenames)
-        t = None
+    def on(self, typename, value=_MISSING, options=None, *args):
+        typenames = self.parseTypenames(str(typename))
 
-        # TODO - write this as python
-        # if (arguments.length < 2) {
-        #     var on = this.node().__on;
-        #     if (on) for (var j = 0, m = on.length, o; j < m; ++j) {
-        #     for (i = 0, o = on[j]; i < n; ++i) {
-        #         if ((t = typenames[i]).type === o.type && t.name === o.name) {
-        #         return o.value;
-        #         }
-        #     }
-        #     }
-        #     return;
-        # }
+        if value is _MISSING:
+            node = self.node()
+            if node is None:
+                return None
+            listeners = getattr(node, "__on", [])
+            for listener in listeners:
+                for parsed in typenames:
+                    if (
+                        listener["type"] == parsed["type"]
+                        and listener["name"] == parsed["name"]
+                    ):
+                        return listener["value"]
+            return None
 
-        # on = value ? onAdd : onRemove;
-        # for (i = 0; i < n; ++i) this.each(on(typenames[i], value, options));
-        # return this;
-        # }
-
-        if arguments.length < 2:
-            on = self.node().__on
-            if on:
-                for j in range(0, len(on)):
-                    o = on[j]
-                    for i in range(0, n):
-                        t = typenames[i]
-                        if t is not None and (o.type == t.type) and (o.name == t.name):
-                            return o.value
-                return
-            return
-        for i in range(0, n):
-            o = self.node().__on[i]
-            for j in range(0, n):
-                t = typenames[j]
-                if (o.type == t.type) and (o.name == t.name):
-                    o.value = value
-                    return
-        self.node().addEventListener(typenames[0].type, value, options)
-        o = {
-            "type": typenames[0].type,
-            "name": typenames[0].name,
-            "value": value,
-            "listener": value,
-            "options": options,
-        }
-        self.node().__on.push(o)
+        for parsed in typenames:
+            callback = (
+                self.onRemove(parsed)
+                if value is None
+                else self.onAdd(parsed, value, options)
+            )
+            self.each(callback)
         return self
 
     # import selection_dispatch from "./dispatch.js";
     # def dispatch: selection_dispatch,
     # import defaultView from "../window.js";
     def dispatchEvent(self, node, type, params):
-        window = defaultView(node)
-        event = window.CustomEvent
-        # TODO - write this as python
-        # if (typeof event === "function") {
-        #     event = new event(type, params);
-        # } else {
-        #     event = window.document.createEvent("Event");
-        #     if (params) event.initEvent(type, params.bubbles, params.cancelable), event.detail = params.detail;
-        #     else event.initEvent(type, false, false);
-        # }
-        if callable(event):
-            event = event(type, params)
-        else:
-            event = event.createEvent("Event")
-            if params:
-                event.initEvent(type, params.bubbles, params.cancelable)
-            else:
-                event.initEvent(type, False, False)
+        from domonic.events import CustomEvent
+
+        if params is None:
+            params = {}
+        elif not isinstance(params, dict):
+            params = dict(getattr(params, "__dict__", {}))
+
+        event = CustomEvent(type, params)
         node.dispatchEvent(event)
         return node
 
     def dispatchConstant(self, type, params):
-        return lambda this: dispatchEvent(this, type, params)
+        return lambda this, *args: self.dispatchEvent(this, type, params)
 
     def dispatchFunction(self, type, params, *args):
-        return lambda this: dispatchEvent(this, type, Object(params).apply(this, args))
+        def anon(this, *call_args):
+            event_params = _invoke_callback(params, *call_args)
+            return self.dispatchEvent(this, type, event_params)
 
-    def dispatch(self, type, params):
-        # return this.each((typeof params === "function"
-        #     ? dispatchFunction
-        #     : dispatchConstant)(type, params))
-        func = dispatchFunction if callable(params) else dispatchConstant
-        return this.each(func(type, params))
+        return anon
+
+    def dispatch(self, type, params=None):
+        func = self.dispatchFunction if callable(params) else self.dispatchConstant
+        return self.each(func(type, params))
 
     # import selection_iterator from "./iterator.js";
     # #   [Symbol.iterator]: selection_iterator

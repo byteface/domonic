@@ -1967,6 +1967,64 @@ class TestCase(unittest.TestCase):
         assert middle.parentNode is None
         assert middle not in ul_.children
 
+    def test_on_and_dispatch(self):
+        d = html(body(button(_id="one"), button(_id="two")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([one, two]).datum(lambda data, i, group: f"button-{i}")
+        calls = []
+
+        def listener(event, data):
+            calls.append(
+                (
+                    event.type,
+                    event.detail,
+                    data,
+                    event.currentTarget.getAttribute("id"),
+                )
+            )
+
+        assert selection.on("custom.release", listener) == selection
+        assert select(one).on("custom.release") is listener
+
+        selection.dispatch("custom", {"detail": "first"})
+        assert calls == [
+            ("custom", "first", "button-0", "one"),
+            ("custom", "first", "button-1", "two"),
+        ]
+
+        replacement_calls = []
+
+        def replacement(event, data):
+            replacement_calls.append((event.detail, data))
+
+        selection.on("custom.release", replacement, {"once": True})
+        assert select(one).on("custom.release") is replacement
+
+        selection.dispatch(
+            "custom", lambda data, i, group: {"detail": f"{data}:{i}"}
+        )
+        assert calls == [
+            ("custom", "first", "button-0", "one"),
+            ("custom", "first", "button-1", "two"),
+        ]
+        assert replacement_calls == [
+            ("button-0:0", "button-0"),
+            ("button-1:1", "button-1"),
+        ]
+
+        selection.dispatch("custom", {"detail": "once-used"})
+        assert replacement_calls == [
+            ("button-0:0", "button-0"),
+            ("button-1:1", "button-1"),
+        ]
+
+        selection.on("custom.release", listener)
+        assert one.hasEventListener("custom")
+        selection.on(".release", None)
+        assert not one.hasEventListener("custom")
+        assert select(one).on("custom.release") is None
+
     @silence
     def test_iterator(self):
         # selection are iterable over the selected nodes
