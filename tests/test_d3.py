@@ -505,7 +505,7 @@ class TestCase(unittest.TestCase):
             == "02.00฿"
         )
         # assert formatLocale({"decimal": ",", "currency": ["", " €"]}).format("$.3s")(1.2e9) == "1,20G €"
-        # assert formatLocale({"decimal": "."}).format("012,.2f")(2) == "000000002.00" # TODO - bug
+        assert formatLocale({"decimal": "."}).format("012,.2f")(2) == "000000002.00"
         assert (
             formatLocale({"decimal": ".", "grouping": [3], "thousands": ","}).format(
                 "012,.2f"
@@ -523,6 +523,10 @@ class TestCase(unittest.TestCase):
                 "012,.2f"
             )(2)
             == "00,000,02.00"
+        )
+        assert (
+            formatLocale({"numerals": list("abcdefghij")}).format("d")(12345)
+            == "bcdef"
         )
         assert (
             formatLocale(

@@ -4,6 +4,8 @@ domonic.d3.format
 
 """
 
+import re as pyre
+
 from domonic.javascript import Array, Global, Math, Number, RegExp, String
 
 
@@ -167,7 +169,7 @@ def formatGroup(grouping, thousands):
 
 def formatNumerals(numerals):
     def func(value):
-        return value.replace(r"[0-9]g", lambda i: numerals[i])
+        return pyre.sub(r"\d", lambda match: numerals[int(match.group(0))], str(value))
 
     return func
 
@@ -282,7 +284,7 @@ def formatTrim(s):
     return String(s).slice(0, i0) + String(s).slice(i1 + 1) if i0 > 0 else s
 
 
-def identity(x):
+def identity(x, *args):
     return x
 
 
@@ -324,8 +326,9 @@ class formatLocale:
     def __init__(self, locale):
 
         self.group = (
-            locale.get("grouping", None) == None or identity
-            if locale.get("thousands", None) == None
+            identity
+            if locale.get("grouping", None) is None
+            or locale.get("thousands", None) is None
             else formatGroup(
                 [Global.Number(g) for g in locale["grouping"]],
                 str(locale.get("thousands")),
