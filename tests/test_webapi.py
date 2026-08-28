@@ -194,6 +194,15 @@ class TestCase(unittest.TestCase):
         )
         self.assertEqual(Sanitizer().sanitizeToString(dirty), "<p>Hello <a>link</a></p>")
 
+        custom = (
+            "Some text <b><i>with</i></b> <blink>tags</blink>, "
+            "including a rogue script <script>alert(1)</script> def."
+        )
+        cleaned = Sanitizer().sanitizeToString(custom)
+        self.assertIn("<blink>tags</blink>", cleaned)
+        self.assertNotIn("<script>", cleaned)
+        self.assertNotIn("alert(1)", cleaned)
+
         empty = Sanitizer({})
         self.assertIn("<script>alert(1)</script>", empty.sanitizeToString(dirty))
         self.assertIn('onclick="evil()"', empty.sanitizeToString(dirty))

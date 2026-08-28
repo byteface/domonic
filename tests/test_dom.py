@@ -3910,17 +3910,6 @@ class DOMTest(unittest.TestCase):
     # def test_domonic_closest(self):
 
     def test_sanitize(self):
-
-        # our input string to clean
-        # stringToClean = 'Some text <b><i>with</i></b> <blink>tags</blink>, including a rogue script <script>alert(1)</script> def. # TODO - failing due to blink tag
-
-        # TODO - parser is stripping last space off the string
-        # stringToClean = 'Some text <b><i>with</i></b> <p>tags</p>, including a rogue script <script>alert(1)</script> def.'
-        # result = Sanitizer().sanitizeToString(stringToClean)
-        # console.log("result::", result)
-        # assert result == "Some text <b><i>with</i></b> <blink>tags</blink>, including a rogue script def."
-        # return
-
         sample = "<div style='cool'><span id='span1' class='theclass' style='font-weight: bold'>hello</span></div>"
         # sample = '<div style="cool"><span id="span1" class="theclass" style="font-weight: bold">hello</span></div>'
 
