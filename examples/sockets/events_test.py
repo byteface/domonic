@@ -67,6 +67,12 @@ class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
         # self.addEventListener(ClipboardEvent.COPY, self.oncopy)
         # self.addEventListener(ClipboardEvent.PASTE, self.onpaste)
 
+    def record(self, event, name=None):
+        event_name = name or getattr(event, "type", event.__class__.__name__)
+        counts = somedata.setdefault("counts", {})
+        counts[event_name] = counts.get(event_name, 0) + 1
+        somedata["last_event"] = event_name
+
     # def oncut(self, event):
     #     print(event)
 
@@ -77,63 +83,69 @@ class BrowserEventHandler(EventDispatcher, GlobalEventHandler):
     #     print(event.clipboardData)
 
     def onwheel(self, event):
+        self.record(event)
         if event.deltaY > 0:
             print("scrolling up")
         else:
             print("scrolling down")
 
     def onhashchange(self, event):
+        self.record(event)
+        somedata["hash"] = {"old": event.oldURL, "new": event.newURL}
         print("The url used to be:", event.oldURL)
         print("Now the url is:", event.newURL)
 
     def ondrag(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragend(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragenter(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragexit(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragleave(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragover(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondragstart(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def ondrop(self, event):
+        self.record(event)
         print(event)
-        pass
 
     def on_keydown(self, event):
+        self.record(event)
         print("a key was pressed", event)
         print(event.key)
 
     def on_keyup(self, event):
+        self.record(event)
         print("a key was released")
         print(event.key)
 
     def on_mousemove(self, event):
-        # print('mousemove', event, event.x, event.y)
-        pass
+        somedata["mouse"] = {"x": event.x, "y": event.y}
 
     def on_mousedown(self, event):
+        self.record(event)
         print("mousedown", event, event.x, event.y)
 
     def on_mouseup(self, event):
+        self.record(event)
         print("on_mouseup", event, event.x, event.y)
 
 

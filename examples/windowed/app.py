@@ -56,7 +56,10 @@ tools = {
 }
 
 # render the toolbars
-render(domonic.loads("templates/toolbar.pyml", tools=tools, APPNAME=APPNAME, Input=Input), "toolbar.html")
+render(
+    domonic.loads("templates/toolbar.pyml", tools=tools, APPNAME=APPNAME, Input=Input),
+    "toolbar.html",
+)
 
 # render a panel
 render(domonic.loads("templates/panel.pyml", somedata={}, APPNAME=APPNAME), "panel.html")
@@ -69,7 +72,7 @@ try:
     import os
     import webbrowser
 
-    webbrowser.open("file://" + os.path.realpath(".") + "/index.html")
-except Exception as e:
+    output_path = os.path.realpath("index.html")
+    webbrowser.open("file://" + output_path)
+except Exception:
     print("view index.html in the browser")
-    pass

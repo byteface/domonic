@@ -32,14 +32,15 @@ mycalc = html(head(classless_css, jquery, code), body(calc))
 
 render(f"{mycalc}", "calc.html")
 
+output_path = "calc.html"
 try:
     import os
     import webbrowser
 
-    webbrowser.open("file://" + os.path.realpath(".") + "/calc.html")
-except Exception as e:
-    print("view calc.html in the browser")
-    pass
+    output_path = os.path.realpath("calc.html")
+    webbrowser.open("file://" + output_path)
+except Exception:
+    print(f"view {output_path} in the browser")
 
 # To serve the generated file instead, run: python3 -m http.server
 

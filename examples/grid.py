@@ -67,10 +67,18 @@ _scripts = script(
 
 class World:
     def __init__(self, request, *args, **kwargs):
-        pass
+        self.request = request
+        self.rows = kwargs.get("rows", ROWS)
+        self.cols = kwargs.get("cols", COLS)
 
     def __str__(self):
-        return str(div(_materials, _scripts, _grid))
+        grid = _grid
+        if self.rows != ROWS or self.cols != COLS:
+            grid = div(
+                *[row(*[cell("d") for _ in range(self.cols)]) for _ in range(self.rows)],
+                _class="container-fluid",
+            )
+        return str(div(_materials, _scripts, grid))
 
 
 @app.get("/")

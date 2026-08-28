@@ -136,9 +136,9 @@ for SITE in sites:
     for l in links:
         try:
             print(l.href)
-        except Exception as e:
+        except Exception:
             # no href on this tag
-            pass
+            continue
     # print( type(page) )
     break
     # return
