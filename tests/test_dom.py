@@ -464,17 +464,6 @@ class DOMTest(unittest.TestCase):
             == "<ol><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>"
         )
 
-        # TODO - tests
-        # compareDocumentPosition()
-        # getRootNode()
-        # isDefaultNamespace()
-        # lookupNamespaceURI()
-        # lookupPrefix()
-        # normalize()
-        # def isSupported(self): return False #  🗑
-        # getUserData() 🗑️
-        # setUserData() 🗑️
-
     def test_node(self):
         sometag = div("asdfasdf", div(), div("yo"), _id="test", _thingy="test22")
         somenewdiv = div("im new")
@@ -3844,6 +3833,7 @@ class DOMTest(unittest.TestCase):
         assert birds[1].matches("li.endangered")
         assert birds[1].matches(".safe, .endangered")
         assert birds[1].closest("ul") is content
+        assert content.closest("li") is None
 
     def test_matches_requires_all_class_tokens(self):
         partial = li("partial", _class="foo")
@@ -4224,6 +4214,9 @@ class NodeTest(unittest.TestCase):
         one = Document.createElement("one")
         two = Document.createElement("two")
         assert node.firstChild is None, f'"{node.firstChild}" != None'
+        text_parent = Document.createElement("node")
+        text_parent.append("lead")
+        assert text_parent.firstChild == "lead"
         node.append(one)
         assert node.firstChild is one, f'"{node.firstChild}" != "{one}"'
         # node.insert(0, two)

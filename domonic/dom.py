@@ -1498,7 +1498,7 @@ class Node(EventTarget):
     def firstChild(self) -> Node | None:
         """Returns the first child node of an element"""
         try:
-            return self.args[0]  # TODO - check if this means includes content
+            return self.args[0]
         except Exception:
             return None
 
@@ -3565,7 +3565,7 @@ class Element(Node):
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
     def closest(self, s: str):
         el = self
-        while el != None and el.nodeType == 1:  # TODO - nodeType
+        while el is not None and getattr(el, "nodeType", None) == Node.ELEMENT_NODE:
             if Element.matches(el, s):
                 return el
             el = el.parentElement or el.parentNode
