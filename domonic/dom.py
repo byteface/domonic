@@ -4823,8 +4823,7 @@ for _property_name, _attribute_name, _is_multiple in _ARIA_REFLECTED_ELEMENT_ATT
 
 class DOMImplementation:
     def __init__(self):
-        # self.__domImplementation = None
-        pass
+        self._features = {}
 
     def createDocument(self, namespaceURI: str, qualifiedName: str, doctype: str):
         if namespaceURI is None:
@@ -4872,6 +4871,14 @@ class DOMImplementation:
         return doc
 
     def hasFeatures(self, featureList) -> bool:
+        return True
+
+    def hasFeature(self, feature=None, version=None) -> bool:
+        """Return whether a DOM feature is supported.
+
+        Modern DOM implementations keep this method for compatibility and
+        report support for all feature strings.
+        """
         return True
 
 
@@ -6846,16 +6853,16 @@ class Text(CharacterData):
         tail = current[offset:]
         self.args = (head,)
         sibling = Text(tail)
-        sibling.parentNode = self.parentNode
         if self.parentNode is not None and hasattr(self.parentNode, "args"):
             siblings = list(self.parentNode.args)
             try:
                 index = siblings.index(self)
+                sibling.parentNode = self.parentNode
                 siblings.insert(index + 1, sibling)
                 self.parentNode.args = tuple(siblings)
                 self.parentNode._update_parents()
             except ValueError:
-                pass
+                sibling.parentNode = None
         return sibling
 
     @property
@@ -7974,7 +7981,7 @@ class NodeIterator:
     def detach(self) -> None:
         # This operation is a no-op. It doesn't do anything.
         # Previously it was telling the engine that the NodeIterator was no more used, but this is now useless.
-        pass
+        return None
 
     def previousNode(self) -> Node | None:
         """Returns the previous Node in the document, or null if there are none."""

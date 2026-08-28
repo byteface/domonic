@@ -742,7 +742,7 @@ class DOMTest(unittest.TestCase):
         assert result.ownerDocument == dom1
         result.remove()
         assert "asdfasdf" not in str(dom1)
-        pass
+        self.assertIsNone(result.parentNode)
 
     # def test_getElementByClassName(self):
     #     dom1 = html(div(div(div(div(div(div(div(div("asdfasdf", div(), div("yo"), _class="test this thing")))))))))
@@ -773,7 +773,7 @@ class DOMTest(unittest.TestCase):
         assert len(wrapper.childNodes) == 1
         # print(wrapper)
         assert str(wrapper) == "<div>Part 1 Part 2 Part 3</div>"
-        pass
+        self.assertEqual(wrapper.textContent, "Part 1 Part 2 Part 3")
 
     # def test_Node():
     # TODO - tests all below
@@ -1151,9 +1151,19 @@ class DOMTest(unittest.TestCase):
     def test_domonic_window_console_log(self):
         # note originally dom had everything from document
         # this will likely move later versions
+        from unittest.mock import patch
 
-        # window = Window()
-        pass
+        from domonic.dom import console as legacy_console
+        from domonic.webapi.console import Console
+        from domonic.window import Window as BrowserWindow
+
+        win = BrowserWindow()
+        self.assertIsInstance(win.console, Console)
+
+        with patch("builtins.print") as print_mock:
+            self.assertEqual(win.console.log("test this"), "test this")
+        self.assertEqual(print_mock.call_args.args, ("test this",))
+        self.assertIs(legacy_console, Console)
 
     def test_element_geometry_helpers(self):
         el = div("x")
@@ -1264,6 +1274,7 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(doc.querySelector("title").textContent, "hello")
         self.assertEqual(doc.body.tagName, "body")
         self.assertTrue(impl.hasFeatures(None))
+        self.assertTrue(impl.hasFeature("XML", "1.0"))
 
     def test_domimplementation_create_document_and_doctype(self):
         impl = DOMImplementation()
@@ -2193,6 +2204,8 @@ class DOMTest(unittest.TestCase):
         self.assertIn("div", seen)
         self.assertIn("span", seen)
         self.assertIn("p", seen)
+        self.assertIsNone(iterator.detach())
+        self.assertEqual(iterator.nextNode(), None)
 
     def test_treewalker_and_nodeiterator_coerce_what_to_show(self):
         root = div("alpha", span("beta"))
@@ -3022,7 +3035,17 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(text.data, "he")
         self.assertEqual(sibling.data, "llo")
         self.assertEqual(node.childNodes[1], sibling)
+        self.assertIs(sibling.parentNode, node)
         self.assertIsNone(text.firstChild)
+
+        orphan_parent = div()
+        orphan = Text("orphan")
+        orphan.parentNode = orphan_parent
+        orphan_sibling = orphan.splitText(2)
+        self.assertEqual(orphan.data, "or")
+        self.assertEqual(orphan_sibling.data, "phan")
+        self.assertIsNone(orphan_sibling.parentNode)
+        self.assertNotIn(orphan_sibling, list(orphan_parent.childNodes))
 
         page = Document()
         self.assertEqual(page.URL, "")
