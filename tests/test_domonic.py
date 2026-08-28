@@ -7,6 +7,7 @@ domonic core tests for __init__.py at the root of the domonic package
 
 """
 
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -26,9 +27,14 @@ class TestCase(unittest.TestCase):
         _debug_print("test_load:::", t1, type(t1))
 
     def test_loads(self):
-        # t1 = domonic.loads('<html></html>')
-        # print(t1)
-        pass
+        with tempfile.NamedTemporaryFile("w+", suffix=".pyml") as template:
+            template.write('div("Hello", _id="loaded")')
+            template.flush()
+
+            result = domonic.loads(template.name)
+
+        self.assertEqual(str(result), '<div id="loaded">Hello</div>')
+        self.assertEqual(result.getAttribute("id"), "loaded")
 
     def parse(self):
         t1 = domonic.parse("<html></html>")

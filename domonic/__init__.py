@@ -28,15 +28,17 @@ except ImportError:  # pragma: no cover - optional dependency chain
 
 try:
     from domonic.javascript import *
+    _HAS_JAVASCRIPT = True
 except ImportError:  # pragma: no cover - optional dependency chain
-    pass
+    _HAS_JAVASCRIPT = False
 
 try:
     # Keep package-root tag conflicts HTML-first; SVG versions are available from domonic.svg.
     from domonic.svg import *
     from domonic.html import a, audio, canvas, iframe, script, style, video
+    _HAS_SVG = True
 except ImportError:  # pragma: no cover - optional dependency chain
-    pass
+    _HAS_SVG = False
 
 try:
     from domonic.utils import NumberUnit, NumberUtils, Utils
@@ -1214,8 +1216,7 @@ class domonic:
                     if "_" not in line:
                         if "-" in line and "=" in line:
                             # its probably a line with hypened a data-tags
-                            # line = fix_hyphen_tags(line)
-                            pass
+                            line = fix_hyphen_tags(line)
                         else:
                             # its regular text content
                             line = encode_content(line)
