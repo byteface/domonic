@@ -456,39 +456,34 @@ class Object:
             return obj.__class__
         return obj.__proto__
 
-    # @property #TODO - static or prop?
-    # def isExtensible(obj):
-    #     """ Determines if extending of an object is allowed """
-    #     return obj.__extensible
+    @staticmethod
+    def isExtensible(obj: Any) -> bool:
+        """Determines if extending an object is allowed."""
+        if isinstance(obj, Object):
+            return bool(getattr(obj, "_Object__extensible", True))
+        return True
 
-    # @property #TODO - static or prop?
-    # def isSealed(obj):
-    #     """ Determines if an object is sealed """
-    #     return obj.__sealed
+    @staticmethod
+    def isSealed(obj: Any) -> bool:
+        """Determines if an object is sealed."""
+        if isinstance(obj, Object):
+            return bool(getattr(obj, "_Object__sealed", False))
+        return False
 
-    # @property
-    # def preventExtensions(obj):
-    #     """ Prevents any extensions of an object. """
-    #     if isinstance(obj, dict):
-    #         return False
-    #     elif isinstance(obj, Object):
-    #         obj.extensible = False
-    #         return True
-    #     elif isinstance(obj, object):
-    #         return False
-    #     return False
+    @staticmethod
+    def preventExtensions(obj: Any) -> Any:
+        """Prevent new properties from being added to an object."""
+        if isinstance(obj, Object):
+            object.__setattr__(obj, "_Object__extensible", False)
+        return obj
 
-    # @property
-    # def seal(obj):
-    #     """ Prevents other code from deleting properties of an object. """
-    #     if isinstance(obj, dict):
-    #         return False
-    #     elif isinstance(obj, Object):
-    #         obj.sealed = True
-    #         return True
-    #     elif isinstance(obj, object):
-    #         return False
-    #     return False
+    @staticmethod
+    def seal(obj: Any) -> Any:
+        """Prevent extensions and deletion of an object's existing properties."""
+        if isinstance(obj, Object):
+            object.__setattr__(obj, "_Object__extensible", False)
+            object.__setattr__(obj, "_Object__sealed", True)
+        return obj
 
     # @property
     # def setPrototypeOf(obj, prototype):
@@ -502,15 +497,27 @@ class Object:
     #         return False
     #     return False
 
-    @property  # TODO - static or prop?
-    def isFrozen(self, obj: Any) -> bool:
+    @staticmethod
+    def isFrozen(obj: Any) -> bool:
         """Determines if an object was frozen."""
-        return self.__isFrozen
+        if isinstance(obj, Object):
+            return bool(getattr(obj, "_Object__frozen", False))
+        return bool(getattr(obj, "__isFrozen", False))
 
-    @staticmethod  # TODO - static or prop?
-    def freeze(obj: Any) -> None:
+    @staticmethod
+    def freeze(obj: Any) -> Any:
         """Freezes an object. Other code cannot delete or change its properties."""
-        obj.__isFrozen = True
+        if isinstance(obj, Object):
+            object.__setattr__(obj, "_Object__extensible", False)
+            object.__setattr__(obj, "_Object__sealed", True)
+            object.__setattr__(obj, "_Object__frozen", True)
+            object.__setattr__(obj, "_Object__isFrozen", True)
+        else:
+            try:
+                setattr(obj, "__isFrozen", True)
+            except Exception:
+                return obj
+        return obj
 
     # def prototype(self, obj):
     #     """
@@ -628,11 +635,26 @@ class Object:
 
     def __setitem__(self, key: str, value: Any) -> None:
         """Sets the value of the specified property."""
-        # self.__dict__[key] = value
-        return self.__dict__.__setitem__(key, value)
+        state = self.__dict__
+        is_internal = isinstance(key, str) and (
+            key.startswith("_Object__") or key == "prototype"
+        )
+        if not is_internal:
+            if state.get("_Object__frozen", False):
+                raise TypeError("Cannot assign to frozen Object")
+            if not state.get("_Object__extensible", True) and key not in state:
+                raise TypeError("Cannot add property to non-extensible Object")
+        return state.__setitem__(key, value)
 
     def __delitem__(self, key: str) -> None:
         """Deletes the specified property."""
+        state = self.__dict__
+        is_internal = isinstance(key, str) and (
+            key.startswith("_Object__") or key == "prototype"
+        )
+        if not is_internal:
+            if state.get("_Object__frozen", False) or state.get("_Object__sealed", False):
+                raise TypeError("Cannot delete property from sealed Object")
         del self.__dict__[key]
 
     def __len__(self) -> int:
@@ -671,6 +693,9 @@ class Object:
         Returns:
             [str]: [the value of the property]
         """
+        if name == "__dict__":
+            object.__setattr__(self, name, val)
+            return None
         return self.__setitem__(name, val)
 
     def __delattr__(self, name: str) -> None:
@@ -682,6 +707,9 @@ class Object:
         Returns:
             [type]: [the value of the property]
         """
+        if name == "__dict__":
+            object.__delattr__(self, name)
+            return None
         return self.__delitem__(name)
 
     # def __call__(self, *args, **kwargs):
@@ -5365,7 +5393,7 @@ class Reflect:
     @staticmethod
     def preventExtensions(target: Any) -> Any:
         """Similar to Object.preventExtensions(). Returns a Boolean that is true if the update was successful."""
-        Object.freeze(target)
+        Object.preventExtensions(target)
         return True
 
     @staticmethod

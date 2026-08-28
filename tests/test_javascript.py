@@ -163,8 +163,38 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Function(len).toString(), "function len() { [native code] }")
         self.assertEqual(Global.require("math").sqrt(9), 3)
         self.assertIs(getter_holder.valueOf(), getter_holder)
-        Object.freeze(getter_holder)
+        self.assertIs(Object.freeze(getter_holder), getter_holder)
         self.assertTrue(getattr(getter_holder, "_Object__isFrozen"))
+        self.assertTrue(Object.isFrozen(getter_holder))
+        self.assertTrue(Object.isSealed(getter_holder))
+        self.assertFalse(Object.isExtensible(getter_holder))
+        with self.assertRaises(TypeError):
+            getter_holder.new_prop = 1
+        with self.assertRaises(TypeError):
+            getter_holder.greet = "hello"
+        with self.assertRaises(TypeError):
+            del getter_holder.greet
+
+        extensible = Object({"name": "Jane"})
+        self.assertTrue(Object.isExtensible(extensible))
+        self.assertIs(Object.preventExtensions(extensible), extensible)
+        self.assertFalse(Object.isExtensible(extensible))
+        self.assertFalse(Object.isFrozen(extensible))
+        extensible.name = "Janet"
+        self.assertEqual(extensible.name, "Janet")
+        with self.assertRaises(TypeError):
+            extensible.age = 30
+
+        sealed = Object({"name": "Ada"})
+        self.assertIs(Object.seal(sealed), sealed)
+        self.assertTrue(Object.isSealed(sealed))
+        self.assertFalse(Object.isFrozen(sealed))
+        sealed.name = "Grace"
+        self.assertEqual(sealed.name, "Grace")
+        with self.assertRaises(TypeError):
+            sealed.extra = True
+        with self.assertRaises(TypeError):
+            del sealed.name
 
         # class Car(Object):
         #     def __init__(self, make, model, year):
@@ -1909,6 +1939,8 @@ class TestCase(unittest.TestCase):
         self.assertTrue(Reflect.setPrototypeOf(obj, Object))
         self.assertEqual(Reflect.getPrototypeOf(obj), Object)
         self.assertTrue(Reflect.preventExtensions(obj))
+        self.assertFalse(Object.isExtensible(obj))
+        self.assertFalse(Object.isFrozen(obj))
 
     def test_symbol(self):
         symbol = Symbol("token")
