@@ -119,7 +119,8 @@ class Console:
             elif token == "c":
                 # Browser consoles consume CSS style arguments without rendering
                 # them in the text stream.
-                pass
+                index += 2
+                continue
             index += 2
 
         if rest_index < len(rest):

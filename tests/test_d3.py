@@ -149,13 +149,54 @@ class TestCase(unittest.TestCase):
 
     def test_d3_path(self):
 
-        from domonic.d3.path import Path
+        from domonic.d3.path import Path, pi
 
         p = Path()
         p.moveTo(1, 2)
         p.lineTo(3, 4)
         p.closePath()
+        self.assertEqual(str(p), "M1,2L3,4Z")
         _debug_print(p)
+
+        p = Path()
+        p.arcTo(1, 2, 3, 4, 5)
+        self.assertEqual(str(p), "M1,2")
+
+        p = Path()
+        p.moveTo(0, 0)
+        p.arcTo(0, 0, 10, 10, 5)
+        self.assertEqual(str(p), "M0,0")
+
+        p = Path()
+        p.moveTo(0, 0)
+        p.arcTo(10, 0, 20, 0, 5)
+        self.assertEqual(str(p), "M0,0L10,0")
+
+        p = Path()
+        p.moveTo(0, 0)
+        p.arcTo(10, 0, 10, 10, 5)
+        self.assertEqual(str(p), "M0,0L5,0A5,5,0,0,1,10,5")
+
+        p = Path()
+        p.arc(0, 0, 10, 0, pi / 2, False)
+        self.assertEqual(str(p), "M10,0A10,10,0,0,1,0,10")
+
+        p = Path()
+        p.arc(0, 0, 10, 0, pi / 2, True)
+        self.assertEqual(str(p), "M10,0A10,10,0,1,0,0,10")
+
+        p = Path()
+        p.arc(0, 0, 10, 0, 2 * pi, False)
+        self.assertEqual(str(p), "M10,0A10,10,0,1,1,-10,0A10,10,0,1,1,10,0")
+
+        p = Path()
+        p.rect(1, 2, 3, 4)
+        self.assertEqual(str(p), "M1,2h3v4h-3Z")
+
+        with self.assertRaisesRegex(Exception, "negative radius"):
+            Path().arc(0, 0, -1, 0, pi, False)
+        with self.assertRaisesRegex(Exception, "negative radius"):
+            Path().arcTo(0, 0, 1, 1, -1)
 
         from domonic.svg import path
 
