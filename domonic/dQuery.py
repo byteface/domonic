@@ -125,7 +125,7 @@ class EventHandler:
                 return registered
         return None
 
-    def unbindEvent(self, event=None, targetElement=None, callback=None):
+    def unbindEvent(self, event=None, targetElement=None, callback=None, selector=_UNSET):
         """[unbinds an event]
 
         Args:
@@ -149,11 +149,18 @@ class EventHandler:
                 registered["event"],
                 registered["original"],
             )
+            selector_matches = selector is _UNSET or registered["selector"] == selector
             target_matches = (
                 targetElement is None or registered["target"] == targetElement
             )
 
-            if type_matches and namespace_matches and callback_matches and target_matches:
+            if (
+                type_matches
+                and namespace_matches
+                and callback_matches
+                and selector_matches
+                and target_matches
+            ):
                 registered["target"].removeEventListener(
                     registered["_type"], registered["event"]
                 )
@@ -566,9 +573,47 @@ class dQuery_el:
         """Add the previous set of elements on the stack to the current set."""
         return self.addBack(None)
 
-    def animate(self):
+    @staticmethod
+    def _effect_args(duration=None, easing=None, complete=None):
+        if isinstance(duration, dict):
+            options = duration
+            duration = options.get("duration")
+            easing = options.get("easing", easing)
+            complete = options.get("complete", complete)
+        if callable(duration) and easing is None and complete is None:
+            complete = duration
+            duration = None
+        elif callable(easing) and complete is None:
+            complete = easing
+            easing = None
+        return duration, easing, complete
+
+    def _run_effect_complete(self, callback):
+        if callback is None:
+            return
+        for index, el in enumerate(self._ensure_list()):
+            self._call_with_fallback(callback, (el, index), (el,), ())
+
+    def animate(self, properties=None, duration=None, easing=None, complete=None):
         """Perform a custom animation of a set of CSS properties."""
-        raise NotImplementedError
+        duration, easing, complete = self._effect_args(duration, easing, complete)
+        properties = {} if properties is None else properties
+        if not isinstance(properties, dict):
+            raise TypeError("animate() expects a mapping of CSS properties")
+        for el in self._ensure_list():
+            for key, value in properties.items():
+                el.style.setProperty(key, value)
+            setattr(
+                el,
+                "_dquery_animation",
+                {
+                    "properties": dict(properties),
+                    "duration": duration,
+                    "easing": easing,
+                },
+            )
+        self._run_effect_complete(complete)
+        return self
 
     def append(self, html):
         """Insert content, specified by the parameter, to the end of each element in the set of matched elements."""
@@ -792,9 +837,11 @@ class dQuery_el:
         self.elements = detached
         return self
 
-    def die(self):
+    def die(self, event=None, handler=None):
         """Remove event handlers previously attached using .live from the elements."""
-        return self.unbind()
+        if isinstance(self.q, str) and self.q:
+            self.eventHandler.unbindEvent(event, self.dom, handler, selector=self.q)
+        return self.off(event, handler)
 
     def each(self, func):
         """Iterate over a dQuery object, executing a function for each matched element."""
@@ -840,21 +887,65 @@ class dQuery_el:
         ]
         return self
 
-    def fadeIn(self):
+    def fadeIn(self, duration=None, complete=None):
         """Display the matched elements by fading them to opaque."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            el.style.removeProperty("display")
+            el.style.setProperty("opacity", 1)
+            setattr(el, "_dquery_animation", {"effect": "fadeIn", "duration": duration})
+        self._run_effect_complete(complete)
+        return self
 
-    def fadeOut(self):
+    def fadeOut(self, duration=None, complete=None):
         """Hide the matched elements by fading them to transparent."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            el.style.setProperty("opacity", 0)
+            el.style.setProperty("display", "none")
+            setattr(el, "_dquery_animation", {"effect": "fadeOut", "duration": duration})
+        self._run_effect_complete(complete)
+        return self
 
-    def fadeTo(self):
+    def fadeTo(self, duration=None, opacity=None, complete=None):
         """Adjust the opacity of the matched elements."""
-        raise NotImplementedError
+        if callable(opacity) and complete is None:
+            complete = opacity
+            opacity = None
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        if opacity is None:
+            opacity = 1
+        for el in self._ensure_list():
+            el.style.setProperty("opacity", opacity)
+            setattr(
+                el,
+                "_dquery_animation",
+                {"effect": "fadeTo", "duration": duration, "opacity": opacity},
+            )
+        self._run_effect_complete(complete)
+        return self
 
-    def fadeToggle(self):
+    def fadeToggle(self, duration=None, complete=None):
         """Display or hide the matched elements by animating their opacity."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            hidden = (
+                el.style.getPropertyValue("display") == "none"
+                or str(el.style.getPropertyValue("opacity")) == "0"
+            )
+            if hidden:
+                el.style.removeProperty("display")
+                el.style.setProperty("opacity", 1)
+            else:
+                el.style.setProperty("opacity", 0)
+                el.style.setProperty("display", "none")
+            setattr(
+                el,
+                "_dquery_animation",
+                {"effect": "fadeToggle", "duration": duration},
+            )
+        self._run_effect_complete(complete)
+        return self
 
     def filter(self, selector):
         """Reduce the set of matched elements to those that match the selector or pass the function’s test."""
@@ -885,7 +976,14 @@ class dQuery_el:
     def finish(self):
         """Stop the currently-running animation, remove all queued animations, and complete all animations
         for the matched elements."""
-        raise NotImplementedError
+        for el in self._ensure_list():
+            queue = getattr(el, "_dquery_queue", [])
+            for item in queue:
+                if callable(item):
+                    item()
+            setattr(el, "_dquery_queue", [])
+            setattr(el, "_dquery_animation", None)
+        return self
 
     def first(self):
         """Reduce the set of matched elements to the first in the set."""
@@ -1073,9 +1171,17 @@ class dQuery_el:
         """The number of elements in the dQuery object."""
         return len(self._coerce_nodes(self.elements)) if self.elements is not None else 0
 
-    def live(self):
+    def live(self, event, handler=None):
         """Attach an event handler for all elements which match the current selector, now and in the future."""
-        raise NotImplementedError
+        if handler is None or not isinstance(self.q, str) or not self.q:
+            return self
+        original_elements = self.elements
+        self.elements = [self.dom]
+        try:
+            self.on(event, self.q, handler)
+        finally:
+            self.elements = original_elements
+        return self
 
     def load(self, url, data=None, complete=None):
         """Load data from the server and place the returned HTML into the matched elements."""
@@ -1729,21 +1835,49 @@ class dQuery_el:
         dq.elements = self._ensure_list()[start:end]
         return dq
 
-    def slideDown(self):
+    def slideDown(self, duration=None, complete=None):
         """Display the matched elements with a sliding motion."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            el.style.removeProperty("display")
+            setattr(el, "_dquery_animation", {"effect": "slideDown", "duration": duration})
+        self._run_effect_complete(complete)
+        return self
 
-    def slideToggle(self):
+    def slideToggle(self, duration=None, complete=None):
         """Display or hide the matched elements with a sliding motion."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            if el.style.getPropertyValue("display") == "none":
+                el.style.removeProperty("display")
+            else:
+                el.style.setProperty("display", "none")
+            setattr(
+                el,
+                "_dquery_animation",
+                {"effect": "slideToggle", "duration": duration},
+            )
+        self._run_effect_complete(complete)
+        return self
 
-    def slideUp(self):
+    def slideUp(self, duration=None, complete=None):
         """Hide the matched elements with a sliding motion."""
-        raise NotImplementedError
+        duration, _easing, complete = self._effect_args(duration, None, complete)
+        for el in self._ensure_list():
+            el.style.setProperty("display", "none")
+            setattr(el, "_dquery_animation", {"effect": "slideUp", "duration": duration})
+        self._run_effect_complete(complete)
+        return self
 
-    def stop(self):
+    def stop(self, clearQueue=False, jumpToEnd=False):
         """Stop the currently-running animation on the matched elements."""
-        raise NotImplementedError
+        for el in self._ensure_list():
+            setattr(el, "_dquery_stopped", True)
+            if clearQueue:
+                setattr(el, "_dquery_queue", [])
+            if jumpToEnd:
+                setattr(el, "_dquery_animation", None)
+        return self
 
     def submit(self, handler=None):
         """Bind an event handler to the “submit” JavaScript event, or trigger that event on an element."""
@@ -1811,10 +1945,29 @@ class dQuery_el:
                     self.eventHandler.unbindEvent(event_name, el)
         return self
 
-    def undelegate(self):
+    def undelegate(self, selector=None, event=None, handler=None):
         """Remove a handler from the event for all elements which match the current selector,
         based upon a specific set of root elements."""
-        raise NotImplementedError
+        if callable(event) and handler is None:
+            handler = event
+            event = None
+        if callable(selector) and handler is None:
+            handler = selector
+            selector = None
+        for el in self._ensure_list():
+            if selector is None:
+                delegated_selectors = {
+                    registered["selector"]
+                    for registered in getattr(el, "_dquery_events", [])
+                    if registered.get("selector") is not None
+                }
+                for delegated_selector in delegated_selectors:
+                    self.eventHandler.unbindEvent(
+                        event, el, handler, selector=delegated_selector
+                    )
+            else:
+                self.eventHandler.unbindEvent(event, el, handler, selector=selector)
+        return self
 
     def unload(self, handler=None):
         """Bind an event handler to the “unload” JavaScript event."""

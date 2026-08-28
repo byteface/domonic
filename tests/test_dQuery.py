@@ -279,7 +279,34 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(selected), "<li>b</li><li>a</li>")
 
     def test_animate(self):
-        pass
+        box = º('<div id="box"></div>')
+        calls = []
+
+        self.assertIs(
+            box.animate(
+                {"width": "20px", "opacity": 0.5},
+                {
+                    "duration": 100,
+                    "easing": "linear",
+                    "complete": lambda el, index: calls.append((el.id, index)),
+                },
+            ),
+            box,
+        )
+        self.assertEqual(box.css("width"), "20px")
+        self.assertEqual(box.css("opacity"), "0.5")
+        self.assertEqual(calls, [("box", 0)])
+        self.assertEqual(
+            box[0]._dquery_animation,
+            {
+                "properties": {"width": "20px", "opacity": 0.5},
+                "duration": 100,
+                "easing": "linear",
+            },
+        )
+
+        with self.assertRaises(TypeError):
+            box.animate("width:20px")
 
     def test_append(self):
         d = º('<div></div>').append("some text")
@@ -393,10 +420,23 @@ class TestCase(unittest.TestCase):
         self._assert_simple_event("dblclick")
 
     def test_delay(self):
-        pass
+        el = º('<div id="test"></div>')
+        self.assertIs(el.delay(50), el)
+        self.assertEqual(el.queue(), [("delay", 50)])
 
     def test_delegate(self):
-        pass
+        page = html(body(div(button("go", _class="child", _id="btn"), _id="root")))
+        º(page)
+        calls = []
+
+        º("#root").delegate(
+            ".child",
+            "click",
+            lambda event: calls.append((event.currentTarget.id, event.delegateTarget.id)),
+        )
+        º("#btn").click()
+
+        self.assertEqual(calls, [("btn", "root")])
 
     def test_dequeue(self):
         el = º('<div id="test"></div>')
@@ -419,7 +459,19 @@ class TestCase(unittest.TestCase):
         self.assertIsNone(detached[0].parentNode)
 
     def test_die(self):
-        pass
+        page = html(body(div(_id="existing", _class="live")))
+        º(page)
+        calls = []
+
+        live = º(".live")
+        live.live("click", lambda event: calls.append(event.target.id))
+        page.body.appendChild(div(_id="future", _class="live"))
+
+        º("#future").click()
+        live.die("click")
+        º("#future").click()
+
+        self.assertEqual(calls, ["future"])
 
     def test_each(self):
         things = º("<li>a</li><li>b</li>")
@@ -451,16 +503,39 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(things.even()), "<li>a</li><li>c</li>")
 
     def test_fadeIn(self):
-        pass
+        box = º('<div id="box"></div>').css("display", "none").css("opacity", 0)
+        calls = []
+
+        self.assertIs(box.fadeIn(lambda el: calls.append(el.id)), box)
+
+        self.assertEqual(box.css("display"), "")
+        self.assertEqual(box.css("opacity"), "1")
+        self.assertEqual(calls, ["box"])
 
     def test_fadeOut(self):
-        pass
+        box = º('<div id="box"></div>')
+
+        self.assertIs(box.fadeOut(), box)
+
+        self.assertEqual(box.css("display"), "none")
+        self.assertEqual(box.css("opacity"), "0")
 
     def test_fadeTo(self):
-        pass
+        box = º('<div id="box"></div>')
+
+        self.assertIs(box.fadeTo(100, 0.25), box)
+
+        self.assertEqual(box.css("opacity"), "0.25")
 
     def test_fadeToggle(self):
-        pass
+        box = º('<div id="box"></div>')
+
+        box.fadeToggle()
+        self.assertEqual(box.css("display"), "none")
+        self.assertEqual(box.css("opacity"), "0")
+        box.fadeToggle()
+        self.assertEqual(box.css("display"), "")
+        self.assertEqual(box.css("opacity"), "1")
 
     def test_filter(self):
         things = º('<li class="keep"></li><li></li><li class="keep"></li>')
@@ -472,7 +547,16 @@ class TestCase(unittest.TestCase):
         assert str(º("#test").find("span")) == "<span>a</span>"
 
     def test_finish(self):
-        pass
+        box = º('<div id="box"></div>')
+        calls = []
+        box.queue(lambda: calls.append("one")).delay(10).queue(
+            lambda: calls.append("two")
+        )
+
+        self.assertIs(box.finish(), box)
+
+        self.assertEqual(calls, ["one", "two"])
+        self.assertEqual(box.queue(), [])
 
     def test_first(self):
         things = º("<li>a</li><li>b</li>")
@@ -640,7 +724,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(º("<li>a</li><li>b</li>").length, 2)
 
     def test_live(self):
-        pass
+        page = html(body(div(_id="first", _class="live")))
+        º(page)
+        calls = []
+
+        live = º(".live")
+        live.live("click", lambda event: calls.append(event.target.id))
+        page.body.appendChild(div(_id="second", _class="live"))
+
+        º("#first").click()
+        º("#second").click()
+
+        self.assertEqual(calls, ["first", "second"])
 
     def test_load(self):
         with self._ajax_handlers_isolated():
@@ -705,9 +800,6 @@ class TestCase(unittest.TestCase):
         things = º("<li>a</li><li>b</li><li>c</li><li>d</li>")
         self.assertEqual(str(things.odd()), "<li>b</li><li>d</li>")
 
-    def off(self, event):
-        pass
-
     def test_offset(self):
         el = º('<div id="test"></div>')
         el.offset({"top": "12px", "left": "5px"})
@@ -717,9 +809,6 @@ class TestCase(unittest.TestCase):
         page = html(body(div(span("x", _id="child"), _id="parent")))
         º(page)
         assert º("#child").offsetParent().getAttribute("id") == "parent"
-
-    def on(self, event, callback):
-        pass
 
     def test_on_multiple_handlers_namespaces_and_off_callback(self):
         page = html(body(button("go", _id="btn")))
@@ -819,9 +908,6 @@ class TestCase(unittest.TestCase):
         el = º('<div id="test"></div>')
         el.offset({"top": "3px", "left": "7px"})
         assert el.position() == {"top": 3, "left": 7}
-
-    def prepend(self, html):
-        pass
 
     def test_prependTo(self):
         page = html(body(div(span("tail"), _id="target")))
@@ -1006,16 +1092,37 @@ class TestCase(unittest.TestCase):
         assert str(things.slice(1, 3)) == "<li>b</li><li>c</li>"
 
     def test_slideDown(self):
-        pass
+        box = º('<div id="box"></div>').hide()
+        calls = []
+
+        self.assertIs(box.slideDown(lambda el: calls.append(el.id)), box)
+
+        self.assertEqual(box.css("display"), "")
+        self.assertEqual(calls, ["box"])
 
     def test_slideToggle(self):
-        pass
+        box = º('<div id="box"></div>')
+
+        box.slideToggle()
+        self.assertEqual(box.css("display"), "none")
+        box.slideToggle()
+        self.assertEqual(box.css("display"), "")
 
     def test_slideUp(self):
-        pass
+        box = º('<div id="box"></div>')
+
+        self.assertIs(box.slideUp(), box)
+
+        self.assertEqual(box.css("display"), "none")
 
     def test_stop(self):
-        pass
+        box = º('<div id="box"></div>').delay(10)
+
+        self.assertIs(box.stop(clearQueue=True, jumpToEnd=True), box)
+
+        self.assertTrue(box[0]._dquery_stopped)
+        self.assertEqual(box.queue(), [])
+        self.assertIsNone(box[0]._dquery_animation)
 
     def test_submit(self):
         page = html(body(form(input(_name="x"), _id="form1")))
@@ -1089,7 +1196,20 @@ class TestCase(unittest.TestCase):
         assert called == []
 
     def test_undelegate(self):
-        pass
+        page = html(body(div(button("go", _class="child", _id="btn"), _id="root")))
+        º(page)
+        calls = []
+
+        def handler(event):
+            calls.append(event.target.id)
+
+        root = º("#root")
+        root.delegate(".child", "click", handler)
+        º("#btn").click()
+        root.undelegate(".child", "click", handler)
+        º("#btn").click()
+
+        self.assertEqual(calls, ["btn"])
 
     def test_unload(self):
         page = html(body(div("x", _id="test")))
