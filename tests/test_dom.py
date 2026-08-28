@@ -4998,6 +4998,31 @@ class TestDocumentType(unittest.TestCase):
     def test_html(self):
         self.assertEqual(str(self.dtype), "<!DOCTYPE html>")
 
+    def test_internal_subset(self):
+        self.assertIsNone(self.dtype.internalSubset)
+        self.dtype.internalSubset = "<!ELEMENT html ANY>"
+        self.assertEqual(self.dtype.internalSubset, "<!ELEMENT html ANY>")
+
+    def test_dtd_collections(self):
+        dtype = DocumentType("root")
+        entity = Entity("writer", publicId="pub", systemId="sys")
+        notation = Notation("png", systemId="image/png")
+
+        dtype.entities._seq.append(entity)
+        dtype.notations._seq.append(notation)
+
+        self.assertEqual(dtype.entities.length, 1)
+        self.assertIs(dtype.entities.item(0), entity)
+        self.assertIs(dtype.entities.getNamedItem("writer"), entity)
+        self.assertEqual(entity.nodeType, Node.ENTITY_NODE)
+        self.assertEqual(entity.nodeName, "writer")
+
+        self.assertEqual(dtype.notations.length, 1)
+        self.assertIs(dtype.notations.item(0), notation)
+        self.assertIs(dtype.notations.getNamedItem("png"), notation)
+        self.assertEqual(notation.nodeType, Node.NOTATION_NODE)
+        self.assertEqual(notation.nodeName, "png")
+
 
 class TestNodeList(unittest.TestCase):
     def setUp(self):

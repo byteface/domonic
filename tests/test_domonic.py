@@ -118,6 +118,25 @@ _id="one", _class="two",
         self.assertIsNotNone(page)
         self.assertEqual(page.querySelector("span").text, "Hello")
 
+    def test_parse_string_with_expat_doctype_entities_and_notations(self):
+        page = domonic.parseString(
+            '<!DOCTYPE root [<!ELEMENT root (#PCDATA)><!ENTITY writer "Ada">'
+            '<!NOTATION png SYSTEM "image/png">]><root>&writer;</root>',
+            parser="expat",
+        )
+        root = page.querySelector("root")
+
+        self.assertIs(page.documentElement, root)
+        self.assertEqual(root.text, "Ada")
+        self.assertEqual(page.doctype.name, "root")
+        self.assertIn('<!ENTITY writer "Ada">', page.doctype.internalSubset)
+        self.assertEqual(page.doctype.entities.length, 1)
+        self.assertEqual(page.doctype.entities.item(0).nodeName, "writer")
+        self.assertEqual(str(page.doctype.entities.item(0)), "Ada")
+        self.assertEqual(page.doctype.notations.length, 1)
+        self.assertEqual(page.doctype.notations.item(0).nodeName, "png")
+        self.assertEqual(page.doctype.notations.item(0).systemId, "image/png")
+
     def test_parse_string_rejects_unknown_parser(self):
         with self.assertRaises(ValueError):
             domonic.parseString("<div></div>", parser="nope")

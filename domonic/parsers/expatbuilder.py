@@ -179,8 +179,10 @@ class ExpatBuilder:
     def reset(self):
         """Free all data structures used during DOM construction."""
         self.document = theDOMImplementation.createDocument(EMPTY_NAMESPACE, None, None)
+        self.document.documentElement = None
         self.curNode = self.document
-        self._elem_info = None  # self.document._elem_info
+        self.document._elem_info = {}
+        self._elem_info = self.document._elem_info
         self._cdata = False
 
     def install(self, parser):
@@ -206,6 +208,12 @@ class ExpatBuilder:
         parser.ElementDeclHandler = self.element_decl_handler
         parser.AttlistDeclHandler = self.attlist_decl_handler
 
+    def _finish_parse(self):
+        doc = self.document
+        self.reset()
+        self._parser = None
+        return doc
+
     def parseFile(self, file):
         """Parse a document from a file object, returning the document
         node."""
@@ -222,11 +230,8 @@ class ExpatBuilder:
                 first_buffer = False
             parser.Parse(b"", True)
         except ParseEscape:
-            pass
-        doc = self.document
-        self.reset()
-        self._parser = None
-        return doc
+            return self._finish_parse()
+        return self._finish_parse()
 
     def parseString(self, string):
         """Parse a document from a string, returning the document node."""
@@ -235,12 +240,8 @@ class ExpatBuilder:
             parser.Parse(string, True)
             self._setup_subset(string)
         except ParseEscape:
-            pass
-        doc = self.document
-        # print( 'WHATS UP DOC>>>>>>>>>>>>>>>>>>>>>>', doc, type(doc) )
-        self.reset()
-        self._parser = None
-        return doc
+            return self._finish_parse()
+        return self._finish_parse()
 
     def _setup_subset(self, buffer):
         """Load the internal subset if there might be one."""
@@ -248,8 +249,7 @@ class ExpatBuilder:
             extractor = InternalSubsetExtractor()
             extractor.parseString(buffer)
             subset = extractor.getSubset()
-            # print(subset)
-            # self.document.doctype.internalSubset = subset
+            self.document.doctype.internalSubset = subset
 
     # @check
     def start_doctype_decl_handler(
@@ -406,6 +406,8 @@ class ExpatBuilder:
         node = self.document.createElement(name)
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
+        if self.document.documentElement is None:
+            self.document.documentElement = node
         self.curNode = node
 
         if attributes:
@@ -827,6 +829,8 @@ class Namespaces:
             # return
         else:
             self.curNode.appendChild(node)
+        if self.document.documentElement is None:
+            self.document.documentElement = node
         self.curNode = node
 
         if self._ns_ordered_prefixes:
@@ -963,8 +967,6 @@ class FragmentBuilderNS(Namespaces, FragmentBuilder):
 class ParseEscape(Exception):
     """Exception raised to short-circuit parsing in InternalSubsetExtractor."""
 
-    pass
-
 
 class InternalSubsetExtractor(ExpatBuilder):
     """XML processor which can rip out the internal document type subset."""
@@ -979,13 +981,13 @@ class InternalSubsetExtractor(ExpatBuilder):
         try:
             ExpatBuilder.parseFile(self, file)
         except ParseEscape:
-            pass
+            return None
 
     def parseString(self, string):
         try:
             ExpatBuilder.parseString(self, string)
         except ParseEscape:
-            pass
+            return None
 
     def install(self, parser):
         parser.StartDoctypeDeclHandler = self.start_doctype_decl_handler

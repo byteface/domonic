@@ -1205,7 +1205,7 @@ class Node(EventTarget):
         dtype = ""
         if isinstance(self, Document):
             # dtype = "<!DOCTYPE html>"
-            dtype = self.doctype
+            dtype = str(self.doctype) if self.doctype else ""
 
         # if self is a closed_tag, return the content
         from domonic.html import closed_tag
@@ -2124,6 +2124,15 @@ class NamedNodeMap:
         self.ownerDocument = ownerDocument
         self._attrs = list(args or [])
 
+    @property
+    def _seq(self) -> list[Any]:
+        """Compatibility alias used by the Expat/minidom-style parser."""
+        return self._attrs
+
+    @_seq.setter
+    def _seq(self, value: Iterable[Any] | None) -> None:
+        self._attrs = list(value or [])
+
     def _normalize_name(self, name: str) -> str:
         return name[1:] if isinstance(name, str) and name.startswith("_") else name
 
@@ -2929,7 +2938,14 @@ class ShadowRoot(
 class DocumentType(Node):
 
     nodeType = Node.DOCUMENT_TYPE_NODE
-    __slots__ = ("name", "publicId", "systemId")
+    __slots__ = (
+        "name",
+        "publicId",
+        "systemId",
+        "_internalSubset",
+        "_entities",
+        "_notations",
+    )
 
     def __init__(
         self, name: str = "html", publicId: str = "", systemId: str = ""
@@ -2941,22 +2957,29 @@ class DocumentType(Node):
         self.systemId: str = (
             systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
         )
+        self._internalSubset = None
+        self._entities = NamedNodeMap()
+        self._notations = NamedNodeMap()
         super().__init__()
 
+    @property
     def internalSubset(self):
         """A DOMString of the internal subset, or None. Eg "<!ELEMENT foo (bar)>"."""
-        if self.systemId:
-            return self.systemId
-        else:
-            return None
+        return self._internalSubset
 
+    @internalSubset.setter
+    def internalSubset(self, value: str | None) -> None:
+        self._internalSubset = value
+
+    @property
+    def entities(self) -> NamedNodeMap:
+        """A NamedNodeMap with entities declared in the DTD."""
+        return self._entities
+
+    @property
     def notations(self) -> NamedNodeMap:
         """A NamedNodeMap with notations declared in the DTD."""
-        nnm = NamedNodeMap()
-        for item in self.ownerDocument.args:
-            if item.nodeType == Node.NOTATION_NODE:
-                nnm.append(item)
-        return nnm
+        return self._notations
 
     def __str__(self) -> str:
         # return f"<!DOCTYPE {self.name} {self.publicId} {self.systemId}>"
@@ -4830,8 +4853,6 @@ class DOMImplementation:
             namespaceURI = ""
         if qualifiedName is None:
             qualifiedName = ""
-        if doctype is None:
-            doctype = ""
         d = XMLDocument()
         root = d.createElementNS(namespaceURI, qualifiedName) if qualifiedName else None
         if root is not None:
@@ -6149,6 +6170,26 @@ class Document(Element):
         """Creates an EntityReference node with the specified name"""
         return EntityReference(name)
 
+    def _create_entity(
+        self,
+        name: str,
+        publicId: str | None = None,
+        systemId: str | None = None,
+        notationName: str | None = None,
+    ) -> "Entity":
+        """Create an Entity node for the Expat DTD parser."""
+        node = Entity(name, publicId, systemId, notationName)
+        node.ownerDocument = self
+        return node
+
+    def _create_notation(
+        self, name: str, publicId: str | None = None, systemId: str | None = None
+    ) -> "Notation":
+        """Create a Notation node for the Expat DTD parser."""
+        node = Notation(name, publicId, systemId)
+        node.ownerDocument = self
+        return node
+
     @property
     def xmlversion(self):
         """Returns the version of XML used for the document"""
@@ -6191,8 +6232,12 @@ class Document(Element):
     @property
     def doctype(self):
         """Returns the Document Type Declaration associated with the document"""
-        return "<!DOCTYPE html>"
-        # return self.doctype = value
+        doctype = getattr(self, "_doctype", None)
+        if doctype is not None:
+            return doctype
+        if getattr(self, "contentType", None) == "text/html":
+            return DocumentType("html", "", "")
+        return None
 
     @doctype.setter
     def doctype(self, value):
@@ -6799,8 +6844,31 @@ class EntityReference(Node):
 
 
 class Entity(Node):
-    def __init__(self, *args) -> None:
-        self.args = args
+    """A DTD entity declaration."""
+
+    nodeType = Node.ENTITY_NODE
+    nodeValue = None
+    actualEncoding = None
+    encoding = None
+    version = None
+
+    def __init__(
+        self,
+        name: str = "",
+        publicId: str | None = None,
+        systemId: str | None = None,
+        notationName: str | None = None,
+    ) -> None:
+        self.name = name
+        self.publicId = publicId or ""
+        self.systemId = systemId or ""
+        self.notationName = notationName
+        super().__init__()
+
+    @property
+    def nodeName(self) -> str:
+        """The entity name."""
+        return self.name
 
     def __str__(self) -> str:
         return "".join([str(a) for a in self.args])
@@ -6816,21 +6884,30 @@ class Entity(Node):
         return ord(char)
 
 
-# class Notation(Node):
+class Notation(Node):
+    """A DTD notation declaration."""
 
-#     def __init__(self, *args):
-#         self.args = args
+    nodeType = Node.NOTATION_NODE
+    nodeValue = None
 
-#     def __str__(self):
-#         return ''.join([str(a) for a in self.args])
+    def __init__(
+        self,
+        name: str = "",
+        publicId: str | None = None,
+        systemId: str | None = None,
+    ) -> None:
+        self.name = name
+        self.publicId = publicId or ""
+        self.systemId = systemId or ""
+        super().__init__()
 
-#     def getPublicId(self):
-#         """ Returns the public identifier of the notation. """
-#         return self.args[0]
+    @property
+    def nodeName(self) -> str:
+        """The notation name."""
+        return self.name
 
-#     def getSystemId(self):
-#         """ Returns the system identifier of the notation. """
-#         return self.args[1]
+    def __str__(self) -> str:
+        return self.name
 
 
 class Text(CharacterData):
