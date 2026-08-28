@@ -863,11 +863,12 @@ class Map:
         for each element in the Map object in insertion order."""
         return [(x, self._dict[x]) for x in self._order]
 
-    # def forEach(self, callbackFn[, thisArg]):
-    #     raise NotImplementedError
-    # TODO - is this supposed to pass count like Node list? i.e.
-    # for i in range(len(self.args)):
-    # func(self.args[i], i, self.args)
+    def forEach(
+        self, callbackFn: Callable[[Any, Any, "Map"], Any], thisArg: Any = None
+    ) -> None:
+        """Call callbackFn once for each key/value pair in insertion order."""
+        for key in list(self._order):
+            _invoke_js_callback(callbackFn, self._dict[key], key, self)
 
     def update(self, ordered_dict: Any) -> None:
         for key, value in ordered_dict.items():
@@ -3314,12 +3315,8 @@ class Array:
 
     def forEach(self, func: Callable[[Any], Any]) -> None:
         """Calls a function for each array element"""
-        # written by .ai (https://6b.eleuther.ai/)
-        for value in self.args:
-            func(value)
-        # TODO - is this supposed to pass count like Node list? i.e.
-        # for i in range(len(self.args)):
-        # func(self.args[i], i, self.args)
+        for index, value in enumerate(list(self.args)):
+            _invoke_js_callback(func, value, index, self.args)
 
     def keys(self) -> Iterator[Any]:
         """Returns a Array Iteration Object, containing the keys of the original array"""

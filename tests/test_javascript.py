@@ -772,6 +772,16 @@ class TestCase(unittest.TestCase):
         self.assertEqual(
             Array(["a", "b", "c"]).findIndex(lambda value: value == "b"), 1
         )
+        visited = []
+        myarr = Array(["a", "b"])
+        myarr.forEach(
+            lambda value, index, values: visited.append((value, index, values))
+        )
+        self.assertEqual(visited, [("a", 0, myarr.args), ("b", 1, myarr.args)])
+
+        values = []
+        myarr.forEach(lambda value: values.append(value))
+        self.assertEqual(values, ["a", "b"])
 
     def test_javascript_map(self):
         mapping = Map({"a": 1})
@@ -784,6 +794,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(mapping.get("b"), 2)
         self.assertEqual(mapping.keys(), ["a", "b"])
         self.assertEqual(mapping.values(), [1, 2])
+        visited = []
+        mapping.forEach(
+            lambda value, key, owner: visited.append((value, key, owner))
+        )
+        self.assertEqual(visited, [(1, "a", mapping), (2, "b", mapping)])
         self.assertTrue(mapping.delete("a"))
         self.assertFalse(mapping.delete("a"))
         self.assertFalse(mapping.has("a"))
