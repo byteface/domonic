@@ -24,11 +24,11 @@ def create_element(name="custom_tag", *args, **kwargs):
     from domonic.html import html_tags
 
     if name in html_tags:
-        return globals()[name]()
+        return globals()[name](*args, **kwargs)
     from domonic.xml.sitemap import sitemap_tags
 
     if name in sitemap_tags:
-        return globals()[name]()
+        return globals()[name](*args, **kwargs)
 
     return create_html_element(name, *args, **kwargs)
 
