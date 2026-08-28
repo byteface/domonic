@@ -613,8 +613,8 @@ class TestCase(unittest.TestCase):
         assert myarr[1] == "2"
         assert len(myarr) == 6
         assert myarr == Array("1", "2", 3, {"4": "four"}, 5, [6])
-        # assert myarr.join('---') == "1---2---3---[object Object]---5---6"
-        assert myarr.join("---") == "1---2---3---{'4': 'four'}---5---[6]"
+        assert myarr.join("---") == "1---2---3---[object Object]---5---6"
+        assert Array(1, None, 3).join() == "1,,3"
         # print(myarr.lastIndexOf("1"))
         assert myarr.lastIndexOf("1") == 0
         assert myarr.lastIndexOf(3) == 2
@@ -774,7 +774,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(arr, ["", "", ""])
         arr[1] = "x"
         self.assertEqual(arr[1], "x")
-        self.assertEqual(arr.toString(), "['', 'x', '']")
+        self.assertEqual(arr.toString(), ",x,")
         self.assertEqual(arr.toSource(), ["", "x", ""])
         self.assertEqual(repr(arr), "['', 'x', '']")
         self.assertNotEqual(arr, "not-an-array")

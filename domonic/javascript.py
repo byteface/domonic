@@ -3016,9 +3016,21 @@ class Array:
             self.args = self.args - value
         return self.args
 
+    @staticmethod
+    def _stringify_join_item(value: Any) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, Array):
+            return value.join()
+        if isinstance(value, (list, tuple)):
+            return Array(list(value)).join()
+        if isinstance(value, dict):
+            return "[object Object]"
+        return str(value)
+
     def toString(self) -> str:
-        """Converts an array to a string, and returns the result"""
-        return str(self.args)  # TODO - check what js does
+        """Converts an array to a JavaScript-style comma-separated string."""
+        return self.join()
 
     def toSource(self) -> list[Any]:
         """
@@ -3153,10 +3165,10 @@ class Array:
         else:
             return False
 
-    def join(self, value: str) -> str:
-        """Joins all elements of an array into a string"""
-        # TODO - get passed param names
-        return value.join([str(x) for x in self.args])
+    def join(self, value: str = ",") -> str:
+        """Joins all elements of an array into a string."""
+        separator = "," if value is None else str(value)
+        return separator.join(self._stringify_join_item(x) for x in self.args)
 
     def lastIndexOf(self, value: Any, fromIndex: int | None = None) -> int:
         """Search the array for an element, starting at the end, and returns its position"""
