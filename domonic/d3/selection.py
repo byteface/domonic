@@ -10,8 +10,9 @@ https://github.com/d3/d3-selection/tree/main/src/selection
 
 import inspect
 import re
+from functools import cmp_to_key
 
-from domonic.dom import document  # bring in the global
+from domonic.dom import Node, document  # bring in the global
 from domonic.javascript import *
 
 xhtml = "http://www.w3.org/1999/xhtml"
@@ -225,12 +226,8 @@ class Selection:
     def __init__(self, groups, parents, this=None):
         self._groups = groups
         self._parents = parents
-        self.this = None
         if this is None:
-            # self.this = root[0]
-            # self.this = self._groups#[0]
-            # self.this = self._groups  #.__iter__()
-            pass
+            self.this = root[0]
         else:
             self.this = this  # context switcher
 
@@ -471,60 +468,44 @@ class Selection:
     # import selection_order from "./order.js";
     # def order: selection_order,
     def order(self):
-        # TODO - rewrite this as python
-        # for (var groups = this._groups, j = -1, m = groups.length; ++j < m;) {
-        #     for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0;) {
-        #     if (node = group[i]) {
-        #         if (next && node.compareDocumentPosition(next) ^ 4) next.parentNode.insertBefore(node, next);
-        #         next = node;
-        #     }
-        #     }
-        # }
-        groups = self._groups
-        j = -1
-        m = len(groups)
-        while j < m:
-            i = len(groups[j]) - 1
-            next = groups[j][i]
+        for group in self._groups:
+            next_node = None
+            i = len(group) - 1
             while i >= 0:
-                node = groups[j][i]
+                node = group[i]
                 if node is None:
+                    i -= 1
                     continue
-                if next and node.compareDocumentPosition(next) ^ 4:
-                    next.parentNode.insertBefore(node, next)
-                next = node
+                if next_node is not None:
+                    position = node.compareDocumentPosition(next_node)
+                    if (
+                        position != Node.DOCUMENT_POSITION_FOLLOWING
+                        and next_node.parentNode is not None
+                    ):
+                        next_node.parentNode.insertBefore(node, next_node)
+                next_node = node
                 i -= 1
-            j += 1
         return self
 
     # import selection_sort from "./sort.js";
     # def sort: selection_sort,
     # import {Selection} from "./index.js";
-    def sort(self, compare):
-        if not compare:
-            compare = ascending
+    def sort(self, compare=None):
+        if compare is None:
+            compare = self.ascending
 
         def compareNode(a, b):
-            # TODO - rewrite this as python
-            # return a and b ? compare(a.__data__, b.__data__) : !a - !b
             if a and b:
-                return compare(a.__data__, b.__data__)
+                result = _invoke_callback(
+                    compare, getattr(a, "__data__", None), getattr(b, "__data__", None)
+                )
+                return 0 if result is None else result
+            if not a and not b:
+                return 0
             return -1 if a else 1
 
-        # TODO - rewrite this as python
-        # for (var groups = this._groups, m = groups.length, sortgroups = new Array(m), j = 0; j < m; ++j) {
-        #     for (var group = groups[j], n = group.length, sortgroup = sortgroups[j] = new Array(n), node, i = 0; i < n; ++i) {
-        #     if (node = group[i]) {
-        #         sortgroup[i] = node;
-        #     }
-        #     }
-        #     sortgroup.sort(compareNode);
-        # }
-        groups = self._groups
-        m = len(groups)
         sortgroups = []
-        j = 0
-        for group in groups:
+        for group in self._groups:
             n = len(group)
             sortgroup = []
             for i in range(n):
@@ -532,9 +513,8 @@ class Selection:
                 if node is None:
                     continue
                 sortgroup.append(node)
-            sortgroup.sort(compareNode)
+            sortgroup.sort(key=cmp_to_key(compareNode))
             sortgroups.append(sortgroup)
-            j += 1
         return Selection(sortgroups, self._parents, self.this).order()
 
     def ascending(self, a, b):
@@ -551,8 +531,7 @@ class Selection:
     def call(self, *args):
         args = list(args)
         callback = args[0]
-        args[0] = self
-        Function(callback).apply(None, args)
+        _invoke_callback(callback, self, *args[1:])
         return self
 
     # import selection_nodes from "./nodes.js";
@@ -605,7 +584,7 @@ class Selection:
                     i += 1
                     continue
                 data = getattr(node, "__data__", None)
-                callback(node, data, i, group)
+                _invoke_callback(callback, node, data, i, group)
 
                 i += 1
             j += 1

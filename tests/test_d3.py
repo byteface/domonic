@@ -1728,42 +1728,49 @@ class TestCase(unittest.TestCase):
         assert selectAll([]).empty() == True
         assert selectAll([None, None]).empty() == True
 
-    def call(self):
-        # selection.call(function) calls the specified function, passing the selection", () => {
-        # result = None
-        # s = select(document)
-        # assert s.call( lambda s: result = s) == s
-        # assert result == s
-
-        # selection.call(function, arguments…) calls the specified function, passing the additional arguments", () => {
-        # result = []
-        # foo = {}
-        # bar = {}
-        # s = select(document)
-        # assert s.call((s, a, b) => { result.push(s, a, b); }, foo, bar) == s
-        # assert result == [s, foo, bar]
-        pass
-
     def test_call(self):
+        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
+        selection = select(d)
+        result = []
+        foo = object()
+        bar = object()
 
+        assert selection.call(lambda s: result.append(s)) == selection
+        assert result == [selection]
+
+        result.clear()
+        assert (
+            selection.call(lambda s, a, b: result.extend([s, a, b]), foo, bar)
+            == selection
+        )
+        assert result == [selection, foo, bar]
+
+    def test_each(self):
         # selection.each(function) calls the specified function for each selected element in order
         d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
-        # result = []
-        # one = document.querySelector("#one")
-        # two = document.querySelector("#two")
-        # selection = selectAll([one, two]).datum(function(d, i) { return "node-" + i; })
-        # assert selection.each(function(d, i, nodes) { result.push(this, d, i, nodes); }) == selection
-        # assert result == [one, "node-0", 0, [one, two], two, "node-1", 1, [one, two]]
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        setattr(one, "__data__", "node-1")
+        setattr(two, "__data__", "node-3")
+        selection = selectAll([None, one, None, two])
+        group = selection._groups[0]
+        result = []
 
-        # selection.each(function) skips missing elements
-        d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
-        # result = []
-        # one = document.querySelector("#one")
-        # two = document.querySelector("#two")
-        # selection = selectAll([, one,, two]).datum(function(d, i) { return "node-" + i; })
-        # assert selection.each(function(d, i, nodes) { result.push(this, d, i, nodes); }) == selection)
-        # assert result == [one, "node-1", 1, [, one,, two], two, "node-3", 3, [, one,, two]])
-        pass
+        assert (
+            selection.each(
+                lambda node, data, i, nodes: result.append((node, data, i, nodes))
+            )
+            == selection
+        )
+        assert len(result) == 2
+        self.assertIs(result[0][0], one)
+        assert result[0][1:] == ("node-1", 1, group)
+        self.assertIs(result[1][0], two)
+        assert result[1][1:] == ("node-3", 3, group)
+
+        shorthand = []
+        assert selection.each(lambda node: shorthand.append(node)) == selection
+        assert shorthand == [one, two]
 
     def test_node(self):
         # selection.node() returns the first element in a selection
@@ -1789,25 +1796,51 @@ class TestCase(unittest.TestCase):
         assert selectAll([]).node() == None
         assert selectAll([None, None, None]).node() == None
 
+    def test_sort(self):
+        d = html(body(h1(_id="two"), h1(_id="one"), h1(_id="three")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        three = d.querySelector("#three")
+        setattr(one, "__data__", 1)
+        setattr(two, "__data__", 2)
+        setattr(three, "__data__", 3)
+
+        selection = selectAll([two, one, three])
+        sorted_selection = selection.sort()
+
+        assert sorted_selection.nodes() == [one, two, three]
+        assert [node.getAttribute("id") for node in one.parentNode.args] == [
+            "one",
+            "two",
+            "three",
+        ]
+
+        descending = sorted_selection.sort(lambda a, b: b - a)
+        assert descending.nodes() == [three, two, one]
+        assert [node.getAttribute("id") for node in one.parentNode.args] == [
+            "three",
+            "two",
+            "one",
+        ]
+
     def test_order(self):
         # selection.order() moves selected elements so that they are before their next sibling
-        # d = html(body(domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")))
-        # one = d.querySelector("#one")
-        # two = d.querySelector("#two")
-        # selection = selectAll([two, one])
-        # assert selection.order() == selection  # infinite loop?
-        # assert one.nextSibling == None
-        # assert two.nextSibling == one
+        d = html(body(h1(_id="one"), h1(_id="two")))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = selectAll([None, two, one])
+        assert selection.order() == selection
+        assert one.nextSibling == None
+        assert two.nextSibling == one
 
         # selection.order() only orders within each group
-        # d = html(body(domonic.load("<h1><span id='one'></span></h1><h1><span id='two'></span></h1>")))
-        # one = d.querySelector("#one")
-        # two = d.querySelector("#two")
-        # selection = select(d).selectAll("h1").selectAll("span")
-        # assert selection.order() == selection
-        # assert one.nextSibling == None
-        # assert two.nextSibling == None
-        pass
+        d = html(body(h1(span(_id="one")), h1(span(_id="two"))))
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+        selection = Selection([[two], [one]], [two.parentNode, one.parentNode])
+        assert selection.order() == selection
+        assert one.nextSibling == None
+        assert two.nextSibling == None
 
     @silence
     def test_iterator(self):
