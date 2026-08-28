@@ -2830,11 +2830,6 @@ class º(dQuery_el):
         """Takes a function and returns a new one that will always have a particular context."""
         return func
 
-    @staticmethod
-    def queue(func):
-        """Show or manipulate the queue of functions to be executed on the matched element."""
-        raise NotImplementedError
-
     # @staticmethod
     # @ty
     # def ready:

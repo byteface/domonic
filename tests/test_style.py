@@ -474,8 +474,10 @@ class TestCase(unittest.TestCase):
         style = CSSStyleDeclaration()
         style.setProperty("width", "10px")
         self.assertEqual(style.getPropertyValue("width"), "10px")
+        self.assertEqual(style.getPropertyCSSValue("width"), "10px")
         self.assertEqual(style.removeProperty("width"), "10px")
         self.assertEqual(style.getPropertyValue("width"), "")
+        self.assertIsNone(style.getPropertyCSSValue("width"))
 
     def test_css_style_declaration_index_and_priority_helpers(self):
         style = CSSStyleDeclaration()

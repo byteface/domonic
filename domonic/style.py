@@ -5890,10 +5890,11 @@ class CSSStyleDeclaration(Style):
         finally:
             object.__setattr__(self, "_suspend_style_sync", False)
 
-    def getPropertyCSSValue(self):
+    def getPropertyCSSValue(self, propertyName: str):
         """Only supported via getComputedStyle in Firefox. Returns the property value as a
         CSSPrimitiveValue or null for shorthand properties."""
-        raise NotImplementedError
+        value = self.getPropertyValue(propertyName)
+        return value if value != "" else None
 
 
 def _known_css_property_names() -> set[str]:
