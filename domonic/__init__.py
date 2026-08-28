@@ -203,8 +203,7 @@ class domonic:
         # i.e. a list not in aa ul or ol. when on single line evaulate will fix
         # but on mulitple lines it will not.
         try:
-            # PyML evaluation is this API's compatibility surface.
-            p = eval(s, {**kwargs, **globals()})  # nosec B307
+            p = domonic._safe_eval_pyml(s, kwargs)
         except Exception as e:
             fragments = domonic._split_top_level_pyml(pyml)
             if len(fragments) > 1:
@@ -212,10 +211,9 @@ class domonic:
                     domonic.domonify(fragment, *args, **kwargs)
                     for fragment in fragments
                 )
-            print("Failed to evaluate as mulitline trying again:", e)
             pyml = "".join(pyml.splitlines()).strip(",")  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)
-            p = eval(s, {**kwargs, **globals()})  # nosec B307
+            p = domonic._safe_eval_pyml(s, kwargs)
 
         return p
 
@@ -243,9 +241,7 @@ class domonic:
             raise ValueError("evaluate requires a string not:", type(pyml))
 
         try:
-            # TODO - strip any potentially bad/dangerous code before eval.
-            # PyML evaluation is this API's compatibility surface.
-            p = eval(pyml, {**kwargs, **globals()})  # nosec B307
+            domonic._safe_eval_pyml(pyml, kwargs)
             domonic.LAST_ERR = None
             return pyml  # ????
         except Exception as e:
@@ -262,7 +258,7 @@ class domonic:
                 err = str(e)
                 if str(len(pyml.splitlines())) in err:
                     pyml += ")"
-                    return domonic.evaluate(pyml)  # try again
+                    return domonic.evaluate(pyml, *args, **kwargs)  # try again
 
             if "positional argument follows keyword argument" in str(e):
 
@@ -301,7 +297,7 @@ class domonic:
 
                 # pyml[num - 2] = pyml[num - 2] + ").html(" + str(num)   # need to know when to close tag comma vs wrap
                 pyml = "\n".join(pyml)
-                return domonic.evaluate(pyml)  # try again
+                return domonic.evaluate(pyml, *args, **kwargs)  # try again
 
             # TODO -  if " does not match opening parenthesis '{' (<string>, line 9)
             # TODO -  keyword argument repeated (<string>, line 617)
@@ -310,18 +306,39 @@ class domonic:
             return pyml
 
     @staticmethod
-    def _is_safe_pyml_ast(tree):
+    def _safe_eval_pyml(pyml: str, extra_context=None):
+        """Evaluate PyML after rejecting expressions outside markup construction."""
+        context = {**globals(), **(extra_context or {})}
+        tree = ast.parse(pyml, mode="eval")
+        if not domonic._is_safe_pyml_ast(tree, context):
+            raise ValueError("Unsafe PyML expression")
+        code = compile(tree, "<domonic-pyml>", "eval")
+        return eval(code, {"__builtins__": {}}, context)  # nosec B307
+
+    @staticmethod
+    def _is_safe_pyml_ast(tree, context=None):
         """Return True when a parsed PyML expression contains only inert markup calls."""
-        allowed_names = {name for name in globals()}
+        context = context or globals()
+        allowed_names = {name for name in context}
+        allowed_methods = {"html"}
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
+                if isinstance(node.func, ast.Attribute):
+                    if node.func.attr not in allowed_methods:
+                        return False
+                    continue
                 if not isinstance(node.func, ast.Name):
                     return False
                 if node.func.id.startswith("__"):
                     return False
-                target = globals().get(node.func.id)
+                target = context.get(node.func.id)
                 if target is None or not callable(target):
+                    return False
+                continue
+
+            if isinstance(node, ast.Attribute):
+                if node.attr not in allowed_methods:
                     return False
                 continue
 

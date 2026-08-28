@@ -56,6 +56,27 @@ class TestCase(unittest.TestCase):
         self.assertFalse(is_valid)
         self.assertEqual(fixed, "")
 
+    def test_domonify_does_not_execute_unsafe_calls(self):
+        with patch("os.system") as system:
+            with self.assertRaises(ValueError):
+                domonic.domonify("__import__('os').system('echo nope')")
+
+        system.assert_not_called()
+
+    def test_domonify_accepts_template_context_names(self):
+        node = domonic.domonify(
+            'div(label, _id=slug, **{"_data-user-id": user_id})',
+            label="Hello",
+            slug="greeting",
+            user_id="7",
+        )
+
+        self.assertEqual(str(node), '<div id="greeting" data-user-id="7">Hello</div>')
+
+    def test_safe_pyml_rejects_attribute_calls(self):
+        with self.assertRaises(ValueError):
+            domonic._safe_eval_pyml("sys.exit()")
+
     def test_pyml_validation_accepts_safe_markup_fragments(self):
         self.assertEqual(domonic._is_valid_pyml("span("), (True, "span("))
         self.assertEqual(
