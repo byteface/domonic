@@ -112,10 +112,6 @@ def remove_extra_whitespace(html_str: str):
     html_str = re.sub(r"\s+", " ", html_str)
     html_str = re.sub(r"\t", " ", html_str)
     return html_str
-    # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
-    # page = page.replace('   ', ' ')
-    # page = page.replace('  ', ' ')
-    # page = page.replace('  ', ' ')
 
 
 def remove_doctype(html_str: str):
@@ -125,29 +121,6 @@ def remove_doctype(html_str: str):
     doctype = re.compile(r"<!DOCTYPE.*?>", re.IGNORECASE)
     html_str = doctype.sub("", html_str)
     return html_str
-    # print('parsing parsing parsing!!')
-
-    page = "".join(page.split("<!DOCTYPE HTML>"))
-    page = "".join(page.split("<!DOCTYPE html>"))
-    page = "".join(page.split("<!doctype html>"))
-    page = "".join(page.split("<!doctype HTML>"))
-
-    page = "".join(page.split('<?xml version="1.0" encoding="utf-8"?>'))
-    page = "".join(page.split('<?xml version="1.0" encoding="utf-8" ?>'))
-    page = "".join(page.split('<?xml version="1.0" encoding="UTF-8" ?>'))
-
-    page = "".join(
-        page.split(
-            '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'
-        )
-    )
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'))
-    # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">'))
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'))
     # page = ''.join(page.split('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'))
@@ -392,12 +365,32 @@ def dent(pyml, use_tabs=False):
     dentage = 0
     lastchar = ""
     dented = ""
+    if "\n" not in pyml:
+        lines = []
+        current = ""
+        for char in pyml:
+            if char == "(":
+                lines.append((tabs_or_spaces * dentage) + current + "(")
+                dentage += 1
+                current = ""
+                continue
+            if char == ")":
+                if current.strip():
+                    lines.append((tabs_or_spaces * dentage) + current)
+                    current = ""
+                dentage = max(0, dentage - 1)
+                lines.append((tabs_or_spaces * dentage) + ")")
+                continue
+            current += char
+        if current.strip():
+            lines.append((tabs_or_spaces * dentage) + current)
+        return "\n".join(lines)
     for count, char in enumerate(pyml):
         if char == "(":
             dentage += 1
         if char == ")":
             dentage -= 1
-        if lastchar == "\n":  # TODO - if file doesn't have newlines already
+        if lastchar == "\n":
             char = tabs_or_spaces * dentage + char
         lastchar = char
         dented += char
@@ -408,7 +401,7 @@ def dent(pyml, use_tabs=False):
 
 def add_cdata_tags_to_every_node(
     content: str,
-):  # TODO - just have a CDATASection class?
+):
     """[puts a CDATA tag on every node in the document]"""
     content = content.replace("<", "<![CDATA[")
     content = content.replace(">", "]]>")
@@ -426,30 +419,3 @@ def add_xml_declaration_to_document(content: str):
     """[puts an XML declaration at the top of the document]"""
     content = content.replace("<", '<?xml version="1.0" encoding="UTF-8" ?>\n<')
     return content
-
-
-# TODO - other methods I can add to this class
-# - add_xml_declaration_to_document
-# - add_cdata_tags_to_every_node
-# - remove_cdata_tags_from_every_node
-# - remove_newlines
-# - add_paragraphs
-# - indent
-# - create_html_from_markdown
-# - create_html_from_xml
-# - get_xpath_of_node
-
-
-''' TODO - check earlier version getter/setters for some string methods that may be useful here
-@body.setter
-def body(self, content):
-    """ Sets the document's body (the <body> element) """
-    # self.querySelector('body')
-    # tag = "body"
-    # reg = f"<{tag}.*?>(.+?)</{tag}>"
-    # pattern = re.compile(reg)
-    # tags = re.findall(pattern,html)
-    # return tags[0]
-    print("TODO - setter method on body")
-    return
-'''
