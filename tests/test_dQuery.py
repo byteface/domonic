@@ -1295,6 +1295,46 @@ class TestCase(unittest.TestCase):
         assert º.contains(d.documentElement, d.body) == True  # true
         assert º.contains(d.body, d.documentElement) == False  # false
 
+        original_transports = list(º._ajax_transports)
+        try:
+            transport = lambda options: None
+            self.assertIs(º.ajaxTransport(transport), transport)
+            self.assertIn(transport, º.ajaxTransport())
+        finally:
+            º._ajax_transports = original_transports
+
+        callback_seen = []
+
+        def remember(value):
+            callback_seen.append(("remember", value))
+
+        callbacks = º.Callbacks("unique memory")
+        callbacks.add(remember, remember).fire("first")
+        callbacks.add(lambda value: callback_seen.append(("late", value)))
+        self.assertEqual(
+            callback_seen, [("remember", "first"), ("late", "first")]
+        )
+        self.assertTrue(callbacks.has(remember))
+        callbacks.remove(remember)
+        self.assertFalse(callbacks.has(remember))
+
+        once_seen = []
+        º.Callbacks("once").add(lambda value: once_seen.append(value)).fire(1).fire(2)
+        self.assertEqual(once_seen, [1])
+
+        stop_seen = []
+        º.Callbacks("stopOnFalse").add(
+            lambda: stop_seen.append("first") is None
+        ).add(lambda: False).add(lambda: stop_seen.append("third")).fire()
+        self.assertEqual(stop_seen, ["first"])
+
+        with self.assertRaisesRegex(RuntimeError, "ready boom"):
+            º.readyException(RuntimeError("ready boom"))
+
+        SubQuery = º.sub()
+        self.assertTrue(issubclass(SubQuery, º))
+        self.assertIsNot(SubQuery.ajaxSettings, º.ajaxSettings)
+
         # º.data()
         # º.Deferred()
         # º.dequeue()

@@ -2082,6 +2082,7 @@ class º(dQuery_el):
     }
     _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}
     _ajax_prefilters = []
+    _ajax_transports = []
     _ajax_active = 0
 
     def __init__(self, selector=None, *args, **kwargs):
@@ -2389,9 +2390,12 @@ class º(dQuery_el):
         return º.ajaxSettings.copy()
 
     @staticmethod
-    def ajaxTransport():
-        """Creates an object that handles the actual transmission of Ajax data."""
-        raise NotImplementedError
+    def ajaxTransport(callback=None):
+        """Register or inspect Ajax transport factories."""
+        if callback is None:
+            return list(º._ajax_transports)
+        º._ajax_transports.append(callback)
+        return callback
 
         # @staticmethod
         # @ty
@@ -2406,29 +2410,97 @@ class º(dQuery_el):
         # raise NotImplementedError
 
     @staticmethod
-    def Callbacks():
+    def Callbacks(options=""):
         """A multi-purpose callbacks list object that provides a powerful way to manage callback lists."""
+        if isinstance(options, str):
+            option_set = set(options.split())
+        elif isinstance(options, dict):
+            option_set = {name for name, enabled in options.items() if enabled}
+        else:
+            option_set = set(options or [])
+
         callbacks = []
+        memory = None
+        fired = False
+        locked = False
+        disabled = False
 
         class _Callbacks:
-            def add(self, callback):
-                callbacks.append(callback)
+            def add(self, *items):
+                nonlocal memory
+                if disabled:
+                    return self
+                for item in items:
+                    if isinstance(item, (list, tuple)):
+                        self.add(*item)
+                        continue
+                    if not callable(item):
+                        continue
+                    if "unique" in option_set and item in callbacks:
+                        continue
+                    callbacks.append(item)
+                    if memory is not None:
+                        item(*memory)
                 return self
 
             def fire(self, *args, **kwargs):
+                return self.fireWith(None, args, kwargs)
+
+            def fireWith(self, context=None, args=(), kwargs=None):
+                nonlocal fired
+                nonlocal locked
+                nonlocal memory
+                if disabled or locked:
+                    return self
+                if fired and "once" in option_set:
+                    return self
+                kwargs = kwargs or {}
+                fired = True
+                call_args = tuple(args or ())
+                if "memory" in option_set:
+                    memory = call_args
                 for callback in list(callbacks):
-                    callback(*args, **kwargs)
+                    result = callback(*call_args, **kwargs)
+                    if result is False and "stopOnFalse" in option_set:
+                        break
+                if "once" in option_set:
+                    locked = True
                 return self
 
-            def remove(self, callback):
-                if callback in callbacks:
-                    callbacks.remove(callback)
+            def remove(self, *items):
+                for item in items:
+                    while item in callbacks:
+                        callbacks.remove(item)
                 return self
 
             def has(self, callback=None):
                 if callback is None:
                     return bool(callbacks)
                 return callback in callbacks
+
+            def empty(self):
+                callbacks.clear()
+                return self
+
+            def disable(self):
+                nonlocal disabled
+                disabled = True
+                callbacks.clear()
+                return self
+
+            def disabled(self):
+                return disabled
+
+            def lock(self):
+                nonlocal locked
+                locked = True
+                return self
+
+            def locked(self):
+                return locked
+
+            def fired(self):
+                return fired
 
         return _Callbacks()
 
@@ -2770,9 +2842,13 @@ class º(dQuery_el):
     # raise NotImplementedError
 
     @staticmethod
-    def readyException():
+    def readyException(error=None):
         """Handles errors thrown synchronously in functions wrapped in dQuery"""
-        raise NotImplementedError
+        if error is None:
+            return None
+        if isinstance(error, BaseException):
+            raise error
+        raise Exception(error)
 
     @staticmethod
     def removeData(element=None, key=None):
@@ -2798,7 +2874,14 @@ class º(dQuery_el):
     def sub():
         """Creates a new copy of dQuery whose properties and methods can be modified without affecting
         the original dQuery object."""
-        raise NotImplementedError
+        class dQuerySub(º):
+            ajaxSettings = copy.deepcopy(º.ajaxSettings)
+            _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}
+            _ajax_prefilters = []
+            _ajax_transports = []
+            _ajax_active = 0
+
+        return dQuerySub
 
     # @staticmethod
     # def t:
