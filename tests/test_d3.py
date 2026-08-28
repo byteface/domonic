@@ -679,6 +679,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(precisionRound(0.01, 1.01), 3)
         self.assertEqual(precisionRound(0.5, 10), 2)
 
+    def test_d3_format_supported_locales(self):
+        self.assertIn("hu-HU", supported_locales())
+        self.assertIn("mk-MK", supported_locales())
+        self.assertEqual(
+            set_locale("hu_HU").format("$,.2f")(1234.5), "1\u00a0234,50\u00a0Ft"
+        )
+        self.assertEqual(
+            set_locale("mk-MK").format("$,.2f")(1234.5), "1.234,50\u00a0ден."
+        )
+
+        with self.assertRaises(ValueError) as error:
+            set_locale("nope")
+        self.assertIn("Unsupported d3-format locale", str(error.exception))
+
     def test_d3_dispatch(self):
 
         d = dispatch("foo", "bar")

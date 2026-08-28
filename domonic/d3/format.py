@@ -569,17 +569,8 @@ def defaultLocale(definition):
 defaultLocale({"thousands": ",", "grouping": [3], "currency": ["$", ""]})
 
 
-# https://github.com/d3/d3-format/tree/main/locale - TODO - finish all
-def set_locale(code):
-    """[sets the locale of the formatting engine]
-
-    Args:
-        code ([str]): [A language/country code i.e. en-GB, en-IN, en-US]
-
-    Returns:
-        [type]: [a new format obj]
-    """
-    loc = {
+def _locale_definitions():
+    return {
         "en-GB": {
             "decimal": ".",
             "thousands": ",",
@@ -652,7 +643,7 @@ def set_locale(code):
             "grouping": [3],
             "currency": ["€\u00a0", ""],
         },
-        "mk-MK.": {
+        "mk-MK": {
             "decimal": ",",
             "thousands": ".",
             "grouping": [3],
@@ -676,7 +667,7 @@ def set_locale(code):
             "grouping": [3],
             "currency": ["€", ""],
         },
-        "hu-HU.": {
+        "hu-HU": {
             "decimal": ",",
             "thousands": "\u00a0",
             "grouping": [3],
@@ -725,8 +716,42 @@ def set_locale(code):
                 "\u0669",
             ],
         },
-    }[code]
+    }
+
+
+def set_locale(code):
+    """[sets the locale of the formatting engine]
+
+    Args:
+        code ([str]): [A language/country code i.e. en-GB, en-IN, en-US]
+
+    Returns:
+        [type]: [a new format obj]
+    """
+    locales = _locale_definitions()
+
+    normalized = str(code).replace("_", "-")
+    normalized = next(
+        (
+            locale_code
+            for locale_code in locales
+            if locale_code.lower() == normalized.lower()
+        ),
+        normalized,
+    )
+    try:
+        loc = locales[normalized]
+    except KeyError:
+        supported = ", ".join(sorted(locales))
+        raise ValueError(
+            f"Unsupported d3-format locale: {code}. Supported: {supported}"
+        )
     return formatLocale(loc)
+
+
+def supported_locales():
+    """Return locale codes bundled with ``set_locale``."""
+    return sorted(_locale_definitions())
 
 
 def precisionFixed(step):
