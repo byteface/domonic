@@ -119,10 +119,9 @@ class TestCase(unittest.TestCase):
         # print(i, l)
 
     def test_bash_history(self):
-        pass  # failing on github actions
-        # print(history())
-        # for i, thing in enumerate(history(), 1):
-        # print(i, thing)
+        result = history()
+        self.assertIsInstance(str(result), str)
+        self.assertEqual(list(result), str(result).splitlines())
 
     @silence
     def test_bash(self):

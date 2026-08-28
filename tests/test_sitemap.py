@@ -159,10 +159,27 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_element_class(self):
-        # could the existing framework have been used. i.e.
-        # from domonic.dom import Document
-        # sitemapindex = Document.createElement('sitemapindex') # TODO - should createElementClass be a method of domonic Document?
-        pass
+        index = sitemapindex(
+            sitemap(
+                loc("https://example.com/sitemap.xml"),
+                lastmod("2026-08-28T00:00:00+00:00"),
+            )
+        )
+        urls = urlset(
+            url(
+                loc("https://example.com/"),
+                changefreq("daily"),
+                priority(1.0),
+            )
+        )
+
+        self.assertEqual(index.tagName, "sitemapindex")
+        self.assertEqual(index.querySelector("loc").text, "https://example.com/sitemap.xml")
+        self.assertIn("<sitemapindex", str(index))
+
+        self.assertEqual(urls.tagName, "urlset")
+        self.assertEqual(urls.querySelector("changefreq").text, "daily")
+        self.assertIn("<priority>1.0</priority>", str(urls))
 
 
 if __name__ == "__main__":

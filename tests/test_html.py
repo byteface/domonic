@@ -426,7 +426,8 @@ body(
             "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
         )
         _debug_print(render(page))
-        pass
+        self.assertIsNotNone(page)
+        self.assertTrue(str(page))
 
     def test_domonic_render(self):
         test = html(
@@ -511,8 +512,11 @@ body(
             ),
             meta(_property="profile:username", _content="byteface"),
         )
-        _debug_print(render(test))
-        pass
+        rendered = render(test)
+        _debug_print(rendered)
+        self.assertEqual(test.querySelector("title").text, "byteface")
+        self.assertIn('name="viewport"', rendered)
+        self.assertIn('rel="manifest"', rendered)
 
     @silence
     def test_domonic_render_bs5_checkout(self):
@@ -1003,8 +1007,15 @@ body(
         )
 
         # print(render(test,'bs5_test_checkout.html'))
-        _debug_print(render(test))
-        pass
+        rendered = render(test)
+        _debug_print(rendered)
+        button_text = [button.text for button in test.getElementsByTagName("button")]
+        self.assertIn("Continue to checkout", button_text)
+        form_classes = [
+            form.getAttribute("class") for form in test.getElementsByTagName("form")
+        ]
+        self.assertIn("needs-validation", form_classes)
+        self.assertIn('src="form-validation.js"', rendered)
 
     @silence
     def test_domonic_render_bs5_carousel(self):
@@ -1364,8 +1375,11 @@ body(
             ),
         )
         # print(render(test,'bs5_test_carousel.html'))
-        _debug_print(render(test))
-        pass
+        rendered = render(test)
+        _debug_print(rendered)
+        self.assertEqual(test.querySelector("h1").text, "Example headline.")
+        self.assertIn("carousel-item active", rendered)
+        self.assertIn('src="/docs/5.0/dist/js/bootstrap.bundle.min.js"', rendered)
 
     @silence
     def test_domonic_render_bs5_dashboard(self):
@@ -1781,7 +1795,10 @@ body(
         # print(type(root))
         # print(root.getElementsByTagName("button")[0].getAttribute("class"))
         # print(render(root))
-        pass
+        rendered = render(test)
+        self.assertEqual(root.getAttribute("lang"), "en")
+        self.assertEqual(test.querySelector("canvas").getAttribute("class"), "my-4 w-100")
+        self.assertIn('src="dashboard.js"', rendered)
 
     def test_domonic_render_a_tag(self):
         atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
@@ -1899,8 +1916,7 @@ body(
         d = html()
         with d:
             with head():
-                with title():
-                    pass
+                title()
             with body():
                 div(domonic.parseString("""
                 <form>

@@ -132,7 +132,7 @@ class TestDecorators(unittest.TestCase):
     def test_empty_function(self):
         @el("div")
         def empty_function():
-            pass
+            return None
 
         result = empty_function()
         self.assertEqual(result, "<div></div>")
