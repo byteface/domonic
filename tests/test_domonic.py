@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from domonic.CDN import CDN_CSS, CDN_JS
-from domonic import domonic
+from domonic import attributes, domonic
 
 
 def _debug_print(*args, **kwargs):
@@ -79,6 +79,20 @@ _id="one", _class="two",
 **{"_data-user-id":"7"},  **{"_aria-label":"Open"},
 ),""",
         )
+
+    def test_parse_empty_and_doctype_only_input(self):
+        self.assertEqual(domonic.parse(""), "")
+        self.assertEqual(domonic.parse("   "), "")
+        self.assertEqual(domonic.parse("\n\n"), "")
+        self.assertEqual(domonic.parse("<!doctype html>"), "")
+
+    def test_parse_does_not_mutate_global_attributes(self):
+        before = list(attributes)
+
+        domonic.parse("<div></div>")
+        domonic.parse("<span></span>")
+
+        self.assertEqual(attributes, before)
 
     def test_hacked_expat_parser(self):
         # test the  hacked version of the xpat parser

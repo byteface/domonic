@@ -441,6 +441,9 @@ class domonic:
         page = "".join(page.split('<?xml version="1.0" encoding="utf-8" ?>'))
         page = "".join(page.split('<?xml version="1.0" encoding="UTF-8" ?>'))
 
+        if not page.strip():
+            return ""
+
         def remove_tag_block(content="", tag_name=""):
             if not content or not tag_name:
                 return content
@@ -666,13 +669,8 @@ class domonic:
                 page = f"{page[:index]},\n{page[index+1:]}"
                 increase_index += 1
 
-        attribs = attributes
-        attribs.append("as")
-        attribs.append("prefix")
-        attribs.append("role")
-        attribs.append("decoding")
-        attribs.append("typography")
-        attribs.append("content")
+        attribs = list(attributes)
+        attribs.extend(["as", "prefix", "role", "decoding", "typography", "content"])
 
         solo_attributes = [  # ones that can have no value
             "allowfullscreen",
