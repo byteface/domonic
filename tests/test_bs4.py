@@ -127,6 +127,11 @@ class BeautifulSlopTest(unittest.TestCase):
         badge.append("patched")
         article.find("h1").insert_after(badge)
         self.assertEqual(article.select_one("article > span").text, "patched")
+        nested = BeautifulSlop(
+            '<table><tr><td><table><tr><td><a href="/x">x</a></td></tr></table></td></tr></table>',
+            "html.parser",
+        )
+        self.assertEqual(len(nested.select("table a[href]")), 1)
 
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")

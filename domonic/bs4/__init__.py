@@ -553,7 +553,14 @@ def _select_fast(self: Node, selector: str) -> list[Element] | None:
         contexts = next_contexts
         if not contexts:
             break
-    return contexts
+    unique_contexts = []
+    seen = set()
+    for context in contexts:
+        context_id = id(context)
+        if context_id not in seen:
+            unique_contexts.append(context)
+            seen.add(context_id)
+    return unique_contexts
 
 
 def _select(
