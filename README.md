@@ -1,781 +1,968 @@
 <h1 align="center">
-    <br>𖤐 domonic 𖤐<br>
+<br>
+𖤐 domonic 𖤐
+<br>
 </h1>
+
+<p align="center">
+<strong>The browser DOM, in Python.</strong>
+</p>
+
+<p align="center">
+Generate HTML. Parse real pages. Query with CSS or XPath. Manipulate a browser-style DOM.<br>
+Then render it, serve it, scrape it, transform it, or do something strange with it.
+</p>
+
+<p align="center">
 
 [![PyPI version](https://badge.fury.io/py/domonic.svg)](https://pypi.org/project/domonic/)
 [![Downloads](https://pepy.tech/badge/domonic)](https://pepy.tech/project/domonic)
 [![Python version](https://img.shields.io/pypi/pyversions/domonic.svg?style=flat)](https://pypi.org/project/domonic/)
 [![Python package](https://github.com/byteface/domonic/actions/workflows/python-package.yml/badge.svg?branch=master)](https://github.com/byteface/domonic/actions/workflows/python-package.yml)
-[![readthedocs](https://readthedocs.org/projects/domonic/badge/?version=latest)](https://domonic.readthedocs.io)
+[![Documentation](https://readthedocs.org/projects/domonic/badge/?version=latest)](https://domonic.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![byteface github](https://img.shields.io/badge/GitHub-byteface-181717.svg?style=flat&logo=github)](https://github.com/byteface)
+[![GitHub stars](https://img.shields.io/github/stars/byteface/domonic?style=social)](https://github.com/byteface/domonic)
 
-#### A pure Python [DOM](https://dom.spec.whatwg.org/) toolkit that goes way beyond minidom
+</p>
 
-- Python `3.10+`
-- HTML generation, SVG, XML, MathML, RSS, ODF, DOM events, CSSOM, selectors, XPath, Web APIs, animation, and a JavaScript-like runtime
-- Built for generating, parsing, traversing, querying, and manipulating real document trees
-- Useful for server-side rendering, static-site generation, web scraping utilities, browser API experiments, and Python-first HTML templates
+---
 
-domonic gives Python code a browser-flavoured document model: create HTML with Python functions, parse pages into DOM nodes, query them with CSS selectors or XPath, script them with JavaScript-like helpers, and render the result back to markup.
+**domonic** is a pure-Python DOM toolkit inspired by the browser platform.
 
-### Feature map
-
-| Area | What domonic covers |
-| --- | --- |
-| Markup | HTML5 tags, SVG, XML, MathML/MathMLElement, A-Frame, X3D, RSS, Atom, sitemaps, ODF, and custom tag constructors |
-| DOM | Document, Element, NodeList, diffdom patching, events, ranges, fragments, custom elements, shadow DOM, selectors, observers, tree traversal, and ValidityState form checks |
-| Web APIs | URL, URLSearchParams, URLPattern, storage, Cookie Store, history, scheduler/postTask helpers, fetch/XHR helpers, File API, Sanitizer, Web Crypto, messaging, Web Workers, WebMCP declarative attributes, import maps, speculation rules, attribution hints, compression streams, XPath, SSE, WebSocket, permissions, media, CSS font loading, canvas/WebGL, notifications, gamepad, and performance APIs |
-| JavaScript-like runtime | Array, Date, Math, String, Number, Promise, timers, typed arrays, JSON helpers, dQuery, d3-inspired utilities, and BeautifulSlop BS4-style compatibility |
-| Tooling | `domonic` CLI for XPath/CSS extraction, parser selection, project scaffolding, terminal wrappers, and server framework hello worlds |
-| Parsers | Stdlib `html.parser`, bundled `html5lib`, optional `html5_parser`, `markupever`, `selectolax`, `justhtml`, `lxml`, and expat adapters |
-
-### Install
-
-```bash
-python3 -m pip install domonic
-python3 -m pip install --upgrade domonic
-```
-
-For development:
-
-```bash
-python3 -m pip install -r requirements-dev.txt
-```
-
-## Creating HTML with Python 3
+It gives you one document model for **creating, parsing, querying, traversing, manipulating and rendering markup**.
 
 ```python
 from domonic.html import *
-print(html(body(h1('Hello, World!'))))
-# <html><body><h1>Hello, World!</h1></body></html>
-```
 
-to pretty format and insert the doctype, use an f-string:
+page = html(
+    body(
+        h1("Hello, World!"),
+        p("HTML as Python objects."),
+        a("GitHub", _href="https://github.com")
+    )
+)
 
-```python
-mydom = html(body(h1('Hello, World!'), a("somelink", _href="somepage.html")))
-print(f"{mydom}")
+print(page)
 ```
 
 ```html
-<!DOCTYPE html>
-<html>
-	<body>
-		<h1>Hello, World!</h1>
-		<a href="somepage.html">somelink</a>
-	</body>
-</html>
+<html><body><h1>Hello, World!</h1><p>HTML as Python objects.</p><a href="https://github.com">GitHub</a></body></html>
 ```
 
-### Parsing html
+But generating HTML is only the beginning.
+
+```python
+heading = page.querySelector("h1")
+heading.textContent = "Hello, DOM!"
+
+for link in page.querySelectorAll("a"):
+    print(link.href)
+```
+
+The same kind of DOM can also come from parsed HTML.
 
 ```python
 from domonic import domonic
-mydom = domonic.parseString('<somehtml...')
+
+document = domonic.parseString("""
+<html>
+    <body>
+        <h1>Hello</h1>
+        <a href="/docs">Documentation</a>
+    </body>
+</html>
+""")
+
+print(document.querySelector("h1").textContent)
 ```
 
-or parse an entire webpage with the window module...
+**Create it. Parse it. Query it. Change it. Render it.**
 
-```python
-from domonic.window import window
-window.location = "https://example.com"
-print(window.document.title)
-```
+---
 
-html5lib is bundled as the default parser because it is pure Python. See the `Parsers` section below for other parser backends, many of which are much faster.
+## Why domonic?
 
+Python already has HTML generators, parsers and XML libraries.
 
-### xpath or css
+domonic is interested in something broader:
 
-Use xpath or css selectors on command line...
+> **What if Python had a practical, browser-flavoured document platform?**
+
+So the project brings together:
+
+|                             |                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 🏗️ **Markup generation**   | HTML5, SVG, XML, MathML, RSS, Atom, ODF, A-Frame, X3D and custom elements                               |
+| 🌳 **DOM**                  | Document, Element, Node, NodeList, fragments, ranges, events, traversal, observers, shadow DOM and more |
+| 🔎 **Querying**             | CSS selectors and XPath                                                                                 |
+| 📥 **Parsing**              | Multiple interchangeable parser backends                                                                |
+| 🌐 **Web APIs**             | URL, URLPattern, storage, messaging, workers, crypto, performance, permissions and more                 |
+| 🟨 **JavaScript-like APIs** | Array, Date, Math, String, Number, Promise, timers, typed arrays and JSON helpers                       |
+| ⚡ **CLI**                   | Query URLs, files or piped HTML with CSS and XPath                                                      |
+| 🧪 **Experiments**          | dQuery, d3-inspired utilities, diffdom, BeautifulSlop and other browser-inspired ideas                  |
+
+Python `3.10+`.
+
+---
+
+# Install
 
 ```bash
-domonic -x https://google.com '//a' | uniq | sort
+python3 -m pip install domonic
 ```
 
-### More
+Upgrade:
 
-- [html](https://domonic.readthedocs.io/_modules/domonic/html.html) : Generate html with Python 3 😎
-- [dom](https://domonic.readthedocs.io/_modules/domonic/dom.html) : DOM API in Python 3 😲
-- [javascript](https://domonic.readthedocs.io/_modules/domonic/javascript.html) : js API in Python 3 😳 + ([dQuery](https://domonic.readthedocs.io/packages/dQuery.html), [d3](https://domonic.readthedocs.io/packages/d3.html))
-- JSON : utils for loading / decorating / transforming
-- utils : string, number/unit, byte-size, and iterable helpers
-- SVG || mathml || aframe || x3d tags - generators for popular tags
-- terminal || cmd : call terminal commands with Python3 😱
-
-See the [docs/code](https://domonic.readthedocs.io/) for more features or examples in the [repo](https://github.com/byteface/domonic/tree/master/examples)
-
-Project links: [Release notes](https://github.com/byteface/domonic/releases) | [Security](SECURITY.md) | [Contributing](CONTRIBUTING.md) | [Examples](examples/README.md)
-
-
-### Namespace
-
-Simply import what you need...
-
-```python
-from domonic import div, span, input as myinput, html as root
+```bash
+python3 -m pip install --upgrade domonic
 ```
 
-or use the tags package if you want a namespace. i.e.
+Then:
 
 ```python
-import domonic.tags
-print(domonic.tags.h1)
-# or
-import domonic.tags as tags
-str(tags.div)
-# or 
-import domonic.tags as html
-print(html.span)
+from domonic.html import *
+
+print(h1("hello world"))
 ```
 
+---
 
-### HTML attributes
+# HTML that is actually Python
 
-Prepend attributes with an underscore ( avoids clashing with Python keywords )
+HTML elements are ordinary Python objects.
 
 ```python
-test = label(_class='classname', _for="someinput")
-print(test)
+from domonic.html import *
+
+card = div(
+    h2("domonic"),
+    p("The browser DOM, in Python."),
+    a("Documentation", _href="https://domonic.readthedocs.io"),
+    _class="card"
+)
+
+print(card)
+```
+
+Attributes are prefixed with `_` to avoid collisions with Python keywords:
+
+```python
+label("Email", _for="email", _class="label")
 ```
 
 ```html
-<label class="classname" for="someinput"></label>
+<label for="email" class="label">Email</label>
 ```
 
-### Rendering DOM objects
-
-domonic is a pure Python DOM whose tree is composed of objects. i.e
+For attributes that cannot be expressed as Python identifiers:
 
 ```python
-div()
-# <domonic.html.div object at 0x106b0e6b0>
+div(
+    "hello",
+    **{"_data-user-id": "42"}
+)
 ```
 
-cast str() on any element to render it without formatting.
+---
+
+# A real DOM
+
+domonic elements are more than formatted strings.
+
+They're nodes in a document tree.
 
 ```python
-el = str(div())
-print(el)
-# <div></div>
+from domonic.html import *
+
+page = html(
+    body(
+        main(
+            h1("Projects"),
+            ul(
+                li("domonic"),
+                li("Blueberry"),
+                li("ezcron")
+            )
+        )
+    )
+)
+
+print(page.querySelector("h1"))
+print(page.querySelectorAll("li"))
 ```
 
-There's also a render method that takes 2 parameters, some domonic and an optional output file.
+Manipulate the tree using familiar DOM concepts:
 
 ```python
-page = div(span('Hello World'))
-render(f"{page}", 'index.html')  # notice use of f-string to pretty print the html
+title = page.querySelector("h1")
+title.textContent = "Open source projects"
+
+new_item = document.createElement("li")
+new_item.textContent = "something new"
+
+page.querySelector("ul").appendChild(new_item)
 ```
 
-For rendering options see DOMConfig.
+The project aims to follow the real platform where practical:
+
+* [WHATWG DOM Standard](https://dom.spec.whatwg.org/)
+* [HTML Standard](https://html.spec.whatwg.org/)
+* [MDN Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)
+
+See the [DOM documentation](https://domonic.readthedocs.io/) for the implemented API.
+
+---
+
+# CSS selectors
+
+Use browser-style selectors directly against the tree.
+
+```python
+page.querySelector("button")
+page.querySelector("#content")
+page.querySelector(".active")
+
+page.querySelectorAll("a")
+page.querySelectorAll("a[rel=nofollow]")
+page.querySelectorAll("a[href='#services']")
+page.querySelectorAll("a[href$='technology']")
+page.querySelectorAll("a[href*='github']")
+```
+
+```python
+for link in page.querySelectorAll("a"):
+    print(link.href)
+```
+
+---
+
+# XPath
+
+XPath is available too.
+
+From Python:
+
+```python
+from domonic import domonic
+
+page = domonic.parseString("<main><h1>Hello</h1></main>")
+
+# use XPath against your document tree
+```
+
+Or straight from your terminal:
+
+```bash
+domonic -x https://example.com '//a'
+```
+
+Against a local file:
+
+```bash
+domonic --xpath-file ./page.html '//title'
+```
+
+Or pipe HTML directly into it:
+
+```bash
+curl -s https://example.com | domonic -x '//a' --count
+```
+
+---
+
+# Parse HTML
+
+```python
+from domonic import domonic
+
+page = domonic.parseString("""
+<!doctype html>
+<html>
+    <body>
+        <article>
+            <h1>Hello from HTML</h1>
+        </article>
+    </body>
+</html>
+""")
+
+print(page.querySelector("h1"))
+```
+
+You can also load a page through the window API:
+
+```python
+from domonic.window import window
+
+window.location = "https://example.com"
+
+print(window.document.title)
+```
+
+---
+
+# Pick your parser
+
+One parser does not fit every job.
+
+domonic lets you choose between **zero dependencies, pure Python compatibility, malformed-HTML repair and high-performance native parsers**.
+
+```python
+from domonic import domonic
+
+page = domonic.parseString("<p>Hello</p>", parser="html.parser")
+page = domonic.parseString("<p>Hello</p>", parser="html5lib")
+page = domonic.parseString("<p>Hello</p>", parser="lxml_html")
+page = domonic.parseString("<p>Hello</p>", parser="markupever")
+page = domonic.parseString("<p>Hello</p>", parser="selectolax")
+page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
+page = domonic.parseString("<p>Hello</p>", parser="justhtml")
+page = domonic.parseString("<p>Hello</p>", parser="expat")
+```
+
+Set one for your application:
+
+```python
+from domonic import domonic
+
+domonic.set_default_parser("html.parser")
+
+page = domonic.parseString("<p>Hello</p>")
+```
+
+### Parser choices
+
+| Parser         | Why use it?                                   |
+| -------------- | --------------------------------------------- |
+| `html5lib`     | Pure Python and bundled with domonic          |
+| `html.parser`  | Python standard library — no extra dependency |
+| `lxml_html`    | Very fast lxml-backed parsing                 |
+| `markupever`   | Fast Rust-powered HTML repair                 |
+| `selectolax`   | Fast native HTML parsing                      |
+| `html5_parser` | Fast HTML5 parsing                            |
+| `justhtml`     | Pure-Python alternative                       |
+| `expat`        | Built into Python; useful for XML-like input  |
+
+Optional parsers require their respective packages.
+
+For parser details and installation notes, see the [documentation](https://domonic.readthedocs.io/).
+
+---
+
+# Render it back to markup
+
+Every element can be rendered with `str()`:
+
+```python
+from domonic.html import *
+
+page = div(
+    h1("Hello"),
+    p("Rendered from a Python DOM.")
+)
+
+markup = str(page)
+
+print(markup)
+```
+
+Write documents to disk with `render`:
+
+```python
+render(f"{page}", "index.html")
+```
+
+Rendering behaviour can be configured through `DOMConfig`.
 
 ```python
 from domonic.dom import DOMConfig
-print(DOMConfig.GLOBAL_AUTOESCAPE)  # Default False
-print(DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS)  # Default True
-print(DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH)  # Defaults True
-print(DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH)  # Default False
+
+print(DOMConfig.GLOBAL_AUTOESCAPE)
+print(DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS)
 ```
 
-## DOM
+See the docs for all rendering options.
 
-DOM manipulation with Python, built with the actual platform in mind.
+---
 
-### createElement
+# Browser-flavoured Python
 
-Create your own elements with the DOM API
-
-```python
-from domonic.dom import *
-
-site = html()
-el = document.createElement('myelement')
-site.appendChild(el)
-print(site)
-# <html><myelement></myelement></html>
-
-```
+domonic includes a large practical slice of JavaScript's familiar APIs.
 
 ```python
-mysite.querySelectorAll('button') 
-mysite.querySelectorAll("a[rel=nofollow]")
-mysite.querySelectorAll("a[href='#services']")
-mysite.querySelectorAll("a[href$='technology']")
-mysite.querySelectorAll('.fa-twitter')
+from domonic.javascript import Math, Array, Date
 
-somelinks = mysite.querySelectorAll("a[href*='twitter']")
-for l in somelinks:
-    print(l.href)
-```
-
-To use the DOM either reference your root 'html' node or import the dom modules global 'document'
-
-```python
-
-# access the document via the html tag
-mydom = html()
-# mydom.getElementbyID...
-
-# or by importing the document global
-from domonic.dom import document
-# document.createElement...
-print(document)
-```
-
-The aim is to track the real platform as closely as possible :
-- [WHATWG DOM Standard](https://dom.spec.whatwg.org/)
-- [HTML Standard](https://html.spec.whatwg.org/)
-- [MDN Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)
-
-Check the [code/docs](https://domonic.readthedocs.io/) to see what's currently implemented.
-
-
-### JavaScript
-
-There is a JavaScript package that mirrors a large, practical slice of the JS API:
-
-```python
-from domonic.javascript import Math
 print(Math.random())
 
-from domonic.javascript import Array
-myArr=Array(1,2,3)
-print(myArr.splice(1))
-# [2, 3]
+numbers = Array(1, 2, 3)
 
+print(numbers.splice(1))
+```
+
+```python
 from domonic.javascript import URL
-url = URL('https://somesite.com/blog/article-one#some-hash')
-print(url.protocol)  # https
-print(url.host)  # somesite.com
-print(url.pathname)  # /blog/article-one
-print(url.hash)  # #some-hash
 
-# Use Global class to import all the js methods from the global namespace i.e
-# from domonic.javascript import Global
-# Global.decodeURIComponent(...
-# Global.encodeComponent(...
-# Global.setInterval(...
+url = URL("https://example.com:8000/blog/article#hello")
 
-# from domonic.javascript import Date, String, Number
-# etc..
+print(url.protocol)
+print(url.host)
+print(url.port)
+print(url.pathname)
+print(url.hash)
 ```
 
-Use setInterval and clearInterval with params
+Timers are there too:
 
 ```python
-from domonic.javascript import setInterval, clearInterval
+from domonic.javascript import setTimeout
 
-x=0
+def hello():
+    print("hello")
 
-def hi(inc):
-    global x
-    x = x+inc
-    print(x)
-
-test = setInterval(hi, 1000, 2)
-import time
-time.sleep(5)
-clearInterval(test)
-print(f"Final value of x:{x}")
+setTimeout(hello, 1000)
 ```
 
-Or for a single delayed function call use setTimeout, clearTimeout
+Other APIs include things such as:
 
-```python
-from domonic.javascript import setTimeout, clearTimeout
-timeoutID = setTimeout(hi, 1000)
-```
+`String` · `Number` · `Promise` · `JSON` · typed arrays · timers · URL helpers · global functions
 
-You can call ```()``` on a stringvar to transform it into a Node
+This JavaScript-like layer also powers some of domonic's more unusual experiments.
 
-```python
-from domonic.javascript import String
+---
 
-test = String("Hi there!")
-test('div', _style="font-color:red;")
-str(test('div', _style="font-color:red;"))
-# <div style="font-color:red;">Hi there!</div>
-```
+# Web APIs
 
-a-tags inherit URL:
+The web platform is much bigger than the DOM.
 
-```python
-from domonic.html import *
+domonic implements or experiments with Python versions of APIs including:
 
-atag = a(_href="https://somesite.com:8000/blog/article-one#some-hash")
-print('href:', atag.href)
-# href: https://somesite.com:8000/blog/article-one#some-hash
-print('protocol:', atag.protocol)
-# protocol: https:
-print('port:', atag.port)
-# port: 8000
+* `URL`
+* `URLSearchParams`
+* `URLPattern`
+* Fetch / XHR helpers
+* Web Storage
+* Cookie Store
+* History
+* File API
+* Web Crypto
+* Web Workers
+* WebSocket
+* Server-Sent Events
+* Messaging
+* Permissions
+* Notifications
+* Performance APIs
+* Scheduler / `postTask`
+* Sanitizer
+* Compression streams
+* Canvas / WebGL
+* CSS font loading
+* Gamepad
+* Media APIs
+* Import maps
+* Speculation rules
+* Custom elements
+* Shadow DOM
+* Mutation / tree observation
+* XPath
 
-atag.protocol = "http"
-atag.port = 8983
-print(atag)
-# <a href="http://somesite.com:8983/blog/article-one#some-hash">
-```
+…and more.
 
-For writing and using regular JavaScript, load from a source:
+The README deliberately doesn't try to document all of them.
 
-```python
-script(_src="/docs/5.0/dist/js/bootstrap.bundle.min.js", _integrity="sha384-1234", _crossorigin="anonymous"),
-# <script src="/docs/5.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-1234" crossorigin="anonymous"></script>
-```
+👉 **[Browse the domonic documentation](https://domonic.readthedocs.io/)**
 
-or do inline js by opening triple quotes...
+---
 
-```python
-script("""
-let itbe = ""
-"""),
-```
+# SVG, XML, MathML and more
 
-### Styling
+The DOM isn't only HTML.
 
-Styling is supported. Styles get passed to the style tag on render...
-
-```python
-mytag = div("hi", _id="test")
-mytag.style.backgroundColor = "black"
-mytag.style.fontSize = "12px"
-print(mytag)
-# <div id="test" style="background-color:black;font-size:12px;">hi</div>
-```
-
-To use css use a link tag as you usually would...
-
-```python
-link(_href="styles.css", _rel="stylesheet"),
-```
-
-or use triple quotes to open style tag...
-
-```python
-style("""
-.placeholder-img {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-"""),
-```
-
-### Decorators
-
-use decorators to wrap elements around function results
-
-```python
-from domonic.decorators import el
-
-@el(html, True)
-@el(body)
-@el(div)
-def test():
-    return 'hi!'
-
-print(test())
-# <html><body><div>hi!</div></body></html>
-
-# returns pyml objects so call str to render
-assert str(test()) == '<html><body><div>hi!</div></body></html>'
-```
-
-It returns the tag object by default. You can pass ``True`` as a second parameter to return a rendered string instead. It also accepts strings as the first parameter for custom tags.
-
-### data-tags
-
-Python doesn't allow hyphens in parameter names. so use variable keyword argument syntax for custom data-tags
-
-```python
-div("test", **{"_data-test":"test"} )
-# <div data-test="test">test</div>
-```
-
-or for example a colon...
-
-```python
-t = div( **{"_:test":"something"} )
-str(t)
-# <div :test="something"></div>
-```
-
-### JSON (utils)
-
-Decorate any function that returns Python objects to return JSON instead.
-
-```python
-from domonic.decorators import as_json
-import domonic.JSON as JSON
-
-@as_json
-def somefunc():
-    myObj = {"hi":[1,2,3]}
-    return myObj
-
-print( somefunc() )
-# {"hi":[1,2,3]}
-print( JSON.is_json(somefunc()) )
-# True
-```
-
-Convert JSON arrays into HTML tables:
-
-```python
-import domonic.JSON as JSON
-
-# i.e. containing a flat JSON array of dicts... [{"id":"01","name": "some item"},{"id":"02","name": "some other item"}]
-
-json_data = JSON.parse_file('somefile.json')
-mytable = JSON.tablify(json_data)
-print(mytable)
-```
-
-Convert JSON arrays into CSV files:
-
-```python
-import domonic.JSON as JSON
-
-json_data = JSON.parse_file('somefile.json')
-JSON.csvify(json_data, 'data.csv')
-```
-
-Convert CSV files to JSON:
-
-```python
-import domonic.JSON as JSON
-
-json_data = JSON.csv2json("data.csv")
-print(json_data)
-```
+domonic can build other document types using the same object-oriented approach.
 
 ### SVG
 
-All tags extend 'Element'. So will have DOM and magic methods available to them. See the [docs](https://domonic.readthedocs.io/).
-
 ```python
-circ = svg(
-    circle(_cx="50", _cy="50", _r="40", _stroke="green", **{"_stroke-width": "4"}, _fill="yellow"),
-    _width="100", _height="100",
+from domonic.html import *
+from domonic.svg import *
+
+icon = svg(
+    circle(
+        _cx="50",
+        _cy="50",
+        _r="40",
+        _stroke="green",
+        _fill="yellow"
+    ),
+    _width="100",
+    _height="100"
 )
-mysvg = svg()
-mysvg.appendChild(circ / 10)
-print(mysvg)
+
+print(icon)
 ```
 
-### Tweening
+There is also support for:
 
-Tween values with the built-in tween library:
+* XML
+* MathML
+* RSS
+* Atom
+* sitemaps
+* ODF
+* A-Frame
+* X3D
+* custom elements
 
-```python
-from domonic.lerpy.easing import *
-from domonic.lerpy.tween import *
+See the [documentation](https://domonic.readthedocs.io/) for the individual packages.
 
-someObj = {'x':0,'y':0,'z':0}
-twn = Tween( someObj, { 'x':10, 'y':5, 'z':3 }, 6, Linear.easeIn )
-twn.start()
-```
+---
 
-### aframe / x3d
+# Style elements from Python
 
-3d tags can be used if you import the js
+DOM-style property access works too.
 
 ```python
 from domonic.html import *
-from domonic.xml.aframe import *
-from domonic.CDN import *
 
-_scene = scene(
-      box(_position="-1 0.5 -3", _rotation="0 45 0", _color="#4CC3D9"),
-      sphere(_position="0 1.25 -5", _radius="1.25", _color="#EF2D5E"),
-      cylinder(_position="1 0.75 -3", _radius="0.5", _height="1.5", _color="#FFC65D"),
-      plane(_position="0 0 -4", _rotation="-90 0 0", _width="4", _height="4", _color="#7BC8A4"),
-      sky(_color="#ECECEC")
-    )
+box = div("hello", _id="message")
 
-_webpage = html(head(),body(
-    script(_src=CDN_JS.AFRAME), # < NOTICE you need to import aframe to use it
-    str(_scene)
-    )
-)
+box.style.backgroundColor = "black"
+box.style.fontSize = "12px"
 
-render( _webpage, 'hello.html' )
+print(box)
 ```
 
-### dQuery
+```html
+<div id="message" style="background-color:black;font-size:12px;">hello</div>
+```
 
-dQuery uses the º symbol (alt+0).
+---
+
+# dQuery
+
+Yes, there is also a jQuery-inspired API.
+
+Because apparently implementing the DOM wasn't enough.
 
 ```python
 from domonic.html import *
 from domonic.dQuery import º
 
-d = html(head(body(li(_class='things'), div(_id="test"))))
+page = html(
+    body(
+        li(_class="thing"),
+        div(_id="test")
+    )
+)
 
-print( º('#test') )
-# <div id="test">
-print( º('.things') )
-# <li class="things">
-mydiv = º('<div class="test2"></div>')
-# <domonic.dQuery.o object at 0x107d5c9a0>
-
-b = º('#test').append(mydiv)
-print(b)
-# <div id="test"><div class="test2"></div></div>
+print(º("#test"))
+print(º(".thing"))
 ```
 
-dQuery is included here because it is useful for proving out the DOM against a demanding consumer API, not just as a convenience wrapper.
+Append nodes:
 
-### Terminal
+```python
+new_div = º('<div class="child"></div>')
 
-There is a command line package that can call bash/unix/posix and other apps on the command line:
+º("#test").append(new_div)
+```
 
-This package only works on Unix-like systems because it delegates to subprocess.
+dQuery is useful in its own right, but it also serves as a demanding consumer of the underlying DOM implementation.
+
+---
+
+# d3-inspired utilities
+
+domonic also contains a Python port / interpretation of useful parts of the d3 ecosystem built on top of its JavaScript and DOM layers.
+
+```python
+from domonic.d3 import *
+```
+
+See the [documentation and examples](https://domonic.readthedocs.io/) for current coverage.
+
+---
+
+# BeautifulSlop
+
+domonic includes **BeautifulSlop**, a BS4-style compatibility experiment built over the domonic parsing system.
+
+It exists for code that wants familiar soup-like ergonomics while still landing in the domonic world.
+
+See the documentation and examples for current compatibility.
+
+---
+
+# JSON utilities
+
+Convert Python data to JSON:
+
+```python
+from domonic.decorators import as_json
+
+@as_json
+def response():
+    return {
+        "hello": "world",
+        "items": [1, 2, 3]
+    }
+
+print(response())
+```
+
+JSON arrays can also be turned into HTML tables or CSV:
+
+```python
+import domonic.JSON as JSON
+
+data = JSON.parse_file("data.json")
+
+table = JSON.tablify(data)
+
+JSON.csvify(data, "data.csv")
+```
+
+And CSV can go the other way:
+
+```python
+data = JSON.csv2json("data.csv")
+```
+
+---
+
+# Animation / tweening
+
+There is a small tweening library too.
+
+```python
+from domonic.lerpy.easing import *
+from domonic.lerpy.tween import *
+
+position = {
+    "x": 0,
+    "y": 0,
+    "z": 0
+}
+
+tween = Tween(
+    position,
+    {"x": 10, "y": 5, "z": 3},
+    6,
+    Linear.easeIn
+)
+
+tween.start()
+```
+
+---
+
+# Terminal APIs
+
+domonic even contains Python wrappers around common command-line tools on Unix-like systems:
 
 ```python
 from domonic.terminal import *
 
 print(ls())
-print(ls("-al"))
-print(ls("../"))
 print(pwd())
-print(mkdir('somedir'))
-print(touch('somefile'))
-print(git('status'))
-
-for file in ls( "-al" ):
-    print("Line : ", file)
-
-for f in ls():
-    try:
-        print(f)
-        print(cat(f))
-    except Exception as e:
-        pass
-
-for i, l in enumerate(cat('LICENSE.txt')):
-    print(i,l)
-
-print(man("ls"))
-print(echo('test'))
+print(git("status"))
 print(df())
-print(du())
-
-for thing in du():
-    print(thing)
-
-print(find('.'))
-# print(ping('eventual.technology'))  # TODO: stream output
-print(cowsay('moo'))
-# print(wget('eventual.technology'))
-print(date())
-print(cal())
 ```
 
-or just run arbitrary commands...
+Or run an arbitrary command:
 
 ```python
 from domonic.terminal import command
-command.run("echo hi")
+
+command.run("echo hello")
 ```
 
-Take a look at the code in `terminal.py` to see all the commands as there's loads. (Disclaimer: not all tested.)
+Windows users can use `domonic.cmd`.
 
-Windows users can use now use cmd.
+These utilities are not the core reason to install domonic, but they're part of the project's broader experiment:
 
-```python
-from domonic.cmd import *
-print(dir())
-print(dir("..\\")) 
-```
+**what familiar platform APIs become interesting when exposed naturally to Python?**
 
-### Docs
+---
 
-[https://domonic.readthedocs.io/](https://domonic.readthedocs.io/)
+# Command line
 
-### CLI
+domonic comes with a CLI for working with HTML without writing a script.
 
-Use the command line interface to help you out.
+### Help
 
-To view the online docs:
-
-```python
+```bash
 domonic -h
 ```
 
-See the version:
+### Version
 
 ```bash
 domonic -v
 ```
 
-Quickly create a domonic project for prototyping:
+### Query a URL with CSS
 
 ```bash
-domonic -p myproject
+domonic -q https://example.com 'a'
 ```
 
-Evaluate some domonic pyml:
+### Query a URL with XPath
 
 ```bash
-domonic -e 'html(head(),body(div()))'
+domonic -x https://example.com '//a'
 ```
 
-Use xpath on a website from the command line:
+### Extract text
 
 ```bash
-domonic -x https://google.com '//a'
+domonic -q https://example.com 'h1' --text
 ```
 
-Use css selectors on a website from the command line:
+### Extract attributes
 
 ```bash
-domonic -q https://google.com 'a'
+domonic -q https://example.com 'a' --attr href
 ```
 
-Use XPath or CSS selectors against a local file:
+### First result
+
+```bash
+domonic -q https://example.com 'a' --first
+```
+
+### Count results
+
+```bash
+domonic -x https://example.com '//a' --count
+```
+
+### Local files
 
 ```bash
 domonic --xpath-file ./page.html '//title'
 domonic --query-file ./page.html 'a.cta'
 ```
 
-Pipe HTML in directly:
+### Pipes
 
 ```bash
 curl -s https://example.com | domonic -x '//a' --count
 cat page.html | domonic -q 'a.cta' --attr href
 ```
 
-Output controls:
+### Evaluate pyml
 
 ```bash
-domonic -q https://example.com 'a' --text
-domonic -q https://example.com 'a' --attr href --first
-domonic -x https://example.com '//a' --count
+domonic -e 'html(head(), body(h1("hello")))'
 ```
 
-Create a project non-interactively with a chosen server:
+### Scaffold a project
+
+```bash
+domonic -p myproject
+```
+
+Choose a server:
 
 ```bash
 domonic -p myproject --server fastapi
 ```
 
-### Example Projects
+---
 
-[Blueberry](https://github.com/byteface/Blueberry/) : A browser based file OS. Working example of how components can work.
+# Server-side HTML
 
-[ezcron](https://github.com/byteface/ezcron/) : A cron viewer
+Because domonic elements are Python objects that render to markup, they work naturally in Python web applications.
 
-[bombdisposer](https://github.com/byteface/bombdisposer/) : A basic game
+The repository contains examples for frameworks including:
 
-[htmlx](https://github.com/byteface/htmlx/tree/master/htmlx) : A low dependency lightweight (DOM only) version of domonic
+* FastAPI
+* Flask
+* Django
+* Sanic
 
-Check out [the docs](https://domonic.readthedocs.io/) for more examples, including generating sitemaps and using domonic with server frameworks like Flask, Django, Sanic, FastAPI, and others.
+…and others.
 
-There are also several usage examples in the repo, so pull it and have a look.
+👉 [Browse the examples](https://github.com/byteface/domonic/tree/master/examples)
 
-### Running the examples
+---
+
+# One library, a lot of surface area
+
+A rough map of the project:
+
+| Area                | Includes                                                                           |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| **HTML**            | HTML5 tag generation and rendering                                                 |
+| **DOM**             | Document, Element, Node, events, ranges, traversal, fragments, observers           |
+| **Selectors**       | CSS selectors + XPath                                                              |
+| **Parsing**         | html5lib, html.parser, lxml, markupever, selectolax, html5_parser, justhtml, expat |
+| **Documents**       | SVG, XML, MathML, RSS, Atom, ODF, sitemaps, A-Frame, X3D                           |
+| **Web APIs**        | URL, storage, workers, crypto, messaging, permissions, performance and more        |
+| **JavaScript**      | Array, Date, Math, Promise, timers, typed arrays and helpers                       |
+| **Experiments**     | dQuery, d3-inspired utilities, BeautifulSlop, diffdom                              |
+| **Utilities**       | JSON/CSV tools, decorators, tweening, string/number/byte helpers                   |
+| **Developer tools** | CLI, terminal wrappers, project scaffolding                                        |
+
+Not every API is implemented to browser-complete parity.
+
+The goal is to make useful parts of the browser and document ecosystem available naturally from Python, while continuing to move closer to the real standards.
+
+---
+
+# What can you build with it?
+
+domonic is useful anywhere you want **documents as programmable Python object trees**.
+
+For example:
+
+* server-side rendering
+* static-site generation
+* HTML generation
+* scraping utilities
+* document transformation
+* HTML repair and parsing
+* XML / SVG generation
+* testing markup
+* browser API experiments
+* Python-first templating
+* command-line extraction
+* document diffing
+* web framework responses
+* programmatic sitemaps and feeds
+* tools that need to both **read and write** HTML
+
+The interesting part is that these don't need separate mental models.
+
+A generated document and a parsed document can live in the same DOM world.
+
+---
+
+# Examples
+
+There are working examples throughout the repository:
+
+👉 **[github.com/byteface/domonic/tree/master/examples](https://github.com/byteface/domonic/tree/master/examples)**
+
+Some projects built with domonic:
+
+### [Blueberry](https://github.com/byteface/Blueberry)
+
+A browser-based file OS and an example of building components with domonic.
+
+### [ezcron](https://github.com/byteface/ezcron)
+
+A cron viewer.
+
+### [bombdisposer](https://github.com/byteface/bombdisposer)
+
+A small game.
+
+### [htmlx](https://github.com/byteface/htmlx/tree/master/htmlx)
+
+A lightweight, low-dependency DOM-focused relative of domonic.
+
+---
+
+# Documentation
+
+The README is the tour.
+
+The docs are the manual.
+
+### 📚 [domonic.readthedocs.io](https://domonic.readthedocs.io/)
+
+Use the docs for detailed API coverage, package-specific examples and less common functionality.
+
+Useful links:
+
+* [Documentation](https://domonic.readthedocs.io/)
+* [Examples](https://github.com/byteface/domonic/tree/master/examples)
+* [Release notes](https://github.com/byteface/domonic/releases)
+* [Contributing](CONTRIBUTING.md)
+* [Security](SECURITY.md)
+
+---
+
+# Development
+
+Clone the repository and install the development dependencies:
 
 ```bash
-. venv/bin/activate
-pip install -r requirements-dev.txt
-cd examples
-python lifecalendar.py
+python3 -m pip install -r requirements-dev.txt
 ```
 
-### Run the tests
-
-The tests are useful both as regression coverage and as working code examples.
-
-See Makefile to run all tests:
+Run the test suite:
 
 ```bash
-make test  # or testpc on Windows to avoid terminal tests
+make test
 ```
 
-Testing a single function:
+Or:
 
 ```bash
-python -m unittest tests.test_javascript.TestCase.test_javascript_array
-python -m unittest tests.test_dQuery.TestCase.test_addClass
-python -m unittest tests.test_geom.TestCase.test_vec2
-python3 -m unittest tests.test_cmd.TestCase.test_cmd_dir  # only windows
+pytest tests
 ```
 
-Test a whole module
+Run an individual module:
 
 ```bash
 python -m unittest tests.test_html
-python -m unittest tests.test_CDN
 ```
 
-to see coverage
+Coverage:
 
 ```bash
 coverage run -m unittest discover tests/
 coverage report
 ```
 
-or...
+The tests are also useful as executable examples of the API.
+
+---
+
+# Contributing
+
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a branch
+3. Make your change
+4. Add or update tests where appropriate
+5. Open a pull request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+
+---
+
+# Philosophy
+
+domonic started with a simple idea:
+
+**HTML should be easy to create from Python.**
+
+That led naturally to elements.
+
+Elements led to a DOM.
+
+A DOM led to selectors, events, traversal and parsing.
+
+Then came JavaScript APIs, Web APIs, SVG, XPath, dQuery, workers, URL APIs, parsers, diffing and everything else that makes documents programmable.
+
+The project is still guided by the same question:
+
+> **What would the browser platform feel like if Python could use it directly?**
+
+If that sounds useful — or just interesting — give domonic a try.
 
 ```bash
-pip install pytest
-pytest tests
+pip install domonic
 ```
 
+⭐ If you find it useful, consider starring the project.
 
-### Parsers
-
-You can choose a parser per call (see below on parser install notes):
-
-```python
-from domonic import domonic
-
-page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
-page = domonic.parseString("<p>Hello</p>", parser="html.parser") # stdlib, no dependency
-page = domonic.parseString("<p>Hello</p>", parser="html5lib") # bundled with domonic
-page = domonic.parseString("<p>Hello</p>", parser="justhtml")
-page = domonic.parseString("<p>Hello</p>", parser="markupever") # fast HTML repair
-page = domonic.parseString("<p>Hello</p>", parser="selectolax")
-page = domonic.parseString("<p>Hello</p>", parser="expat")
-```
-
-Or set the default parser for your app:
-
-```python
-from domonic import domonic
-
-domonic.set_default_parser("html5_parser")
-page = domonic.parseString("<p>Hello</p>")
-```
-
-Parser install notes, roughly ordered by observed speed with domonic on
-`benchmarks/html_meaty_page.html`:
-
-- `lxml_html`: `pip install lxml` 🚀 c
-- `markupever`: `pip install markupever` 🚀 Rust
-- `selectolax`: `pip install selectolax lxml` 🚀 c++
-- `html5_parser`: `pip install html5-parser lxml` 🚀 c++
-- `html.parser`: built into Python, no extra dependency
-- `justhtml`: `pip install justhtml` 🐢 Python
-- `html5lib`: `pip install html5lib` 🐢 Python
-- `expat`: 🐌 built into Python. (chokes on html5 or malformed content)
-
-`html5lib` has a direct treebuilder integration.
-`html.parser` builds domonic nodes directly from Python's standard-library parser callbacks.
-`markupever`, `html5_parser`, `selectolax`, and `lxml_html` use the shared lxml-to-domonic adapter.
-`justhtml` uses html5lib adapter-backed parser (parse + conversion == slower).
-
-*html5_parser was a hidden feature in older versions of domonic.
-
-## Contributing
-Contributions are welcome! If you'd like to contribute, please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bug fix.
-3. Write your code and add tests if applicable.
-4. Submit a pull request with a clear description of your changes.
-
-For more details, see the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+[Documentation](https://domonic.readthedocs.io/) ·
+[PyPI](https://pypi.org/project/domonic/) ·
+[Examples](https://github.com/byteface/domonic/tree/master/examples) ·
+[Releases](https://github.com/byteface/domonic/releases)
