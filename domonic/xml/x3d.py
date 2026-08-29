@@ -20,7 +20,6 @@ inline = Inline = type("inline", (Element,), {"name": "inline"})
 box = Box = type("box", (Element,), {"name": "box"})
 plane = Plane = type("plane", (Element,), {"name": "plane"})
 
-# TODO - go through examples to find which are usually lower. i.e before they allowed mised cases
 positionInterpolator = PositionInterpolator = type(
     "PositionInterpolator", (Element,), {"name": "PositionInterpolator"}
 )
