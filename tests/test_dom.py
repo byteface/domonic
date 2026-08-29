@@ -2546,6 +2546,8 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(str(cdata), "<![CDATA[<tag/>]]>")
         self.assertEqual(comment.length, 5)
         self.assertEqual(cdata.length, 6)
+        self.assertEqual(len(comment), 5)
+        self.assertEqual(len(cdata), 6)
         self.assertEqual(str(entity), "&amp;")
         self.assertEqual(EntityReference.fromOrdinal(38), "&")
 

@@ -5042,7 +5042,6 @@ class Comment(Node):
     def __format__(self, format_spec):
         return str(self)
 
-    @property
     def __len__(self) -> int:
         return len(self.data)
 
@@ -5067,7 +5066,6 @@ class CDATASection(Node):
 
     __str__ = toString
 
-    @property
     def __len__(self) -> int:
         return len(self.data)
 
