@@ -50,7 +50,7 @@ class TestCase(unittest.TestCase):
         assert myObj["date created"] == "String with space"
         assert myObj[string] == "String value"
         assert myObj[rand] == "Random Number"
-        # assert myObj[obj1] == 'Object' # TODO - does js do this?
+        assert myObj[obj1] == "Object"
         assert myObj[""] == "Even an empty string"
 
         assert o is not myObj
@@ -547,7 +547,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Global.parseFloat("12.5"), 12.5)
         self.assertEqual(Global.parseInt("12"), 12)
 
-    # TODO - this was move to webapi. tests are working by proxy
     def test_javascript_url(self):
         url = URL("https://somesite.com/blog/article-one#some-hash")
         # print('TESTS:')
@@ -556,7 +555,7 @@ class TestCase(unittest.TestCase):
         assert url.protocol == "https"
         assert url.host == "somesite.com"
         assert url.hostname == "somesite.com"
-        # assert url.port == ''  # TODO - check js none or empty
+        assert url.port is None
         assert url.pathname == "/blog/article-one"
         assert url.hash == "#some-hash"
         assert url.toString() == "https://somesite.com/blog/article-one#some-hash"
@@ -1081,8 +1080,10 @@ class TestCase(unittest.TestCase):
 
         assert mystr.includes("a") == False
         assert mystr.includes("Some") == True
-        # assert mystr.matchAll(['a', 'b']) == False # TODO - dont think this is supposed to take lists?
-        # assert mystr.match('a', 'b') == False # TODO
+        with self.assertRaises(TypeError):
+            mystr.matchAll(["a", "b"])
+        with self.assertRaises(TypeError):
+            mystr.match(["a", "b"])
         assert String("  Some").trimStart() == "Some"
         assert String("String  ").trimEnd() == "String"
 

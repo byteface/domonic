@@ -65,9 +65,7 @@ class TestHTML(unittest.TestCase):
         assert str(title()) == "<title></title>"
         # print(str(meta()))
         assert str(meta()) == "<meta/>"
-        assert (
-            str(link()) == "<link/>"
-        )  # TODO - in html5 i think slash no longer required? (one for config when thats setup)
+        assert str(link()) == "<link/>"
         assert str(style()) == "<style></style>"
         assert str(script()) == "<script></script>"
         assert str(noscript()) == "<noscript></noscript>"
@@ -592,9 +590,7 @@ body(
                 """),
                 link(_href="form-validation.css", _rel="stylesheet"),
             ),
-            body(
-                _class="bg-light"
-            ).html(  # , _html= # TODO - make an attribute to do the same
+            body(_class="bg-light").html(
                 div(_class="container").html(
                     div(_class="py-5 text-center").html(
                         img(
@@ -1837,8 +1833,7 @@ body(
         ]
         for url in urls:
             assert f"""{render(a(_href=url))}""" == f"""<a href="{url}"></a>"""
-        # a tag no href TODO
-        # print( render(a(_name="test")) )
+        assert render(a(_name="test")) == '<a name="test"></a>'
 
     def test_with(self):
         # d =
