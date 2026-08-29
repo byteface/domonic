@@ -41,6 +41,9 @@ class TestCase(unittest.TestCase):
         sometag.style.display = "none"
         assert sometag.style.getPropertyValue("display") == "none"
         assert "font-size:12px;" in str(sometag)
+        sometag.style.cssFloat = "right"
+        assert sometag.style.getPropertyValue("float") == "right"
+        assert sometag.style.float == "right"
 
         sometag.style = "color: red; font-size: 16px;"
         self.assertIsInstance(sometag.style, CSSStyleDeclaration)

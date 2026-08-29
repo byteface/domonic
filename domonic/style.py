@@ -1195,11 +1195,7 @@ class CSSStyleSheet(StyleSheet):
 
 
 class Style:
-    """[ js syntax styles ]
-    # TODO - just add normal float?
-    # TODO - consider camel case for hyphen params?
-    # TODO - not json serialisable due to the decorators.
-    """
+    """JavaScript-style accessors for CSS declarations."""
 
     def __init__(self, parent_node=None):
         # print("*** MADE A STYLE11 ***")
@@ -2044,7 +2040,7 @@ class Style:
         return style_wrapper
 
     @property
-    @style_get_decorator  # TODO - pass array of valid words as params. so can raise value errors
+    @style_get_decorator
     def alignContent(self):
         return self.__alignContent
 
@@ -2932,6 +2928,7 @@ class Style:
     @style_set_decorator
     def float(self, value=None, *args, **kwargs):
         self.__float = value
+        self.__cssFloat = value
 
     @property
     @style_get_decorator
@@ -2942,6 +2939,7 @@ class Style:
     @style_set_decorator
     def cssFloat(self, value=None, *args, **kwargs):
         self.__cssFloat = value
+        self.__float = value
 
     @property
     @style_get_decorator
