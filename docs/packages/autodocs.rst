@@ -10,6 +10,9 @@
 .. automodule:: domonic.dom
     :members:
 
+.. automodule:: domonic.bs4
+    :members:
+
 .. automodule:: domonic.diffdom
     :members:
 

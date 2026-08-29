@@ -17,6 +17,7 @@ Domonic is a Python library for generating, parsing, traversing, and manipulatin
 - HTML, SVG, DOM, events, CSSOM, geometry, observers, animation, and web APIs
 - A JavaScript-like runtime surface for practical porting and scripting
 - diffDOM-style patch data for minimal server-side DOM updates
+- BeautifulSlop for Beautiful Soup style querying over real domonic nodes
 - CLI tools for querying pages with XPath and CSS selectors
 - dQuery and d3 included as demanding consumers of the DOM, not just extras
 
@@ -132,6 +133,7 @@ Package Guide
    packages/javascript
    packages/webapi
    packages/constants
+   packages/bs4
    packages/dQuery
    packages/diffdom
    packages/d3

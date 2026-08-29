@@ -82,6 +82,7 @@ Pure examples:
 cd examples
 python alltags.py
 python atom_feed.py
+python beautifulslop.py
 python diffdom.py
 python mathml.py
 python odf_content.py
