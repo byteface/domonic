@@ -29,7 +29,7 @@ Examples that need extra packages beyond the core install:
 
 - `websockets`
   Used by:
-  `events/events.py`, `sockets/atoms.py`, `sockets/atoms3d.py`, `sockets/events_test.py`, `sockets/gol.py`
+  `events/events.py`, `sockets/atoms.py`, `sockets/atoms3d.py`, `sockets/diffdom_socket.py`, `sockets/events_test.py`, `sockets/gol.py`
 
 - `requests`
   Used by:
@@ -105,4 +105,5 @@ Server-backed examples are usually better run from the repo root so local import
 ```bash
 . venv/bin/activate
 python examples/games/hangman.py
+python examples/sockets/diffdom_socket.py
 ```

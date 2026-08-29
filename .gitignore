@@ -78,6 +78,7 @@ local.settings.json
 *.log
 *.tmp
 *.pid
+examples/sockets/diffdom_socket.html
 
 # Misc
 *.pot
