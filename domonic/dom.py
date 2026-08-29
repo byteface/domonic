@@ -5990,8 +5990,13 @@ class Document(Element):
         # el = type(qualifiedName, (Element,), {'name': qualifiedName})
         from domonic.html import create_element
 
-        el = create_element(qualifiedName)  # , *args, **kwargs)
-        el.namespaceURI = namespaceURI
+        local_name = str(qualifiedName).split(":", 1)[-1]
+        if namespaceURI == MATHML_NAMESPACE:
+            element_type = type(local_name, (MathMLElement,), {"name": local_name})
+            el = element_type()
+        else:
+            el = create_element(qualifiedName)  # , *args, **kwargs)
+            el.namespaceURI = namespaceURI
         _upgrade_custom_element_instance(el)
         # el["name"] = qualifiedName
         return el
@@ -8424,6 +8429,34 @@ def _set_attributes(element: "Element", attributes: dict[str, Any]) -> None:
     for name, value in attributes.items():
         if value is not None:
             element.setAttribute(name, value)
+
+
+MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML"
+
+
+class MathMLElement(Element):
+    """DOM interface for MathML elements."""
+
+    name = ""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.namespaceURI = MATHML_NAMESPACE
+
+    @property
+    def attributeStyleMap(self):
+        return self.style
+
+    @property
+    def nonce(self) -> str | None:
+        return self.getAttribute("nonce")
+
+    @nonce.setter
+    def nonce(self, value: Any) -> None:
+        if value is None:
+            self.removeAttribute("nonce")
+            return
+        self.setAttribute("nonce", value)
 
 
 class HTMLElement(Element):
