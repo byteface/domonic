@@ -91,7 +91,7 @@ For example, here we set several flags away from their defaults:
 	# <html><head></head><body><div><h1>heading</h1><div><button data-hx-get="/get_hi">hi & hack</button></div></div></body></html>
 
 When ``HTMX_ENABLED`` is set, domonic maps HTMX-style shortcut attributes to
-the ``data-hx-`` prefix recognised by HTMX 2:
+the configurable ``data-hx-`` secondary prefix recognised by HTMX:
 
 .. code-block :: python
 
@@ -104,6 +104,26 @@ the ``data-hx-`` prefix recognised by HTMX 2:
 	)
 	# <button data-hx-post="/items" data-hx-target="#items" data-hx-swap-oob="true" data-hx-on:click="this.classList.add('busy')">Save</button>
 
+HTMX 4 explicit inheritance can be written with the literal attribute spelling
+or with ``__inherited`` as a Python-friendly suffix:
+
+.. code-block :: python
+
+	div(_confirm__inherited="Are you sure?", _headers__inherited='{"X-CSRF": "token"}')
+	# <div data-hx-confirm:inherited="Are you sure?" data-hx-headers:inherited="{"X-CSRF": "token"}"></div>
+
+HTMX 4 attributes and popular extension attributes are available as shortcuts,
+including ``_query``, ``_pending``, ``_status``, ``_ignore``, ``_morph_skip``,
+``_morph_skip_children``, ``_preload``, ``_live``, ``_optimistic``,
+``_targets``, ``_download``, and ``_multipart``.
+
+``<hx-partial>`` responses can be generated with ``hx_partial``:
+
+.. code-block :: python
+
+	hx_partial(div("New message"), **{"_hx-target": "#messages", "_hx-swap": "beforeend"})
+	# <hx-partial hx-target="#messages" hx-swap="beforeend"><div>New message</div></hx-partial>
+
 Raw HTMX attributes can still be emitted by spelling the attribute explicitly:
 
 .. code-block :: python
@@ -111,7 +131,8 @@ Raw HTMX attributes can still be emitted by spelling the attribute explicitly:
 	button("Load", **{"_hx-get": "/items"})
 	# <button hx-get="/items">Load</button>
 
-The HTMX 2 SSE and WebSocket extensions use their own attribute names:
+Legacy SSE and WebSocket extension spellings are still supported for existing
+HTMX 2 integrations:
 
 .. code-block :: python
 

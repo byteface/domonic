@@ -37,7 +37,9 @@ class CDN_JS:
     BRYTHON: str = "https://cdn.jsdelivr.net/npm/brython@3.14.3/brython.min.js"
     MATHML: str = "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
     MATHJAX: str = MATHML
-    HTMX: str = "https://unpkg.com/htmx.org@2.0.10"
+    HTMX: str = "https://unpkg.com/htmx.org@4.0.0/dist/htmx.min.js"
+    HTMX_2: str = "https://unpkg.com/htmx.org@2.0.10"
+    HTMAX: str = "https://unpkg.com/htmx.org@4.0.0/dist/htmax.min.js"
     LODASH: str = "https://cdn.jsdelivr.net/npm/lodash@4.18.1/lodash.min.js"
     AXIOS: str = "https://cdn.jsdelivr.net/npm/axios@1.19.0/dist/axios.min.js"
     DAY_JS: str = "https://cdn.jsdelivr.net/npm/dayjs@1.11.23/dayjs.min.js"

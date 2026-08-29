@@ -28,6 +28,9 @@ class TestCase(unittest.TestCase):
             CDN_JS.MATHML == "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"
         )
         assert CDN_JS.MATHJAX == CDN_JS.MATHML
+        assert CDN_JS.HTMX == "https://unpkg.com/htmx.org@4.0.0/dist/htmx.min.js"
+        assert CDN_JS.HTMX_2 == "https://unpkg.com/htmx.org@2.0.10"
+        assert CDN_JS.HTMAX == "https://unpkg.com/htmx.org@4.0.0/dist/htmax.min.js"
         assert (
             CDN_IMG.PLACEHOLDER(100, 100, HTTP="https")
             == "https://loremflickr.com/100/100"

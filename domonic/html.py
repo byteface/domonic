@@ -76,6 +76,7 @@ html_tags = [
     "keygen",
     "iframe",
     "hgroup",
+    "hx-partial",
     "header",
     "footer",
     "figure",
@@ -185,7 +186,7 @@ html_tags = [
 # big, blink, bold, tt, var, frameset
 
 _HTML_TAG_LOOKUP = set(html_tags)
-_TAG_ALIASES = {"del": "del_"}
+_TAG_ALIASES = {"del": "del_", "hx-partial": "hx_partial"}
 
 html_attributes = [
     "accept",
@@ -581,6 +582,7 @@ class closed_tag(Node):
 html = type("html", (HTMLDocument,), {"name": "html"})
 body = type("body", (HTMLBodyElement,), {"name": "body"})
 head = type("head", (HTMLHeadElement,), {"name": "head"})
+hx_partial = type("hx-partial", (Element,), {"name": "hx-partial"})
 script = type("script", (HTMLScriptElement,), {"name": "script"})
 style = type("style", (HTMLStyleElement,), {"name": "style"})
 h1 = type("h1", (HTMLHeadingElement,), {"name": "h1"})

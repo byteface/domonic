@@ -173,6 +173,11 @@ class TestHTML(unittest.TestCase):
     def test_modern_html_attributes(self):
         self.assertIn("portal", html_tags)
         self.assertIn("selectedcontent", html_tags)
+        self.assertIn("hx-partial", html_tags)
+        self.assertEqual(
+            str(hx_partial(div("New message"), **{"_hx-target": "#messages"})),
+            '<hx-partial hx-target="#messages"><div>New message</div></hx-partial>',
+        )
         for attr in (
             "allow",
             "allowfullscreen",

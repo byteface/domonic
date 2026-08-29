@@ -63,30 +63,42 @@ HTMX_ATTRIBUTES: frozenset[str] = frozenset(
         "disable",
         "disabled_elt",
         "disinherit",
+        "download",
         "encoding",
         "ext",
         "get",
         "headers",
         "history",
         "history_elt",
+        "ignore",
         "include",
         "indicator",
         "inherit",
+        "live",
+        "morph_skip",
+        "morph_skip_children",
+        "multipart",
+        "optimistic",
         "params",
         "patch",
+        "pending",
         "post",
+        "preload",
         "preserve",
         "prompt",
         "push_url",
         "put",
+        "query",
         "replace_url",
         "request",
         "select",
         "select_oob",
+        "status",
         "swap",
         "swap_oob",
         "sync",
         "target",
+        "targets",
         "trigger",
         "validate",
         "vals",
@@ -96,8 +108,8 @@ HTMX_ATTRIBUTES: frozenset[str] = frozenset(
 """Stable HTMX shortcut attributes supported by ``DOMConfig.HTMX_ENABLED``.
 
 These are supplied without the ``hx`` prefix, for example ``_get="/items"`` or
-``_swap_oob=True``. They render as ``data-hx-*`` attributes, because HTMX 2
-recognises that secondary prefix by default.
+``_swap_oob=True``. They render as ``data-hx-*`` secondary attributes by
+default, which HTMX supports via its configurable secondary prefix.
 """
 
 HTMX_LEGACY_ATTRIBUTES: frozenset[str] = frozenset({"sse", "ws"})
@@ -110,10 +122,12 @@ HTMX_EXTENSION_ATTRIBUTES: dict[str, str] = {
     "ws_connect": "ws-connect",
     "ws_send": "ws-send",
 }
-"""HTMX 2 extension attributes that are not prefixed with ``hx-``."""
+"""Legacy HTMX extension attributes that are not prefixed with ``hx-``."""
 
 
 def _normalize_htmx_attribute(key: str) -> str | None:
+    key = key.replace("__inherited", ":inherited")
+    base_key = key.split(":", 1)[0]
     if key.startswith("hx_"):
         suffix = key[3:].replace("_", "-")
         if suffix:
@@ -122,7 +136,7 @@ def _normalize_htmx_attribute(key: str) -> str | None:
         return HTMX_EXTENSION_ATTRIBUTES[key]
     if key == "on" or key.startswith(("on:", "on-", "on_")):
         return f"data-hx-{key.replace('_', '-')}"
-    if key in HTMX_ATTRIBUTES or key in HTMX_LEGACY_ATTRIBUTES:
+    if base_key in HTMX_ATTRIBUTES or base_key in HTMX_LEGACY_ATTRIBUTES:
         return f"data-hx-{key.replace('_', '-')}"
     return None
 

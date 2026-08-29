@@ -2370,11 +2370,18 @@ class DOMTest(unittest.TestCase):
             self.assertIn(" loop", media_rendered)
             self.assertIn(" muted", media_rendered)
             self.assertIn(" playsinline", media_rendered)
+            self.assertIn(
+                " preload=metadata", video(_preload="metadata").__attributes__
+            )
 
             DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = True
             htmx_rendered = button_node.__attributes__
             self.assertIn(" data-hx-get=", htmx_rendered)
+            self.assertIn(
+                ' data-hx-preload="metadata"',
+                video(_preload="metadata").__attributes__,
+            )
 
             htmx_node = div(
                 _get="/api/items",
@@ -2385,6 +2392,18 @@ class DOMTest(unittest.TestCase):
                 _history="false",
                 _inherit="*",
                 _validate="true",
+                _query="/items/search",
+                _pending="closest form",
+                _status="404:#missing",
+                _ignore=True,
+                _morph_skip=True,
+                _morph_skip_children=True,
+                _preload="mouseover",
+                _live="count",
+                _optimistic="true",
+                _targets=".toast",
+                _download="invoice.pdf",
+                _multipart="/stream",
                 _sse_connect="/events",
                 _sse_swap="message",
                 _sse_close="done",
@@ -2396,6 +2415,8 @@ class DOMTest(unittest.TestCase):
                 **{
                     "_on:click": "this.classList.toggle('active')",
                     "_on__after_request": "this.reset()",
+                    "_confirm:inherited": "Are you sure?",
+                    "_headers__inherited": '{"X-CSRF": "token"}',
                     "_hx-get": "/raw",
                 },
             )
@@ -2408,6 +2429,18 @@ class DOMTest(unittest.TestCase):
             self.assertIn(' data-hx-history="false"', htmx_rendered)
             self.assertIn(' data-hx-inherit="*"', htmx_rendered)
             self.assertIn(' data-hx-validate="true"', htmx_rendered)
+            self.assertIn(' data-hx-query="/items/search"', htmx_rendered)
+            self.assertIn(' data-hx-pending="closest form"', htmx_rendered)
+            self.assertIn(' data-hx-status="404:#missing"', htmx_rendered)
+            self.assertIn(' data-hx-ignore="true"', htmx_rendered)
+            self.assertIn(' data-hx-morph-skip="true"', htmx_rendered)
+            self.assertIn(' data-hx-morph-skip-children="true"', htmx_rendered)
+            self.assertIn(' data-hx-preload="mouseover"', htmx_rendered)
+            self.assertIn(' data-hx-live="count"', htmx_rendered)
+            self.assertIn(' data-hx-optimistic="true"', htmx_rendered)
+            self.assertIn(' data-hx-targets=".toast"', htmx_rendered)
+            self.assertIn(' data-hx-download="invoice.pdf"', htmx_rendered)
+            self.assertIn(' data-hx-multipart="/stream"', htmx_rendered)
             self.assertIn(' sse-connect="/events"', htmx_rendered)
             self.assertIn(' sse-swap="message"', htmx_rendered)
             self.assertIn(' sse-close="done"', htmx_rendered)
@@ -2421,6 +2454,13 @@ class DOMTest(unittest.TestCase):
                 htmx_rendered,
             )
             self.assertIn(' data-hx-on--after-request="this.reset()"', htmx_rendered)
+            self.assertIn(
+                ' data-hx-confirm:inherited="Are you sure?"', htmx_rendered
+            )
+            self.assertIn(
+                ' data-hx-headers:inherited="{"X-CSRF": "token"}"',
+                htmx_rendered,
+            )
             self.assertIn(' hx-get="/raw"', htmx_rendered)
 
             form_rendered = form(
@@ -2430,9 +2470,6 @@ class DOMTest(unittest.TestCase):
             ).__attributes__
             self.assertIn(' action="/native"', form_rendered)
             self.assertIn(' method="post"', form_rendered)
-            self.assertIn(
-                ' preload="metadata"', video(_preload="metadata").__attributes__
-            )
 
             DOMConfig.ATTRIBUTE_QUOTES = '"'
             DOMConfig.HTMX_ENABLED = False

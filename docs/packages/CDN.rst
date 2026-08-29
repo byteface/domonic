@@ -64,6 +64,8 @@ Current JavaScript constants include:
 - BRYTHON
 - MATHML
 - HTMX
+- HTMX_2
+- HTMAX
 - LODASH
 - AXIOS
 - DAY_JS
