@@ -752,12 +752,13 @@ domonic.set_default_parser("html5_parser")
 page = domonic.parseString("<p>Hello</p>")
 ```
 
-Parser install notes (listed in order of speed when used with domonic):
+Parser install notes:
 
-- `html.parser`: built into Python, no extra dependency
 - `markupever`: `pip install markupever` 🚀 Rust
+- `lxml_html`: `pip install lxml` 🚀 c
 - `html5_parser`: `pip install html5-parser lxml` 🚀 c++
 - `selectolax`: `pip install selectolax lxml` 🚀 c++
+- `html.parser`: built into Python, no extra dependency
 - `justhtml`: `pip install justhtml` 🐢 Python
 - `html5lib`: `pip install html5lib` 🐢 Python
 - `expat`: 🐌 built into Python. (chokes on html5 or malformed content)
