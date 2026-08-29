@@ -899,7 +899,6 @@ def _install_node_api(cls: type) -> None:
     cls.string = property(_string, _set_string)
     cls.strings = property(_strings)
     cls.stripped_strings = property(_stripped_strings)
-    cls.text = property(_get_text)
 
 
 def _install_element_api() -> None:
