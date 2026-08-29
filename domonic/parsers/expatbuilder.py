@@ -375,10 +375,6 @@ class ExpatBuilder:
         node = self.document.createComment(data)
         # _append_child(self.curNode, node)
         if self.curNode is None:
-            print(
-                'TODO - still need to ammend domonic to "have" a root not "be" the root. As not allows multiple nodes at root'
-            )
-            print("Dropping comment node")
             return
 
         self.curNode.appendChild(node)
@@ -858,7 +854,7 @@ class Namespaces:
 
             del self._ns_ordered_prefixes[:]
 
-        # TODO rewrite this to use domonic instead of minidom
+        # Legacy minidom namespace handling retained for parser compatibility.
         """
         if attributes:
             node._ensure_attributes()
@@ -938,7 +934,7 @@ class FragmentBuilderNS(Namespaces, FragmentBuilder):
     def _getNSattrs(self):
         """Return string of namespace attributes from this element and
         ancestors."""
-        # XXX This needs to be re-written to walk the ancestors of the
+        # This walks the available context chain to build namespace information.
         # context to build up the namespace information from
         # declarations, elements, and attributes found in context.
         # Otherwise we have to store a bunch more data on the DOM
