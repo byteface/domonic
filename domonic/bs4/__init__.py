@@ -121,6 +121,53 @@ def _find_element_by_id(
     return None
 
 
+def _root_for_index(node: Any) -> Node | None:
+    root = getattr(node, "rootNode", node)
+    return root if isinstance(root, Node) else None
+
+
+def _invalidate_index(node: Any) -> None:
+    root = _root_for_index(node)
+    if root is not None:
+        root.__dict__.pop("_bs4_tag_index", None)
+
+
+def _tag_index(node: Any) -> dict[str, list[Element]]:
+    root = _root_for_index(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_tag_index")
+    if cached is not None:
+        return cached
+
+    index: dict[str, list[Element]] = {"*": []}
+    for element in _element_descendants(root):
+        index["*"].append(element)
+        index.setdefault(element.name.lower(), []).append(element)
+    root.__dict__["_bs4_tag_index"] = index
+    return index
+
+
+def _indexed_candidates(
+    node: Any,
+    name: Any = None,
+    recursive: bool = True,
+    string: Any = None,
+) -> Iterator[Any] | None:
+    parent = getattr(node, "parentNode", None)
+    if (
+        string is not None
+        or not recursive
+        or not isinstance(name, (str, type(None)))
+        or (parent is not None and not isinstance(parent, Document))
+    ):
+        return None
+    index = _tag_index(node)
+    if name is None:
+        return iter(index.get("*", ()))
+    return iter(index.get(name.lower(), ()))
+
+
 def _attribute_name(name: str) -> str:
     if name == "class_":
         return "class"
@@ -388,7 +435,9 @@ def _find_all(
         and not merged_attrs
         and isinstance(name, (str, type(None)))
     ):
-        candidates = _candidate_nodes(self, name, recursive, string)
+        candidates = _indexed_candidates(self, name, recursive, string)
+        if candidates is None:
+            candidates = _candidate_nodes(self, name, recursive, string)
         if candidates is not None:
             return _limit(candidates, limit)
     if recursive and _can_use_css(name, merged_attrs, string):
@@ -400,7 +449,9 @@ def _find_all(
             return _limit(self.querySelectorAll(selector), limit)
         except Exception:
             pass
-    candidates = _candidate_nodes(self, name, recursive, string)
+    candidates = _indexed_candidates(self, name, recursive, string)
+    if candidates is None:
+        candidates = _candidate_nodes(self, name, recursive, string)
     if candidates is not None:
         return _limit(
             (node for node in candidates if _matches(node, name, merged_attrs, string)),
@@ -907,6 +958,7 @@ def _attrs_get(self: Element) -> dict[str, Any]:
 
 
 def _attrs_set(self: Element, value: dict[str, Any]) -> None:
+    _invalidate_index(self)
     for attr in list(_attribute_dict(self)):
         self.removeAttribute(attr)
     for attr, attr_value in value.items():
@@ -938,6 +990,7 @@ def _setitem(self: Element, key: str | int, value: Any) -> None:
         raise TypeError(
             "Element child assignment by index is not supported by the BS4 layer"
         )
+    _invalidate_index(self)
     self.setAttribute(key, value)
     return self
 
@@ -949,6 +1002,7 @@ def _delitem(self: Element, key: str | int) -> None:
         )
     if not self.hasAttribute(key):
         raise KeyError(key)
+    _invalidate_index(self)
     self.removeAttribute(key)
 
 
@@ -1001,6 +1055,7 @@ def _set_string(self: Node, value: Any) -> None:
 
 
 def _append(self: Node, *items: Any) -> Any:
+    _invalidate_index(self)
     original = _original_append(type(self))
     if original is not None:
         return original(self, *items)
@@ -1010,11 +1065,13 @@ def _append(self: Node, *items: Any) -> Any:
 
 
 def _extend(self: Node, items: Iterable[Any]) -> None:
+    _invalidate_index(self)
     for item in items:
         self.appendChild(item)
 
 
 def _insert(self: Node, index: int, item: Any) -> Any:
+    _invalidate_index(self)
     children = list(_iter_child_nodes(self))
     if index >= len(children):
         self.appendChild(item)
@@ -1027,6 +1084,7 @@ def _insert_relative(self: Node, item: Any, after: bool = False) -> Any:
     parent = getattr(self, "parentNode", None)
     if parent is None:
         return item
+    _invalidate_index(parent)
     siblings = list(_iter_child_nodes(parent))
     index = siblings.index(self) + (1 if after else 0)
     if index >= len(siblings):
@@ -1045,6 +1103,7 @@ def _insert_after(self: Node, item: Any) -> Any:
 
 
 def _clear(self: Node) -> None:
+    _invalidate_index(self)
     for child in _iter_child_nodes(self):
         if isinstance(child, Node):
             child.parentNode = None
@@ -1054,6 +1113,7 @@ def _clear(self: Node) -> None:
 def _extract(self: Node) -> Node:
     parent = getattr(self, "parentNode", None)
     if parent is not None:
+        _invalidate_index(parent)
         parent.removeChild(self)
     return self
 
@@ -1068,6 +1128,7 @@ def _replace_with(self: Node, *nodes: Any) -> Node:
     parent = getattr(self, "parentNode", None)
     if parent is None:
         return self
+    _invalidate_index(parent)
     siblings = list(_iter_child_nodes(parent))
     index = siblings.index(self)
     parent.removeChild(self)
@@ -1079,6 +1140,7 @@ def _replace_with(self: Node, *nodes: Any) -> Node:
 def _wrap(self: Node, wrapper: Element) -> Element:
     parent = getattr(self, "parentNode", None)
     if parent is not None:
+        _invalidate_index(parent)
         siblings = list(_iter_child_nodes(parent))
         index = siblings.index(self)
         parent.removeChild(self)
@@ -1091,6 +1153,7 @@ def _unwrap(self: Node) -> Node:
     parent = getattr(self, "parentNode", None)
     if parent is None:
         return self
+    _invalidate_index(parent)
     children = list(_iter_child_nodes(self))
     siblings = list(_iter_child_nodes(parent))
     index = siblings.index(self)

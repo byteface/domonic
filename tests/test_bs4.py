@@ -200,6 +200,15 @@ class BeautifulSlopTest(unittest.TestCase):
         soup.find("strong").decompose()
         self.assertIsNone(soup.find("strong"))
 
+    def test_root_tag_index_is_invalidated_by_mutation(self):
+        soup = BeautifulSlop("<section><a>one</a></section>", "html.parser")
+
+        self.assertEqual(len(soup.find_all("a")), 1)
+        soup.append(soup.new_tag("a"))
+        self.assertEqual(len(soup.find_all("a")), 2)
+        soup.find("a").decompose()
+        self.assertEqual(len(soup.find_all("a")), 1)
+
     def test_new_string_clear_smooth_and_rendering(self):
         soup = BeautifulSlop("<section><p>one</p></section>", "html.parser")
         text = soup.new_string("two")
