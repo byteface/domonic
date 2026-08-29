@@ -88,13 +88,18 @@ class domonic:
         return domonic.DEFAULT_PARSER
 
     @staticmethod
-    def get(url: str):
-        """downloads html and converts to domonic"""
+    def get(url: str, evaluate: bool = False):
+        """Download HTML and convert it to PyML or a domonic object."""
         import requests
 
         r = requests.get(url, timeout=30)
-        return domonic.parse(r.text)
-        # TODO - param to eval
+        pyml = domonic.parse(r.text)
+        if not evaluate:
+            return pyml
+        result = domonic.domonify(pyml)
+        if type(result) is tuple and len(result) == 1:
+            return result[0]
+        return result
 
     @staticmethod
     def loads(path: str, *args, **kwargs):
@@ -269,7 +274,7 @@ class domonic:
                 if str(e) == domonic.LAST_ERR:  # only allow 1 error per line
                     # raise ValueError("Recursion limit exceeded")
                     domonic.LAST_ERR = None
-                    # raise  # Exception("Recursion limit exceeded") # TODO - cant raise as called by self
+                    # raise  # Exception("Recursion limit exceeded")
                     try:
                         return
                     except Exception as e:
@@ -301,10 +306,6 @@ class domonic:
                 pyml = "\n".join(pyml)
                 return domonic.evaluate(pyml, *args, **kwargs)  # try again
 
-            # TODO -  if " does not match opening parenthesis '{' (<string>, line 9)
-            # TODO -  keyword argument repeated (<string>, line 617)
-            # keyword argument repeated (<string>, line 3)
-            # TODO - invalid syntax (<string>, line 615)
             return pyml
 
     @staticmethod
@@ -552,7 +553,7 @@ class domonic:
         page = remove_html_comments(page)
         # page = page.strip('\n').strip()
 
-        # remove abnormal spacing between tag attributes (TODO- maybe 2 spaces is valid somewhere?)
+        # Collapse abnormal spacing between tag attributes.
         page = page.replace("   ", " ")
         page = page.replace("  ", " ")
         page = page.replace("  ", " ")
@@ -680,9 +681,7 @@ class domonic:
         increase_index = 0  # by the amount of new chars you add
         last_tag = None
         for index, char in enumerate(page):
-            index = (
-                index + increase_index
-            )  # TODO does this need to go back to zero.? is any of this code still relevant?
+            index = index + increase_index
             if char == "(":
                 open_count += 1
                 flag = open_count > 0
@@ -777,8 +776,6 @@ class domonic:
         # pattern = re.compile(reg)
         # page = re.sub(pattern, f' _{attr}="', page)
 
-        # TODO - diff between loaded and inline
-        # TODO - would have to replace all tags in js (same as content ) (or do opposite way round)
         # get the style and script tags
         # // sure this doesnt' work anymore as we do all tags already?
         htmltags = ["style", "script"]

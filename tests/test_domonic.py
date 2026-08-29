@@ -40,6 +40,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(domonic.dent("div(span())"), "div(\n    span(\n    )\n)")
         self.assertEqual(domonic.dent("div(span())", use_tabs=True), "div(\n\tspan(\n\t)\n)")
 
+    def test_get_can_return_pyml_or_domonic_object(self):
+        class Response:
+            text = '<div id="downloaded"></div>'
+
+        fake_requests = type(
+            "Requests", (), {"get": staticmethod(lambda url, timeout=30: Response())}
+        )
+        with patch.dict("sys.modules", {"requests": fake_requests}):
+            pyml = domonic.get("https://example.test")
+            node = domonic.get("https://example.test", evaluate=True)
+
+        self.assertIn('_id="downloaded"', pyml)
+        self.assertEqual(str(node), '<div id="downloaded"></div>')
+
     def parse(self):
         t1 = domonic.parse("<html></html>")
         assert (
