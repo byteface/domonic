@@ -136,7 +136,7 @@ def function(python_str: str) -> Callable[[], Any]:
     return anon
 
 
-# TODO - list all javascript keywords to python keywords
+# JavaScript literal aliases for code ported from browser examples.
 true: bool = True
 false: bool = False
 null: object = None
@@ -1993,8 +1993,8 @@ class Date(Object):
     ) -> None:
         """A date object that tries to behave like the Javascript one.
 
-        TODO - js allowed dates are larger than pythons(mysql) datetime 99999 limit
-        TODO - also negative dates i.e. BC don't seem to be allowed with datetime
+        Python's datetime range is narrower than JavaScript Date, so dates
+        outside year 1..9999 are intentionally not represented here.
 
         Args:
             date (_type_, optional): _description_. Defaults to None.
@@ -2670,8 +2670,6 @@ class Window:
         except AttributeError:
             return
 
-    # TODO - tell users to use other window class if methods are called.
-
     @staticmethod
     def alert(msg: Any) -> None:
         """Displays an alert box with a message and an OK button"""
@@ -2740,8 +2738,20 @@ class Window:
                 "fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled"
             )
         f = Promise()
-        r = window._do_request(url, f, *kwargs)
+        r = window._do_request(url, f, **kwargs)
         return f.resolve(r)
+
+    @staticmethod
+    async def fetch_async(url: str, **kwargs: Any) -> Any:
+        """Fetch a URL without blocking the current asyncio event loop."""
+        import asyncio
+        from functools import partial
+
+        if type(url) is not str:
+            raise ValueError("fetch_async takes a single url string")
+        loop = asyncio.get_running_loop()
+        request = partial(window._do_request, url, None, **kwargs)
+        return await loop.run_in_executor(None, request)
 
     @staticmethod
     def fetch_set(
@@ -2776,13 +2786,15 @@ class Window:
         f = FetchedSet()
         jobs = []
         for url in urls:
-            thread = threading.Thread(target=window._do_request(url, f, **kwargs))
-            # thread.setDaemon(True) # deprecated
+            thread = threading.Thread(
+                target=lambda url=url: window._do_request(url, f, **kwargs)
+            )
             thread.daemon = True
             jobs.append(thread)
-        map(lambda j: j.start(), jobs)
-        map(lambda j: j.join(), jobs)
-        # f = FetchedSet()
+        for job in jobs:
+            job.start()
+        for job in jobs:
+            job.join()
         return f
 
     @staticmethod
@@ -2823,9 +2835,6 @@ class Window:
         p.close()
         p.join()
         return f
-
-    # def fetch_aysnc( urls: list, options={}, type="async" ):
-    # TODO - a version using async/await
 
     @staticmethod
     def btoa(dataString: str) -> bytes:
@@ -4489,23 +4498,6 @@ class RegExp:
             raise
         return self
 
-    # def exec(self, s: str):
-    #     """ Executes a search for a match in its string parameter. """
-    #     class Match:
-    #         def __init__(self, index: int, match: str):
-    #             self.index = index
-    #             self.match = match
-    #         def __str__(self):
-    #             return f'{self.match}'
-    #         def __repr__(self):
-    #             return f'{self.match}'
-    #         def __getitem__(self, index):
-    #             return self.match[index]
-    #     matches = re.finditer(self.expression, s, flags=re.MULTILINE)  # TODO - flags
-    #     return [Match(m.start(), m.group(0)) for m in matches]
-
-    # TODO - wanted to change this to be like above. but d3 required me to rollback.
-    # need to check if i modifed that implementation to fit my needs at the time.
     def exec(self, s: str) -> list[str] | None:
         """Executes a search for a match in its string parameter."""
         # print("exec:", self.expression, s)
@@ -4578,8 +4570,6 @@ class ArrayBuffer:
         self.buffer[index] = value
 
     def __getattr__(self, name: str) -> Any:
-        # return getattr(self.buffer, name)
-        # TODO - try on self if not get from buffer. (was this a todo)?
         return getattr(self.buffer, name)
 
     def __len__(self) -> int:

@@ -8,6 +8,7 @@ import math
 import re
 import time
 import unittest
+import asyncio
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
@@ -874,9 +875,10 @@ class TestCase(unittest.TestCase):
             return response
 
         with patch.object(Window, "_do_request", side_effect=fake_request):
-            promise = window.fetch(urls[0])
+            promise = window.fetch(urls[0], timeout=1)
             self.assertEqual(promise.state, "fulfilled")
             self.assertEqual(promise.data.url, urls[0])
+            self.assertEqual(Window._do_request.call_args_list[0].kwargs["timeout"], 1)
             self.assertEqual(
                 promise.then(lambda response: response.text).data, f"response:{urls[0]}"
             )
@@ -895,6 +897,10 @@ class TestCase(unittest.TestCase):
             self.assertEqual(
                 sorted(result.url for result in pooled.results), sorted(urls)
             )
+
+            async_response = asyncio.run(window.fetch_async(urls[0], timeout=2))
+            self.assertEqual(async_response.url, urls[0])
+            self.assertEqual(Window._do_request.call_args_list[-1].kwargs["timeout"], 2)
 
     def test_javascript_do_request_success_and_failure(self):
         class FakeRequest:
