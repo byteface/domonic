@@ -46,7 +46,7 @@ domonic parser backends:
 
 .. code-block:: python
 
-   BeautifulSlop(markup, "html.parser")  # maps to html5lib
+   BeautifulSlop(markup, "html.parser")  # Python stdlib parser
    BeautifulSlop(markup, "lxml")         # maps to lxml_html
 
 Find Tags

@@ -602,10 +602,13 @@ You can also choose a parser directly through ``domonic.parseString()``:
 
     from domonic import domonic
 
+    page = domonic.parseString("<p>Hello World!</p>", parser="html.parser")
     page = domonic.parseString("<p>Hello World!</p>", parser="html5_parser")
     print(page.querySelector("p").text)
 
-Supported parser names are ``auto``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, and ``expat``.
+Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, and ``expat``.
+
+``html.parser`` uses Python's standard library and has no external dependency.
 
 
 For a quick parse, try the window module:

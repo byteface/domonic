@@ -64,6 +64,9 @@ class domonic:
         parser_name = (parser or "auto").lower()
         valid = {
             "auto",
+            "html.parser",
+            "html_parser",
+            "html-parser",
             "html5_parser",
             "html5-parser",
             "html5lib",
@@ -78,6 +81,8 @@ class domonic:
             raise ValueError(f"Unknown parser: {parser}")
         if parser_name == "html5-parser":
             parser_name = "html5_parser"
+        if parser_name == "html-parser":
+            parser_name = "html_parser"
         if parser_name == "lxml-html":
             parser_name = "lxml_html"
         domonic.DEFAULT_PARSER = parser_name
@@ -1485,6 +1490,12 @@ class domonic:
                 page = html_parser.parseFragment(string)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
 
+        def _parse_with_html_parser():
+            from domonic.ext.html_parser_ import parse as html_parser_parse
+
+            page = html_parser_parse(string, return_root=True)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
         def _parse_with_html5_parser():
             from domonic.ext.html5_parser_ import parse as html5_parser_parse
 
@@ -1517,6 +1528,8 @@ class domonic:
 
         if parser == "html5lib":
             return _parse_with_html5lib()
+        if parser in ("html.parser", "html_parser", "html-parser"):
+            return _parse_with_html_parser()
         if parser in ("lxml_html", "lxml-html"):
             return _parse_with_lxml_html()
         if parser in ("html5_parser", "html5-parser"):

@@ -28,7 +28,7 @@ domonic gives Python code a browser-flavoured document model: create HTML with P
 | Web APIs | URL, URLSearchParams, URLPattern, storage, Cookie Store, history, scheduler/postTask helpers, fetch/XHR helpers, File API, Sanitizer, Web Crypto, messaging, Web Workers, WebMCP declarative attributes, import maps, speculation rules, attribution hints, compression streams, XPath, SSE, WebSocket, permissions, media, CSS font loading, canvas/WebGL, notifications, gamepad, and performance APIs |
 | JavaScript-like runtime | Array, Date, Math, String, Number, Promise, timers, typed arrays, JSON helpers, dQuery, d3-inspired utilities, and BeautifulSlop BS4-style compatibility |
 | Tooling | `domonic` CLI for XPath/CSS extraction, parser selection, project scaffolding, terminal wrappers, and server framework hello worlds |
-| Parsers | Bundled `html5lib` support plus optional `html5_parser`, `markupever`, `selectolax`, `justhtml`, `lxml`, and expat adapters |
+| Parsers | Stdlib `html.parser`, bundled `html5lib`, optional `html5_parser`, `markupever`, `selectolax`, `justhtml`, `lxml`, and expat adapters |
 
 ### Install
 
@@ -735,6 +735,7 @@ You can choose a parser per call (see below on parser install notes):
 from domonic import domonic
 
 page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
+page = domonic.parseString("<p>Hello</p>", parser="html.parser") # stdlib, no dependency
 page = domonic.parseString("<p>Hello</p>", parser="html5lib") # bundled with domonic
 page = domonic.parseString("<p>Hello</p>", parser="justhtml")
 page = domonic.parseString("<p>Hello</p>", parser="markupever") # stupidly fast
@@ -753,6 +754,7 @@ page = domonic.parseString("<p>Hello</p>")
 
 Parser install notes (listed in order of speed when used with domonic):
 
+- `html.parser`: built into Python, no extra dependency
 - `markupever`: `pip install markupever` 🚀 Rust
 - `html5_parser`: `pip install html5-parser lxml` 🚀 c++
 - `selectolax`: `pip install selectolax lxml` 🚀 c++
@@ -761,6 +763,7 @@ Parser install notes (listed in order of speed when used with domonic):
 - `expat`: 🐌 built into Python. (chokes on html5 or malformed content)
 
 `html5lib` has a direct treebuilder integration.
+`html.parser` builds domonic nodes directly from Python's standard-library parser callbacks.
 `markupever` also uses an lxml adapter but we can get content w/o pretty formatting
 `html5_parser` and `selectolax` have to use an lxml adapter as there's no hooks
 `justhtml` uses html5lib adapter-backed parser (parse + conversion == slower).

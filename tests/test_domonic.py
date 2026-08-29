@@ -202,6 +202,88 @@ _id="one", _class="two",
         with self.assertRaises(ValueError):
             domonic.parseString("<div></div>", parser="nope")
 
+    def test_parse_string_with_stdlib_html_parser_basic_elements(self):
+        page = domonic.parseString("<p>Hello</p>", parser="html.parser")
+
+        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.text, "Hello")
+
+    def test_parse_string_with_stdlib_html_parser_nested_elements(self):
+        page = domonic.parseString(
+            "<section><p>Hello <strong>there</strong></p></section>",
+            parser="html.parser",
+        )
+
+        self.assertEqual(page.querySelector("strong").text, "there")
+        self.assertEqual(page.text, "Hello there")
+
+    def test_parse_string_with_stdlib_html_parser_attributes(self):
+        page = domonic.parseString(
+            '<input id="name" class="field" disabled>',
+            parser="html.parser",
+        )
+
+        self.assertEqual(page.getAttribute("id"), "name")
+        self.assertEqual(page.getAttribute("class"), "field")
+        self.assertTrue(page.getAttribute("disabled"))
+        self.assertEqual(str(page), '<input id="name" class="field" disabled/>')
+
+    def test_parse_string_with_stdlib_html_parser_self_closing_and_void(self):
+        page = domonic.parseString(
+            '<div><br><img src="x.png"/><input disabled></div>',
+            parser="html.parser",
+        )
+
+        self.assertEqual(page.querySelector("img").getAttribute("src"), "x.png")
+        self.assertEqual(page.querySelector("input").getAttribute("disabled"), "disabled")
+        self.assertIn("<br/>", str(page))
+
+    def test_parse_string_with_stdlib_html_parser_fragments(self):
+        page = domonic.parseString("<p>One</p><p>Two</p>", parser="html.parser")
+
+        self.assertEqual(len(page.childNodes), 2)
+        self.assertEqual([child.text for child in page.childNodes], ["One", "Two"])
+
+    def test_parse_string_with_stdlib_html_parser_full_document(self):
+        page = domonic.parseString(
+            "<!doctype html><html><head><title>T</title></head><body><p>Hi</p></body></html>",
+            parser="html.parser",
+        )
+
+        self.assertEqual(page.tagName, "html")
+        self.assertEqual(page.querySelector("title").text, "T")
+        self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_parse_string_with_stdlib_html_parser_malformed_reasonable_html(self):
+        page = domonic.parseString("<div><p>One<p>Two</div>", parser="html.parser")
+
+        self.assertEqual(page.tagName, "div")
+        self.assertEqual([node.text for node in page.querySelectorAll("p")], ["One", "Two"])
+
+    def test_parse_string_with_stdlib_html_parser_comments_and_entities(self):
+        page = domonic.parseString(
+            "<div><!--note--><p>A&nbsp;&amp;&#x21;</p></div>",
+            parser="html.parser",
+        )
+
+        self.assertIn("<!--note-->", str(page))
+        self.assertEqual(page.querySelector("p").text, "A\xa0&!")
+
+    def test_parse_string_with_stdlib_html_parser_aliases(self):
+        for parser in ("html.parser", "html_parser", "html-parser"):
+            with self.subTest(parser=parser):
+                page = domonic.parseString("<p>Hello</p>", parser=parser)
+                self.assertEqual(page.text, "Hello")
+
+    def test_stdlib_html_parser_adapter_return_root(self):
+        from domonic.ext.html_parser_ import parse
+
+        page = parse("<p>Hello</p>")
+        fragment = parse("<p>Hello</p><p>World</p>")
+
+        self.assertEqual(page.tagName, "p")
+        self.assertEqual(len(fragment.childNodes), 2)
+
     def test_parse_string_with_html5_parser_option(self):
         try:
             page = domonic.parseString(
@@ -231,6 +313,10 @@ _id="one", _class="two",
             self.assertEqual(domonic.get_default_parser(), "expat")
             page = domonic.parseString("<div><span>Hello</span></div>")
             self.assertEqual(page.querySelector("span").text, "Hello")
+            domonic.set_default_parser("html-parser")
+            self.assertEqual(domonic.get_default_parser(), "html_parser")
+            page = domonic.parseString("<p>Hello</p>")
+            self.assertEqual(page.text, "Hello")
         finally:
             domonic.set_default_parser(previous)
 

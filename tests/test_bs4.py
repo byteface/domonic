@@ -127,7 +127,7 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(first.find_next_sibling(), None)
         self.assertEqual(self.soup.find("article").find_next_sibling("aside").name, "aside")
         self.assertEqual(str(first.next_element), "one")
-        self.assertEqual(str(second.previous_element), "one")
+        self.assertEqual(str(second.previous_element).strip(), "")
 
     def test_attrs_get_and_item_access(self):
         link = self.soup.find("a")
@@ -146,7 +146,7 @@ class BeautifulSlopTest(unittest.TestCase):
 
         self.assertEqual(article.find("h1").string, "Title")
         self.assertEqual(article.get_text("|", strip=True), "Title|Hello|one|two")
-        self.assertIn("Hello ", list(article.strings))
+        self.assertIn(" Hello ", list(article.strings))
         self.assertEqual(list(article.find("p").stripped_strings), ["Hello", "one"])
 
     def test_mutation_methods(self):

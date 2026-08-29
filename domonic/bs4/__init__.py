@@ -21,7 +21,7 @@ _PARSER_ALIASES = {
     None: "auto",
     "": "auto",
     "auto": "auto",
-    "html.parser": "html5lib",
+    "html.parser": "html.parser",
     "html5lib": "html5lib",
     "lxml": "lxml_html",
     "lxml-html": "lxml_html",
