@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If domonic helps your work, please cite the project."
 title: "domonic: a Python DOM, HTML, SVG, XML, and Web API toolkit"
-version: 1.1.0
-date-released: 2026-08-22
+version: 1.2.0
+date-released: 2026-08-29
 authors:
   - alias: byteface
 repository-code: "https://github.com/byteface/domonic"

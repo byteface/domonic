@@ -134,6 +134,7 @@ Package Guide
    packages/dQuery
    packages/d3
    packages/svg
+   packages/xml
    packages/JSON
    packages/terminal
    packages/cmd

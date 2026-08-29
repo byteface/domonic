@@ -18,6 +18,17 @@ d3's selection API is very powerful.
 
 	import domonic.d3 as d3
 
+Selections support data binding with update, enter, and exit groups:
+
+.. code-block :: python
+
+	from domonic.d3.selection import select
+	from domonic.html import li, ul
+
+	items = ul(li(), li())
+	update = select(items).selectAll("li").data(["one", "two", "three"])
+	update.enter().append("li").text(lambda data: data)
+
 
 format
 ----------------

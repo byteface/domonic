@@ -164,9 +164,7 @@ class EventSource(EventTarget):
 
     @property
     def withCredentials(self):
-        """A boolean value indicating whether the EventSource object was
-          instantiated with cross-origin (CORS) credentials
-        set (true), or not (false, the default)."""
+        """Whether the EventSource was opened with CORS credentials."""
         return self._withCredentials
 
     def close(self):

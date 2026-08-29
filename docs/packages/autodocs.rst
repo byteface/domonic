@@ -52,6 +52,18 @@
 .. automodule:: domonic.xml.x3d
     :members:
 
+.. automodule:: domonic.xml.mathml
+    :members:
+
+.. automodule:: domonic.xml.atom
+    :members:
+
+.. automodule:: domonic.xml.rss
+    :members:
+
+.. automodule:: domonic.xml.odf
+    :members:
+
 .. automodule:: domonic.geom
     :members:
 
@@ -77,6 +89,33 @@
     :members:
 
 .. automodule:: domonic.webapi.sanitizer
+    :members:
+
+.. automodule:: domonic.webapi.scheduler
+    :members:
+
+.. automodule:: domonic.webapi.streams
+    :members:
+
+.. automodule:: domonic.webapi.urlpattern
+    :members:
+
+.. automodule:: domonic.webapi.xhr
+    :members:
+
+.. automodule:: domonic.webapi.history
+    :members:
+
+.. automodule:: domonic.webapi.permissions
+    :members:
+
+.. automodule:: domonic.webapi.serviceworker
+    :members:
+
+.. automodule:: domonic.webapi.sse
+    :members:
+
+.. automodule:: domonic.webapi.websocket
     :members:
 
 .. automodule:: domonic.webapi.canvas

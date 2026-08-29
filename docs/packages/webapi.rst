@@ -30,6 +30,34 @@ fetch
 	from domonic.webapi.fetch import fetch
 
 
+XHR
+----------------
+
+``XMLHttpRequest`` and ``FormData`` provide browser-shaped request helpers for
+code that was originally written against web APIs.
+
+.. code-block :: python
+
+	from domonic.webapi.xhr import FormData, XMLHttpRequest
+
+	data = FormData()
+	data.append("name", "domonic")
+
+
+URLPattern
+----------------
+
+``URLPattern`` matches URLs against path, hostname, protocol, and search
+patterns.
+
+.. code-block :: python
+
+	from domonic.webapi.urlpattern import URLPattern
+
+	pattern = URLPattern({"pathname": "/users/:id"})
+	print(pattern.test("https://example.com/users/42"))
+
+
 Web Crypto
 ----------------
 
@@ -90,6 +118,33 @@ parent and worker, and both sides support ``onmessage``, ``messageerror`` and
 	worker.postMessage("hello")
 	done.wait(2)
 	worker.terminate()
+
+
+Scheduler
+----------------
+
+``Scheduler`` and ``TaskController`` provide a small Prioritized Task Scheduling
+surface for ordered server-side work.
+
+.. code-block :: python
+
+	from domonic.webapi.scheduler import scheduler
+
+	scheduler.postTask(lambda: "done", {"priority": "user-visible"})
+
+
+Streams
+----------------
+
+Readable, writable, transform, compression, and decompression streams are
+available for Web Streams-style examples and tests.
+
+.. code-block :: python
+
+	from domonic.webapi.streams import ReadableStream
+
+	stream = ReadableStream(["hello", "world"])
+	print(stream.getReader().read().value)
 
 
 Canvas and WebGL
@@ -188,6 +243,20 @@ interactive examples.
 	print(win.navigator.getGamepads())
 
 
+Service Workers
+----------------
+
+``ServiceWorkerContainer`` and registrations model the lifecycle enough for DOM
+tests and worker-style examples without requiring a browser runtime.
+
+.. code-block :: python
+
+	from domonic.webapi.serviceworker import ServiceWorkerContainer
+
+	container = ServiceWorkerContainer("https://example.com/app/")
+	registration = container.register("/sw.js")
+
+
 URL
 ----------------
 
@@ -263,6 +332,38 @@ https://developer.mozilla.org/en-US/docs/Web/API
     :noindex:
 
 .. automodule:: domonic.webapi.sanitizer
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.scheduler
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.streams
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.urlpattern
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.history
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.permissions
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.serviceworker
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.sse
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.websocket
     :members:
     :noindex:
 

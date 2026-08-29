@@ -139,6 +139,21 @@ HTMX 2 integrations:
 	div(_ext="sse", _sse_connect="/events", _sse_swap="message")
 	# <div data-hx-ext="sse" sse-connect="/events" sse-swap="message"></div>
 
+ValidityState
+----------------
+
+Form controls expose ``validity``, ``validationMessage``, ``willValidate``,
+``checkValidity()``, ``reportValidity()``, and ``setCustomValidity()`` for
+server-side constraint checks.
+
+.. code-block :: python
+
+	from domonic.html import input
+
+	email = input(_type="email", _required=True, _value="not-an-email")
+	print(email.validity.typeMismatch)
+	print(email.validationMessage)
+
 
 The full list of available DOM methods are listed below...
 
