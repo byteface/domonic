@@ -121,6 +121,35 @@ def _filter_matches(value: Any, candidate: Any, node: Any | None = None) -> bool
     return str(candidate) == str(value)
 
 
+def _class_filter_matches(value: Any, candidate: Any, node: Any | None = None) -> bool:
+    if value is None:
+        return candidate is None
+    if candidate is None:
+        return value is False
+    class_value = str(candidate)
+    tokens = class_value.split()
+    if value is True:
+        return bool(tokens)
+    if isinstance(value, (list, tuple, set)):
+        return any(_class_filter_matches(item, candidate, node) for item in value)
+    if hasattr(value, "search"):
+        return value.search(class_value) is not None or any(
+            value.search(token) is not None for token in tokens
+        )
+    if callable(value):
+        for arg in (class_value, *tokens, node):
+            try:
+                if value(arg):
+                    return True
+            except TypeError:
+                continue
+        return False
+    expected_tokens = str(value).split()
+    if not expected_tokens:
+        return False
+    return all(token in tokens for token in expected_tokens)
+
+
 def _name_matches(name: Any, node: Any) -> bool:
     if not isinstance(node, Element):
         return False
@@ -155,7 +184,8 @@ def _attributes_match(node: Any, attrs: dict[str, Any] | None) -> bool:
     for name, expected in attrs.items():
         public_name = _attribute_name(name)
         candidate = node_attrs.get(public_name)
-        if not _filter_matches(expected, candidate, node):
+        matcher = _class_filter_matches if public_name == "class" else _filter_matches
+        if not matcher(expected, candidate, node):
             return False
     return True
 
@@ -214,7 +244,10 @@ def _can_use_css(name: Any, attrs: dict[str, Any] | None, string: Any) -> bool:
         return False
     if not attrs:
         return True
-    return all(isinstance(value, _SIMPLE_FILTER_TYPES) for value in attrs.values())
+    return all(
+        value is not None and isinstance(value, _SIMPLE_FILTER_TYPES)
+        for value in attrs.values()
+    )
 
 
 def _css_escape_value(value: Any) -> str:
@@ -262,6 +295,12 @@ def _limit(items: Iterable[Any], limit: int | None = None) -> list[Any]:
     return out
 
 
+def _string_alias(string: Any, kwargs: dict[str, Any]) -> Any:
+    if string is None and "text" in kwargs:
+        return kwargs.pop("text")
+    return string
+
+
 def _find(
     self: Node,
     name: Any = None,
@@ -270,6 +309,7 @@ def _find(
     string: Any = None,
     **kwargs: Any,
 ) -> Any | None:
+    string = _string_alias(string, kwargs)
     found = _find_all(self, name, attrs, recursive, string, limit=1, **kwargs)
     return found[0] if found else None
 
@@ -283,6 +323,7 @@ def _find_all(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Any]:
+    string = _string_alias(string, kwargs)
     merged_attrs = _merge_attrs(attrs, kwargs)
     if recursive and _can_use_css(name, merged_attrs, string):
         selector = _css_from_filters(name, merged_attrs)
@@ -291,6 +332,35 @@ def _find_all(
         except Exception:
             pass
     return _limit(_search_nodes(self, name, merged_attrs, recursive, string), limit)
+
+
+def _find_child(
+    self: Node,
+    name: Any = None,
+    attrs: dict[str, Any] | None = None,
+    string: Any = None,
+    **kwargs: Any,
+) -> Any | None:
+    return _find(self, name, attrs, recursive=False, string=string, **kwargs)
+
+
+def _find_children(
+    self: Node,
+    name: Any = None,
+    attrs: dict[str, Any] | None = None,
+    limit: int | None = None,
+    string: Any = None,
+    **kwargs: Any,
+) -> list[Any]:
+    return _find_all(
+        self,
+        name,
+        attrs,
+        recursive=False,
+        string=string,
+        limit=limit,
+        **kwargs,
+    )
 
 
 def _select(
@@ -381,6 +451,7 @@ def _find_next_sibling(
     string: Any = None,
     **kwargs: Any,
 ) -> Any | None:
+    string = _string_alias(string, kwargs)
     found = _find_siblings(self, False, name, attrs, string, limit=1, **kwargs)
     return found[0] if found else None
 
@@ -393,6 +464,7 @@ def _find_next_siblings(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Any]:
+    string = _string_alias(string, kwargs)
     return _find_siblings(self, False, name, attrs, string, limit, **kwargs)
 
 
@@ -403,6 +475,7 @@ def _find_previous_sibling(
     string: Any = None,
     **kwargs: Any,
 ) -> Any | None:
+    string = _string_alias(string, kwargs)
     found = _find_siblings(self, True, name, attrs, string, limit=1, **kwargs)
     return found[0] if found else None
 
@@ -415,6 +488,7 @@ def _find_previous_siblings(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Any]:
+    string = _string_alias(string, kwargs)
     return _find_siblings(self, True, name, attrs, string, limit, **kwargs)
 
 
@@ -464,6 +538,7 @@ def _find_next(
     string: Any = None,
     **kwargs: Any,
 ) -> Any | None:
+    string = _string_alias(string, kwargs)
     found = _find_document_order(self, False, name, attrs, string, limit=1, **kwargs)
     return found[0] if found else None
 
@@ -476,6 +551,7 @@ def _find_all_next(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Any]:
+    string = _string_alias(string, kwargs)
     return _find_document_order(self, False, name, attrs, string, limit, **kwargs)
 
 
@@ -486,6 +562,7 @@ def _find_previous(
     string: Any = None,
     **kwargs: Any,
 ) -> Any | None:
+    string = _string_alias(string, kwargs)
     found = _find_document_order(self, True, name, attrs, string, limit=1, **kwargs)
     return found[0] if found else None
 
@@ -498,6 +575,7 @@ def _find_all_previous(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Any]:
+    string = _string_alias(string, kwargs)
     return _find_document_order(self, True, name, attrs, string, limit, **kwargs)
 
 
@@ -546,6 +624,10 @@ def _get(self: Element, key: str, default: Any = None) -> Any:
 
 
 def _has_attr(self: Element, key: str) -> bool:
+    return self.hasAttribute(key)
+
+
+def _has_key(self: Element, key: str) -> bool:
     return self.hasAttribute(key)
 
 
@@ -760,18 +842,32 @@ def _install_node_api(cls: type) -> None:
     cls.find = _find
     cls.find_all = _find_all
     cls.findAll = _find_all
+    cls.find_child = _find_child
+    cls.findChild = _find_child
+    cls.find_children = _find_children
+    cls.findChildren = _find_children
     cls.select = _select
     cls.select_one = _select_one
     cls.find_parent = _find_parent
+    cls.findParent = _find_parent
     cls.find_parents = _find_parents
+    cls.findParents = _find_parents
     cls.find_next = _find_next
+    cls.findNext = _find_next
     cls.find_all_next = _find_all_next
+    cls.findAllNext = _find_all_next
     cls.find_previous = _find_previous
+    cls.findPrevious = _find_previous
     cls.find_all_previous = _find_all_previous
+    cls.findAllPrevious = _find_all_previous
     cls.find_next_sibling = _find_next_sibling
+    cls.findNextSibling = _find_next_sibling
     cls.find_next_siblings = _find_next_siblings
+    cls.findNextSiblings = _find_next_siblings
     cls.find_previous_sibling = _find_previous_sibling
+    cls.findPreviousSibling = _find_previous_sibling
     cls.find_previous_siblings = _find_previous_siblings
+    cls.findPreviousSiblings = _find_previous_siblings
     cls.get_text = _get_text
     cls.prettify = _prettify
     cls.append = _append
@@ -810,6 +906,7 @@ def _install_element_api() -> None:
     Element.attrs = property(_attrs_get, _attrs_set)
     Element.get = _get
     Element.has_attr = _has_attr
+    Element.has_key = _has_key
     Element.__getitem__ = _getitem
     Element.__setitem__ = _setitem
     Element.__delitem__ = _delitem

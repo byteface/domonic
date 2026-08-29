@@ -37,19 +37,49 @@ class BeautifulSlopTest(unittest.TestCase):
 
     def test_find_and_find_all_delegate_common_cases(self):
         self.assertEqual(self.soup.find("article")["id"], "story")
-        self.assertEqual([link["href"] for link in self.soup.find_all("a")], ["/one", "/two", "/side"])
+        self.assertEqual(
+            [link["href"] for link in self.soup.find_all("a")],
+            ["/one", "/two", "/side"],
+        )
         self.assertEqual(self.soup.find("article", id="story").name, "article")
         self.assertEqual(self.soup.find_all("a", class_="external")[0]["href"], "/one")
         self.assertEqual(self.soup.find_all("a", {"data-kind": "nav"})[0].text, "two")
         self.assertEqual(len(self.soup.find_all("a", limit=2)), 2)
 
     def test_filter_types(self):
-        self.assertEqual([node.name for node in self.soup.find_all(["article", "aside"])], ["article", "aside"])
+        self.assertEqual(
+            [node.name for node in self.soup.find_all(["article", "aside"])],
+            ["article", "aside"],
+        )
         self.assertEqual(self.soup.find(re.compile("^art")).name, "article")
-        self.assertEqual(self.soup.find(lambda tag: getattr(tag, "name", "") == "aside").name, "aside")
+        self.assertEqual(
+            self.soup.find(lambda tag: getattr(tag, "name", "") == "aside").name,
+            "aside",
+        )
         self.assertEqual(self.soup.find("a", href=re.compile("two$")).text, "two")
         self.assertEqual(self.soup.find("a", href=lambda value: value == "/side").text, "side")
         self.assertEqual(self.soup.find_all(True)[0].name, "main")
+
+    def test_class_attribute_matching_is_token_based(self):
+        soup = BeautifulSlop(
+            '<main><p class="body strikeout">x</p><p class="body">y</p></main>',
+            "html.parser",
+        )
+
+        self.assertEqual(
+            [p.text for p in soup.find_all("p", class_="body")],
+            ["x", "y"],
+        )
+        self.assertEqual(soup.find("p", class_="strikeout").text, "x")
+        self.assertEqual(soup.find("p", class_=re.compile("^str")).text, "x")
+        self.assertEqual(
+            soup.find("p", class_=lambda value: value == "body").text,
+            "x",
+        )
+        self.assertEqual(
+            [p.text for p in soup.find_all("p", {"class": ["missing", "strikeout"]})],
+            ["x"],
+        )
 
     def test_string_filters_return_text_children(self):
         title = self.soup.find(string="Title")
@@ -57,7 +87,28 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertIsInstance(title, Text)
         self.assertEqual(str(title), "Title")
         self.assertEqual(self.soup.find("h1", string="Title").name, "h1")
+        self.assertEqual(self.soup.find("h1", text="Title").name, "h1")
         self.assertEqual(str(self.soup.find(string=re.compile("one"))), "one")
+        self.assertEqual(str(self.soup.find(text=lambda value: value == "two")), "two")
+
+    def test_recursive_false_and_child_aliases(self):
+        article = self.soup.find("article")
+
+        self.assertEqual(article.find("a", recursive=False)["href"], "/two")
+        self.assertEqual(article.find_child("h1").text, "Title")
+        self.assertEqual(article.findChild("h1").text, "Title")
+        self.assertEqual([node.name for node in article.find_children()], ["h1", "p", "a"])
+        self.assertEqual(
+            [node.name for node in article.findChildren("p")],
+            ["p"],
+        )
+
+    def test_presence_and_absence_attribute_filters(self):
+        self.assertEqual(
+            [a["href"] for a in self.soup.find_all("a", href=True)],
+            ["/one", "/two", "/side"],
+        )
+        self.assertEqual(self.soup.find("a", href=None), None)
 
     def test_css_select(self):
         self.assertEqual(self.soup.select_one("article > a")["href"], "/two")
@@ -82,6 +133,7 @@ class BeautifulSlopTest(unittest.TestCase):
         link = self.soup.find("a")
 
         self.assertTrue(link.has_attr("href"))
+        self.assertTrue(link.has_key("href"))
         self.assertEqual(link.get("missing", "fallback"), "fallback")
         self.assertEqual(link.attrs["href"], "/one")
         link["href"] = "/changed"
