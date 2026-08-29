@@ -132,6 +132,10 @@ class BeautifulSlopTest(unittest.TestCase):
             "html.parser",
         )
         self.assertEqual(len(nested.select("table a[href]")), 1)
+        self.assertEqual(
+            [node.name for node in self.soup.select("aside, article.external")],
+            ["article", "aside"],
+        )
 
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")

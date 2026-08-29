@@ -62,7 +62,7 @@ def _normalize_parser(parser: str | None) -> str:
 
 def _tag_name(node: Any) -> str | None:
     if isinstance(node, Element):
-        return getattr(node, "tagName", getattr(node, "name", None))
+        return getattr(node, "name", getattr(node, "tagName", None))
     if isinstance(node, Document):
         return "[document]"
     return None
@@ -73,10 +73,12 @@ def _iter_child_nodes(node: Any) -> Iterator[Any]:
 
 
 def _descendants(node: Any) -> Iterator[Any]:
-    for child in _iter_child_nodes(node):
+    stack = list(reversed(tuple(_iter_child_nodes(node))))
+    while stack:
+        child = stack.pop()
         yield child
         if isinstance(child, Node) and not isinstance(child, (Text, Comment)):
-            yield from _descendants(child)
+            stack.extend(reversed(getattr(child, "args", ()) or ()))
 
 
 def _document_order(root: Any) -> list[Any]:
@@ -86,12 +88,14 @@ def _document_order(root: Any) -> list[Any]:
 
 
 def _element_descendants(node: Any) -> Iterator[Element]:
-    for child in _iter_child_nodes(node):
+    stack = list(reversed(tuple(_iter_child_nodes(node))))
+    while stack:
+        child = stack.pop()
         if isinstance(child, Element):
             yield child
-            yield from _element_descendants(child)
+            stack.extend(reversed(getattr(child, "args", ()) or ()))
         elif isinstance(child, Node) and not isinstance(child, (Text, Comment)):
-            yield from _element_descendants(child)
+            stack.extend(reversed(getattr(child, "args", ()) or ()))
 
 
 def _element_children(node: Any) -> Iterator[Element]:
@@ -333,7 +337,7 @@ def _candidate_nodes(
     return (
         candidate
         for candidate in _element_descendants(node)
-        if candidate.tagName.lower() == tag_name
+        if candidate.name.lower() == tag_name
     )
 
 
@@ -378,6 +382,15 @@ def _find_all(
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
     merged_attrs = _merge_attrs(attrs, kwargs)
+    if (
+        recursive
+        and string is None
+        and not merged_attrs
+        and isinstance(name, (str, type(None)))
+    ):
+        candidates = _candidate_nodes(self, name, recursive, string)
+        if candidates is not None:
+            return _limit(candidates, limit)
     if recursive and _can_use_css(name, merged_attrs, string):
         selector = _css_from_filters(name, merged_attrs)
         try:
@@ -483,9 +496,51 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     return parts
 
 
+def _split_selector_groups(selector: str) -> list[str] | None:
+    groups = []
+    token = []
+    bracket_depth = 0
+    quote: str | None = None
+
+    for char in selector.strip():
+        if quote:
+            token.append(char)
+            if char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            token.append(char)
+            quote = char
+            continue
+        if char == "[":
+            bracket_depth += 1
+            token.append(char)
+            continue
+        if char == "]":
+            bracket_depth -= 1
+            if bracket_depth < 0:
+                return None
+            token.append(char)
+            continue
+        if char == "," and not bracket_depth:
+            group = "".join(token).strip()
+            if not group:
+                return None
+            groups.append(group)
+            token = []
+            continue
+        token.append(char)
+
+    group = "".join(token).strip()
+    if not group or bracket_depth or quote:
+        return None
+    groups.append(group)
+    return groups
+
+
 def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
     tag_name = parsed["tag"]
-    if tag_name != "*" and element.tagName.lower() != tag_name.lower():
+    if tag_name != "*" and element.name.lower() != tag_name.lower():
         return False
     if parsed["id"] is not None and element.getAttribute("id") != parsed["id"]:
         return False
@@ -516,14 +571,30 @@ def _selector_candidates(
     if parsed["tag"] != "*":
         tag_name = parsed["tag"].lower()
         for candidate in _element_descendants(context):
-            if candidate.tagName.lower() == tag_name:
+            if candidate.name.lower() == tag_name:
                 yield candidate
         return
     yield from _element_descendants(context)
 
 
 def _select_fast(self: Node, selector: str) -> list[Element] | None:
-    if "," in selector or any(char in selector for char in ("+", "~", ":")):
+    groups = _split_selector_groups(selector)
+    if not groups:
+        return None
+    if len(groups) > 1:
+        matched_ids = set()
+        for group in groups:
+            matches = _select_fast(self, group)
+            if matches is None:
+                return None
+            matched_ids.update(id(match) for match in matches)
+        return [
+            candidate
+            for candidate in _element_descendants(self)
+            if id(candidate) in matched_ids
+        ]
+    selector = groups[0]
+    if any(char in selector for char in ("+", "~", ":")):
         return None
     parts = _split_simple_selector_chain(selector)
     if not parts:
@@ -789,11 +860,15 @@ def _strings(self: Node) -> Iterator[str]:
     if isinstance(self, Text):
         yield self.data
         return
-    for node in _descendants(self):
+    stack = list(reversed(getattr(self, "args", ()) or ()))
+    while stack:
+        node = stack.pop()
         if isinstance(node, Text):
             yield node.data
         elif isinstance(node, str):
             yield node
+        elif isinstance(node, Node) and not isinstance(node, Comment):
+            stack.extend(reversed(getattr(node, "args", ()) or ()))
 
 
 def _stripped_strings(self: Node) -> Iterator[str]:
