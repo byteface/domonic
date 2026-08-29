@@ -24,7 +24,7 @@ domonic gives Python code a browser-flavoured document model: create HTML with P
 | Area | What domonic covers |
 | --- | --- |
 | Markup | HTML5 tags, SVG, XML, MathML/MathMLElement, A-Frame, X3D, RSS, Atom, sitemaps, ODF, and custom tag constructors |
-| DOM | Document, Element, NodeList, events, ranges, fragments, custom elements, shadow DOM, selectors, observers, tree traversal, and ValidityState form checks |
+| DOM | Document, Element, NodeList, diffdom patching, events, ranges, fragments, custom elements, shadow DOM, selectors, observers, tree traversal, and ValidityState form checks |
 | Web APIs | URL, URLSearchParams, URLPattern, storage, Cookie Store, history, scheduler/postTask helpers, fetch/XHR helpers, File API, Sanitizer, Web Crypto, messaging, Web Workers, WebMCP declarative attributes, import maps, speculation rules, attribution hints, compression streams, XPath, SSE, WebSocket, permissions, media, CSS font loading, canvas/WebGL, notifications, gamepad, and performance APIs |
 | JavaScript-like runtime | Array, Date, Math, String, Number, Promise, timers, typed arrays, JSON helpers, dQuery, and d3-inspired utilities |
 | Tooling | `domonic` CLI for XPath/CSS extraction, parser selection, project scaffolding, terminal wrappers, and server framework hello worlds |
