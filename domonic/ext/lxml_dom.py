@@ -8,9 +8,12 @@
 
 from __future__ import annotations
 
+import importlib
+
 from lxml.etree import _Comment
 
-from domonic.dom import DOMImplementation, MATHML_NAMESPACE, Comment, MathMLElement, Text
+from domonic.dom import (DOMImplementation, MATHML_NAMESPACE, Comment, Element,
+                         MathMLElement, Text)
 
 impl = DOMImplementation()
 
@@ -21,6 +24,8 @@ except AttributeError:
 
 _ELEM_NAME_CACHE = {}
 _MATHML_ELEMENT_CACHE = {}
+_HTML_ELEMENT_CLASS_CACHE = {}
+_UNKNOWN_ELEMENT_CLASS_CACHE = {}
 
 
 def elem_name_parts(elem):
@@ -84,6 +89,49 @@ def append_child_raw(parent, child, children):
     child.__dict__["parentNode"] = parent
 
 
+def initialize_element_raw(element, namespace_uri):
+    element.__dict__.update(
+        {
+            "args": (),
+            "kwargs": {},
+            "_baseURI": "",
+            "isConnected": True,
+            "namespaceURI": namespace_uri or "http://www.w3.org/1999/xhtml",
+            "outerText": None,
+            "_ownerDocument": None,
+            "parentNode": None,
+            "prefix": None,
+            "lang": None,
+            "tabIndex": None,
+            "style": None,
+            "shadowRoot": None,
+            "dir": None,
+        }
+    )
+    return element
+
+
+def html_element_class(qualified_name):
+    normalized_name = str(qualified_name).strip().lower()
+    cached = _HTML_ELEMENT_CLASS_CACHE.get(normalized_name)
+    if cached is not None:
+        return cached
+
+    html = importlib.import_module("domonic.html")
+
+    if normalized_name in html._HTML_TAG_LOOKUP:
+        tag_name = html._TAG_ALIASES.get(normalized_name, normalized_name)
+        element_class = getattr(html, tag_name)
+    else:
+        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
+        if element_class is None:
+            element_class = type("custom_tag", (Element,), {"name": qualified_name})
+            _UNKNOWN_ELEMENT_CLASS_CACHE[normalized_name] = element_class
+
+    _HTML_ELEMENT_CLASS_CACHE[normalized_name] = element_class
+    return element_class
+
+
 def create_element_ns_raw(namespace_uri, qualified_name):
     local_name = str(qualified_name).split(":", 1)[-1]
     if namespace_uri == MATHML_NAMESPACE:
@@ -91,13 +139,10 @@ def create_element_ns_raw(namespace_uri, qualified_name):
         if element_type is None:
             element_type = type(local_name, (MathMLElement,), {"name": local_name})
             _MATHML_ELEMENT_CACHE[local_name] = element_type
-        return element_type()
+        return initialize_element_raw(element_type.__new__(element_type), namespace_uri)
 
-    from domonic.html import create_element
-
-    element = create_element(qualified_name)
-    element.__dict__["namespaceURI"] = namespace_uri
-    return element
+    element_class = html_element_class(qualified_name)
+    return initialize_element_raw(element_class.__new__(element_class), namespace_uri)
 
 
 def adapt(source_tree, return_root=True, **kw):
