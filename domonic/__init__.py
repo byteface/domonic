@@ -1417,7 +1417,7 @@ class domonic:
     parseString_prev_error = None
 
     @staticmethod
-    def parseString(string, parser=None):
+    def parseString(string, parser=None, debug: bool = False):
         """Parse a file into a DOM from a string."""
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
@@ -1535,7 +1535,6 @@ class domonic:
         if parser != "auto":
             raise ValueError(f"Unknown parser: {parser}")
 
-        # TODO - this needs to be off for debugging
         fallback_parsers = (
             (_parse_with_html5lib, (ImportError,)),
             (_parse_with_lxml_html, (Exception,)),
@@ -1547,7 +1546,9 @@ class domonic:
         for parse_with, handled_errors in fallback_parsers:
             try:
                 return parse_with()
-            except handled_errors:
+            except handled_errors as exc:
+                if debug:
+                    print(f"{parse_with.__name__} failed: {exc}")
                 continue
 
         try:
@@ -1556,8 +1557,7 @@ class domonic:
             page = expatbuilder.parseString(string)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
         except Exception as e:
-            # TODO - problem with this method. is it takes literally forever.
-            # as it removes 1 char then reparses entire doc. even on small pages this is a problem.
+            # Last-resort recovery removes the character reported by expat and retries once.
             dodgycharIndex = int(Utils.digits(str(e).split(",")[1]))
             # string[int(dodgycharIndex)-1] = Utils.escape(string[int(dodgycharIndex)-1])
             dodgyChar = string[int(dodgycharIndex) - 1]
@@ -1566,7 +1566,7 @@ class domonic:
             )
             if domonic.parseString_prev_error != dodgycharIndex:
                 domonic.parseString_prev_error = dodgycharIndex
-                return domonic.parseString(string, parser="expat")
+                return domonic.parseString(string, parser="expat", debug=debug)
             else:
                 return None
 
