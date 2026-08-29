@@ -24,6 +24,7 @@ DEFAULT_SELECTORS = [
     "img[src]",
 ]
 DEFAULT_HREF_RE = r"^/wiki/(?!File:|Special:)"
+DEFAULT_CLASS_RE = r"\bmw-|infobox|navbox|sidebar"
 
 
 def time_call(func: Callable[[], object], iterations: int) -> tuple[list[float], object]:
@@ -57,6 +58,104 @@ def decompose_matches(soup: object, selector: str) -> int:
     return len(str(soup))
 
 
+def parent_depth(node: object) -> int:
+    return sum(1 for _ in getattr(node, "parents", ()))
+
+
+def common_cases(
+    selectors: list[str],
+    href_pattern: str,
+    class_pattern: str,
+) -> list[tuple[str, Callable[[object], object], Callable[[object], object]]]:
+    href_re = re.compile(href_pattern)
+    class_re = re.compile(class_pattern)
+    return [
+        (
+            "one CSS selector",
+            lambda soup: len(soup.select(selectors[0])),
+            lambda soup: len(soup.select(selectors[0])),
+        ),
+        (
+            "five CSS selectors",
+            lambda soup: sum(len(soup.select(selector)) for selector in selectors),
+            lambda soup: sum(len(soup.select(selector)) for selector in selectors),
+        ),
+        (
+            "select_one id descendant",
+            lambda soup: soup.select_one("div#bodyContent a[href]").get("href"),
+            lambda soup: soup.select_one("div#bodyContent a[href]").get("href"),
+        ),
+        (
+            "find id",
+            lambda soup: soup.find(id="bodyContent").name,
+            lambda soup: soup.find(id="bodyContent").name,
+        ),
+        (
+            "find class",
+            lambda soup: soup.find(class_="mw-parser-output").name,
+            lambda soup: soup.find(class_="mw-parser-output").name,
+        ),
+        (
+            "find_all links",
+            lambda soup: len(soup.find_all("a")),
+            lambda soup: len(soup.find_all("a")),
+        ),
+        (
+            "find_all links limit 25",
+            lambda soup: sum(
+                len(link.get("href", "")) for link in soup.find_all("a", limit=25)
+            ),
+            lambda soup: sum(
+                len(link.get("href", "")) for link in soup.find_all("a", limit=25)
+            ),
+        ),
+        (
+            "find_all href=True",
+            lambda soup: len(soup.find_all("a", href=True)),
+            lambda soup: len(soup.find_all("a", href=True)),
+        ),
+        (
+            "regex find_all href",
+            lambda soup: len(soup.find_all("a", href=href_re)),
+            lambda soup: len(soup.find_all("a", href=href_re)),
+        ),
+        (
+            "regex class find_all",
+            lambda soup: len(soup.find_all(class_=class_re)),
+            lambda soup: len(soup.find_all(class_=class_re)),
+        ),
+        (
+            "callable find_all links",
+            lambda soup: len(
+                soup.find_all(lambda tag: getattr(tag, "name", None) == "a")
+            ),
+            lambda soup: len(
+                soup.find_all(lambda tag: getattr(tag, "name", None) == "a")
+            ),
+        ),
+        (
+            "attribute reads over links",
+            lambda soup: sum(len(link.get("href", "")) for link in soup.find_all("a")),
+            lambda soup: sum(len(link.get("href", "")) for link in soup.find_all("a")),
+        ),
+        (
+            "parent traversal",
+            lambda soup: parent_depth(soup.select_one(selectors[0])),
+            lambda soup: parent_depth(soup.select_one(selectors[0])),
+        ),
+        (
+            "text extraction",
+            lambda soup: len(soup.get_text(" ", strip=True)),
+            lambda soup: len(soup.get_text(" ", strip=True)),
+        ),
+        (
+            "remove sidebars",
+            lambda soup: decompose_matches(soup, ".sidebar, .navbox"),
+            lambda soup: decompose_matches(soup, ".sidebar, .navbox"),
+        ),
+    ]
+
+
 def run_end_to_end(
     html: str,
     bs4_parser: str,
@@ -64,45 +163,23 @@ def run_end_to_end(
     iterations: int,
     selectors: list[str],
     href_pattern: str,
+    class_pattern: str,
 ) -> list[tuple[str, dict[str, object], dict[str, object]]]:
-    href_re = re.compile(href_pattern)
     cases = [
         (
             "parse only",
             lambda soup: soup.title.string,
             lambda soup: soup.find("title").text,
         ),
-        (
-            "parse + one CSS selector",
-            lambda soup: len(soup.select(selectors[0])),
-            lambda soup: len(soup.select(selectors[0])),
-        ),
-        (
-            "parse + five CSS selectors",
-            lambda soup: sum(len(soup.select(selector)) for selector in selectors),
-            lambda soup: sum(len(soup.select(selector)) for selector in selectors),
-        ),
-        (
-            "parse + find_all links",
-            lambda soup: len(soup.find_all("a")),
-            lambda soup: len(soup.find_all("a")),
-        ),
-        (
-            "parse + regex find_all href",
-            lambda soup: len(soup.find_all("a", href=href_re)),
-            lambda soup: len(soup.find_all("a", href=href_re)),
-        ),
-        (
-            "parse + text extraction",
-            lambda soup: len(soup.get_text(" ", strip=True)),
-            lambda soup: len(soup.get_text(" ", strip=True)),
-        ),
-        (
-            "parse + remove sidebars",
-            lambda soup: decompose_matches(soup, ".sidebar, .navbox"),
-            lambda soup: decompose_matches(soup, ".sidebar, .navbox"),
-        ),
     ]
+    cases.extend(
+        (f"parse + {name}", bs4_op, slop_op)
+        for name, bs4_op, slop_op in common_cases(
+            selectors,
+            href_pattern,
+            class_pattern,
+        )
+    )
     rows = []
     for name, bs4_op, slop_op in cases:
         bs4_result = bench(
@@ -124,39 +201,17 @@ def run_query_only(
     iterations: int,
     selectors: list[str],
     href_pattern: str,
+    class_pattern: str,
 ) -> list[tuple[str, dict[str, object], dict[str, object]]]:
-    href_re = re.compile(href_pattern)
     bs4_soup = BeautifulSoup(html, bs4_parser)
     slop = BeautifulSlop(html, slop_parser)
-    cases = [
-        (
-            "one CSS selector",
-            lambda: len(bs4_soup.select(selectors[0])),
-            lambda: len(slop.select(selectors[0])),
-        ),
-        (
-            "five CSS selectors",
-            lambda: sum(len(bs4_soup.select(selector)) for selector in selectors),
-            lambda: sum(len(slop.select(selector)) for selector in selectors),
-        ),
-        (
-            "find_all links",
-            lambda: len(bs4_soup.find_all("a")),
-            lambda: len(slop.find_all("a")),
-        ),
-        (
-            "regex find_all href",
-            lambda: len(bs4_soup.find_all("a", href=href_re)),
-            lambda: len(slop.find_all("a", href=href_re)),
-        ),
-        (
-            "text extraction",
-            lambda: len(bs4_soup.get_text(" ", strip=True)),
-            lambda: len(slop.get_text(" ", strip=True)),
-        ),
-    ]
+    cases = common_cases(selectors, href_pattern, class_pattern)
     return [
-        (name, bench(bs4_op, iterations), bench(slop_op, iterations))
+        (
+            name,
+            bench(lambda op=bs4_op: op(bs4_soup), iterations),
+            bench(lambda op=slop_op: op(slop), iterations),
+        )
         for name, bs4_op, slop_op in cases
     ]
 
@@ -196,6 +251,7 @@ def main() -> None:
     parser.add_argument("--bs4-parser", default="lxml")
     parser.add_argument("--slop-parser", default="markupever")
     parser.add_argument("--href-regex", default=DEFAULT_HREF_RE)
+    parser.add_argument("--class-regex", default=DEFAULT_CLASS_RE)
     args = parser.parse_args()
 
     page_path = Path(args.page)
@@ -217,6 +273,7 @@ def main() -> None:
             args.iterations,
             DEFAULT_SELECTORS,
             args.href_regex,
+            args.class_regex,
         ),
         bs4_label,
         slop_label,
@@ -230,6 +287,7 @@ def main() -> None:
             args.iterations,
             DEFAULT_SELECTORS,
             args.href_regex,
+            args.class_regex,
         ),
         bs4_label,
         slop_label,

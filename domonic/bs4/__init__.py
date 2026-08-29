@@ -393,6 +393,9 @@ def _find_all(
             return _limit(candidates, limit)
     if recursive and _can_use_css(name, merged_attrs, string):
         selector = _css_from_filters(name, merged_attrs)
+        fast = _select_fast(self, selector, limit=limit)
+        if fast is not None:
+            return _limit(fast, limit)
         try:
             return _limit(self.querySelectorAll(selector), limit)
         except Exception:
@@ -577,7 +580,11 @@ def _selector_candidates(
     yield from _element_descendants(context)
 
 
-def _select_fast(self: Node, selector: str) -> list[Element] | None:
+def _select_fast(
+    self: Node,
+    selector: str,
+    limit: int | None = None,
+) -> list[Element] | None:
     groups = _split_selector_groups(selector)
     if not groups:
         return None
@@ -588,11 +595,14 @@ def _select_fast(self: Node, selector: str) -> list[Element] | None:
             if matches is None:
                 return None
             matched_ids.update(id(match) for match in matches)
-        return [
-            candidate
-            for candidate in _element_descendants(self)
-            if id(candidate) in matched_ids
-        ]
+        return _limit(
+            (
+                candidate
+                for candidate in _element_descendants(self)
+                if id(candidate) in matched_ids
+            ),
+            limit,
+        )
     selector = groups[0]
     if any(char in selector for char in ("+", "~", ":")):
         return None
@@ -621,6 +631,8 @@ def _select_fast(self: Node, selector: str) -> list[Element] | None:
             for candidate in _selector_candidates(context, parsed, combinator):
                 if _match_parsed_selector(candidate, parsed):
                     next_contexts.append(candidate)
+                    if index == last_index and limit == 1:
+                        return next_contexts
         contexts = next_contexts
         if not contexts:
             break
@@ -631,6 +643,8 @@ def _select_fast(self: Node, selector: str) -> list[Element] | None:
         if context_id not in seen:
             unique_contexts.append(context)
             seen.add(context_id)
+            if limit is not None and len(unique_contexts) >= limit:
+                break
     return unique_contexts
 
 
@@ -640,14 +654,14 @@ def _select(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Element]:
-    fast = _select_fast(self, selector)
+    fast = _select_fast(self, selector, limit=limit)
     if fast is not None:
         return _limit(fast, limit)
     return _limit(self.querySelectorAll(selector), limit)
 
 
 def _select_one(self: Node, selector: str, **kwargs: Any) -> Element | None:
-    fast = _select_fast(self, selector)
+    fast = _select_fast(self, selector, limit=1)
     if fast is not None:
         return fast[0] if fast else None
     return self.querySelector(selector)
