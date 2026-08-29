@@ -113,6 +113,15 @@ class BeautifulSlopTest(unittest.TestCase):
     def test_css_select(self):
         self.assertEqual(self.soup.select_one("article > a")["href"], "/two")
         self.assertEqual([node.text for node in self.soup.select("a")], ["one", "two", "side"])
+        self.assertEqual(self.soup.find("article").select("article"), [])
+        self.assertEqual(
+            [node["href"] for node in self.soup.select('main#root a[href^="/"]')],
+            ["/one", "/two", "/side"],
+        )
+        self.assertEqual(
+            [node["href"] for node in self.soup.select('article > a[data-kind="nav"]')],
+            ["/two"],
+        )
 
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")

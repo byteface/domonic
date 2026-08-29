@@ -85,6 +85,38 @@ def _document_order(root: Any) -> list[Any]:
     return nodes
 
 
+def _element_descendants(node: Any) -> Iterator[Element]:
+    for child in _iter_child_nodes(node):
+        if isinstance(child, Element):
+            yield child
+            yield from _element_descendants(child)
+        elif isinstance(child, Node) and not isinstance(child, (Text, Comment)):
+            yield from _element_descendants(child)
+
+
+def _element_children(node: Any) -> Iterator[Element]:
+    for child in _iter_child_nodes(node):
+        if isinstance(child, Element):
+            yield child
+
+
+def _find_element_by_id(
+    node: Any,
+    element_id: str,
+    include_self: bool = False,
+) -> Element | None:
+    if (
+        include_self
+        and isinstance(node, Element)
+        and node.getAttribute("id") == element_id
+    ):
+        return node
+    for child in _element_descendants(node):
+        if child.getAttribute("id") == element_id:
+            return child
+    return None
+
+
 def _attribute_name(name: str) -> str:
     if name == "class_":
         return "class"
@@ -178,12 +210,13 @@ def _merge_attrs(attrs: dict[str, Any] | None, kwargs: dict[str, Any]) -> dict[s
 
 
 def _attributes_match(node: Any, attrs: dict[str, Any] | None) -> bool:
+    if not isinstance(node, Element):
+        return False
     if not attrs:
-        return isinstance(node, Element)
-    node_attrs = _attribute_dict(node)
+        return True
     for name, expected in attrs.items():
         public_name = _attribute_name(name)
-        candidate = node_attrs.get(public_name)
+        candidate = node.getAttribute(public_name)
         matcher = _class_filter_matches if public_name == "class" else _filter_matches
         if not matcher(expected, candidate, node):
             return False
@@ -284,6 +317,26 @@ def _search_nodes(
             yield child
 
 
+def _candidate_nodes(
+    node: Any,
+    name: Any = None,
+    recursive: bool = True,
+    string: Any = None,
+) -> Iterator[Any] | None:
+    if string is not None or not isinstance(name, (str, type(None))):
+        return None
+    if not recursive:
+        return _iter_child_nodes(node)
+    if name is None:
+        return _element_descendants(node)
+    tag_name = name.lower()
+    return (
+        candidate
+        for candidate in _element_descendants(node)
+        if candidate.tagName.lower() == tag_name
+    )
+
+
 def _limit(items: Iterable[Any], limit: int | None = None) -> list[Any]:
     if limit is None:
         return list(items)
@@ -331,6 +384,12 @@ def _find_all(
             return _limit(self.querySelectorAll(selector), limit)
         except Exception:
             pass
+    candidates = _candidate_nodes(self, name, recursive, string)
+    if candidates is not None:
+        return _limit(
+            (node for node in candidates if _matches(node, name, merged_attrs, string)),
+            limit,
+        )
     return _limit(_search_nodes(self, name, merged_attrs, recursive, string), limit)
 
 
@@ -363,16 +422,148 @@ def _find_children(
     )
 
 
+def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] | None:
+    parts: list[tuple[str | None, str]] = []
+    token = []
+    combinator: str | None = None
+    bracket_depth = 0
+    quote: str | None = None
+    pending_space = False
+
+    for char in selector.strip():
+        if quote:
+            token.append(char)
+            if char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            token.append(char)
+            quote = char
+            continue
+        if char == "[":
+            bracket_depth += 1
+            token.append(char)
+            continue
+        if char == "]":
+            bracket_depth -= 1
+            if bracket_depth < 0:
+                return None
+            token.append(char)
+            continue
+        if bracket_depth:
+            token.append(char)
+            continue
+        if char == ">":
+            current = "".join(token).strip()
+            if not current:
+                return None
+            parts.append((combinator, current))
+            token = []
+            combinator = ">"
+            pending_space = False
+            continue
+        if char.isspace():
+            if token:
+                pending_space = True
+            continue
+        if pending_space:
+            current = "".join(token).strip()
+            if not current:
+                return None
+            parts.append((combinator, current))
+            token = []
+            combinator = " "
+            pending_space = False
+        token.append(char)
+
+    current = "".join(token).strip()
+    if not current or bracket_depth or quote:
+        return None
+    parts.append((combinator, current))
+    return parts
+
+
+def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
+    tag_name = parsed["tag"]
+    if tag_name != "*" and element.tagName.lower() != tag_name.lower():
+        return False
+    if parsed["id"] is not None and element.getAttribute("id") != parsed["id"]:
+        return False
+    class_tokens = set(str(element.getAttribute("class") or "").split())
+    if not set(parsed["classes"]).issubset(class_tokens):
+        return False
+    for attr, operator, value in parsed["attributes"]:
+        if not Element._attribute_selector_matches(
+            element.getAttribute(attr), operator, value
+        ):
+            return False
+    return True
+
+
+def _selector_candidates(
+    context: Any,
+    parsed: dict[str, Any],
+    combinator: str | None,
+) -> Iterator[Element]:
+    if combinator == ">":
+        yield from _element_children(context)
+        return
+    if parsed["id"] is not None:
+        found = _find_element_by_id(context, parsed["id"])
+        if isinstance(found, Element):
+            yield found
+        return
+    if parsed["tag"] != "*":
+        tag_name = parsed["tag"].lower()
+        for candidate in _element_descendants(context):
+            if candidate.tagName.lower() == tag_name:
+                yield candidate
+        return
+    yield from _element_descendants(context)
+
+
+def _select_fast(self: Node, selector: str) -> list[Element] | None:
+    if "," in selector or any(char in selector for char in ("+", "~", ":")):
+        return None
+    parts = _split_simple_selector_chain(selector)
+    if not parts:
+        return None
+    parsed_parts = [
+        (combinator, Element._parse_simple_selector(simple))
+        for combinator, simple in parts
+    ]
+    if any(parsed is None for _, parsed in parsed_parts):
+        return None
+
+    contexts: list[Any] = [self]
+    for combinator, parsed in parsed_parts:
+        next_contexts = []
+        for context in contexts:
+            for candidate in _selector_candidates(context, parsed, combinator):
+                if _match_parsed_selector(candidate, parsed):
+                    next_contexts.append(candidate)
+        contexts = next_contexts
+        if not contexts:
+            break
+    return contexts
+
+
 def _select(
     self: Node,
     selector: str,
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Element]:
+    fast = _select_fast(self, selector)
+    if fast is not None:
+        return _limit(fast, limit)
     return _limit(self.querySelectorAll(selector), limit)
 
 
 def _select_one(self: Node, selector: str, **kwargs: Any) -> Element | None:
+    fast = _select_fast(self, selector)
+    if fast is not None:
+        return fast[0] if fast else None
     return self.querySelector(selector)
 
 
