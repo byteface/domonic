@@ -309,8 +309,14 @@ _id="one", _class="two",
             self.assertEqual(page.querySelector("p").text, "Hi")
 
     def test_lxml_html_adapter_does_not_require_html5_parser(self):
+        try:
+            import lxml  # noqa: F401
+        except ImportError:
+            self.skipTest("lxml is not installed")
+
         module_name = "domonic.ext.lxml_html_"
         cached_adapter = sys.modules.pop(module_name, None)
+
         try:
             with patch.dict(sys.modules, {"html5_parser": None}):
                 adapter = import_module(module_name)
