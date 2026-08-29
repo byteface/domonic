@@ -1430,7 +1430,9 @@ class domonic:
             try:
                 from domonic.window import window as domonic_window
 
-                domonic_window.customElements.upgrade(page)
+                registry = domonic_window.customElements
+                if getattr(registry, "store", None):
+                    registry.upgrade(page)
             except Exception:
                 return page
             return page
