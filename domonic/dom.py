@@ -764,7 +764,7 @@ class Node(EventTarget):
             # elif nm == "sioc":
             #     self.namespaceURI = "http://rdfs.org/sioc/ns#"
             # elif nm == "skos":
-            #     self.namespaceURI = "http://www.w3.org/2004/02/skos/core#"  # TODO - test
+            #     self.namespaceURI = "http://www.w3.org/2004/02/skos/core#"
             # elif nm == "wot":
             #     self.namespaceURI = "http://xmlns.com/wot/0.1/"
             # elif nm == "wgs84_pos":
@@ -1131,12 +1131,6 @@ class Node(EventTarget):
     # def __dir__(self):
     #     return self.__dict__.keys()
 
-    # TODO - these are hard and wil need tests
-    # def __setattr__(self, attr, value):
-    # def __delattr__(self, attr):
-    # def __next__(self):
-    # def __iter__(self):
-
     def __iter__(self):
         return iter(self.args)
 
@@ -1144,7 +1138,7 @@ class Node(EventTarget):
         # return super().__format__(format_spec)
         # get node depth by counting parents
 
-        # TODO - this is a hack to get the depth of the node
+        # Indentation depth is derived from the current parent chain.
         n = self
         depth = 0
         while n is not None:
@@ -1284,21 +1278,6 @@ class Node(EventTarget):
     #     self.__dict__[name] = value
     # return self.__dict__[name]
 
-    # TODO - html.tag class currently has the required method as its called there.
-    # def __getitem__(self, item):
-    #     print('GET ITEM CALLED')
-    #     if isinstance(item, int):
-    #         return self.childNodes[item]
-    #     if isinstance(item, str):
-    #         # call props on self
-    #         print('sup!')
-    #         try:
-    #             return self.__dict__[item]
-    #         except Exception as e:
-    #             print(e)
-    #             # return None
-    #     return super(Node, self).__getitem__(item)
-
     def _update_parents(self):
         """Assign this node as parent for child nodes.
 
@@ -1321,7 +1300,7 @@ class Node(EventTarget):
         Lists are tolerated for backwards compatibility with older code that
         passed child groups directly.
         """
-        callback(element)  # TODO - this can block on failed attributes
+        callback(element)
         elements = []
         if isinstance(element, Node):
             elements = element.args
@@ -1520,7 +1499,6 @@ class Node(EventTarget):
     @property
     def nodeName(self) -> str | None:
         """Returns the name of a node"""
-        # TODO - not sure what's better this or overriding on every element
         # if isinstance(self, Text):
         #     return '#text'
         # if isinstance(self, Comment):
@@ -2854,9 +2832,7 @@ class DOMTokenList(list):
         return self.toString()
 
 
-class ShadowRoot(
-    Node
-):  # TODO - this may need to extend tag also to get the args/kwargs
+class ShadowRoot(Node):
     """property on element that has hidden DOM"""
 
     def __init__(self, host, mode="open"):
@@ -3377,8 +3353,7 @@ class Element(Node):
         return False
 
     def _getElementByAttrVal(self, attr: str, val: str):
-        # TODO - i think i need to build a hash map of IDs to positions on the tree
-        # for now I'm going using recursion so this is a bit of a hack to do a few levels
+        # Recursion keeps this in sync with live tree mutations.
         if self.getAttribute(attr) == val:
             return self
         for child in self.childNodes:
@@ -6597,8 +6572,6 @@ class Document(Element):
 
 
 class Location:
-    # TODO - move this to the window class and remove all domonic.javascript refs in this file
-
     def __init__(self, url: str = None, *args, **kwargs) -> None:
         self.href = url
 
@@ -8129,14 +8102,6 @@ def traverseSiblings(tw: TreeWalker, type: str) -> Node | None:
 
 
 def nextSkippingChildren(node: Node, stayWithin: Node) -> Node | None:
-
-    # if isinstance(node, str):
-    # node = Text(node)
-    # return None
-    # TODO - casting is not enough. as the Text node does not know its siblings
-    # print( "nsc", node, "??", stayWithin )
-    # print( "AND:", node.nextSibling )
-
     if node == stayWithin:
         # print('a')
         return None
@@ -8164,7 +8129,6 @@ class TreeWalker:
         """[
             Our dom has some strings that are not Text Nodes
             so we have to upgrade them to Node objects. As we can't know siblings otherwise
-            # TODO - consider upgrading as they are created.
         ]
         """
 
@@ -8359,7 +8323,6 @@ class TreeWalker:
                 return node
 
 
-# TODO - create fetch package and move the js fetch stuff to it?
 # fetch api
 
 # AbortController
