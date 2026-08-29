@@ -36,6 +36,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(str(result), '<div id="loaded">Hello</div>')
         self.assertEqual(result.getAttribute("id"), "loaded")
 
+    def test_dent_formats_single_line_pyml(self):
+        self.assertEqual(domonic.dent("div(span())"), "div(\n    span(\n    )\n)")
+        self.assertEqual(domonic.dent("div(span())", use_tabs=True), "div(\n\tspan(\n\t)\n)")
+
     def parse(self):
         t1 = domonic.parse("<html></html>")
         assert (

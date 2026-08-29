@@ -417,12 +417,32 @@ class domonic:
         dentage = 0
         lastchar = ""
         dented = ""
+        if "\n" not in pyml:
+            lines = []
+            current = ""
+            for char in pyml:
+                if char == "(":
+                    lines.append((tabs_or_spaces * dentage) + current + "(")
+                    dentage += 1
+                    current = ""
+                    continue
+                if char == ")":
+                    if current.strip():
+                        lines.append((tabs_or_spaces * dentage) + current)
+                        current = ""
+                    dentage = max(0, dentage - 1)
+                    lines.append((tabs_or_spaces * dentage) + ")")
+                    continue
+                current += char
+            if current.strip():
+                lines.append((tabs_or_spaces * dentage) + current)
+            return "\n".join(lines)
         for count, char in enumerate(pyml):
             if char == "(":
                 dentage += 1
             if char == ")":
                 dentage -= 1
-            if lastchar == "\n":  # TODO - if file doesn't have newlines already
+            if lastchar == "\n":
                 char = tabs_or_spaces * dentage + char
             lastchar = char
             dented += char
