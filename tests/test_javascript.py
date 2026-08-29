@@ -1030,6 +1030,9 @@ class TestCase(unittest.TestCase):
         assert mystr.replace("S", "X") == "Xome String"
         assert mystr.replace(" ", "X") == "SomeXString"
         assert mystr.replace("S", "X") != "Xome Xtring"
+        assert mystr.replace(RegExp("s", "i"), "X") == "Xome String"
+        assert mystr.replace(RegExp("s", "ig"), "X") == "Xome Xtring"
+        assert mystr.replace(RegExp(r"(\w+)\s+(\w+)"), r"\2 \1") == "String Some"
 
         # localeCompare
         self.assertLess(String("apple").localeCompare("banana"), 0)
@@ -1149,7 +1152,13 @@ class TestCase(unittest.TestCase):
         # searchParams.get("bin2")  # "E+AXQB+A"
 
     def test_javascript_FormData(self):
-        self.assertTrue(True)
+        from domonic.webapi.xhr import FormData as XHRFormData
+
+        data = FormData()
+        data.append("name", "domonic")
+
+        self.assertIsInstance(data, XHRFormData)
+        self.assertEqual(data.get("name"), "domonic")
 
     def test_javascript_Worker(self):
         with self.assertRaises(FileNotFoundError):

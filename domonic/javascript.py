@@ -906,60 +906,13 @@ class Map:
         return str([(x, self._dict[x]) for x in self._order])
 
 
-# TODO - moved to webapi.xhr . might import here for convenience?
-# class FormData:
-#     """[utils for a form]
+class FormData:
+    """Compatibility wrapper for :class:`domonic.webapi.xhr.FormData`."""
 
-#     Args:
-#         object ([str]): [takes a string or pyml object and returns a FormData]
-#     """
+    def __new__(cls, *args: Any, **kwargs: Any) -> Any:
+        from domonic.webapi.xhr import FormData as XHRFormData
 
-#     def __init__(self, form):
-#         """ creates a new FormData object. """
-#         # TODO - parse to domonic.
-#         # if isinstance(form, str):
-#         #   self._data = domonic.loads(form) # TODO - parser wont be done enough yet
-#         # if isinstance(form, Node):
-#         #   self._data = form
-#         raise NotImplementedError
-
-#     def append(self, name, value, filename):
-#         """ Appends a new value onto an existing key inside a FormData object,
-#         or adds the key if it does not already exist. """
-#         raise NotImplementedError
-
-#     def delete(self, name):
-#         """ Deletes a key/value pair from a FormData object. """
-#         raise NotImplementedError
-
-#     def entries(self):
-#         """ Returns an iterator allowing to go through all key/value pairs contained in this object. """
-#         raise NotImplementedError
-
-#     def get(self, name):
-#         """ Returns the first value associated with a given key from within a FormData object. """
-#         raise NotImplementedError
-
-#     def getAll(self, name):
-#         """ Returns an array of all the values associated with a given key from within a FormData """
-#         raise NotImplementedError
-
-#     def has(self, name):
-#         """ Returns a boolean stating whether a FormData object contains a certain key."""
-#         raise NotImplementedError
-
-#     def keys(self):
-#         """ Returns an iterator allowing to go through all keys of the key/value pairs contained in this object."""
-#         raise NotImplementedError
-
-#     def set(self, name, value, filename):
-#         """ Sets a new value for an existing key inside a FormData object,
-#         or adds the key/value if it does not already exist."""
-#         raise NotImplementedError
-
-#     def values(self):
-#         """ Returns an iterator allowing to go through all values  contained in this object."""
-#         raise NotImplementedError
+        return XHRFormData(*args, **kwargs)
 
 
 class Worker(_WebWorker):
@@ -3999,18 +3952,18 @@ class String:
             return ""
         return self.x[index]
 
-    def replace(self, old: str, new: str | Callable[..., str]) -> str:
+    def replace(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
         """
         Searches a string for a specified value, or a regular expression,
         and returns a new string where the specified values are replaced.
         only replaces first one.
         """
+        if isinstance(old, RegExp):
+            count = 0 if old.global_ else 1
+            return re.sub(old.expression, new, self.x, count=count, flags=old._re_flags())
         if callable(new):
-            # return new(self.x, old)
-            return re.sub(old, new, self.x)
-        else:
-            return self.x.replace(old, new, 1)
-        # re.sub(r"regepx", "old", "new") # TODO - js one also takes a regex
+            return re.sub(str(old), new, self.x, count=1)
+        return self.x.replace(str(old), str(new), 1)
 
     def replaceAll(self, old: str, new: str) -> str:
         """[returns a new string where the specified values are replaced. ES2021]
