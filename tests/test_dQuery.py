@@ -165,15 +165,12 @@ class TestCase(unittest.TestCase):
         # print(el.getAttribute("class"))
 
     def test_after(self):
-        # TODO - sort the parser... positional error on this as not multiline
-        # tags = º('<div id="test1"><h1>asd</h1></div>')
-        # print(tags)
+        tags = º('<div id="test1"><h1>asd</h1></div>')
+        self.assertEqual(str(tags), '<div id="test1"><h1>asd</h1></div>')
         app = html(head(), body(div(span(), _id="test")))
-        º(app)  # TODO _str is none?
-        # print( 'wtf:??:', º('#test1') ) # TODO - better errors when passing wrong id name
+        self.assertEqual(str(º(app)), "None")
         º("#test").after(p("hi"))
         self.assertIn("<p>hi</p>", str(app))
-        # pass
 
     def test_ajaxComplete(self):
         with self._ajax_handlers_isolated():
