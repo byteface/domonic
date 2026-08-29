@@ -4905,8 +4905,8 @@ class Comment(Node):
     nodeName: str = "#comment"
     __slots__ = "data"
 
-    def __init__(self, data) -> None:
-        self.data = data
+    def __init__(self, *data) -> None:
+        self.data = "".join(str(part) for part in data)
         super().__init__()
 
     def toString(self) -> str:

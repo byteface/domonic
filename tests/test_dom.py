@@ -400,11 +400,7 @@ class DOMTest(unittest.TestCase):
         # print(type(d))
         # print(d.nodeName)
 
-        # TODO - i thought had to be uppercase. but this breaks on html5lib treeparser
-        # line 1681ish html5parser.py  says... assert node.name == "script"
-        # which stops that parser working with domonic
-        #
-        # self.assertEqual("DIV", d.nodeName)
+        self.assertEqual("div", d.nodeName)
 
         self.assertEqual("test", d.nodeValue)
         self.assertEqual(True, n.contains(c))
@@ -516,7 +512,8 @@ class DOMTest(unittest.TestCase):
         # print(div(_test="1", **{"_data-test": ""}))
 
         assert sometag.id == "test"
-        # print(sometag.style.color)  # TODO - get on style
+        sometag.style.color = "red"
+        self.assertEqual(sometag.style.color, "red")
         assert sometag._thingy == "test22"
         assert sometag.thingy == "test22"
 
@@ -579,10 +576,6 @@ class DOMTest(unittest.TestCase):
 
         self.assertEqual(sometag.innerText(), "test2")
         sometag.textContent = ""
-
-        # return
-        # print(sometag.nodeName)
-        # assert(sometag.nodeName, 'DIV') # TODO - i checked one site in chrome, was upper case. not sure if a standard?
 
         sometag.setAttribute("id", "newid")
         assert sometag.getAttribute("id") == "newid"
@@ -710,9 +703,8 @@ class DOMTest(unittest.TestCase):
         doc.appendChild(div(_id="doc-hit"))
         self.assertEqual(doc.getElementById("doc-hit").tagName, "div")
         self.assertIsNone(doc.getElementById("missing"))
-        # print(result)
-        # print(len(result.children))
-        # assert len(result.children) == 3  # TODO - does a text node count?
+        self.assertEqual(len(result.childNodes), 3)
+        self.assertEqual(len(result.children), 2)
 
     def test_remove(self):
         dom1 = html(
@@ -763,12 +755,6 @@ class DOMTest(unittest.TestCase):
         # print(wrapper)
         assert str(wrapper) == "<div>Part 1 Part 2 Part 3</div>"
         self.assertEqual(wrapper.textContent, "Part 1 Part 2 Part 3")
-
-    # def test_Node():
-    # TODO - tests all below
-    # contains - probably need more recursive testing
-    # replaceChild
-    # anchors
 
     def test_querySelector(self):
         dom1 = html(
@@ -3990,9 +3976,7 @@ class DOMTest(unittest.TestCase):
         # https://github.com/byteface/domonic/issues/38
         com = f"{html(head(),body(Comment('foo')))}"
         assert "<!--foo-->" in com
-        # not able to recreate. Comment was updated to a Node in 6.1
-        # this may have been due to that
-        # TODO - mulitple arguments to comment
+        assert str(comment("foo", "bar")) == "<!--foobar-->"
 
     def test_body_two(self):
         aNewBodyElement = document.createElement("body")
@@ -4554,7 +4538,6 @@ class NodeTest(unittest.TestCase):
         node += one
         # node.insertBefore(two, one)
         # node.insertBefore(three, two)
-        # TODO - just add an optional positional parameter to append?
         node.args = (
             node.args[:2] + (two,) + node.args[2:]
         )  # does same as node.insert(1, two)
@@ -4582,7 +4565,6 @@ class NodeTest(unittest.TestCase):
         i3 = Document.createTextNode("i3")
         # node.insert(0, i0)
         node.prepend(i0)
-        # node.insert(3, i3) # TODO - consider an insertAt non standard addition to node? (although then where do you stop. grep/moveTo/find_at/every list method?. etc)
         node.args = node.args[:3] + (i3,) + node.args[3:]  # does same as insert(3, i3)
         # print("cool2?", node)
         expected = [i0, one, two, i3, three]
