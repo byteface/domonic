@@ -2727,6 +2727,14 @@ class DOMTokenList(list):
         self._reload()
         return list(list.__iter__(self)) == other
 
+    def __iadd__(self, token):
+        self.add(token)
+        return self
+
+    def __isub__(self, token):
+        self.remove(token)
+        return self
+
     def add(self, *args):
         """Adds the given tokens to the list"""
         self._reload()

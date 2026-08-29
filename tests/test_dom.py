@@ -4597,33 +4597,6 @@ class NodeTest(unittest.TestCase):
         assert four.parentNode is node, f'"{four.parentNode}" != "{node}"'
         self._checkPositions(node)
 
-    # TODO - item assignment - bring dunders over from tag now? - or we bringing all over for v8?
-    # def testSetItem(self):
-    #     doc = Document()
-    #     node = doc.createElement('node')
-    #     one = doc.createElement('one')
-    #     two = doc.createTextNode('two')
-    #     three = doc.createElement('three')
-    #     four = doc.createElement('four')
-    #     five = doc.createElement('five')
-    #     node.appendChild(one)
-    #     node.appendChild(two)
-    #     node.appendChild(three)
-
-    #     node[1] = four
-    #     assert node[0] is one, '"%s" != "%s"' % (node[0], one)
-    #     assert node[1] is four, '"%s" != "%s"' % (node[1], four)
-    #     assert node[2] is three, '"%s" != "%s"' % (node[2], three)
-    #     assert len(node) == 3, '%s != %s' % (len(node), 3)
-    #     self._checkPositions(node)
-
-    #     node[2] = five
-    #     assert node[0] is one, '"%s" != "%s"' % (node[0], one)
-    #     assert node[1] is four, '"%s" != "%s"' % (node[1], four)
-    #     assert node[2] is five, '"%s" != "%s"' % (node[2], five)
-    #     assert len(node) == 3, '%s != %s' % (len(node), 3)
-    #     self._checkPositions(node)
-
     def test_extend(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
@@ -4742,9 +4715,6 @@ class NodeTest(unittest.TestCase):
         # node.attributes['one'] = one
         # print(str(node.attributes))
         # print(len(node.attributes))
-        # node._test2 = 'test1'  # TODO - still need to sort
-        # node.test2 = 'test2'  # TODO - still need to sort
-        # node['test'] = 'test3' # TODO - auto-underscore?. (problem is expectation on getters. think back to the broken branch)
         node["_test4"] = "test4"
         # node >> {"_test":'test'}
         # print(node)
@@ -4916,15 +4886,6 @@ class NodeTest(unittest.TestCase):
         node2 = node.cloneNode(deep=True)
         assert node.isEqualNode(node2)
 
-    # TODO - support legacy methods if they don't break anything?
-    # def testGetSetUserData(self):
-    #     doc = Document()
-    #     node = doc.createElement('node')
-    #     node.setUserData('foo', 'bar')
-    #     res = node.getUserData('foo')
-    #     assert res == 'bar'
-
-
 class CommentTest(unittest.TestCase):
     def setUp(self):
         self.c = Comment("comment")
@@ -5042,9 +5003,10 @@ class TestDomTokenList(unittest.TestCase):
         sample.classList.add("theclass4")
         # print(sample.classList)
         assert sample.classList.contains("theclass4")
-        # print(type(sample.classList))
-        # sample.classList += 'theclass5' # TODO - dunders
-        # print(sample.classList)
+        sample.classList += "theclass5"
+        assert sample.classList.contains("theclass5")
+        sample.classList -= "theclass5"
+        assert not sample.classList.contains("theclass5")
         sample.classList.remove("theclass")
         # print(sample.classList)
         assert not sample.classList.contains("theclass")

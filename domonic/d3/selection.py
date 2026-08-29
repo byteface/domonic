@@ -421,8 +421,100 @@ class Selection:
             subgroups.append(subgroup)
         return Selection(subgroups, self._parents, self.this)
 
-    # import selection_data from "./data.js";
-    # def data: selection_data, # TODO -------------------------------------- this is a big one
+    def data(self, value=_MISSING, key=None):
+        if value is _MISSING:
+            return [getattr(node, "__data__", None) for node in self]
+
+        bind = self._bind_key if callable(key) else self._bind_index
+        update_groups = []
+        enter_groups = []
+        exit_groups = []
+
+        for j, group in enumerate(self._groups):
+            parent = self._parents[j] if j < len(self._parents) else None
+            parent_data = getattr(parent, "__data__", None)
+            values = (
+                _invoke_callback(value, parent_data, j, self._parents)
+                if callable(value)
+                else value
+            )
+            data_values = array(values)
+            update, enter, exit_ = bind(parent, group, data_values, key)
+            update_groups.append(update)
+            enter_groups.append(enter)
+            exit_groups.append(exit_)
+
+        selection = Selection(update_groups, self._parents, self.this)
+        selection._enter = enter_groups
+        selection._exit = exit_groups
+        return selection
+
+    def _bind_index(self, parent, group, data_values, key=None):
+        update = Array(len(data_values))
+        enter = Array(len(data_values))
+        exit_ = []
+        group_length = len(group)
+
+        for i, datum in enumerate(data_values):
+            node = group[i] if i < group_length else None
+            if node is None:
+                enter[i] = EnterNode(parent, datum) if parent is not None else None
+                update[i] = None
+            else:
+                node.__data__ = datum
+                update[i] = node
+                enter[i] = None
+
+        for i in range(len(data_values), group_length):
+            node = group[i]
+            if node is not None:
+                exit_.append(node)
+
+        self._link_enter_nodes(enter, update)
+        return update, enter, exit_
+
+    def _bind_key(self, parent, group, data_values, key):
+        update = Array(len(data_values))
+        enter = Array(len(data_values))
+        exit_ = []
+        node_by_key = {}
+
+        for i, node in enumerate(group):
+            if node is None:
+                continue
+            node_key = str(
+                _invoke_callback(key, getattr(node, "__data__", None), i, group)
+            )
+            if node_key in node_by_key:
+                exit_.append(node)
+            else:
+                node_by_key[node_key] = node
+
+        for i, datum in enumerate(data_values):
+            data_key = str(_invoke_callback(key, datum, i, data_values))
+            node = node_by_key.pop(data_key, None)
+            if node is None:
+                enter[i] = EnterNode(parent, datum) if parent is not None else None
+                update[i] = None
+            else:
+                node.__data__ = datum
+                update[i] = node
+                enter[i] = None
+
+        exit_.extend(node_by_key.values())
+        self._link_enter_nodes(enter, update)
+        return update, enter, exit_
+
+    def _link_enter_nodes(self, enter, update):
+        next_node = None
+        for i in range(len(enter) - 1, -1, -1):
+            node = update[i]
+            if node is not None:
+                next_node = node
+                continue
+            enter_node = enter[i]
+            if enter_node is not None:
+                enter_node._next = next_node
 
     # import selection_enter from "./enter.js";
     # def enter: selection_enter,

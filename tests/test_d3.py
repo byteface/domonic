@@ -33,6 +33,7 @@ from domonic.decorators import silence
 from domonic.dom import *
 from domonic.html import *
 from domonic.svg import *  # lowercase path is in here
+from domonic.d3.selection import Selection, select, selectAll
 
 # from domonic.d3.timer import *
 
@@ -1946,6 +1947,55 @@ class TestCase(unittest.TestCase):
         assert len(empty_enter._groups) == len(update._groups)
         assert len(empty_enter._groups[0]) == 2
         assert len(empty_exit._groups[1]) == 1
+
+    def test_selection_data_binds_enter_exit_and_join(self):
+        d = html(body(ul(li(_id="one"), li(_id="two"))))
+        parent = d.querySelector("ul")
+        one = d.querySelector("#one")
+        two = d.querySelector("#two")
+
+        update = select(parent).selectAll("li").data(["alpha", "beta", "gamma"])
+
+        assert update.nodes() == [one, two]
+        assert update.data() == ["alpha", "beta"]
+        assert update.exit().nodes() == []
+        assert len(update.enter().nodes()) == 1
+
+        update.enter().append("li").text(lambda data: data)
+        assert [item.textContent for item in parent.querySelectorAll("li")] == [
+            None,
+            None,
+            "gamma",
+        ]
+
+        update = select(parent).selectAll("li").data(["alpha"])
+        assert update.nodes() == [one]
+        assert update.exit().nodes() == [two, parent.querySelectorAll("li")[2]]
+
+    def test_selection_data_accepts_callback_and_key(self):
+        d = html(body(ul(li("old", _id="a"), li("old", _id="b"))))
+        parent = d.querySelector("ul")
+        a = d.querySelector("#a")
+        b = d.querySelector("#b")
+        a.__data__ = {"id": "a", "value": 1}
+        b.__data__ = {"id": "b", "value": 2}
+        parent.__data__ = [
+            {"id": "b", "value": 20},
+            {"id": "c", "value": 30},
+        ]
+
+        update = select(parent).selectAll("li").data(
+            lambda data: data, lambda data: data["id"]
+        )
+
+        assert update.nodes() == [b]
+        assert b.__data__["value"] == 20
+        assert update.exit().nodes() == [a]
+
+        update.enter().append("li").text(lambda data: data["id"])
+        items = parent.querySelectorAll("li")
+        assert [item.textContent for item in items] == ["old", "old", "c"]
+        assert items[2].__data__["value"] == 30
 
     def test_property_classed_text_html_and_datum(self):
         d = html(body(p("old", _id="one", _class="alpha"), p("old", _id="two")))

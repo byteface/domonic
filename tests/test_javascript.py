@@ -212,7 +212,6 @@ class TestCase(unittest.TestCase):
 
     # Animal properties and method encapsulation
 
-    # TODO - to get reference back to self. in a dict it needs to readd the method and pass self
     Animal = {
         "type": "Invertebrates",  # Default value of properties
         "displayType": lambda self: self.type,
