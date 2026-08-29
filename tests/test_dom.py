@@ -3593,6 +3593,61 @@ class DOMTest(unittest.TestCase):
         self.assertIsNone(image.abort())
         self.assertEqual(events, ["loadstart", "load", "load", "error", "abort"])
 
+    def test_validity_state_reports_constraint_flags(self):
+        email = input(_type="email", _required=True)
+        self.assertTrue(email.willValidate)
+        self.assertTrue(email.validity.valueMissing)
+        self.assertFalse(email.validity.valid)
+        self.assertEqual(email.validationMessage, "Please fill out this field.")
+
+        invalid_events = []
+        email.addEventListener(
+            "invalid", lambda event: invalid_events.append(event.type)
+        )
+        self.assertFalse(email.checkValidity())
+        self.assertEqual(invalid_events, ["invalid"])
+
+        email.value = "not-an-email"
+        self.assertTrue(email.validity.typeMismatch)
+        self.assertFalse(email.validity.valueMissing)
+
+        email.value = "person@example.com"
+        self.assertTrue(email.validity.valid)
+        self.assertEqual(email.validationMessage, "")
+
+        email.setCustomValidity("Use a work email address.")
+        self.assertTrue(email.validity.customError)
+        self.assertEqual(email.validationMessage, "Use a work email address.")
+        email.setCustomValidity("")
+        self.assertTrue(email.validity.valid)
+
+        url_input = input(_type="url", _value="not a url")
+        self.assertTrue(url_input.validity.typeMismatch)
+
+        code = input(_pattern=r"[A-Z]{3}", _value="ab1")
+        self.assertTrue(code.validity.patternMismatch)
+
+        tickets = input(
+            _type="number", _min="1", _max="10", _step="2", _value="12"
+        )
+        self.assertTrue(tickets.validity.rangeOverflow)
+        tickets.value = "0"
+        self.assertTrue(tickets.validity.rangeUnderflow)
+        tickets.value = "4"
+        self.assertTrue(tickets.validity.stepMismatch)
+        tickets.value = "abc"
+        self.assertTrue(tickets.validity.badInput)
+
+        short_text = textarea("abc", _minlength="5", _maxlength="10")
+        self.assertTrue(short_text.validity.tooShort)
+        short_text.value = "abcdefghijkl"
+        self.assertTrue(short_text.validity.tooLong)
+
+        hidden = input(_type="hidden", _required=True)
+        self.assertFalse(hidden.willValidate)
+        self.assertTrue(hidden.checkValidity())
+        self.assertTrue(form(hidden).checkValidity())
+
     def test_required_radio_group_validity_uses_group_checked_state(self):
         free = input(_type="radio", _name="plan", _value="free", _required=True)
         pro = input(_type="radio", _name="plan", _value="pro")

@@ -635,26 +635,154 @@ def _radio_group_members(
     return radios or ([control] if isinstance(control, HTMLInputElement) else [])
 
 
+def _control_value(control: "Element") -> str:
+    value = getattr(control, "value", "")
+    return "" if value is None else str(value)
+
+
+def _constraint_number(value: Any) -> float | None:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _constraint_int(value: Any) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+class ValidityState:
+    """Represents the constraint-validation state for a form control."""
+
+    def __init__(self, element: "Element") -> None:
+        self._element = element
+
+    @property
+    def badInput(self) -> bool:
+        input_type = (self._element.getAttribute("type") or "").lower()
+        value = _control_value(self._element)
+        return bool(
+            value
+            and input_type in {"number", "range"}
+            and _constraint_number(value) is None
+        )
+
+    @property
+    def customError(self) -> bool:
+        return bool(getattr(self._element, "_custom_validity_message", ""))
+
+    @property
+    def patternMismatch(self) -> bool:
+        pattern = self._element.getAttribute("pattern")
+        value = _control_value(self._element)
+        if not pattern or value == "":
+            return False
+        try:
+            return re.fullmatch(str(pattern), value) is None
+        except re.error:
+            return False
+
+    @property
+    def rangeOverflow(self) -> bool:
+        value = _constraint_number(_control_value(self._element))
+        maximum = _constraint_number(self._element.getAttribute("max"))
+        return value is not None and maximum is not None and value > maximum
+
+    @property
+    def rangeUnderflow(self) -> bool:
+        value = _constraint_number(_control_value(self._element))
+        minimum = _constraint_number(self._element.getAttribute("min"))
+        return value is not None and minimum is not None and value < minimum
+
+    @property
+    def stepMismatch(self) -> bool:
+        step = self._element.getAttribute("step")
+        if step in (None, "any"):
+            return False
+        value = _constraint_number(_control_value(self._element))
+        step_value = _constraint_number(step)
+        if value is None or step_value in (None, 0):
+            return False
+        base = _constraint_number(self._element.getAttribute("min")) or 0
+        remainder = (value - base) % step_value
+        return not (abs(remainder) < 1e-9 or abs(remainder - step_value) < 1e-9)
+
+    @property
+    def tooLong(self) -> bool:
+        maximum = _constraint_int(self._element.getAttribute("maxlength"))
+        return maximum is not None and len(_control_value(self._element)) > maximum
+
+    @property
+    def tooShort(self) -> bool:
+        minimum = _constraint_int(self._element.getAttribute("minlength"))
+        value = _control_value(self._element)
+        return bool(value and minimum is not None and len(value) < minimum)
+
+    @property
+    def typeMismatch(self) -> bool:
+        input_type = (self._element.getAttribute("type") or "").lower()
+        value = _control_value(self._element)
+        if value == "":
+            return False
+        if input_type == "email":
+            values = [value]
+            if self._element.hasAttribute("multiple"):
+                values = [item.strip() for item in value.split(",")]
+            return any(
+                re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", item) is None
+                for item in values
+            )
+        if input_type == "url":
+            return re.fullmatch(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s]+", value) is None
+        return False
+
+    @property
+    def valid(self) -> bool:
+        return not any(
+            (
+                self.badInput,
+                self.customError,
+                self.patternMismatch,
+                self.rangeOverflow,
+                self.rangeUnderflow,
+                self.stepMismatch,
+                self.tooLong,
+                self.tooShort,
+                self.typeMismatch,
+                self.valueMissing,
+            )
+        )
+
+    @property
+    def valueMissing(self) -> bool:
+        if self._element.hasAttribute("disabled") or not self._element.hasAttribute(
+            "required"
+        ):
+            return False
+        tag_name = getattr(
+            self._element, "tagName", getattr(self._element, "name", "")
+        ).lower()
+        if tag_name == "input":
+            input_type = (self._element.getAttribute("type") or "text").lower()
+            if input_type == "checkbox":
+                return not self._element.checked
+            if input_type == "radio":
+                return not any(
+                    radio.checked
+                    for radio in _radio_group_members(
+                        self._element, include_disabled=False
+                    )
+                )
+        return _control_value(self._element) == ""
+
+
 def _is_control_valid(control: "Element") -> bool:
     if not isinstance(control, Element) or control.hasAttribute("disabled"):
         return True
-    if control.hasAttribute("required"):
-        tag_name = getattr(control, "tagName", getattr(control, "name", "")).lower()
-        if tag_name == "input":
-            input_type = (control.getAttribute("type") or "text").lower()
-            if input_type == "checkbox":
-                return control.checked
-            if input_type == "radio":
-                return any(
-                    radio.checked
-                    for radio in _radio_group_members(control, include_disabled=False)
-                )
-            return control.value != ""
-        if tag_name == "textarea":
-            return control.value != ""
-        if tag_name == "select":
-            return control.value != ""
-    return True
+    return not getattr(control, "willValidate", True) or control.validity.valid
 
 
 class Node(EventTarget):
@@ -8463,6 +8591,58 @@ class HTMLElement(Element):
     name = ""
 
     @property
+    def validity(self) -> ValidityState:
+        return ValidityState(self)
+
+    @property
+    def validationMessage(self) -> str:
+        custom_message = getattr(self, "_custom_validity_message", "")
+        if custom_message:
+            return custom_message
+        validity = self.validity
+        messages = (
+            (validity.valueMissing, "Please fill out this field."),
+            (validity.typeMismatch, "Please enter a valid value."),
+            (validity.patternMismatch, "Please match the requested format."),
+            (validity.rangeOverflow, "Value must be less than or equal to max."),
+            (validity.rangeUnderflow, "Value must be greater than or equal to min."),
+            (validity.stepMismatch, "Please enter a valid step value."),
+            (validity.tooLong, "Please shorten this text."),
+            (validity.tooShort, "Please lengthen this text."),
+            (validity.badInput, "Please enter a valid value."),
+        )
+        for failed, message in messages:
+            if failed:
+                return message
+        return ""
+
+    @property
+    def willValidate(self) -> bool:
+        tag_name = getattr(self, "tagName", getattr(self, "name", "")).lower()
+        if self.hasAttribute("disabled") or tag_name in {"fieldset", "output"}:
+            return False
+        if tag_name == "input" and self.type in {"hidden", "button", "reset"}:
+            return False
+        if tag_name == "button" and (self.getAttribute("type") or "submit").lower() in {
+            "button",
+            "reset",
+        }:
+            return False
+        return tag_name in {"button", "input", "select", "textarea"}
+
+    def checkValidity(self) -> bool:
+        valid = not self.willValidate or self.validity.valid
+        if not valid:
+            self.dispatchEvent(Event("invalid", {"bubbles": False, "cancelable": True}))
+        return valid
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
+
+    def setCustomValidity(self, message: Any) -> None:
+        self._custom_validity_message = "" if message is None else str(message)
+
+    @property
     def popover(self) -> str | None:
         return self.getAttribute("popover")
 
@@ -9666,7 +9846,7 @@ class HTMLInputElement(HTMLElement):
         return result
 
     def checkValidity(self) -> bool:
-        return _is_control_valid(self)
+        return super().checkValidity()
 
     def reportValidity(self) -> bool:
         return self.checkValidity()
@@ -10276,7 +10456,7 @@ class HTMLSelectElement(HTMLElement):
         return self.selectedIndex
 
     def checkValidity(self) -> bool:
-        return _is_control_valid(self)
+        return super().checkValidity()
 
     def reportValidity(self) -> bool:
         return self.checkValidity()
@@ -10654,7 +10834,7 @@ class HTMLTextAreaElement(HTMLElement):
         self._default_value = "" if new_value is None else str(new_value)
 
     def checkValidity(self) -> bool:
-        return _is_control_valid(self)
+        return super().checkValidity()
 
     def reportValidity(self) -> bool:
         return self.checkValidity()

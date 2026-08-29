@@ -87,6 +87,7 @@ python odf_content.py
 python rss_feed.py
 python scheduler_api.py
 python speculation_rules.py
+python validity_state.py
 python webmcp_form.py
 ```
 
