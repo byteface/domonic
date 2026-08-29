@@ -23,6 +23,12 @@ DEFAULT_SELECTORS = [
     "table a[href]",
     "img[src]",
 ]
+DEFAULT_COMPLEX_SELECTORS = [
+    'div#bodyContent p:first-child a[href^="/wiki/"]',
+    'div#bodyContent table tr:nth-child(2) a[href]',
+    'div#bodyContent ul li:last-child a[href]',
+    'div#bodyContent a[href*="Python"]',
+]
 DEFAULT_HREF_RE = r"^/wiki/(?!File:|Special:)"
 DEFAULT_CLASS_RE = r"\bmw-|infobox|navbox|sidebar"
 
@@ -81,6 +87,15 @@ def common_cases(
             lambda soup: sum(len(soup.select(selector)) for selector in selectors),
         ),
         (
+            "complex CSS selectors",
+            lambda soup: sum(
+                len(soup.select(selector)) for selector in DEFAULT_COMPLEX_SELECTORS
+            ),
+            lambda soup: sum(
+                len(soup.select(selector)) for selector in DEFAULT_COMPLEX_SELECTORS
+            ),
+        ),
+        (
             "select_one id descendant",
             lambda soup: soup.select_one("div#bodyContent a[href]").get("href"),
             lambda soup: soup.select_one("div#bodyContent a[href]").get("href"),
@@ -132,6 +147,11 @@ def common_cases(
             lambda soup: len(
                 soup.find_all(lambda tag: getattr(tag, "name", None) == "a")
             ),
+        ),
+        (
+            "list-name find_all",
+            lambda soup: len(soup.find_all(["a", "img", "table"])),
+            lambda soup: len(soup.find_all(["a", "img", "table"])),
         ),
         (
             "attribute reads over links",

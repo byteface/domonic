@@ -137,12 +137,38 @@ class BeautifulSlopTest(unittest.TestCase):
             ["article", "aside"],
         )
 
+    def test_common_css_pseudo_selectors(self):
+        soup = BeautifulSlop(
+            """
+            <main>
+              <ul>
+                <li><a href="/one">one</a></li>
+                <li><a href="/two">two</a></li>
+                <li><a href="/three">three</a></li>
+              </ul>
+              <p><span>first</span><span>last</span></p>
+            </main>
+            """,
+            "html.parser",
+        )
+
+        self.assertEqual(soup.select_one("li:first-child a")["href"], "/one")
+        self.assertEqual(soup.select_one("li:nth-child(2) a")["href"], "/two")
+        self.assertEqual(soup.select_one("li:last-child a")["href"], "/three")
+        self.assertEqual(
+            [node.text for node in soup.select("p > span:first-child, p > span:last-child")],
+            ["first", "last"],
+        )
+
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")
         second = self.soup.find("a", href="/two")
 
         self.assertEqual(first.parent.name, "p")
-        self.assertEqual([node.name for node in first.parents if getattr(node, "name", None)][:2], ["p", "article"])
+        self.assertEqual(
+            [node.name for node in first.parents if getattr(node, "name", None)][:2],
+            ["p", "article"],
+        )
         self.assertIn(first, list(first.parent.children))
         self.assertEqual(second.find_previous("h1").text, "Title")
         self.assertEqual(first.find_next("a")["href"], "/two")
@@ -171,6 +197,15 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(article.get_text("|", strip=True), "Title|Hello|one|two")
         self.assertIn(" Hello ", list(article.strings))
         self.assertEqual(list(article.find("p").stripped_strings), ["Hello", "one"])
+
+    def test_document_get_text_skips_script_and_style_children(self):
+        soup = BeautifulSlop(
+            "<main>visible<script>hidden()</script><style>.x{}</style></main>",
+            "html.parser",
+        )
+
+        self.assertEqual(soup.get_text("", strip=True), "visible")
+        self.assertEqual(soup.find("script").get_text("", strip=True), "hidden()")
 
     def test_mutation_methods(self):
         soup = BeautifulSlop("<section><p>one</p><p>two</p></section>", "html.parser")

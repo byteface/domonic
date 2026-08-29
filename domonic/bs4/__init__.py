@@ -10,6 +10,7 @@ real DOM classes. Returned objects remain normal domonic nodes, not wrappers.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 
@@ -112,11 +113,11 @@ def _find_element_by_id(
     if (
         include_self
         and isinstance(node, Element)
-        and node.getAttribute("id") == element_id
+        and _get_attribute(node, "id") == element_id
     ):
         return node
     for child in _element_descendants(node):
-        if child.getAttribute("id") == element_id:
+        if _get_attribute(child, "id") == element_id:
             return child
     return None
 
@@ -158,13 +159,23 @@ def _indexed_candidates(
     if (
         string is not None
         or not recursive
-        or not isinstance(name, (str, type(None)))
         or (parent is not None and not isinstance(parent, Document))
     ):
         return None
     index = _tag_index(node)
     if name is None:
         return iter(index.get("*", ()))
+    if isinstance(name, (list, tuple, set)) and all(
+        isinstance(item, str) for item in name
+    ):
+        names = {item.lower() for item in name}
+        return (
+            element
+            for element in index.get("*", ())
+            if element.name.lower() in names
+        )
+    if not isinstance(name, str):
+        return None
     return iter(index.get(name.lower(), ()))
 
 
@@ -174,6 +185,14 @@ def _attribute_name(name: str) -> str:
     if name.endswith("_") and not name.startswith("_"):
         return name[:-1]
     return name
+
+
+def _get_attribute(node: Any, name: str) -> Any:
+    if not isinstance(node, Element):
+        return None
+    public_name = _attribute_name(name)
+    key = public_name if public_name.startswith("_") else f"_{public_name}"
+    return getattr(node, "kwargs", {}).get(key)
 
 
 def _attribute_dict(node: Any) -> dict[str, Any]:
@@ -267,7 +286,7 @@ def _attributes_match(node: Any, attrs: dict[str, Any] | None) -> bool:
         return True
     for name, expected in attrs.items():
         public_name = _attribute_name(name)
-        candidate = node.getAttribute(public_name)
+        candidate = _get_attribute(node, public_name)
         matcher = _class_filter_matches if public_name == "class" else _filter_matches
         if not matcher(expected, candidate, node):
             return False
@@ -362,7 +381,23 @@ def _search_nodes(
     recursive: bool = True,
     string: Any = None,
 ) -> Iterator[Any]:
-    children = _descendants(node) if recursive else _iter_child_nodes(node)
+    if string is None:
+        children = _element_descendants(node) if recursive else _element_children(node)
+        if callable(name) and not attrs:
+            for child in children:
+                try:
+                    if name(child):
+                        yield child
+                except TypeError:
+                    candidate = _tag_name(child)
+                    try:
+                        if name(candidate):
+                            yield child
+                    except TypeError:
+                        pass
+            return
+    else:
+        children = _descendants(node) if recursive else _iter_child_nodes(node)
     for child in children:
         if _matches(child, name, attrs, string):
             yield child
@@ -550,6 +585,19 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     return parts
 
 
+def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | None:
+    if ":" not in selector:
+        return selector, None
+    if selector.endswith(":first-child"):
+        return selector[: -len(":first-child")], ("first-child", None)
+    if selector.endswith(":last-child"):
+        return selector[: -len(":last-child")], ("last-child", None)
+    match = re.search(r":nth-child\((\d+)\)$", selector)
+    if match:
+        return selector[: match.start()], ("nth-child", int(match.group(1)))
+    return None
+
+
 def _split_selector_groups(selector: str) -> list[str] | None:
     groups = []
     token = []
@@ -596,17 +644,53 @@ def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
     tag_name = parsed["tag"]
     if tag_name != "*" and element.name.lower() != tag_name.lower():
         return False
-    if parsed["id"] is not None and element.getAttribute("id") != parsed["id"]:
+    if parsed["id"] is not None and _get_attribute(element, "id") != parsed["id"]:
         return False
-    class_tokens = set(str(element.getAttribute("class") or "").split())
+    class_tokens = set(str(_get_attribute(element, "class") or "").split())
     if not set(parsed["classes"]).issubset(class_tokens):
         return False
     for attr, operator, value in parsed["attributes"]:
         if not Element._attribute_selector_matches(
-            element.getAttribute(attr), operator, value
+            _get_attribute(element, attr), operator, value
         ):
             return False
     return True
+
+
+def _element_index(element: Element) -> int | None:
+    parent = getattr(element, "parentNode", None)
+    if parent is None:
+        return None
+    index = 0
+    for child in _iter_child_nodes(parent):
+        if isinstance(child, Element):
+            index += 1
+            if child is element:
+                return index
+    return None
+
+
+def _match_simple_pseudo(element: Element, pseudo: tuple[str, Any] | None) -> bool:
+    if pseudo is None:
+        return True
+    name, value = pseudo
+    index = _element_index(element)
+    if index is None:
+        return False
+    if name == "first-child":
+        return index == 1
+    if name == "last-child":
+        parent = getattr(element, "parentNode", None)
+        if parent is None:
+            return False
+        last = None
+        for child in _iter_child_nodes(parent):
+            if isinstance(child, Element):
+                last = child
+        return last is element
+    if name == "nth-child":
+        return index == value
+    return False
 
 
 def _selector_candidates(
@@ -655,21 +739,24 @@ def _select_fast(
             limit,
         )
     selector = groups[0]
-    if any(char in selector for char in ("+", "~", ":")):
+    if any(char in selector for char in ("+", "~")):
         return None
     parts = _split_simple_selector_chain(selector)
     if not parts:
         return None
-    parsed_parts = [
-        (combinator, Element._parse_simple_selector(simple))
-        for combinator, simple in parts
-    ]
-    if any(parsed is None for _, parsed in parsed_parts):
+    parsed_parts = []
+    for combinator, simple in parts:
+        pseudo_result = _strip_simple_pseudo(simple)
+        if pseudo_result is None:
+            return None
+        simple, pseudo = pseudo_result
+        parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
+    if any(parsed is None for _, parsed, _ in parsed_parts):
         return None
 
     contexts: list[Any] = [self]
     last_index = len(parsed_parts) - 1
-    for index, (combinator, parsed) in enumerate(parsed_parts):
+    for index, (combinator, parsed, pseudo) in enumerate(parsed_parts):
         next_contexts = []
         for context in contexts:
             if (
@@ -677,10 +764,13 @@ def _select_fast(
                 and index < last_index
                 and isinstance(context, Element)
                 and _match_parsed_selector(context, parsed)
+                and _match_simple_pseudo(context, pseudo)
             ):
                 next_contexts.append(context)
             for candidate in _selector_candidates(context, parsed, combinator):
-                if _match_parsed_selector(candidate, parsed):
+                if _match_parsed_selector(candidate, parsed) and _match_simple_pseudo(
+                    candidate, pseudo
+                ):
                     next_contexts.append(candidate)
                     if index == last_index and limit == 1:
                         return next_contexts
@@ -932,6 +1022,8 @@ def _strings(self: Node) -> Iterator[str]:
             yield node.data
         elif isinstance(node, str):
             yield node
+        elif isinstance(node, Element) and node.name.lower() in {"script", "style"}:
+            continue
         elif isinstance(node, Node) and not isinstance(node, Comment):
             stack.extend(reversed(getattr(node, "args", ()) or ()))
 
@@ -966,7 +1058,7 @@ def _attrs_set(self: Element, value: dict[str, Any]) -> None:
 
 
 def _get(self: Element, key: str, default: Any = None) -> Any:
-    value = self.getAttribute(key)
+    value = _get_attribute(self, key)
     return default if value is None else value
 
 
@@ -981,7 +1073,7 @@ def _has_key(self: Element, key: str) -> bool:
 def _getitem(self: Element, key: str | int) -> Any:
     if isinstance(key, int):
         return _ORIGINAL_GETITEM(self, key)
-    value = self.getAttribute(key)
+    value = _get_attribute(self, key)
     return value
 
 
