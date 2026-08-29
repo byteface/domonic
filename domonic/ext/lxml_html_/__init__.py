@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from lxml import html
 
-from domonic.ext.html5_parser_.dom import adapt
+from domonic.ext.lxml_dom import adapt
 
 
 def parse(source, return_root=True, **kwargs):

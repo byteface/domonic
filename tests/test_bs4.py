@@ -122,6 +122,11 @@ class BeautifulSlopTest(unittest.TestCase):
             [node["href"] for node in self.soup.select('article > a[data-kind="nav"]')],
             ["/two"],
         )
+        article = self.soup.find("article")
+        badge = article.new_tag("span", class_="badge")
+        badge.append("patched")
+        article.find("h1").insert_after(badge)
+        self.assertEqual(article.select_one("article > span").text, "patched")
 
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")

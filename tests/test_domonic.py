@@ -8,7 +8,9 @@ domonic core tests for __init__.py at the root of the domonic package
 """
 
 import tempfile
+import sys
 import unittest
+from importlib import import_module
 from unittest.mock import patch
 
 from domonic import attributes, domonic
@@ -305,6 +307,19 @@ _id="one", _class="two",
         else:
             self.assertIsNotNone(page)
             self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_lxml_html_adapter_does_not_require_html5_parser(self):
+        module_name = "domonic.ext.lxml_html_"
+        cached_adapter = sys.modules.pop(module_name, None)
+        try:
+            with patch.dict(sys.modules, {"html5_parser": None}):
+                adapter = import_module(module_name)
+                page = adapter.parse("<html><body><p>Hi</p></body></html>")
+        finally:
+            if cached_adapter is not None:
+                sys.modules[module_name] = cached_adapter
+
+        self.assertEqual(page.querySelector("p").text, "Hi")
 
     def test_default_parser_setter(self):
         previous = domonic.get_default_parser()

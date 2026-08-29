@@ -764,8 +764,7 @@ Parser install notes (listed in order of speed when used with domonic):
 
 `html5lib` has a direct treebuilder integration.
 `html.parser` builds domonic nodes directly from Python's standard-library parser callbacks.
-`markupever` also uses an lxml adapter but we can get content w/o pretty formatting
-`html5_parser` and `selectolax` have to use an lxml adapter as there's no hooks
+`markupever`, `html5_parser`, `selectolax`, and `lxml_html` use the shared lxml-to-domonic adapter.
 `justhtml` uses html5lib adapter-backed parser (parse + conversion == slower).
 
 *html5_parser was a hidden feature in older versions of domonic.

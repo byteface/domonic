@@ -2,13 +2,25 @@ from __future__ import annotations
 
 import argparse
 import statistics
+import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from domonic import domonic
 
 
-DEFAULT_PARSERS = ["html5lib", "html5_parser", "lxml_html", "justhtml", "markupever", "selectolax", "expat"]
+DEFAULT_PARSERS = [
+    "html.parser",
+    "html5lib",
+    "html5_parser",
+    "lxml_html",
+    "justhtml",
+    "markupever",
+    "selectolax",
+    "expat",
+]
 
 
 def benchmark_parser(html: str, parser_name: str, iterations: int) -> dict[str, object]:

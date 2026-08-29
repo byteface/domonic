@@ -247,7 +247,7 @@ def parse(
         return ans.getroot() if return_root else ans
 
     if treebuilder == "domonic":
-        m = importlib.import_module("domonic.ext.html5_parser_.dom")
+        m = importlib.import_module("domonic.ext.lxml_dom")
         return m.adapt(ans, return_root=return_root)
 
     m = importlib.import_module("html5_parser." + treebuilder)

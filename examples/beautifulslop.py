@@ -20,7 +20,7 @@ markup = """
 </article>
 """
 
-soup = BeautifulSlop(markup, "html.parser")
+soup = BeautifulSlop(markup, "markupever")
 
 for link in soup.find_all("a", class_="external"):
     print(link.get("href"))
@@ -33,5 +33,5 @@ badge.append("patched")
 soup.find("h1").insert_after(badge)
 
 print(soup.select_one("article > span").text)
-print(soup.querySelector("article").getAttribute("id"))
+print(soup.getAttribute("id"))
 print(soup)

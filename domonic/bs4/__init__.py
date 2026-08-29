@@ -536,9 +536,17 @@ def _select_fast(self: Node, selector: str) -> list[Element] | None:
         return None
 
     contexts: list[Any] = [self]
-    for combinator, parsed in parsed_parts:
+    last_index = len(parsed_parts) - 1
+    for index, (combinator, parsed) in enumerate(parsed_parts):
         next_contexts = []
         for context in contexts:
+            if (
+                index == 0
+                and index < last_index
+                and isinstance(context, Element)
+                and _match_parsed_selector(context, parsed)
+            ):
+                next_contexts.append(context)
             for candidate in _selector_candidates(context, parsed, combinator):
                 if _match_parsed_selector(candidate, parsed):
                     next_contexts.append(candidate)
