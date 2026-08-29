@@ -738,7 +738,7 @@ page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
 page = domonic.parseString("<p>Hello</p>", parser="html.parser") # stdlib, no dependency
 page = domonic.parseString("<p>Hello</p>", parser="html5lib") # bundled with domonic
 page = domonic.parseString("<p>Hello</p>", parser="justhtml")
-page = domonic.parseString("<p>Hello</p>", parser="markupever") # stupidly fast
+page = domonic.parseString("<p>Hello</p>", parser="markupever") # fast HTML repair
 page = domonic.parseString("<p>Hello</p>", parser="selectolax")
 page = domonic.parseString("<p>Hello</p>", parser="expat")
 ```
@@ -752,12 +752,13 @@ domonic.set_default_parser("html5_parser")
 page = domonic.parseString("<p>Hello</p>")
 ```
 
-Parser install notes:
+Parser install notes, roughly ordered by observed speed with domonic on
+`benchmarks/html_meaty_page.html`:
 
-- `markupever`: `pip install markupever` 🚀 Rust
 - `lxml_html`: `pip install lxml` 🚀 c
-- `html5_parser`: `pip install html5-parser lxml` 🚀 c++
+- `markupever`: `pip install markupever` 🚀 Rust
 - `selectolax`: `pip install selectolax lxml` 🚀 c++
+- `html5_parser`: `pip install html5-parser lxml` 🚀 c++
 - `html.parser`: built into Python, no extra dependency
 - `justhtml`: `pip install justhtml` 🐢 Python
 - `html5lib`: `pip install html5lib` 🐢 Python
