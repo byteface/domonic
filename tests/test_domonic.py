@@ -119,6 +119,14 @@ _id="one", _class="two",
 ),""",
         )
 
+    def test_parse_preserves_equals_text_and_solo_attrs(self):
+        self.assertEqual(domonic.parse("<p>2=2</p>"), 'p(\n"2=2"\n),')
+        self.assertEqual(domonic.parse("<div hidden></div>"), "div(\n_hidden=True,\n),")
+        self.assertEqual(
+            domonic.parse("<div aria-hidden></div>"),
+            'div(\n**{"_aria-hidden":True},\n),',
+        )
+
     def test_parse_empty_and_doctype_only_input(self):
         self.assertEqual(domonic.parse(""), "")
         self.assertEqual(domonic.parse("   "), "")

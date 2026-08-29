@@ -872,9 +872,7 @@ class domonic:
                 if (
                     "_" in key
                 ):  # or '_' not in key: # skip as its a single attribute with multiple key:values
-                    if (
-                        "-" not in key
-                    ):  # TODO - may still have to do other ones as below?
+                    if "-" not in key:
                         newparam = f"{key}={val}"
                         params[count] = newparam
                         continue
@@ -905,8 +903,7 @@ class domonic:
                 ")",
                 "$QUOTE$",
                 "}",
-                "e",
-            ]:  # TODO 'e' is the last letter of True. crap check
+            ] or line.endswith("True"):
                 line = line + ","
 
             return line
@@ -1110,9 +1107,7 @@ class domonic:
 
                     # if key not in attributes: # THEN IT MUST BE NORMAL TEXT. strict tho
                     # continue
-                    if (
-                        key.istitle()
-                    ):  # very weak check for normal text TODO. normal text with equals gets through.
+                    if key.istitle():
                         continue
 
                     if val == None or val == "":
@@ -1184,18 +1179,15 @@ class domonic:
                         continue
 
             if "=" in line:
-                line = parse_attributes(
-                    line
-                )  # < TODO -  normal content with equals in is getting caught here
+                line = parse_attributes(line)
 
                 # solo attributes
 
-                # TODO - should really be doing these much sooner no?
-                # TODO - breaking class in css content when they have attribute names .i.e. hidden. SORTDE> shoudl be fixed now
+                # Keep boolean/solo attributes out of text content.
                 # aria-hidden also affected.?. by why it doing with no spaces
                 if (
                     "(" not in line and ")" not in line and line[0] != '"'
-                ):  # TODO - not if it already has an equals
+                ):
                     for each in solo_attributes:
                         pos = line.find(each)
                         # if pos < 1: continue
@@ -1206,9 +1198,7 @@ class domonic:
                         PREP = '"'
                         if pos > 5:
                             # check 4 chars back if quote set false.
-                            if (
-                                '"' in line[pos - 5 : pos]
-                            ):  # TODO - or if just the word True
+                            if '"' in line[pos - 5 : pos]:
                                 has_leading_quote = True
                             if has_leading_quote:
                                 PREP = ""
@@ -1234,8 +1224,6 @@ class domonic:
                         pattern = re.compile(reg)
                         line = re.sub(pattern, f"{PREP}, _{each}=True,", line)
 
-                # TODO - custom solo attributes
-
                 line = fix_hyphen_tags(line)
 
                 # any leftover solo hyphenataed data-tags
@@ -1243,7 +1231,17 @@ class domonic:
                 for each in hyphenated:
                     line = line.replace(each, f'**\u007b"_{each}":{True}\u007d,')
 
-            # TODO - some attribute content could have open curlies. need to replace all normal text chars
+            else:
+                solo_token = line.rstrip(",")
+                if solo_token in solo_attributes:
+                    line = f"_{solo_token}=True,"
+                elif (
+                    "-" in solo_token
+                    and " " not in solo_token
+                    and not solo_token.startswith(('"', "'"))
+                ):
+                    line = f'**\u007b"_{solo_token}":{True}\u007d,'
+
             if "(" not in line[0:10]:
                 if ")" not in line[0:2]:
                     # normal text could start with underscore. so could also check for =
