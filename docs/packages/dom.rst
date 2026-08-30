@@ -7,6 +7,16 @@ dom
 
 domonic's DOM aims to be useful as an actual platform surface, not just a tree of helper objects.
 
+That is intentional. A Python developer can practise the browser DOM API in
+Python: ``createElement()``, ``appendChild()``, ``removeChild()``,
+``querySelector()``, ``querySelectorAll()``, ``parentNode``, ``childNodes`` and
+``textContent`` are the same concepts used in JavaScript in the browser.
+
+For JavaScript developers, this means domonic DOM code is recognisable even
+inside Python. You can parse or generate markup, then keep using familiar
+operations such as ``querySelector()``, ``appendChild()``, ``removeChild()``,
+``setAttribute()`` and ``dispatchEvent()``.
+
 To use the DOM, either reference your own root ``html`` node or import the global ``document`` from ``domonic.dom``.
 
 .. code-block :: python
@@ -60,6 +70,9 @@ querySelectorAll
 ----------------
 
 ``querySelectorAll`` and ``querySelector`` are useful for finding elements in the DOM.
+
+These use familiar CSS selector strings, so the same selectors can be reused in
+browser JavaScript, tests, scraping scripts, and domonic server-side rendering.
 
 .. code-block :: python
 

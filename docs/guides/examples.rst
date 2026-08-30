@@ -9,6 +9,15 @@ The fastest way to learn domonic is to copy a small example, run it, then change
 one thing. The repository keeps examples small and focused so each file shows a
 particular feature.
 
+Many examples are deliberately close to browser code. They are good learning
+material for Python developers who want to understand HTML, CSS selectors, DOM
+traversal, Web APIs, htmx, SVG, MathML, feeds, JavaScript-like helpers, and
+server-side rendering without starting in a browser-only toolchain.
+
+They are also good for JavaScript developers who need Python for scraping,
+automation, testing, data work, static generation, or server-side rendering but
+still want to think in DOM nodes, selectors, events, URLs, JSON and Web APIs.
+
 HTML and Templates
 ------------------
 
@@ -80,4 +89,3 @@ From the repo root:
 
 Server-backed examples usually list their framework dependency in the file.
 Install the relevant package, then run the script from the repo root.
-

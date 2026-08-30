@@ -35,6 +35,7 @@ release = domonic.__version__
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.viewcode",
@@ -44,6 +45,18 @@ extensions = [
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+autodoc_default_options = {
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
+    "member-order": "bysource",
+}
+autodoc_typehints = "none"
+autosummary_generate = True
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+suppress_warnings = ["ref.python"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -123,6 +136,8 @@ def skip_dynamic_classes(app, what, name, obj, would_skip, options):
     ]
     # Skip dynamically created classes if the name starts with any of the namespaces
     if any(name.startswith(namespace) for namespace in namespaces_to_skip):
+        return True
+    if ":" in name:
         return True
     
     return None

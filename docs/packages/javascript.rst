@@ -9,6 +9,16 @@ domonic includes a JavaScript-like runtime surface for practical scripting and p
 
 It is useful for quickly porting familiar JS code to Python while staying close to web-platform concepts:
 
+It is also useful for learning JavaScript from the Python side. Many APIs keep
+their browser names and behaviour where practical, so ``Array.map()``,
+``String.includes()``, ``Math.random()``, ``Date.now()``, ``Promise`` and
+``URL`` feel familiar when you later meet them in JavaScript.
+
+For JavaScript developers using Python, this module gives you familiar tools
+while you translate browser or Node habits into Python scripts. It is handy for
+ports, teaching material, tests, scraping utilities, and codebases where web
+developers need to contribute Python without losing every familiar API at once.
+
 .. code-block :: python
 
 	from domonic.javascript import Math
@@ -37,6 +47,9 @@ Alongside the global helpers, there are familiar ``String``, ``Number``, ``Array
 
 Port JavaScript-Like Code
 -------------------------
+
+The goal is not to replace JavaScript. The goal is to make JavaScript-shaped
+code easier to read, test, port and teach inside Python projects.
 
 .. code-block :: python
 

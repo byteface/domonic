@@ -108,11 +108,10 @@ class domonic:
 
     @staticmethod
     def loads(path: str, *args, **kwargs):
-        """[
-            given a path to a file will return the .pyml as a python object
+        """Load a PyML file and return the rendered domonic object.
 
-            if you have variables in the template they can be pass as kwargs
-        ]
+        Extra keyword arguments are passed into the PyML evaluation context so
+        templates can reference caller-provided values.
         """
         with open(path, "r") as pyml_string:
             content = pyml_string.read()
@@ -124,10 +123,7 @@ class domonic:
 
     @staticmethod
     def load(pyml: str, *args, **kwargs):
-        """[
-            turns a pyml string into a python object
-        ]
-        """
+        """Convert an HTML or PyML string into a domonic object."""
         if not isinstance(pyml, str):
             raise ValueError("load requires a string not:", type(pyml))
 
@@ -190,18 +186,14 @@ class domonic:
 
     @staticmethod
     def domonify(pyml: str, *args, **kwargs):
-        """[
-            attempts to fix pyml
-        ]
+        """Evaluate PyML into a domonic object.
 
         Args:
-            pyml (str): [a string in the form div(_class="123")]
+            pyml: A PyML expression, for example ``div(_class="card")``.
 
         Returns:
-            a python object
-            Note:
-            returns a potentially edited working program. (not the string)
-            if it was ammeneded, render the returned object to get the new string
+            The resulting domonic node, or a tuple of nodes for top-level
+            sibling expressions.
         """
         # print(pyml)
         if not isinstance(pyml, str):
@@ -233,19 +225,13 @@ class domonic:
 
     @staticmethod
     def evaluate(pyml: str, *args, **kwargs):
-        """[
-            attempts to fix pyml by using eval to make sure we can contruct nodes.
-            be careful.
-        ]
+        """Normalize PyML so it can be evaluated into domonic nodes.
 
         Args:
-            pyml (str): [a string in the form div(_class="123")]
+            pyml: A PyML expression, for example ``div(_class="card")``.
 
         Returns:
-            a python object
-            Note:
-            returns a potentially edited working program. (not the string)
-            if it was ammeneded, render the returned object to get the new string
+            A corrected PyML expression string when possible.
         """
 
         # print(pyml)
@@ -413,10 +399,7 @@ class domonic:
 
     @staticmethod
     def dent(pyml, use_tabs=False):
-        """[
-            proper dentage
-        ]
-        """
+        """Return a consistently indented PyML string."""
         tabs_or_spaces = "    "
         if use_tabs:
             tabs_or_spaces = "\t"

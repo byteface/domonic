@@ -156,50 +156,23 @@ def parse(
     stack_size=16 * 1024,
     fragment_context=None,
 ):
-    """
-    Parse the specified :attr:`html` and return the parsed representation.
-    :param html: The HTML to be parsed. Can be either bytes or a unicode string.
-    :param transport_encoding: If specified, assume the passed in bytes are in this encoding.
-        Ignored if :attr:`html` is unicode.
-    :param namespace_elements:
-        Add XML namespaces when parsing so that the resulting tree is XHTML.
-    :param treebuilder:
-        The type of tree to return. Note that only the lxml treebuilder is fast, as all
-        other treebuilders are implemented in python, not C. Supported values are:
-          * `lxml <https://lxml.de>`_  -- the default, and fastest
-          * `lxml_html <https://lxml.de>`_  -- tree of lxml.html.HtmlElement, same speed as lxml
-          * etree (the python stdlib :mod:`xml.etree.ElementTree`)
-          * dom (the python stdlib :mod:`xml.dom.minidom`)
-          * `soup <https://www.crummy.com/software/BeautifulSoup>`_ -- BeautifulSoup,
-            which must be installed or it will raise an :class:`ImportError`
-    :param fallback_encoding: If no encoding could be detected, then use this encoding.
-        Defaults to an encoding based on system locale.
-    :param keep_doctype: Keep the <DOCTYPE> (if any).
-    :param maybe_xhtml: Useful when it is unknown if the HTML to be parsed is
-        actually XHTML. Changes the HTML 5 parsing algorithm to be more
-        suitable for XHTML. In particular handles self-closed CDATA elements.
-        So a ``<title/>`` or ``<style/>`` in the HTML will not completely break
-        parsing. Also preserves namespaced tags and attributes even for namespaces
-        not supported by HTML 5 (this works only with the ``lxml`` and ``lxml_html``
-        treebuilder).
-        Note that setting this also implicitly sets ``namespace_elements``.
-    :param return_root: If True, return the root node of the document, otherwise
-        return the tree object for the document.
-    :param line_number_attr: The optional name of an attribute used to store the line number
-        of every element. If set, this attribute will be added to each element with the
-        element's line number.
-    :param sanitize_names: Ensure tag and attributes contain only ASCII alphanumeric
-        charactes, underscores, hyphens and periods. This ensures that the resulting
-        tree is also valid XML. Any characters outside this set are replaced by
-        underscores. Note that this is not strictly HTML 5 spec compliant, so turn it
-        off if you need strict spec compliance.
-    :param stack_size: The initial size (number of items) in the stack. The
-        default is sufficient to avoid memory allocations for all but the
-        largest documents.
-    :param fragment_context: the tag name under which to parse the HTML when the html
-        is a fragment. Common choices are ``div`` or ``body``. To use SVG or MATHML tags
-        prefix the tag name with ``svg:`` or ``math:`` respectively. Note that currently
-        using a non-HTML fragment_context is not supported.
+    """Parse HTML with ``html5_parser`` and return the selected tree type.
+
+    Args:
+        html: HTML as ``bytes`` or ``str``.
+        transport_encoding: Encoding to assume for byte input.
+        namespace_elements: Add XML namespaces so the resulting tree is XHTML.
+        treebuilder: Output tree type. Supported values include ``lxml``,
+            ``lxml_html``, ``etree``, ``dom`` and ``soup``.
+        fallback_encoding: Encoding used when detection fails.
+        keep_doctype: Preserve the document type node when present.
+        maybe_xhtml: Handle markup that may actually be XHTML.
+        return_root: Return the root element instead of the full tree object.
+        line_number_attr: Optional attribute name used to store element line
+            numbers.
+        sanitize_names: Replace invalid tag or attribute name characters.
+        stack_size: Initial parser stack size.
+        fragment_context: Tag name used when parsing a fragment.
     """
     data = as_utf8(html or b"", transport_encoding, fallback_encoding)
     treebuilder = normalize_treebuilder(treebuilder)

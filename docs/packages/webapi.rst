@@ -421,6 +421,54 @@ Related Examples and Guides
     :members:
     :noindex:
 
+.. automodule:: domonic.webapi.clipboard
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.dragndrop
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.credentials
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.geo
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.webstorage
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.cookiestore
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.mediadevices
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.mediacapabilities
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.mediasession
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.netinfo
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.push
+    :members:
+    :noindex:
+
+.. automodule:: domonic.webapi.webrtc
+    :members:
+    :noindex:
+
 .. automodule:: domonic.webapi.permissions
     :members:
     :noindex:

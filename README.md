@@ -10,6 +10,7 @@
 
 <p align="center">
 Generate HTML. Parse real pages. Query with CSS or XPath. Manipulate a browser-style DOM.<br>
+Learn real HTML, DOM and JavaScript-style APIs from Python code that uses the same names and ideas.<br>
 Then render it, serve it, scrape it, transform it, or do something strange with it.
 </p>
 
@@ -30,6 +31,17 @@ Then render it, serve it, scrape it, transform it, or do something strange with 
 **domonic** is a pure-Python DOM toolkit inspired by the browser platform.
 
 It gives you one document model for **creating, parsing, querying, traversing, manipulating and rendering markup**.
+
+If you are a Python developer learning the web platform, domonic lets you write
+HTML tags, DOM methods, CSS selectors and JavaScript-shaped helpers directly in
+Python. The code you practise here maps back to browser concepts such as
+`querySelectorAll()`, `appendChild()`, `textContent`, `Array.map()`, `Promise`
+and `fetch`.
+
+If you are a JavaScript developer who needs to use Python, the same idea works
+in reverse. domonic gives you familiar browser names and patterns in a Python
+package, so Python scripts can still feel like DOM, HTML, CSS selectors, Web
+APIs and JavaScript utilities rather than a completely different world.
 
 ```python
 from domonic.html import *
@@ -77,6 +89,12 @@ print(document.querySelector("h1").textContent)
 ```
 
 **Create it. Parse it. Query it. Change it. Render it.**
+
+That is the central idea: you can learn browser HTML, DOM traversal, CSS
+selectors and JavaScript-like programming without leaving Python.
+
+Or, coming from JavaScript, you can use Python without giving up the DOM-shaped
+tools you already know.
 
 ---
 
@@ -149,6 +167,16 @@ domonic is interested in something broader:
 
 > **What if Python had a practical, browser-flavoured document platform?**
 
+That makes it useful both as a production toolkit and as a learning bridge. A
+Python developer can build pages with `div()`, inspect them with
+`querySelector()`, move nodes with `appendChild()`, parse URLs with `URL()`,
+and use familiar JavaScript collection methods without switching
+mental models every five minutes.
+
+For JavaScript developers, domonic makes Python feel less alien: selectors,
+nodes, events, URL parsing, JSON helpers, timers, promises, fetch-style APIs and
+DOM mutation all live behind names that already mean something.
+
 So the project brings together:
 
 |                             |                                                                                                         |
@@ -191,6 +219,10 @@ print(h1("hello world"))
 # HTML that is actually Python
 
 HTML elements are ordinary Python objects.
+
+The tag names are the HTML names. The attribute names are the HTML names with a
+Python-friendly leading underscore where needed. That means examples often read
+like HTML with Python syntax:
 
 ```python
 from domonic.html import *

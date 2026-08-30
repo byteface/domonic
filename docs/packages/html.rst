@@ -7,6 +7,11 @@ html
 
 With domonic, you can create clean ``<html>`` straight out of the box.
 
+The API is designed to teach and reuse real HTML vocabulary. Tags are Python
+classes named after HTML elements, so learning ``div()``, ``section()``,
+``article()``, ``form()``, ``input()`` and ``button()`` in domonic also teaches
+the names you will see in browser markup.
+
 .. code-block :: python
     
     mydom = html(body(h1('Hello, World!')))
@@ -89,6 +94,9 @@ usage
 attributes
 ----------------
 Prepend attributes with an underscore to avoid clashing with Python keywords.
+
+The rendered output is normal HTML, so the attribute names you use here are the
+same ones you will inspect in browser developer tools.
 
 .. code-block :: python
 
