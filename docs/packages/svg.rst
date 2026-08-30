@@ -84,6 +84,14 @@ Mix SVG and HTML
 
     print(save_button)
 
+Related Examples
+----------------
+
+- :doc:`../guides/examples`
+- `examples/svg.html <https://github.com/byteface/domonic/blob/master/examples/svg.html>`_
+- `examples/mathml.py <https://github.com/byteface/domonic/blob/master/examples/mathml.py>`_
+- `examples/aframe/hello.py <https://github.com/byteface/domonic/blob/master/examples/aframe/hello.py>`_
+
 .. automodule:: domonic.svg
     :members:
     :noindex:

@@ -359,6 +359,17 @@ Here's a quick example of using XPath:
 For more information, see the MDN Web API docs:
 https://developer.mozilla.org/en-US/docs/Web/API
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/server-side-html`
+- :doc:`../guides/live-dom-updates`
+- `examples/file_api.py <https://github.com/byteface/domonic/blob/master/examples/file_api.py>`_
+- `examples/web_crypto.py <https://github.com/byteface/domonic/blob/master/examples/web_crypto.py>`_
+- `examples/messaging.py <https://github.com/byteface/domonic/blob/master/examples/messaging.py>`_
+- `examples/webworkers.py <https://github.com/byteface/domonic/blob/master/examples/webworkers.py>`_
+- `examples/scheduler_api.py <https://github.com/byteface/domonic/blob/master/examples/scheduler_api.py>`_
+
 
 
 

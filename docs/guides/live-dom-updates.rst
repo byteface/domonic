@@ -71,5 +71,14 @@ understands the same change data.
      applyPatches(document.body, changes);
    });
 
-See ``examples/sockets/diffdom_socket.py`` for a complete Python example.
+See `examples/sockets/diffdom_socket.py <https://github.com/byteface/domonic/blob/master/examples/sockets/diffdom_socket.py>`_
+for a complete Python example.
 
+Next Steps
+----------
+
+- :doc:`../packages/diffdom` for the full diff and patch API
+- :doc:`../packages/components` for component rendering patterns
+- :doc:`../packages/webapi` for WebSocket, MessageChannel, BroadcastChannel, and Workers
+- :doc:`server-side-html` for serving generated HTML
+- :doc:`examples` for runnable socket and diff examples

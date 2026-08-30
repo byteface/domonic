@@ -658,6 +658,16 @@ For a quick parse, try the window module:
     window.location = "http://www.google.com"
     print(window.document.title)
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/server-side-html`
+- :doc:`../guides/scrape-html`
+- :doc:`../guides/examples`
+- `examples/boilerplate.py <https://github.com/byteface/domonic/blob/master/examples/boilerplate.py>`_
+- `examples/grid.py <https://github.com/byteface/domonic/blob/master/examples/grid.py>`_
+- `examples/declarative_shadow_dom.py <https://github.com/byteface/domonic/blob/master/examples/declarative_shadow_dom.py>`_
+- `examples/speculation_rules.py <https://github.com/byteface/domonic/blob/master/examples/speculation_rules.py>`_
 
 .. automodule:: domonic.html
     :members:

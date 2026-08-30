@@ -108,3 +108,11 @@ CLI Scraping
    domonic -q https://example.com 'main h1' --text --first
    domonic -x https://example.com '//a' --count
 
+Next Steps
+----------
+
+- :doc:`../packages/bs4` for the full BeautifulSlop compatibility API
+- :doc:`../packages/html` for parser names and DOM rendering
+- :doc:`../packages/webapi` for XPath, URL, fetch, and XHR helpers
+- :doc:`parser-performance` for parser benchmark commands
+- :doc:`examples` for runnable scraping and parsing example files

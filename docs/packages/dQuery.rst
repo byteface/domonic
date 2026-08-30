@@ -94,6 +94,14 @@ Manipulate Nodes
 
     print(page)
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/scrape-html`
+- :doc:`../guides/server-side-html`
+- `examples/windowed/app.py <https://github.com/byteface/domonic/blob/master/examples/windowed/app.py>`_
+- `examples/parsing/codemirror.py <https://github.com/byteface/domonic/blob/master/examples/parsing/codemirror.py>`_
+
 
 .. automodule:: domonic.dQuery
     :members:

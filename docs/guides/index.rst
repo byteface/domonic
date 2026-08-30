@@ -12,8 +12,8 @@ reference when you need the full API.
 .. toctree::
    :maxdepth: 1
 
+   examples
    scrape-html
    server-side-html
    live-dom-updates
    parser-performance
-

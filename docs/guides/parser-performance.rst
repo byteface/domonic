@@ -80,3 +80,11 @@ parsing can be faster in Beautiful Soup with lxml, while BeautifulSlop is built
 to win query-heavy workflows because it keeps a real domonic DOM and avoids a
 second wrapped tree.
 
+Next Steps
+----------
+
+- :doc:`scrape-html` for BeautifulSlop, CSS selectors, and XPath examples
+- :doc:`../packages/bs4` for the full BeautifulSlop API
+- :doc:`../packages/html` for parser integration details
+- `scripts/benchmark_parsers.py <https://github.com/byteface/domonic/blob/master/scripts/benchmark_parsers.py>`_
+- `scripts/benchmark_bs4.py <https://github.com/byteface/domonic/blob/master/scripts/benchmark_bs4.py>`_

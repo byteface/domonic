@@ -170,6 +170,13 @@ This is not the same as SVG's polygon element. SVG polygons have a points method
         self.assertEqual(polygonLength(square), 16)
         self.assertEqual(round(polygonLength(triangle), 3), 16.129)
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/examples`
+- `examples/svg.html <https://github.com/byteface/domonic/blob/master/examples/svg.html>`_
+- `examples/keyboard/periodic_table.py <https://github.com/byteface/domonic/blob/master/examples/keyboard/periodic_table.py>`_
+
 .. automodule:: domonic.d3
     :members:
     :noindex:

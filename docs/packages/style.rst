@@ -78,6 +78,14 @@ stylesheets
 	window.location = "https://example.com"
 	print(window.document.stylesheets)
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/server-side-html`
+- :doc:`html`
+- `examples/boilerplate.py <https://github.com/byteface/domonic/blob/master/examples/boilerplate.py>`_
+- `examples/declarative_shadow_dom.py <https://github.com/byteface/domonic/blob/master/examples/declarative_shadow_dom.py>`_
+
 .. automodule:: domonic.style
     :members:
     :noindex:

@@ -87,8 +87,12 @@ Use Cases
 - Snapshot tests for generated HTML and component rendering
 - JSON-safe DOM patches that can be logged, stored, replayed, or undone
 
-See ``examples/diffdom.py`` and ``examples/sockets/diffdom_socket.py`` for
-complete runnable examples.
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/live-dom-updates`
+- `examples/diffdom.py <https://github.com/byteface/domonic/blob/master/examples/diffdom.py>`_
+- `examples/sockets/diffdom_socket.py <https://github.com/byteface/domonic/blob/master/examples/sockets/diffdom_socket.py>`_
 
 .. automodule:: domonic.diffdom
     :members:

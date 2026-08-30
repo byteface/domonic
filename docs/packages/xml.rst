@@ -102,5 +102,8 @@ Python keyword arguments cannot contain ``:`` or ``-``, so use explicit
 Examples
 --------
 
-See ``examples/mathml.py``, ``examples/rss_feed.py``, ``examples/atom_feed.py``,
-and ``examples/odf_content.py`` for complete renderable files.
+- :doc:`../guides/examples`
+- `examples/mathml.py <https://github.com/byteface/domonic/blob/master/examples/mathml.py>`_
+- `examples/rss_feed.py <https://github.com/byteface/domonic/blob/master/examples/rss_feed.py>`_
+- `examples/atom_feed.py <https://github.com/byteface/domonic/blob/master/examples/atom_feed.py>`_
+- `examples/odf_content.py <https://github.com/byteface/domonic/blob/master/examples/odf_content.py>`_

@@ -359,6 +359,14 @@ Render
    print(soup)
    print(soup.prettify())
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/scrape-html`
+- :doc:`../guides/parser-performance`
+- `examples/beautifulslop.py <https://github.com/byteface/domonic/blob/master/examples/beautifulslop.py>`_
+- `scripts/benchmark_bs4.py <https://github.com/byteface/domonic/blob/master/scripts/benchmark_bs4.py>`_
+
 Compatibility Notes
 -------------------
 

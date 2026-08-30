@@ -104,3 +104,11 @@ Project Scaffolding
 
    domonic -p myproject --server fastapi
 
+Next Steps
+----------
+
+- :doc:`../packages/html` for tag constructors, attributes, htmx, and rendering
+- :doc:`../packages/components` for reusable component patterns
+- :doc:`../packages/servers` for FastAPI, Flask, Django, Sanic, Starlette and more
+- :doc:`../packages/webapi` for Sanitizer, History, URL, Workers, Streams, and File API
+- :doc:`examples` for runnable server-side examples

@@ -133,6 +133,7 @@ print(changes)
 
 More focused guides:
 
+- [Examples gallery](https://domonic.readthedocs.io/en/latest/guides/examples.html)
 - [Scrape HTML with Python](https://domonic.readthedocs.io/en/latest/guides/scrape-html.html)
 - [Server-side HTML](https://domonic.readthedocs.io/en/latest/guides/server-side-html.html)
 - [Live DOM updates](https://domonic.readthedocs.io/en/latest/guides/live-dom-updates.html)

@@ -309,6 +309,15 @@ The built-in components package is useful for examples and prototypes. For
 production apps, treat these components as starter patterns and keep your own
 stable components in your application.
 
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/server-side-html`
+- :doc:`../guides/live-dom-updates`
+- `examples/grid.py <https://github.com/byteface/domonic/blob/master/examples/grid.py>`_
+- `examples/windowed/app.py <https://github.com/byteface/domonic/blob/master/examples/windowed/app.py>`_
+- `examples/games/hangman.py <https://github.com/byteface/domonic/blob/master/examples/games/hangman.py>`_
+
 You should use domonic to make your own components.
 
 Some components used in examples are listed here.

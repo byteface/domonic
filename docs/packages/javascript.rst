@@ -272,6 +272,11 @@ There is a fetch implementation that uses promises, with threaded and pooled var
 
 .. code-block :: python
 
+	from domonic.webapi.fetch import fetch
+
+	response = fetch("https://example.com")
+	print(response.text())
+
 	from domonic.javascript import *
 
 	urls = ['http://google.com', 'http://linkedin.com', 'http://eventual.technology']  # use your own domains
@@ -323,6 +328,15 @@ There is a fetch implementation that uses promises, with threaded and pooled var
 
 
 All fetch methods use ``requests`` and pass keyword arguments through when you need to modify behaviour.
+
+Related Examples and Guides
+---------------------------
+
+- :doc:`../guides/scrape-html`
+- :doc:`../guides/live-dom-updates`
+- `examples/mixed.py <https://github.com/byteface/domonic/blob/master/examples/mixed.py>`_
+- `examples/web_crypto.py <https://github.com/byteface/domonic/blob/master/examples/web_crypto.py>`_
+- `examples/webworkers.py <https://github.com/byteface/domonic/blob/master/examples/webworkers.py>`_
 
 
 Keywords
