@@ -80,6 +80,66 @@ print(document.querySelector("h1").textContent)
 
 ---
 
+## Copy-paste recipes
+
+### Scrape links like Beautiful Soup, keep a real DOM
+
+```python
+from domonic.bs4 import BeautifulSlop
+
+soup = BeautifulSlop("<main><a href='/docs'>Docs</a></main>", "html.parser")
+
+for link in soup.find_all("a", href=True):
+    print(link.text, link["href"])
+
+# Same object, still domonic:
+print(soup.querySelector("a").getAttribute("href"))
+```
+
+### Build a server-side component
+
+```python
+from domonic.html import a, article, h2, p
+
+def card(title, body, href):
+    return article(h2(title), p(body), a("Open", _href=href), _class="card")
+
+print(card("Python DOM", "Generate HTML with Python objects.", "/docs"))
+```
+
+### Sanitize user HTML
+
+```python
+from domonic.webapi.sanitizer import Sanitizer
+
+clean = Sanitizer().sanitizeToString(
+    '<p onclick="bad()">Hello <script>bad()</script></p>'
+)
+print(clean)
+```
+
+### Send a minimal DOM patch
+
+```python
+from domonic.diffdom import DiffDOM
+from domonic.html import div, p
+
+old = div(p("Version one"))
+new = div(p("Version two"))
+
+changes = DiffDOM().diff(old, new)
+print(changes)
+```
+
+More focused guides:
+
+- [Scrape HTML with Python](https://domonic.readthedocs.io/en/latest/guides/scrape-html.html)
+- [Server-side HTML](https://domonic.readthedocs.io/en/latest/guides/server-side-html.html)
+- [Live DOM updates](https://domonic.readthedocs.io/en/latest/guides/live-dom-updates.html)
+- [Parser performance](https://domonic.readthedocs.io/en/latest/guides/parser-performance.html)
+
+---
+
 ## Why domonic?
 
 Python already has HTML generators, parsers and XML libraries.

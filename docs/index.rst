@@ -89,8 +89,8 @@ DOM Example
 
    print(root.querySelectorAll(".card"))
 
-What Can I Build?
------------------
+Start Here
+----------
 
 Use these copy-paste starting points for common Python web, scraping, DOM, and
 server-side rendering tasks.
@@ -148,6 +148,14 @@ Use browser Web APIs in Python:
 
    print(crypto.randomUUID())
    print(TextEncoder().encode("hello"))
+
+Guides
+------
+
+.. toctree::
+   :maxdepth: 1
+
+   guides/index
 
 CLI
 ---
