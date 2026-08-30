@@ -1,6 +1,10 @@
 webapi
 ===================
 
+.. meta::
+   :description: Browser Web APIs in Python: fetch, XMLHttpRequest, URL, URLPattern, XPath, FileReader, Blob, Sanitizer, Web Crypto, Streams, Workers, History, Geolocation, Canvas and console.
+   :keywords: Python Web API, fetch Python, XMLHttpRequest Python, FileReader Python, Web Crypto Python, URLPattern Python, Web Workers Python, DOM API Python, XPath Python
+
 The ``webapi`` package groups browser-flavoured APIs that sit alongside the DOM surface.
 
 
@@ -19,7 +23,10 @@ encoding
 .. code-block :: python
 
 	from domonic.webapi.encoding import TextEncoder, TextDecoder
-	encoder = TextEncoder()
+
+	encoded = TextEncoder().encode("hello")
+	decoded = TextDecoder("utf-8").decode(encoded)
+	print(decoded)
 
 
 fetch
@@ -28,6 +35,9 @@ fetch
 .. code-block :: python
 
 	from domonic.webapi.fetch import fetch
+
+	response = fetch("https://example.com")
+	print(response.text())
 
 
 XHR
@@ -43,6 +53,10 @@ code that was originally written against web APIs.
 	data = FormData()
 	data.append("name", "domonic")
 
+	request = XMLHttpRequest()
+	request.open("POST", "https://example.com/api")
+	request.send(data)
+
 
 URLPattern
 ----------------
@@ -56,6 +70,39 @@ patterns.
 
 	pattern = URLPattern({"pathname": "/users/:id"})
 	print(pattern.test("https://example.com/users/42"))
+
+
+History
+----------------
+
+``History`` models ``pushState()``, ``replaceState()``, ``back()``,
+``forward()``, ``go()``, ``length``, ``state`` and ``scrollRestoration``.
+
+.. code-block :: python
+
+	from domonic.window import Window
+
+	win = Window("https://example.com/")
+	win.history.pushState({"page": 2}, "", "/page/2")
+	win.history.replaceState({"page": 2, "filter": "new"}, "", "/page/2?filter=new")
+
+	print(win.location.href)
+	print(win.history.state)
+
+
+Geolocation
+----------------
+
+The geolocation helper is deterministic and test-friendly: set coordinates,
+read the current position, or watch for position changes.
+
+.. code-block :: python
+
+	from domonic.webapi.geo import Geolocation
+
+	geo = Geolocation()
+	geo.setPosition({"latitude": 51.5072, "longitude": -0.1276, "accuracy": 10})
+	geo.getCurrentPosition(lambda position: print(position.coords.latitude))
 
 
 Web Crypto
@@ -271,6 +318,18 @@ URL
 	print(myurl.query)
 	print(myurl.query.q)
 	print(myurl.query.q.value)
+
+Object URLs work with the File API:
+
+.. code-block :: python
+
+	from domonic.webapi.file import Blob
+	from domonic.webapi.url import URL
+
+	blob = Blob(["hello"], {"type": "text/plain"})
+	url = URL.createObjectURL(blob)
+	print(url)
+	URL.revokeObjectURL(url)
 
 For more information see the MDN URL API docs:
 https://developer.mozilla.org/en-US/docs/Web/API/URL

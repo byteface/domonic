@@ -1,6 +1,10 @@
 decorators
 ======================
 
+.. meta::
+   :description: Python decorators for domonic HTML rendering, element wrapping, debugging, immediate callbacks, JSON responses, and utility functions.
+   :keywords: Python decorators, HTML decorator, render decorator, domonic decorators, JSON decorator, callback decorator
+
 Everyone loves Python decorators.
 
 domonic includes a few decorators to make rendering and debugging more convenient.

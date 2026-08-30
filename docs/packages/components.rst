@@ -1,7 +1,68 @@
 Templates and Components
 ======================================
 
+.. meta::
+   :description: Build Python HTML templates and reusable server-side components with domonic, including component classes, render functions, and web framework responses.
+   :keywords: Python components, Python HTML templates, server-side rendering Python, reusable HTML components, domonic components
+
 With all these pieces you can build templates and components.
+
+Small Function Component
+------------------------
+
+For most pages, a plain Python function is enough.
+
+.. code-block :: python
+
+	from domonic.html import a, article, h2, p
+
+	def card(title, body, url):
+	    return article(
+	        h2(title),
+	        p(body),
+	        a("Read more", _href=url),
+	        _class="card",
+	    )
+
+	print(card("DOM", "Build real document trees in Python.", "/docs/dom"))
+
+Reusable Class Component
+------------------------
+
+Use a class when the component has state, helper methods, or several render
+paths.
+
+.. code-block :: python
+
+	from domonic.html import button, div, span
+
+	class Counter:
+	    def __init__(self, value=0):
+	        self.value = value
+
+	    def __str__(self):
+	        return str(
+	            div(
+	                span(str(self.value), _class="count"),
+	                button("+", _type="button"),
+	                _class="counter",
+	            )
+	        )
+
+	print(Counter(3))
+
+Server Response
+---------------
+
+domonic only provides the view. Return the rendered string from FastAPI, Flask,
+Django, Sanic, Starlette, or any framework that accepts HTML responses.
+
+.. code-block :: python
+
+	from domonic.html import body, h1, html, main
+
+	def homepage():
+	    return str(html(body(main(h1("Hello from domonic")))))
 
 
 Templates
@@ -244,7 +305,9 @@ Then a component or template can return HTML and render directly into your page 
 
 *built-in components*
 
-There is a built-in components package, but its use is discouraged because the components may change and are not all fully tested.
+The built-in components package is useful for examples and prototypes. For
+production apps, treat these components as starter patterns and keep your own
+stable components in your application.
 
 You should use domonic to make your own components.
 

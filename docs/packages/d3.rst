@@ -1,6 +1,10 @@
 d3
 =================
 
+.. meta::
+   :description: Python d3-style helpers for DOM selections, data joins, dispatch, paths, polygons, shapes, formatting, and visualization utilities.
+   :keywords: Python d3, d3 selection, data binding Python, SVG paths Python, polygon geometry, data visualization Python
+
 d3 is another popular DOM manipulation library available in JavaScript. This is the domonic-side Python port of that surface.
 
 It has several utilities for working with the DOM.
@@ -28,6 +32,21 @@ Selections support data binding with update, enter, and exit groups:
 	items = ul(li(), li())
 	update = select(items).selectAll("li").data(["one", "two", "three"])
 	update.enter().append("li").text(lambda data: data)
+
+Build a Small Data List
+-----------------------
+
+.. code-block :: python
+
+	from domonic.d3.selection import select
+	from domonic.html import div
+
+	root = div(_id="chart")
+	select(root).selectAll("span").data([10, 20, 30]).enter().append("span").text(
+	    lambda value: f"{value}%"
+	)
+
+	print(root)
 
 
 format

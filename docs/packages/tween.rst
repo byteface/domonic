@@ -1,6 +1,10 @@
 tween
 =================
 
+.. meta::
+   :description: Python tweening and easing equations with Robert Penner easing, timers, animation helpers, and game-style interpolation.
+   :keywords: Python tween, easing equations, Robert Penner, animation interpolation, game tweening, lerp, setInterval
+
 For tweening, domonic includes a port of Robert Penner's easing equations and helpers to use them.
 
 .. code-block :: python

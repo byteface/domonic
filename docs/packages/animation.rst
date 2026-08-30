@@ -1,6 +1,10 @@
 animation
 =================
 
+.. meta::
+   :description: Web Animations API style helpers in Python with Animation, KeyframeEffect, timelines, playback events, and Element.animate.
+   :keywords: Python animation, Web Animations API, Element animate, KeyframeEffect, DOM animation
+
 Domonic includes a practical first pass of the Web Animations surface.
 
 That includes:
@@ -30,6 +34,23 @@ Quick example:
     )
 
     animation.play()
+
+Inspect Timing
+--------------
+
+.. code-block:: python
+
+    from domonic.animation import KeyframeEffect
+    from domonic.html import div
+
+    effect = KeyframeEffect(
+        div(_id="panel"),
+        [{"opacity": 0}, {"opacity": 1}],
+        {"duration": 250, "delay": 50},
+    )
+
+    print(effect.getTiming().duration)
+    print(effect.getComputedTiming().endTime)
 
 .. automodule:: domonic.animation
     :members:

@@ -89,6 +89,66 @@ DOM Example
 
    print(root.querySelectorAll(".card"))
 
+What Can I Build?
+-----------------
+
+Use these copy-paste starting points for common Python web, scraping, DOM, and
+server-side rendering tasks.
+
+Generate HTML with Python:
+
+.. code-block:: python
+
+   from domonic.html import a, article, h1, p
+
+   page = article(
+       h1("domonic"),
+       p("Generate HTML with Python objects."),
+       a("Read more", _href="/docs", _class="cta"),
+   )
+   print(page)
+
+Parse and query HTML:
+
+.. code-block:: python
+
+   from domonic import domonic
+
+   page = domonic.parseString("<main><a href='/docs'>Docs</a></main>", parser="html.parser")
+   print(page.querySelector("a").getAttribute("href"))
+
+Use Beautiful Soup style scraping over real DOM nodes:
+
+.. code-block:: python
+
+   from domonic.bs4 import BeautifulSlop
+
+   soup = BeautifulSlop("<article><a href='/api'>API</a></article>", "html.parser")
+   for link in soup.find_all("a", href=True):
+       print(link.text, link["href"])
+
+Diff two DOM trees:
+
+.. code-block:: python
+
+   from domonic.diffdom import DiffDOM
+   from domonic.html import div, p
+
+   old = div(p("one"))
+   new = div(p("two"))
+   changes = DiffDOM().diff(old, new)
+   print(changes)
+
+Use browser Web APIs in Python:
+
+.. code-block:: python
+
+   from domonic.webapi.crypto import crypto
+   from domonic.webapi.encoding import TextEncoder
+
+   print(crypto.randomUUID())
+   print(TextEncoder().encode("hello"))
+
 CLI
 ---
 

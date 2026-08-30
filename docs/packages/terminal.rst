@@ -1,64 +1,59 @@
 terminal
 =================
 
-The terminal package can call Bash, Unix, POSIX, and other command-line tools.
+.. meta::
+   :description: Python terminal command wrappers for Bash, Unix, POSIX, subprocess workflows, shell scripts, and CLI automation.
+   :keywords: Python terminal, shell commands, subprocess wrapper, Bash from Python, Unix commands, CLI automation
 
-This package only works on Unix-like systems because it delegates to ``subprocess``.
+The terminal package calls Bash, Unix, POSIX, Git, and other command-line tools
+from Python. It is useful for small build scripts, local automation, examples,
+and command-line experiments that should stay close to shell syntax.
+
+Basic Commands
+--------------
 
 .. code-block :: python
 
-	from domonic.terminal import *
-
-	print(ls())
-	print(ls("-al"))
-	print(ls("../"))
+	from domonic.terminal import date, df, du, echo, ls, pwd
 
 	print(pwd())
-
-	print(mkdir('somedir'))
-	print(touch('somefile'))
-	print(git('status'))
-
-	for file in ls( "-al" ):
-	    print("Line : ", file)
-
-	for f in ls():
-	    try:
-	        print(f)
-	        print(cat(f))
-	    except Exception as e:
-	        pass
-
-	for i, l in enumerate(cat('LICENSE.txt')):
-	    print(i,l)
-
-	print(man("ls"))
-	print(echo('test'))
+	print(ls())
+	print(ls("-al"))
+	print(echo("hello"))
+	print(date())
 	print(df())
 	print(du())
 
-	for thing in du():
-	    print(thing)
+Small Automation Scripts
+------------------------
 
-	print(find('.'))
-	# print(ping('eventual.technology'))
-	print(cowsay('moo'))
-	print(wget('eventual.technology'))
-	print(date())
-	print(cal())
+.. code-block :: python
 
+	from domonic.terminal import grep, ls, pwd
+
+	print("cwd:", pwd())
+	print("python files:", ls("*.py"))
+
+	print(grep("domonic README.md"))
+
+Git and Build Helpers
+---------------------
+
+.. code-block :: python
+
+	from domonic.terminal import git, make
+
+	print(git("status", "--short"))
+	print(make("--version"))
 
 Run Arbitrary Commands
---------------------------------
+----------------------
 
 .. code-block :: python
 
 	from domonic.terminal import command
-	command.run("echo hi")
 
-
-Take a look at the code in `terminal.py` to see the available command wrappers and platform-specific behaviour.
-
+	print(command.run("echo hi"))
 
 .. automodule:: domonic.terminal
     :members:

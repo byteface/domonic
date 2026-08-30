@@ -1,6 +1,10 @@
 Servers
 =================
 
+.. meta::
+   :description: Serve domonic HTML from Python web frameworks including FastAPI, Flask, Django, Sanic, Starlette, Bottle, Tornado, CherryPy, Pyramid and aiohttp.
+   :keywords: FastAPI HTML, Flask HTML Python, Django HTML response, Sanic HTML, Starlette HTML, Bottle HTML, Python server-side rendering
+
 Generating static HTML files with domonic is fun.
 
 Python has a built-in server for viewing generated files locally:

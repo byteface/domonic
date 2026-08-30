@@ -1,7 +1,12 @@
 dQuery
 =================
 
-dQuery is for querying and manipulating your server-side DOM.
+.. meta::
+   :description: Python jQuery-like DOM querying, manipulation, Ajax helpers, CSS selectors, and callbacks for domonic.
+   :keywords: Python jQuery, dQuery, DOM query, Ajax Python, CSS selector Python, server-side DOM manipulation
+
+dQuery is a jQuery-like API for querying and manipulating your server-side DOM.
+It also stress-tests domonic's JavaScript-like runtime and DOM implementation.
 
 
 querying
@@ -72,6 +77,22 @@ jQuery-like callbacks and global Ajax events.
 
     data = º.getJSON("https://example.com/api", {"q": "domonic"})
     º.post("https://example.com/save", {"name": "Ada"})
+
+Manipulate Nodes
+----------------
+
+.. code-block :: python
+
+    from domonic.dQuery import º
+    from domonic.html import div, html, p
+
+    page = html(div(p("one"), _id="app"))
+    º(page)
+
+    º("#app").append("<p>two</p>")
+    º("#app p").addClass("item")
+
+    print(page)
 
 
 .. automodule:: domonic.dQuery

@@ -1,6 +1,10 @@
 JSON
 =============
 
+.. meta::
+   :description: JSON helpers for Python HTML tables, CSV conversion, decorators, validation, flattening, and domonic data workflows.
+   :keywords: Python JSON, JSON to HTML table, CSV to JSON, JSON decorator, HTML table from JSON, data utilities
+
 domonic includes practical helpers for moving between Python objects, JSON, CSV, and simple HTML tables.
 
 Decorate any function that returns Python objects to return JSON instead:
@@ -53,6 +57,31 @@ Convert CSV files to JSON:
 
 
 The module also includes helpers for validation, flattening, and turning table nodes back into row dictionaries.
+
+API Response Helpers
+--------------------
+
+.. code-block :: python
+
+	from domonic.JSON import return_json
+
+	@return_json
+	def api_payload():
+	    return {"name": "domonic", "features": ["html", "dom", "webapi"]}
+
+	print(api_payload())
+
+Data to Markup
+--------------
+
+.. code-block :: python
+
+	import domonic.JSON as JSON
+	from domonic.html import h2, section
+
+	rows = [{"name": "Ada", "role": "engineer"}, {"name": "Grace", "role": "compiler"}]
+	page = section(h2("People"), JSON.tablify(rows))
+	print(page)
 
 .. automodule:: domonic.JSON
     :members:

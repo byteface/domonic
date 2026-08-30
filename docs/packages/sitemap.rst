@@ -1,6 +1,10 @@
 sitemap
 =================
 
+.. meta::
+   :description: Generate XML sitemaps, sitemap indexes, robots-friendly URL sets, lastmod, priority and changefreq tags with Python.
+   :keywords: Python sitemap, XML sitemap generator, sitemap index, urlset, lastmod, changefreq, priority, SEO XML
+
 domonic can help create a sitemap or sitemap index for your website.
 
 A sitemap contains URLs for your website. A sitemap index contains a list of sitemap files.

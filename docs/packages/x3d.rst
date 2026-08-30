@@ -1,6 +1,10 @@
 x3d
 =================
 
+.. meta::
+   :description: Generate X3D and A-Frame scenes with Python, including 3D shapes, routes, interpolators, WebVR-style markup, and domonic XML tags.
+   :keywords: Python X3D, A-Frame Python, 3D HTML, WebVR Python, X3DOM, generate 3D scene, XML 3D
+
 When using X3D, use ``append`` rather than ``html`` when adding children inline while templating.
 
 This is because they are nodes, not HTML elements, so they do not inherit the custom ``innerHTML`` shortcut.
@@ -54,7 +58,7 @@ A-Frame is similar, and its tags can be used if you import the JavaScript runtim
 		)
 
 	_webpage = html(head(),body(
-		script(_src=CDN_JS.AFRAME), # < NOTICE you need to import aframe to use it
+		script(_src=CDN_JS.AFRAME), # Import A-Frame before using the scene.
 		str(_scene)
 		)
 	)

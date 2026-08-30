@@ -1,6 +1,10 @@
 bs4
 ===
 
+.. meta::
+   :description: Beautiful Soup 4 compatible Python HTML parsing with BeautifulSlop, CSS selectors, find_all, get_text, mutation, and real domonic DOM nodes.
+   :keywords: Beautiful Soup Python, bs4 compatible, Python HTML parser, find_all, CSS selectors Python, BeautifulSlop, web scraping Python
+
 ``domonic.bs4`` gives you a Beautiful Soup 4 style API while keeping a real
 domonic DOM underneath.
 
@@ -11,6 +15,19 @@ Importing ``domonic.bs4`` installs the compatibility methods as an opt-in patch
 onto domonic's ``Node``, ``Element``, ``Document``, ``DocumentFragment``,
 ``Text`` and ``Comment`` classes. A normal ``import domonic`` does not install
 these methods.
+
+Why BeautifulSlop?
+------------------
+
+Use ``BeautifulSlop`` when you want Beautiful Soup style scraping code but you
+also want actual domonic nodes underneath:
+
+- familiar ``find()``, ``find_all()``, ``select()``, ``get_text()`` and mutation
+  methods
+- normal ``querySelectorAll()``, ``parentNode``, ``appendChild()``,
+  ``setAttribute()`` and XPath access
+- fast query-heavy workflows over parsed HTML
+- no wrapper ``Tag`` objects and no duplicate tree
 
 Parse
 -----
@@ -34,7 +51,9 @@ Parse
 
 .. code-block:: python
 
+   BeautifulSlop(markup, "html.parser")
    BeautifulSlop(markup, "html5lib")
+   BeautifulSlop(markup, "lxml_html")
    BeautifulSlop(markup, "markupever")
    BeautifulSlop(markup, "selectolax")
    BeautifulSlop(markup, "html5_parser")
@@ -48,6 +67,33 @@ domonic parser backends:
 
    BeautifulSlop(markup, "html.parser")  # Python stdlib parser
    BeautifulSlop(markup, "lxml")         # maps to lxml_html
+
+Install optional parser backends as needed:
+
+.. code-block:: bash
+
+   python -m pip install lxml
+   python -m pip install markupever lxml
+   python -m pip install selectolax lxml
+
+Scrape Links
+------------
+
+.. code-block:: python
+
+   from domonic.bs4 import BeautifulSlop
+
+   html = """
+   <article>
+     <a href="/docs" class="external">Docs</a>
+     <a href="/api">API</a>
+   </article>
+   """
+
+   soup = BeautifulSlop(html, "html.parser")
+
+   for link in soup.find_all("a", href=True):
+       print(link.text, link["href"])
 
 Find Tags
 ---------
@@ -153,6 +199,12 @@ CSS Selectors
 
    soup.select("article a.external")
    soup.select_one("article > p")
+   soup.select('a[href^="/docs"]')
+   soup.select("ul > li:nth-child(2)")
+   soup.select("p:first-child, p:last-child")
+
+Complex CSS and repeated selector workflows are a good fit for Slop because the
+objects remain domonic nodes and common selector paths avoid a second CSS engine.
 
 Navigation
 ----------

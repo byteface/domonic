@@ -1,6 +1,10 @@
 html
 =============
 
+.. meta::
+   :description: Generate HTML with Python using domonic tags, attributes, templates, parsers, htmx attributes, import maps, forms, and server-side rendering.
+   :keywords: Python HTML generator, HTML tags Python, server-side rendering Python, htmx Python, parse HTML Python, PyML, static site generator
+
 With domonic, you can create clean ``<html>`` straight out of the box.
 
 .. code-block :: python
@@ -603,6 +607,8 @@ You can also choose a parser directly through ``domonic.parseString()``:
     from domonic import domonic
 
     page = domonic.parseString("<p>Hello World!</p>", parser="html.parser")
+    page = domonic.parseString("<p>Hello World!</p>", parser="markupever")
+    page = domonic.parseString("<p>Hello World!</p>", parser="lxml_html")
     page = domonic.parseString("<p>Hello World!</p>", parser="html5_parser")
     print(page.querySelector("p").text)
 
@@ -610,6 +616,39 @@ Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_p
 
 ``html.parser`` uses Python's standard library and has no external dependency.
 
+Parser Choices
+--------------
+
+Choose a parser based on the job:
+
+.. code-block:: python
+
+    from domonic import domonic
+
+    domonic.set_default_parser("html.parser")
+    page = domonic.parseString("<article><h1>Hello</h1></article>")
+
+    assert page.querySelector("h1").text == "Hello"
+
+The current practical parser order for HTML work is:
+
+- ``markupever``: fast Rust-powered HTML repair, adapted through lxml
+- ``lxml_html``: fast lxml-backed HTML parsing and DOM adaptation
+- ``html.parser``: Python standard library, no external dependency
+- ``selectolax``: fast native parser, adapted through lxml
+- ``html5_parser``: fast HTML5 parser, adapted through lxml
+- ``justhtml``: pure-Python alternative
+- ``html5lib``: bundled Python parser with broad compatibility
+- ``expat``: useful for XML-like input
+
+Install optional native parsers as needed:
+
+.. code-block:: bash
+
+    python -m pip install markupever lxml
+    python -m pip install lxml
+    python -m pip install selectolax lxml
+    python -m pip install html5-parser lxml
 
 For a quick parse, try the window module:
 

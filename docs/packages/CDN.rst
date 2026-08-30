@@ -1,6 +1,10 @@
 CDN
 =============
 
+.. meta::
+   :description: CDN constants for Python HTML generation with Bootstrap, htmx, D3, Chart.js, A-Frame, Tailwind, Font Awesome, and placeholder images.
+   :keywords: Python CDN, Bootstrap Python, htmx CDN, D3 CDN, Chart.js CDN, A-Frame CDN, Tailwind CDN, Font Awesome CDN
+
 For quick reference when prototyping you can use the CDN package.
 
 To use a CDN class it must be imported.
@@ -21,7 +25,13 @@ CDN_JS
 
 .. code-block :: python
 
+	from domonic.CDN import CDN_JS
+	from domonic.html import script
+
 	script(_src=CDN_JS.JQUERY)
+	script(_src=CDN_JS.HTMX)
+	script(_src=CDN_JS.D3)
+	script(_src=CDN_JS.CHART_JS)
 
 
 
@@ -30,7 +40,11 @@ CDN_CSS
 
 .. code-block :: python
 
+	from domonic.CDN import CDN_CSS
+	from domonic.html import link
+
 	classless_css = link(_rel="stylesheet", _href=CDN_CSS.WATER)
+	bootstrap = link(_rel="stylesheet", _href=CDN_CSS.BOOTSTRAP)
 
 Current CSS constants include:
 
@@ -85,7 +99,7 @@ CDN_IMG has a placeholder service.
 
         img(_src=CDN_IMG.PLACEHOLDER(300,100))
         
-        # optional seperator if the site uses x instead of slash between dimensions
+        # Optional separator if the site uses x instead of slash between dimensions.
         img(_src=CDN_IMG.PLACEHOLDER(300,100,'x')) 
 
 

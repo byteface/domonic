@@ -1,6 +1,10 @@
 JavaScript
 ===================
 
+.. meta::
+   :description: JavaScript-like APIs in Python including Array, Object, String, Number, Date, Promise, URL, Math, timers, typed arrays, JSON, fetch, and porting helpers.
+   :keywords: JavaScript in Python, Python Array, Python Promise, JS port to Python, typed arrays Python, setTimeout Python, Date.now Python
+
 domonic includes a JavaScript-like runtime surface for practical scripting and porting.
 
 It is useful for quickly porting familiar JS code to Python while staying close to web-platform concepts:
@@ -30,6 +34,35 @@ It is useful for quickly porting familiar JS code to Python while staying close 
 
 
 Alongside the global helpers, there are familiar ``String``, ``Number``, ``Array``, ``Date``, ``URL``, and timing APIs.
+
+Port JavaScript-Like Code
+-------------------------
+
+.. code-block :: python
+
+	from domonic.javascript import Array, Math, Object, String
+
+	items = Array("HTML", "DOM", "Web APIs")
+	items.push("BeautifulSlop")
+
+	meta = Object()
+	meta.name = String("domonic")
+	meta.score = Math.round(9.6)
+
+	print(items.join(", "))
+	print(meta.name.toUpperCase(), meta.score)
+
+Promises and Timers
+-------------------
+
+.. code-block :: python
+
+	from domonic.javascript import Promise, setTimeout
+
+	def work(resolve, reject):
+	    setTimeout(lambda: resolve("done"), 50)
+
+	Promise(work).then(lambda value: print(value))
 
 
 Date class

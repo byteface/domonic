@@ -1,11 +1,20 @@
 diffdom
 =======
 
-``domonic.diffdom`` compares two domonic DOM trees and returns a JSON-safe list
-of changes that can be applied or undone later.
+.. meta::
+   :description: Python DOM diff and patch utilities for server-side rendering, WebSocket updates, live HTML, and JSON-safe DOM patches.
+   :keywords: Python DOM diff, DOM patch, server-side rendering, WebSocket DOM updates, HTML diff, virtual DOM, morphdom, diffDOM
 
-This is useful when a server-side render produces a new tree and you only want
-to send the structural changes somewhere else.
+``domonic.diffdom`` compares two domonic DOM trees and returns a JSON-safe list
+of patch operations. You can apply the patch to mutate an existing tree, undo it
+later, or send the patch somewhere else.
+
+This is useful for Python server-side rendering, live HTML, dashboard updates,
+WebSocket DOM updates, DOM testing, and experiments that need a real mutable DOM
+rather than a string diff.
+
+Basic DOM Diff
+--------------
 
 .. code-block:: python
 
@@ -18,8 +27,68 @@ to send the structural changes somewhere else.
    dd = DiffDOM()
    changes = dd.diff(old, new)
 
+   for change in changes:
+       print(change)
+
    dd.apply(old, changes)
    assert str(old) == str(new)
+
+Send DOM Patches Over a WebSocket
+---------------------------------
+
+The diff is plain data, so it can be serialized as JSON and streamed to another
+process, a browser, or a test harness.
+
+.. code-block:: python
+
+   import json
+
+   changes = dd.diff(old, new)
+   payload = json.dumps(changes)
+
+   # websocket.send(payload)
+   print(payload)
+
+Undo a Patch
+------------
+
+.. code-block:: python
+
+   before = str(old)
+   changes = dd.diff(old, new)
+
+   dd.apply(old, changes)
+   dd.undo(old, changes)
+
+   assert str(old) == before
+
+Compare Rendered Components
+---------------------------
+
+.. code-block:: python
+
+   from domonic.diffdom import DiffDOM
+   from domonic.html import article, h2, p
+
+   def card(title, body):
+       return article(h2(title), p(body), _class="card")
+
+   current = card("Status", "Queued")
+   next_render = card("Status", "Shipped")
+
+   changes = DiffDOM().diff(current, next_render)
+   assert changes[0]["action"] == "modifyTextElement"
+
+Use Cases
+---------
+
+- Python server-side DOM rendering with minimal browser updates
+- HTML-over-WebSocket apps and live dashboards
+- Snapshot tests for generated HTML and component rendering
+- JSON-safe DOM patches that can be logged, stored, replayed, or undone
+
+See ``examples/diffdom.py`` and ``examples/sockets/diffdom_socket.py`` for
+complete runnable examples.
 
 .. automodule:: domonic.diffdom
     :members:

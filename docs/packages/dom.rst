@@ -1,6 +1,10 @@
 dom
 ============
 
+.. meta::
+   :description: Python DOM implementation with Document, Node, Element, querySelectorAll, XPath, events, MutationObserver, forms, validation, and server-side DOM manipulation.
+   :keywords: Python DOM, Document object model Python, querySelectorAll Python, DOM nodes, MutationObserver Python, server-side DOM, HTML parser
+
 domonic's DOM aims to be useful as an actual platform surface, not just a tree of helper objects.
 
 To use the DOM, either reference your own root ``html`` node or import the global ``document`` from ``domonic.dom``.

@@ -334,16 +334,24 @@ page = domonic.parseString("<p>Hello</p>")
 
 | Parser         | Why use it?                                   |
 | -------------- | --------------------------------------------- |
-| `html5lib`     | Pure Python and bundled with domonic          |
-| `html.parser`  | Python standard library — no extra dependency |
-| `lxml_html`    | Very fast lxml-backed parsing                 |
-| `markupever`   | Fast Rust-powered HTML repair                 |
-| `selectolax`   | Fast native HTML parsing                      |
-| `html5_parser` | Fast HTML5 parsing                            |
+| `markupever`   | Fast Rust-powered HTML repair; uses the shared lxml DOM adapter |
+| `lxml_html`    | Very fast lxml-backed parsing and direct lxml DOM adaptation |
+| `html.parser`  | Python standard library; no extra dependency |
+| `selectolax`   | Fast native HTML parsing through the shared lxml DOM adapter |
+| `html5_parser` | Fast HTML5 parsing through the shared lxml DOM adapter |
 | `justhtml`     | Pure-Python alternative                       |
+| `html5lib`     | Pure Python and bundled with domonic          |
 | `expat`        | Built into Python; useful for XML-like input  |
 
 Optional parsers require their respective packages.
+
+Install the native parser stack like this:
+
+```bash
+python -m pip install markupever lxml
+python -m pip install selectolax lxml
+python -m pip install html5-parser lxml
+```
 
 For parser details and installation notes, see the [documentation](https://domonic.readthedocs.io/).
 
