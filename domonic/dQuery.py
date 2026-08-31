@@ -13,8 +13,15 @@ import sys
 import time
 
 from domonic.dom import *
-from domonic.events import (CustomEvent, Event, FocusEvent, InputEvent,
-                            KeyboardEvent, MouseEvent, SubmitEvent)
+from domonic.events import (
+    CustomEvent,
+    Event,
+    FocusEvent,
+    InputEvent,
+    KeyboardEvent,
+    MouseEvent,
+    SubmitEvent,
+)
 from domonic.html import *
 from domonic.javascript import *
 

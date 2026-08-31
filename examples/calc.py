@@ -10,12 +10,10 @@ from domonic.javascript import Math
 classless_css = link(_rel="stylesheet", _href=CDN_CSS.MARX)
 jquery = script(_src=CDN_JS.JQUERY)
 
-code = script(
-    """
+code = script("""
 	function add(){
 		$('#results').html( Number($('#a').val()) + Number($('#b').val()) )};
-"""
-)
+""")
 
 calc = article(
     div(

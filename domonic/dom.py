@@ -29,8 +29,12 @@ from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
 from domonic.webapi.url import URL
-from domonic.webapi.xpath import (XPathEvaluator, XPathException,
-                                  XPathExpression, XPathResult)
+from domonic.webapi.xpath import (
+    XPathEvaluator,
+    XPathException,
+    XPathExpression,
+    XPathResult,
+)
 
 # from xml.dom.pulldom import END_ELEMENT
 
@@ -4290,6 +4294,30 @@ class Element(Node):
             [type]: [method returns a live HTMLCollection of elements with the given tag name.]
         """
         elements = HTMLCollection()
+        tagName = str(tagName)
+
+        if tagName == "*":
+
+            def anon(el):
+                if el is not self and isinstance(el, Element):
+                    elements.append(el)
+
+            self._iterate(self, anon)
+            return elements
+
+        if re.match(r"^[A-Za-z_][\w:-]*$", tagName):
+            wanted = tagName.lower()
+
+            def anon(el):
+                if (
+                    el is not self
+                    and isinstance(el, Element)
+                    and el.tagName.lower() == wanted
+                ):
+                    elements.append(el)
+
+            self._iterate(self, anon)
+            return elements
 
         def anon(el):
             if el is self:
@@ -4655,6 +4683,45 @@ class Element(Node):
         Returns:
             [type]: [an Element object]
         """
+        if not query:
+            return None
+        query = query.strip()
+        if re.match(r"^#[\w-]+$", query):
+            return self.getElementById(query[1:])
+
+        class_match = re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query)
+        tag_match = re.match(r"^(\*|[A-Za-z][\w-]*)$", query)
+        simple_selector = Element._parse_simple_selector(query)
+        if class_match or tag_match or simple_selector is not None:
+            required_classes = None
+            wanted_tag = None
+            if class_match:
+                required_classes = set(query.split(".")[1:])
+            elif tag_match:
+                wanted_tag = None if query == "*" else query.lower()
+
+            stack = list(reversed(self.__dict__.get("args", ()) or ()))
+            while stack:
+                node = stack.pop()
+                if isinstance(node, Element):
+                    if required_classes is not None:
+                        class_tokens = set(
+                            str(node.getAttribute("class") or "").split()
+                        )
+                        if required_classes.issubset(class_tokens):
+                            return node
+                    elif wanted_tag is not None:
+                        if node.tagName.lower() == wanted_tag:
+                            return node
+                    elif wanted_tag is None and tag_match:
+                        return node
+                    elif self._matchElement(node, query):
+                        return node
+                    stack.extend(reversed(node.__dict__.get("args", ()) or ()))
+                elif isinstance(node, Node):
+                    stack.extend(reversed(node.__dict__.get("args", ()) or ()))
+            return None
+
         try:
             return self.querySelectorAll(query)[0]
         except IndexError:
@@ -4819,9 +4886,7 @@ class Element(Node):
         _queue_mutation_record(
             "attributes",
             self,
-            attribute_name=(
-                attribute[1:] if attribute.startswith("_") else attribute
-            ),
+            attribute_name=(attribute[1:] if attribute.startswith("_") else attribute),
             old_value=str(old_value) if old_value is not None else None,
         )
 
@@ -6207,23 +6272,48 @@ class Document(Element):
         Returns:
             Event: A new event object.
         """
-        from domonic.events import (AnimationEvent, BeforeUnloadEvent,
-                                    BlobEvent, ClipboardEvent, CloseEvent,
-                                    CommandEvent, CompositionEvent,
-                                    CustomEvent, DeviceLightEvent,
-                                    DeviceMotionEvent, DeviceOrientationEvent,
-                                    DeviceProximityEvent,
-                                    DOMContentLoadedEvent, DragEvent,
-                                    ErrorEvent, ExtendableEvent, FetchEvent,
-                                    FocusEvent, FormDataEvent, GamePadEvent,
-                                    HashChangeEvent, InputEvent, KeyboardEvent,
-                                    MessageEvent, PageTransitionEvent,
-                                    PointerEvent, PopStateEvent, ProgressEvent,
-                                    SecurityPolicyViolationEvent, StorageEvent,
-                                    SubmitEvent, SVGEvent, SyncEvent,
-                                    TimerEvent, ToggleEvent, TrackEvent,
-                                    TransitionEvent, UIEvent,
-                                    WebGLContextEvent, WheelEvent)
+        from domonic.events import (
+            AnimationEvent,
+            BeforeUnloadEvent,
+            BlobEvent,
+            ClipboardEvent,
+            CloseEvent,
+            CommandEvent,
+            CompositionEvent,
+            CustomEvent,
+            DeviceLightEvent,
+            DeviceMotionEvent,
+            DeviceOrientationEvent,
+            DeviceProximityEvent,
+            DOMContentLoadedEvent,
+            DragEvent,
+            ErrorEvent,
+            ExtendableEvent,
+            FetchEvent,
+            FocusEvent,
+            FormDataEvent,
+            GamePadEvent,
+            HashChangeEvent,
+            InputEvent,
+            KeyboardEvent,
+            MessageEvent,
+            PageTransitionEvent,
+            PointerEvent,
+            PopStateEvent,
+            ProgressEvent,
+            SecurityPolicyViolationEvent,
+            StorageEvent,
+            SubmitEvent,
+            SVGEvent,
+            SyncEvent,
+            TimerEvent,
+            ToggleEvent,
+            TrackEvent,
+            TransitionEvent,
+            UIEvent,
+            WebGLContextEvent,
+            WheelEvent,
+        )
 
         if event_type is None:
             return Event()

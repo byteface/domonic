@@ -205,21 +205,21 @@ Query a remote page:
 .. code-block:: bash
 
    domonic -x https://example.com '//title'
-   domonic -q https://example.com 'a.cta' --attr href --first
+   domonic -q https://example.com 'a.cta' --attr href --first --parser selectolax
 
 Query a local file:
 
 .. code-block:: bash
 
    domonic --xpath-file ./page.html '//a' --count
-   domonic --query-file ./page.html 'a.cta' --text
+   domonic --query-file ./page.html 'a.cta' --text --parser selectolax
 
 Pipe HTML in directly:
 
 .. code-block:: bash
 
    curl -s https://example.com | domonic -x '//a' --count
-   cat page.html | domonic -q 'a.cta' --attr href
+   cat page.html | domonic -q 'a.cta' --attr href --parser selectolax
 
 Create a project with a chosen server:
 

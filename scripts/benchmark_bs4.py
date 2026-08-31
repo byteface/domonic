@@ -15,7 +15,6 @@ from bs4 import BeautifulSoup
 
 from domonic.bs4 import BeautifulSlop
 
-
 DEFAULT_SELECTORS = [
     'div#bodyContent a[href^="/wiki/"]',
     "div#bodyContent p a[href]",
@@ -25,15 +24,17 @@ DEFAULT_SELECTORS = [
 ]
 DEFAULT_COMPLEX_SELECTORS = [
     'div#bodyContent p:first-child a[href^="/wiki/"]',
-    'div#bodyContent table tr:nth-child(2) a[href]',
-    'div#bodyContent ul li:last-child a[href]',
+    "div#bodyContent table tr:nth-child(2) a[href]",
+    "div#bodyContent ul li:last-child a[href]",
     'div#bodyContent a[href*="Python"]',
 ]
 DEFAULT_HREF_RE = r"^/wiki/(?!File:|Special:)"
 DEFAULT_CLASS_RE = r"\bmw-|infobox|navbox|sidebar"
 
 
-def time_call(func: Callable[[], object], iterations: int) -> tuple[list[float], object]:
+def time_call(
+    func: Callable[[], object], iterations: int
+) -> tuple[list[float], object]:
     timings = []
     result = None
     for _ in range(iterations):
@@ -244,9 +245,7 @@ def print_rows(
 ) -> None:
     print("")
     print(title)
-    print(
-        f"{'case':<42} {bs4_label:>12} {slop_label:>16} {'winner':>10}  result"
-    )
+    print(f"{'case':<42} {bs4_label:>12} {slop_label:>16} {'winner':>10}  result")
     print("-" * 98)
     for name, bs4, slop in rows:
         winner = "Slop" if slop["median_ms"] < bs4["median_ms"] else "BS4"

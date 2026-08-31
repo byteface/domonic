@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+
 sys.path.insert(0, "../..")
 
 import requests
@@ -72,10 +73,12 @@ content = str(
     )
 )
 
+
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
     outp = render(page(str(content)))
     return HTMLResponse(content=outp)
+
 
 @app.post("/convert", response_class=JSONResponse)
 async def convert(data: dict):
@@ -83,6 +86,8 @@ async def convert(data: dict):
     output = domonic.parse(code)
     return {"output": output}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -28,6 +28,7 @@ class TestCLI(unittest.TestCase):
             attr=None,
             count=False,
             first=False,
+            parser=None,
             html2pyml=None,
             server=None,
         )
@@ -53,10 +54,18 @@ class TestCLI(unittest.TestCase):
             patch("domonic.webapi.xpath.XPathEvaluator", return_value=mocked_evaluator),
             redirect_stdout(io.StringIO()) as stdout,
         ):
-            do_things(self._base_args(xpath=["https://example.com", "//a"]))
+            do_things(
+                self._base_args(
+                    xpath=["https://example.com", "//a"],
+                    parser="selectolax",
+                )
+            )
 
         fake_requests.get.assert_called_once_with("https://example.com", timeout=30)
-        mock_parse.assert_called_once()
+        mock_parse.assert_called_once_with(
+            "<html><body><a href='https://example.com'>Example</a></body></html>",
+            parser="selectolax",
+        )
         mocked_evaluator.createExpression.assert_called_once_with("//a")
         self.assertIn("Example", stdout.getvalue())
 
@@ -65,16 +74,30 @@ class TestCLI(unittest.TestCase):
         fake_document.querySelectorAll.return_value = [
             "<a class='cta'>Call to action</a>"
         ]
+        fake_requests = MagicMock()
+        fake_requests.get.return_value.text = (
+            "<html><body><a class='cta'>Call to action</a></body></html>"
+        )
 
         with (
-            patch("domonic.window.window") as mock_window,
+            patch.dict(sys.modules, {"requests": fake_requests}),
+            patch(
+                "domonic.domonic.parseString", return_value=fake_document
+            ) as mock_parse,
             redirect_stdout(io.StringIO()) as stdout,
         ):
-            mock_window.document = fake_document
+            do_things(
+                self._base_args(
+                    query=["https://example.com", ".cta"],
+                    parser="selectolax",
+                )
+            )
 
-            do_things(self._base_args(query=["https://example.com", ".cta"]))
-
-        self.assertEqual(mock_window.location, "https://example.com")
+        fake_requests.get.assert_called_once_with("https://example.com", timeout=30)
+        mock_parse.assert_called_once_with(
+            "<html><body><a class='cta'>Call to action</a></body></html>",
+            parser="selectolax",
+        )
         fake_document.querySelectorAll.assert_called_once_with(".cta")
         self.assertIn("Call to action", stdout.getvalue())
 
@@ -95,7 +118,9 @@ class TestCLI(unittest.TestCase):
 
         try:
             with (
-                patch("domonic.domonic.parseString", return_value=fake_page),
+                patch(
+                    "domonic.domonic.parseString", return_value=fake_page
+                ) as mock_parse,
                 redirect_stdout(io.StringIO()) as stdout,
             ):
                 do_things(
@@ -103,6 +128,7 @@ class TestCLI(unittest.TestCase):
                         query_file=[file_path, "a"],
                         attr="href",
                         first=True,
+                        parser="selectolax",
                     )
                 )
         finally:
@@ -111,6 +137,10 @@ class TestCLI(unittest.TestCase):
             os.unlink(file_path)
 
         fake_page.querySelectorAll.assert_called_once_with("a")
+        mock_parse.assert_called_once_with(
+            "<html><body><a href='https://example.com/docs'>Docs</a></body></html>",
+            parser="selectolax",
+        )
         self.assertEqual(stdout.getvalue().strip(), "https://example.com/docs")
 
     def test_xpath_stdin_cli_supports_count(self):
@@ -121,7 +151,7 @@ class TestCLI(unittest.TestCase):
         mocked_evaluator.createExpression.return_value = mocked_expression
 
         with (
-            patch("domonic.domonic.parseString", return_value=object()),
+            patch("domonic.domonic.parseString", return_value=object()) as mock_parse,
             patch("domonic.webapi.xpath.XPathEvaluator", return_value=mocked_evaluator),
             patch(
                 "sys.stdin",
@@ -129,8 +159,18 @@ class TestCLI(unittest.TestCase):
             ),
             redirect_stdout(io.StringIO()) as stdout,
         ):
-            do_things(self._base_args(xpath_stdin="//a", count=True))
+            do_things(
+                self._base_args(
+                    xpath_stdin="//a",
+                    count=True,
+                    parser="selectolax",
+                )
+            )
 
+        mock_parse.assert_called_once_with(
+            "<html><body><a>One</a><a>Two</a></body></html>",
+            parser="selectolax",
+        )
         self.assertEqual(stdout.getvalue().strip(), "2")
 
     def test_xpath_cli_uses_piped_stdin_when_only_expression_is_passed(self):
@@ -161,7 +201,7 @@ class TestCLI(unittest.TestCase):
         fake_page.querySelectorAll.return_value = ["<a class='cta'>CTA</a>"]
 
         with (
-            patch("domonic.domonic.parseString", return_value=fake_page),
+            patch("domonic.domonic.parseString", return_value=fake_page) as mock_parse,
             patch(
                 "sys.stdin",
                 io.StringIO("<html><body><a class='cta'>CTA</a></body></html>"),
@@ -169,8 +209,12 @@ class TestCLI(unittest.TestCase):
             patch("sys.stdin.isatty", return_value=False),
             redirect_stdout(io.StringIO()) as stdout,
         ):
-            do_things(self._base_args(query=["a.cta"]))
+            do_things(self._base_args(query=["a.cta"], parser="selectolax"))
 
+        mock_parse.assert_called_once_with(
+            "<html><body><a class='cta'>CTA</a></body></html>",
+            parser="selectolax",
+        )
         fake_page.querySelectorAll.assert_called_once_with("a.cta")
         self.assertIn("CTA", stdout.getvalue())
 

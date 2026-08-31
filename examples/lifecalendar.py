@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, "..")
 
 import datetime
@@ -64,19 +65,31 @@ _materials = style(
 .life-row:before{
     content:counter(age, decimal-leading-zero);
     display:inline-block;
-    width:""" + str(YEAR_LABEL_WIDTH) + """px;
+    width:"""
+    + str(YEAR_LABEL_WIDTH)
+    + """px;
     margin-right:6px;
     text-align:right;
     font-size:10px;
-    line-height:""" + str(CELL_SIZE + (PADDING * 2)) + """px;
+    line-height:"""
+    + str(CELL_SIZE + (PADDING * 2))
+    + """px;
     color:#333;
 }
 .week{
     background-color: white;
-    width:""" + str(CELL_SIZE) + """px;
-    min-width:""" + str(CELL_SIZE) + """px;
-    margin:""" + str(MARGIN) + """px;
-    padding:""" + str(PADDING) + """px;
+    width:"""
+    + str(CELL_SIZE)
+    + """px;
+    min-width:"""
+    + str(CELL_SIZE)
+    + """px;
+    margin:"""
+    + str(MARGIN)
+    + """px;
+    padding:"""
+    + str(PADDING)
+    + """px;
     box-sizing:border-box;
     display:inline-flex;
     align-items:center;
@@ -99,16 +112,17 @@ _materials = style(
 """
 )
 
-_scripts = script(
-    """
+_scripts = script("""
 //alert('yo world!')
-"""
-)
+""")
+
 
 class World:
     def __init__(self, request, age, *args, **kwargs):
 
-        weeks = div(_class="life-weeks", _style=f"padding-left:{YEAR_LABEL_WIDTH + 6}px;")
+        weeks = div(
+            _class="life-weeks", _style=f"padding-left:{YEAR_LABEL_WIDTH + 6}px;"
+        )
         for count in range(1, 53):
             weeks += span(str(count).zfill(2), _class="week")
 
@@ -117,7 +131,9 @@ class World:
             year = row()
             for countw in range(52):
                 has_passed = ((count * 52) + countw) < Math.floor(self.get_weeks(age))
-                year += cell("g open" if has_passed else "d open")  # , Char.CROSS if has_passed else '')
+                year += cell(
+                    "g open" if has_passed else "d open"
+                )  # , Char.CROSS if has_passed else '')
             years.append(year)
 
         self.grid = div(weeks, *years, _class="life-calendar")
@@ -136,9 +152,9 @@ class World:
 @app.get("/", response_class=HTMLResponse)
 @app.get("/{age}", response_class=HTMLResponse)
 async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
-    if request.url.path == '/favicon.ico':
+    if request.url.path == "/favicon.ico":
         # Skip date parsing for favicon requests
-        return Response(content='')
+        return Response(content="")
 
     def get_weeks(BIRTHDAY=DEFAULT_BIRTHDAY):
         currentDate = datetime.datetime.now()
@@ -155,8 +171,7 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BALLOON),
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.BOOTSTRAP),
                     link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
-                    style(
-                        """
+                    style("""
                         .x-label{
                             writing-mode: vertical-rl;
                             display: inline-block;
@@ -174,31 +189,42 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
                             left:50px;
                             position:absolute;
                         }
-                    """
-                    ),
+                    """),
                 ),
                 body(
-                    Modal("modalref", div("Here is some content.", hr(), button("Add Data"))),
+                    Modal(
+                        "modalref",
+                        div("Here is some content.", hr(), button("Add Data")),
+                    ),
                     h1("Life Calendar 📅".upper(), _style="margin-left:5px;"),
                     div(
                         input(type="date"),
                         div(
                             h5("legend"),
-                            div(div(_style="width:10px;height:10px;", _class="g"), "weeks spent"),
-                            div(div(_style="width:10px;height:10px;", _class="d"), "weeks left"),
+                            div(
+                                div(_style="width:10px;height:10px;", _class="g"),
+                                "weeks spent",
+                            ),
+                            div(
+                                div(_style="width:10px;height:10px;", _class="d"),
+                                "weeks left",
+                            ),
                             hr(),
                             h6("📅 : ", age),
                         ),
                         _style="position:absolute;top:0px;right:0px;",
                     ),
-                    h5("Year of your life".upper(), _class="x-label", _style="top:120px;"),
+                    h5(
+                        "Year of your life".upper(),
+                        _class="x-label",
+                        _style="top:120px;",
+                    ),
                     h5("Week of the Year".upper(), _class="y-label"),
                     div(
                         str(World(request, age)),
                         _class="calendar-shell",
                     ),
-                    script(
-                        """
+                    script("""
                         $(document).on( "click", ".close", function() {
                             var _id = $(this).data('ref');
                             $('#'+_id).css("display","none");
@@ -211,13 +237,14 @@ async def world(request: Request, age: str = DEFAULT_BIRTHDAY):
                             //console.log(this.value);
                             window.location = '/'+this.value;
                         });
-                        """
-                    ),
+                        """),
                 ),
             )
         )
     )
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

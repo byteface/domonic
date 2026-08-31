@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from domonic.html import *
 
-
 OUTPUT = Path(__file__).with_suffix(".html")
 
 
@@ -53,8 +52,7 @@ def build_page():
                 _src="/campaign.js",
                 _attributionsrc="https://example.com/register-source",
             ),
-            style(
-                """
+            style("""
                 body {
                     font-family: system-ui, sans-serif;
                     margin: 2rem;
@@ -76,8 +74,7 @@ def build_page():
                     padding: .6rem .75rem;
                     text-decoration: none;
                 }
-                """
-            ),
+                """),
         ),
         body(
             main(

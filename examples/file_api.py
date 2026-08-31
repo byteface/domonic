@@ -18,7 +18,6 @@ from domonic.webapi.fetch import fetch
 from domonic.webapi.url import URL
 from domonic.webapi.xhr import FormData
 
-
 report = File(
     [
         "name,score\n",

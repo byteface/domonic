@@ -11,6 +11,7 @@ from __future__ import annotations
 import array
 import builtins
 import calendar
+
 # import chunk
 import datetime
 import gc
@@ -3955,7 +3956,9 @@ class String:
         """
         if isinstance(old, RegExp):
             count = 0 if old.global_ else 1
-            return re.sub(old.expression, new, self.x, count=count, flags=old._re_flags())
+            return re.sub(
+                old.expression, new, self.x, count=count, flags=old._re_flags()
+            )
         if callable(new):
             return re.sub(str(old), new, self.x, count=1)
         return self.x.replace(str(old), str(new), 1)
@@ -4286,8 +4289,7 @@ class String:
         Returns:
             [str]: [the string as a webpage]
         """
-        from domonic.html import (body, h1, head, html, link, meta, script,
-                                  style, title)
+        from domonic.html import body, h1, head, html, link, meta, script, style, title
 
         content = html(
             head(

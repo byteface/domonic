@@ -8,10 +8,18 @@ import array
 import codecs
 from collections.abc import Sequence
 
-from domonic.javascript import (ArrayBuffer, DataView, Float32Array,
-                                Float64Array, Int8Array, Int16Array,
-                                Int32Array, Uint8Array, Uint16Array,
-                                Uint32Array)
+from domonic.javascript import (
+    ArrayBuffer,
+    DataView,
+    Float32Array,
+    Float64Array,
+    Int8Array,
+    Int16Array,
+    Int32Array,
+    Uint8Array,
+    Uint16Array,
+    Uint32Array,
+)
 from domonic.webapi.streams import ReadableStream
 
 _BUFFER_VIEW_TYPES = (

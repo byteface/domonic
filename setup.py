@@ -40,6 +40,7 @@ def get_requirements(filename: str = "requirements.txt"):
         )
     )
 
+
 setup(
     name="domonic",
     version=get_version(),

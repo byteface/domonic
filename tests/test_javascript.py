@@ -13,8 +13,18 @@ from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
 from domonic.javascript import *
-from domonic.javascript import (URL, Array, Date, Global, Math, Object, String,
-                                Window, globalThis, performance)
+from domonic.javascript import (
+    URL,
+    Array,
+    Date,
+    Global,
+    Math,
+    Object,
+    String,
+    Window,
+    globalThis,
+    performance,
+)
 
 # import requests
 # from mock import patch

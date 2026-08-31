@@ -16,8 +16,7 @@ class Version(NamedTuple):
 
 
 if not hasattr(sys, "generating_docs_via_sphinx"):
-    from lxml import \
-        etree  # Must be imported before html_parser to initialize libxml
+    from lxml import etree  # Must be imported before html_parser to initialize libxml
 
     try:
         # from . import html_parser

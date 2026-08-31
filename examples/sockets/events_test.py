@@ -17,9 +17,16 @@ page = html(
     head(title("Test Capturing Browser Events")),
     script(_src=CDN_JS.JQUERY),
     body(
-        Websocket(drag_events=True, hashchange_events=True, wheel_events=True, clipboard_events=True),
+        Websocket(
+            drag_events=True,
+            hashchange_events=True,
+            wheel_events=True,
+            clipboard_events=True,
+        ),
         # canvas(_id="canvas", _width="500", _height="500"),
-        div(_class="dropzone",).html(
+        div(
+            _class="dropzone",
+        ).html(
             div(
                 _id="draggable",
                 _draggable="true",
@@ -162,6 +169,7 @@ async def update(websocket):
             global event_handler
             event_handler.dispatchEvent(evt)
         await websocket.send(json.dumps(somedata, default=vars))
+
 
 async def main():
     async with websockets.serve(update, "0.0.0.0", 5555):

@@ -13,7 +13,6 @@ from typing import Any
 
 from domonic import dom
 
-
 _HTML_ELEMENT_CLASS_CACHE = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE = {}
 
@@ -132,7 +131,9 @@ def _create_document_raw() -> dom.HTMLDocument:
 
 
 def _create_text_raw(data: Any) -> dom.Text:
-    return _initialize_node_raw(object.__new__(dom.Text), ("" if data is None else str(data),))
+    return _initialize_node_raw(
+        object.__new__(dom.Text), ("" if data is None else str(data),)
+    )
 
 
 def _create_comment_raw(data: Any) -> dom.Comment:
@@ -147,7 +148,9 @@ def _create_cdata_raw(data: Any) -> dom.CDATASection:
     return cdata
 
 
-def _create_processing_instruction_raw(target: Any, data: Any) -> dom.ProcessingInstruction:
+def _create_processing_instruction_raw(
+    target: Any, data: Any
+) -> dom.ProcessingInstruction:
     instruction = _initialize_node_raw(object.__new__(dom.ProcessingInstruction))
     instruction.target = "" if target is None else str(target)
     instruction.data = "" if data is None else str(data)

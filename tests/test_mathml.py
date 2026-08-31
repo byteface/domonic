@@ -66,9 +66,7 @@ class TestCase(unittest.TestCase):
         self.assertIn("<msup>x</msup>", rendered)
 
     def test_mathml_elements_use_mathml_dom_interface(self):
-        root = math_(
-            mrow(mi("x"), mo("="), mn("1")), **{"_data-equation": "linear"}
-        )
+        root = math_(mrow(mi("x"), mo("="), mn("1")), **{"_data-equation": "linear"})
         row = root.firstChild
 
         self.assertIsInstance(root, MathMLElement)

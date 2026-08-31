@@ -7,8 +7,7 @@ tests for components
 import json
 import unittest
 
-from domonic.components import (DomonicJS, Modal, ProgressBar, Webpage,
-                                Websocket)
+from domonic.components import DomonicJS, Modal, ProgressBar, Webpage, Websocket
 from domonic.events import KeyboardEvent, WheelEvent
 from domonic.html import *
 from domonic.JSON import *

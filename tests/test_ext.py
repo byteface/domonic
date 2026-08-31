@@ -1,8 +1,7 @@
 import ast
 import unittest
 
-from domonic.ext import (get_hello_world, get_server_requirements,
-                         get_supported_servers)
+from domonic.ext import get_hello_world, get_server_requirements, get_supported_servers
 
 
 class TestExtScaffolds(unittest.TestCase):

@@ -1,8 +1,12 @@
 import unittest
 
-from domonic.animation import (Animation, AnimationPlaybackEvent,
-                               ComputedEffectTiming, EffectTiming,
-                               KeyframeEffect)
+from domonic.animation import (
+    Animation,
+    AnimationPlaybackEvent,
+    ComputedEffectTiming,
+    EffectTiming,
+    KeyframeEffect,
+)
 from domonic.dom import DocumentTimeline
 from domonic.html import div
 

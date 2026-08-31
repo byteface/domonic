@@ -15,7 +15,6 @@ from typing import Any
 from domonic import dom
 from domonic.dom import Comment, DocumentFragment, Element, Node, Text
 
-
 _HTML_ELEMENT_CLASS_CACHE = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE = {}
 
@@ -154,9 +153,7 @@ class DomonicHTMLParser(HTMLParser):
                 del self.child_stack[index:]
                 return
 
-    def handle_startendtag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         _append_child_raw(
             self.current,
             self._create_element(tag, attrs),
@@ -165,7 +162,9 @@ class DomonicHTMLParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         if data:
-            _append_child_raw(self.current, _create_text_raw(data), self.child_stack[-1])
+            _append_child_raw(
+                self.current, _create_text_raw(data), self.child_stack[-1]
+            )
 
     def handle_comment(self, data: str) -> None:
         _append_child_raw(self.current, _create_comment_raw(data), self.child_stack[-1])

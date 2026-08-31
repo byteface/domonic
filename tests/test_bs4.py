@@ -12,7 +12,6 @@ import unittest
 from domonic.bs4 import BeautifulSlop
 from domonic.dom import DocumentFragment, Element, Text
 
-
 HTML = """
 <main id="root">
   <article id="story" class="feature external">
@@ -57,7 +56,9 @@ class BeautifulSlopTest(unittest.TestCase):
             "aside",
         )
         self.assertEqual(self.soup.find("a", href=re.compile("two$")).text, "two")
-        self.assertEqual(self.soup.find("a", href=lambda value: value == "/side").text, "side")
+        self.assertEqual(
+            self.soup.find("a", href=lambda value: value == "/side").text, "side"
+        )
         self.assertEqual(self.soup.find_all(True)[0].name, "main")
 
     def test_class_attribute_matching_is_token_based(self):
@@ -97,7 +98,9 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(article.find("a", recursive=False)["href"], "/two")
         self.assertEqual(article.find_child("h1").text, "Title")
         self.assertEqual(article.findChild("h1").text, "Title")
-        self.assertEqual([node.name for node in article.find_children()], ["h1", "p", "a"])
+        self.assertEqual(
+            [node.name for node in article.find_children()], ["h1", "p", "a"]
+        )
         self.assertEqual(
             [node.name for node in article.findChildren("p")],
             ["p"],
@@ -112,7 +115,9 @@ class BeautifulSlopTest(unittest.TestCase):
 
     def test_css_select(self):
         self.assertEqual(self.soup.select_one("article > a")["href"], "/two")
-        self.assertEqual([node.text for node in self.soup.select("a")], ["one", "two", "side"])
+        self.assertEqual(
+            [node.text for node in self.soup.select("a")], ["one", "two", "side"]
+        )
         self.assertEqual(self.soup.find("article").select("article"), [])
         self.assertEqual(
             [node["href"] for node in self.soup.select('main#root a[href^="/"]')],
@@ -156,7 +161,10 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(soup.select_one("li:nth-child(2) a")["href"], "/two")
         self.assertEqual(soup.select_one("li:last-child a")["href"], "/three")
         self.assertEqual(
-            [node.text for node in soup.select("p > span:first-child, p > span:last-child")],
+            [
+                node.text
+                for node in soup.select("p > span:first-child, p > span:last-child")
+            ],
             ["first", "last"],
         )
 
@@ -174,7 +182,9 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(first.find_next("a")["href"], "/two")
         self.assertEqual(second.find_previous_sibling("p").name, "p")
         self.assertEqual(first.find_next_sibling(), None)
-        self.assertEqual(self.soup.find("article").find_next_sibling("aside").name, "aside")
+        self.assertEqual(
+            self.soup.find("article").find_next_sibling("aside").name, "aside"
+        )
         self.assertEqual(str(first.next_element), "one")
         self.assertEqual(str(second.previous_element).strip(), "")
 

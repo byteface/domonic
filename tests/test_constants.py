@@ -1,13 +1,27 @@
 import unittest
 
-from domonic.constants import (HTTPStatus, doctypes, file_extensions,
-                               get_doctype, get_mime_type, get_namespace,
-                               get_status_text, http_response_status_codes,
-                               mime_types, namespaces)
+from domonic.constants import (
+    HTTPStatus,
+    doctypes,
+    file_extensions,
+    get_doctype,
+    get_mime_type,
+    get_namespace,
+    get_status_text,
+    http_response_status_codes,
+    mime_types,
+    namespaces,
+)
 from domonic.constants.color import Color
 from domonic.constants.entities import Char, Entity
-from domonic.constants.keyboard import (Code, Key, KeyCode, KeyLocation,
-                                        normalize_code, normalize_key)
+from domonic.constants.keyboard import (
+    Code,
+    Key,
+    KeyCode,
+    KeyLocation,
+    normalize_code,
+    normalize_key,
+)
 
 
 class ConstantsTest(unittest.TestCase):

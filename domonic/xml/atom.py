@@ -9,8 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from domonic.xml._elements import (XMLElement, register_xml_tags,
-                                   xml_attribute_aliases, xml_tag_alias)
+from domonic.xml._elements import (
+    XMLElement,
+    register_xml_tags,
+    xml_attribute_aliases,
+    xml_tag_alias,
+)
 
 XMLNS = "http://www.w3.org/2005/Atom"
 ATOM_NAMESPACE = XMLNS

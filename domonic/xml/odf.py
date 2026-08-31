@@ -9,8 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from domonic.xml._elements import (XMLElement, register_xml_tags,
-                                   xml_attribute_aliases, xml_tag_alias)
+from domonic.xml._elements import (
+    XMLElement,
+    register_xml_tags,
+    xml_attribute_aliases,
+    xml_tag_alias,
+)
 
 OFFICE = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 TEXT = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"

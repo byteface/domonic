@@ -54,11 +54,9 @@ prefixExponent = None
 
 def formatPrefixAuto(x, p):
 
-
     d = formatDecimalParts(x, p)
     if not d:
         return str(x)
-
 
     coefficient = d[0]
     if d[1] == "":

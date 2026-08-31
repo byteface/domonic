@@ -74,8 +74,7 @@ class TestCase(unittest.TestCase):
         self.assertIn('manifest:full-path="/"', str(manifest_doc))
 
     def test_odf_content_example(self):
-        from examples.odf_content import (build_content, build_manifest,
-                                          render_xml)
+        from examples.odf_content import build_content, build_manifest, render_xml
 
         rendered = render_xml(build_content())
         manifest = render_xml(build_manifest())

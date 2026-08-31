@@ -11,7 +11,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from domonic.bs4 import BeautifulSlop
 
-
 markup = """
 <article id="post">
   <h1>Sloppy, but useful</h1>

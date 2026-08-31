@@ -2460,9 +2460,7 @@ class DOMTest(unittest.TestCase):
                 htmx_rendered,
             )
             self.assertIn(' data-hx-on--after-request="this.reset()"', htmx_rendered)
-            self.assertIn(
-                ' data-hx-confirm:inherited="Are you sure?"', htmx_rendered
-            )
+            self.assertIn(' data-hx-confirm:inherited="Are you sure?"', htmx_rendered)
             self.assertIn(
                 ' data-hx-headers:inherited="{"X-CSRF": "token"}"',
                 htmx_rendered,
@@ -3698,9 +3696,7 @@ class DOMTest(unittest.TestCase):
         code = input(_pattern=r"[A-Z]{3}", _value="ab1")
         self.assertTrue(code.validity.patternMismatch)
 
-        tickets = input(
-            _type="number", _min="1", _max="10", _step="2", _value="12"
-        )
+        tickets = input(_type="number", _min="1", _max="10", _step="2", _value="12")
         self.assertTrue(tickets.validity.rangeOverflow)
         tickets.value = "0"
         self.assertTrue(tickets.validity.rangeUnderflow)
@@ -5148,6 +5144,7 @@ class NodeTest(unittest.TestCase):
         node += 2
         node2 = node.cloneNode(deep=True)
         assert node.isEqualNode(node2)
+
 
 class CommentTest(unittest.TestCase):
     def setUp(self):

@@ -17,51 +17,77 @@ from domonic.events import AbortController
 from domonic.html import *
 from domonic.javascript import *
 from domonic.webapi import *
-from domonic.webapi.canvas import (CanvasRenderingContext2D, ImageData,
-                                   WebGL2RenderingContext,
-                                   WebGLRenderingContext)
+from domonic.webapi.canvas import (
+    CanvasRenderingContext2D,
+    ImageData,
+    WebGL2RenderingContext,
+    WebGLRenderingContext,
+)
 from domonic.webapi.clipboard import Clipboard, ClipboardItem
 from domonic.webapi.console import Console, console
-from domonic.webapi.cookiestore import (CookieChangeEvent, CookieListItem,
-                                        CookieStore)
-from domonic.webapi.credentials import (Credential, CredentialsContainer,
-                                        FederatedCredential,
-                                        PasswordCredential)
+from domonic.webapi.cookiestore import CookieChangeEvent, CookieListItem, CookieStore
+from domonic.webapi.credentials import (
+    Credential,
+    CredentialsContainer,
+    FederatedCredential,
+    PasswordCredential,
+)
 from domonic.webapi.crypto import Crypto, CryptoKey, SubtleCrypto, crypto
 from domonic.webapi.cssfontloading import FontFace, FontFaceSet
 from domonic.webapi.dragndrop import DataTransfer
-from domonic.webapi.encoding import (TextDecoder, TextDecoderStream,
-                                     TextEncoder, TextEncoderStream)
-from domonic.webapi.fetch import (Headers, Request, Response, fetch,
-                                  fetch_pooled, fetch_set, fetch_threaded)
-from domonic.webapi.file import (Blob, File, FileList, FileReader,
-                                 FileReaderSync)
+from domonic.webapi.encoding import (
+    TextDecoder,
+    TextDecoderStream,
+    TextEncoder,
+    TextEncoderStream,
+)
+from domonic.webapi.fetch import (
+    Headers,
+    Request,
+    Response,
+    fetch,
+    fetch_pooled,
+    fetch_set,
+    fetch_threaded,
+)
+from domonic.webapi.file import Blob, File, FileList, FileReader, FileReaderSync
 from domonic.webapi.gamepad import Gamepad, GamepadButton, GamepadManager
-from domonic.webapi.geo import (Geolocation, GeolocationCoordinates,
-                                GeolocationPosition)
+from domonic.webapi.geo import Geolocation, GeolocationCoordinates, GeolocationPosition
 from domonic.webapi.mediacapabilities import MediaCapabilities
-from domonic.webapi.mediadevices import (InputDeviceInfo, MediaDeviceInfo,
-                                         MediaDevices, MediaStream,
-                                         MediaStreamTrack)
+from domonic.webapi.mediadevices import (
+    InputDeviceInfo,
+    MediaDeviceInfo,
+    MediaDevices,
+    MediaStream,
+    MediaStreamTrack,
+)
 from domonic.webapi.mediasession import MediaSession
-from domonic.webapi.messaging import (BroadcastChannel, MessageChannel,
-                                      MessagePort)
+from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.notifications import Notification
 from domonic.webapi.permissions import Permissions, PermissionStatus
-from domonic.webapi.push import (PushManager, PushSubscription,
-                                 PushSubscriptionOptions)
+from domonic.webapi.push import PushManager, PushSubscription, PushSubscriptionOptions
 from domonic.webapi.sanitizer import Sanitizer
-from domonic.webapi.scheduler import (Scheduler, TaskController,
-                                      TaskPriorityChangeEvent, TaskSignal,
-                                      scheduler)
-from domonic.webapi.serviceworker import (ServiceWorker,
-                                          ServiceWorkerContainer,
-                                          ServiceWorkerRegistration)
+from domonic.webapi.scheduler import (
+    Scheduler,
+    TaskController,
+    TaskPriorityChangeEvent,
+    TaskSignal,
+    scheduler,
+)
+from domonic.webapi.serviceworker import (
+    ServiceWorker,
+    ServiceWorkerContainer,
+    ServiceWorkerRegistration,
+)
 from domonic.webapi.sse import EventSource
-from domonic.webapi.streams import (CompressionStream, DecompressionStream,
-                                    ReadableStream, TransformStream,
-                                    WritableStream)
+from domonic.webapi.streams import (
+    CompressionStream,
+    DecompressionStream,
+    ReadableStream,
+    TransformStream,
+    WritableStream,
+)
 from domonic.webapi.url import URL, URLSearchParams
 from domonic.webapi.urlpattern import URLPattern
 from domonic.webapi.webstorage import Storage
@@ -1995,6 +2021,7 @@ onmessage = handle
     def test_xhr(self):
         from domonic.html import br, button, div, form, hr, input
         from domonic.javascript import Global
+
         # def on_submit(event):
         #     event.preventDefault()
         #     alert("Form submitted")
@@ -2037,8 +2064,12 @@ onmessage = handle
     def test_xpath(self):
 
         from domonic import domonic
-        from domonic.webapi.xpath import (XPathEvaluator, XPathException,
-                                          XPathNSResolver, XPathResult)
+        from domonic.webapi.xpath import (
+            XPathEvaluator,
+            XPathException,
+            XPathNSResolver,
+            XPathResult,
+        )
 
         # api unit test based on mdn example
         # https://developer.mozilla.org/en-US/docs/Web/API/XPathEvaluator

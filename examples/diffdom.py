@@ -14,7 +14,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from domonic.diffdom import DiffDOM
 from domonic.html import button, div, h1, p
 
-
 old = div(h1("Hello"), p("Version one"))
 new = div(h1("Hello"), p("Version two"), button("Save"))
 

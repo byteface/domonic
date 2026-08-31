@@ -52,9 +52,15 @@ output = html(
             a(" go to the repo >>", _href=repo, _style="font-size:15px;"),
             br(),
             br(),
-            nav("Nav:", a("Go back to here again", _href=""), "|", a("repo", _href=repo)),
+            nav(
+                "Nav:", a("Go back to here again", _href=""), "|", a("repo", _href=repo)
+            ),
             br(),
-            img(_src="http://placekitten.com/400/400", _alt="some text", _title="some text"),
+            img(
+                _src="http://placekitten.com/400/400",
+                _alt="some text",
+                _title="some text",
+            ),
             br(),
             ol("".join([f'{li("some item")}' for thing in range(5)])),
             table(
@@ -67,7 +73,11 @@ output = html(
         ),
         section(
             figure(
-                img(_src="http://placekitten.com/200/200", _alt="some text", _title="some text"),
+                img(
+                    _src="http://placekitten.com/200/200",
+                    _alt="some text",
+                    _title="some text",
+                ),
                 br(),
             ),
             figcaption("a cat"),
@@ -76,7 +86,12 @@ output = html(
             form(
                 label("this is a label:", _for="some_input"),
                 br(),
-                input(_id="some_input", _name="some_input", _type="text", _placeholder="cool"),
+                input(
+                    _id="some_input",
+                    _name="some_input",
+                    _type="text",
+                    _placeholder="cool",
+                ),
                 br(),
                 input(" yer or no?", _type="radio"),
                 br(),
@@ -88,7 +103,11 @@ output = html(
         noscript("Your browser does not support javascript"),
         footer(
             address("Where: Earth"),
-            select(option("test1", _value="test1"), option("test2", _value="test2"), option("test3", _value="test3")),
+            select(
+                option("test1", _value="test1"),
+                option("test2", _value="test2"),
+                option("test3", _value="test3"),
+            ),
             button("cool button"),
             sup("sup!"),
             sub("sub!"),

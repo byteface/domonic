@@ -49,7 +49,9 @@ def update_atoms():
 
 # run the update loop from here.
 init()
-loop = window.setInterval(update_atoms, 10)  # update on own clock. clients see state if request via animfram
+loop = window.setInterval(
+    update_atoms, 10
+)  # update on own clock. clients see state if request via animfram
 
 
 # create webpage with a socket connection back to our server so it can get the atom data
@@ -67,15 +69,12 @@ page = html(
     ),
     body(canvas(_id="canvas", _width="1000", _height="600")),
     # listen on the socket and call draw when we get a message
-    script(
-        """
+    script("""
 const socket = new WebSocket('ws://0.0.0.0:5555');
 socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
-"""
-    ),
+"""),
     # draw the atoms
-    script(
-        """
+    script("""
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var WIDTH=canvas.width;
@@ -133,8 +132,7 @@ socket.onmessage = function(event) { atoms = JSON.parse(event.data); draw(); };
     setFramerate(60);
     resizeCanvas();
 
-"""
-    ),
+"""),
 )
 
 # render a page of particles you can open an look at while the socket server is running
@@ -146,6 +144,7 @@ async def update(websocket):
     while True:
         # msg = await websocket.recv()
         await websocket.send(json.dumps(atoms, default=vars))
+
 
 async def main():
     async with websockets.serve(update, "0.0.0.0", 5555):

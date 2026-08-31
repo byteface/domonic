@@ -15,10 +15,21 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from domonic.dom import DOMException
-from domonic.javascript import (ArrayBuffer, DataView, Float32Array,
-                                Float64Array, Int8Array, Int16Array,
-                                Int32Array, Promise, TypedArray, Uint8Array,
-                                Uint8ClampedArray, Uint16Array, Uint32Array)
+from domonic.javascript import (
+    ArrayBuffer,
+    DataView,
+    Float32Array,
+    Float64Array,
+    Int8Array,
+    Int16Array,
+    Int32Array,
+    Promise,
+    TypedArray,
+    Uint8Array,
+    Uint8ClampedArray,
+    Uint16Array,
+    Uint32Array,
+)
 
 _MAX_RANDOM_BYTES = 65536
 _INTEGER_TYPED_ARRAYS = (

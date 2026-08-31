@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, "..")
 
 from fastapi import FastAPI, Request, Response
@@ -33,8 +34,7 @@ _grid = div(
     _class="container-fluid",
 )
 
-_materials = style(
-    """
+_materials = style("""
 /* default */
 .d{
 	background-color: black;
@@ -55,14 +55,11 @@ _materials = style(
 	background-color: purple;
 }
 
-"""
-)
+""")
 
-_scripts = script(
-    """
+_scripts = script("""
 //alert('yo world!')
-"""
-)
+""")
 
 
 class World:
@@ -75,7 +72,10 @@ class World:
         grid = _grid
         if self.rows != ROWS or self.cols != COLS:
             grid = div(
-                *[row(*[cell("d") for _ in range(self.cols)]) for _ in range(self.rows)],
+                *[
+                    row(*[cell("d") for _ in range(self.cols)])
+                    for _ in range(self.rows)
+                ],
                 _class="container-fluid",
             )
         return str(div(_materials, _scripts, grid))
@@ -96,6 +96,8 @@ async def world(request: Request):
         )
     )
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

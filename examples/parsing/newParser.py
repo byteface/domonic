@@ -114,7 +114,9 @@ sites = [
 
 import sys
 
-sys.setrecursionlimit(5000)  # beefs the recursion limit for big pages (not a solution for DEEP pages)
+sys.setrecursionlimit(
+    5000
+)  # beefs the recursion limit for big pages (not a solution for DEEP pages)
 
 from sys import exc_info
 from traceback import format_exception

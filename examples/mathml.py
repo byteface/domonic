@@ -14,7 +14,6 @@ from domonic.CDN import CDN_JS
 from domonic.html import *
 from domonic.xml.mathml import *
 
-
 OUTPUT = Path(__file__).with_suffix(".html")
 
 
@@ -67,8 +66,7 @@ def build_page():
             meta(_name="viewport", _content="width=device-width, initial-scale=1"),
             title("domonic MathML"),
             script(_id="MathJax-script", _defer="", _src=CDN_JS.MATHML),
-            style(
-                """
+            style("""
                 body {
                     font-family: system-ui, sans-serif;
                     margin: 2rem;
@@ -85,8 +83,7 @@ def build_page():
                 math {
                     font-size: 1.35rem;
                 }
-                """
-            ),
+                """),
         ),
         body(
             main(

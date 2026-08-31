@@ -41,7 +41,9 @@ class TestCase(unittest.TestCase):
 
     def test_dent_formats_single_line_pyml(self):
         self.assertEqual(domonic.dent("div(span())"), "div(\n    span(\n    )\n)")
-        self.assertEqual(domonic.dent("div(span())", use_tabs=True), "div(\n\tspan(\n\t)\n)")
+        self.assertEqual(
+            domonic.dent("div(span())", use_tabs=True), "div(\n\tspan(\n\t)\n)"
+        )
 
     def test_get_can_return_pyml_or_domonic_object(self):
         class Response:
@@ -238,7 +240,9 @@ _id="one", _class="two",
         )
 
         self.assertEqual(page.querySelector("img").getAttribute("src"), "x.png")
-        self.assertEqual(page.querySelector("input").getAttribute("disabled"), "disabled")
+        self.assertEqual(
+            page.querySelector("input").getAttribute("disabled"), "disabled"
+        )
         self.assertIn("<br/>", str(page))
 
     def test_parse_string_with_stdlib_html_parser_fragments(self):
@@ -274,7 +278,9 @@ _id="one", _class="two",
         page = domonic.parseString("<div><p>One<p>Two</div>", parser="html.parser")
 
         self.assertEqual(page.tagName, "div")
-        self.assertEqual([node.text for node in page.querySelectorAll("p")], ["One", "Two"])
+        self.assertEqual(
+            [node.text for node in page.querySelectorAll("p")], ["One", "Two"]
+        )
 
     def test_parse_string_with_stdlib_html_parser_comments_and_entities(self):
         page = domonic.parseString(

@@ -7,8 +7,17 @@ unit tests for the decorator methods
 import unittest
 from unittest.mock import Mock
 
-from domonic.decorators import (accepts, as_json, called, check, deprecated,
-                                el, instead, log, silence)
+from domonic.decorators import (
+    accepts,
+    as_json,
+    called,
+    check,
+    deprecated,
+    el,
+    instead,
+    log,
+    silence,
+)
 
 
 class TestDecorators(unittest.TestCase):

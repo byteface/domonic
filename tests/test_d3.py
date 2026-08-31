@@ -11,6 +11,7 @@ import unittest
 from types import SimpleNamespace
 
 import domonic.d3 as d3
+
 # from mock import patch
 # from domonic.javascript import Math
 from domonic import domonic
@@ -19,6 +20,7 @@ from domonic.d3 import *
 from domonic.d3.dispatch import Dispatch, dispatch
 from domonic.d3.format import *
 from domonic.d3.format import format
+
 # from domonic.d3.path import Path
 from domonic.d3.polygon import *
 from domonic.d3.queue import queue
@@ -1457,8 +1459,7 @@ class TestCase(unittest.TestCase):
         _debug_print("body", d.doctype)
         _debug_print("bodyx", domonic.dom.document.doctype)
         _debug_print("body", document.doctype)
-        from domonic.dom import \
-            document  # re-import to get the updated document
+        from domonic.dom import document  # re-import to get the updated document
 
         _debug_print("body", document.doctype)
         assert type(select(document.body).append("h1")) == Selection
@@ -1984,8 +1985,10 @@ class TestCase(unittest.TestCase):
             {"id": "c", "value": 30},
         ]
 
-        update = select(parent).selectAll("li").data(
-            lambda data: data, lambda data: data["id"]
+        update = (
+            select(parent)
+            .selectAll("li")
+            .data(lambda data: data, lambda data: data["id"])
         )
 
         assert update.nodes() == [b]

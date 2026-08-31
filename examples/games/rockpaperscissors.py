@@ -21,8 +21,7 @@ page_wrapper = lambda content: html(
     head(
         script(_src=CDN_JS.JQUERY),
         link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
-        script(_type="text/javascript").html(
-            """
+        script(_type="text/javascript").html("""
                 document.addEventListener('keydown', send_keypress);
                 function send_keypress(event) {
                     var choice = "";
@@ -39,17 +38,18 @@ page_wrapper = lambda content: html(
                         $("#game").html(response);
                     });
                 };
-                """
-        ),
+                """),
     ),
     body(str(content)),
 )
 
 choices = ["✊", "✋", "✌"]
 
+
 def get_choice():
     choice = random.choice(choices)
     return choice
+
 
 @app.get("/move", response_class=HTMLResponse)
 async def move(request: Request, choice: str = Query(...)):
@@ -89,17 +89,26 @@ async def move(request: Request, choice: str = Query(...)):
     page.appendChild(board)
     return str(main(str(page), _id="game"))
 
+
 @app.get("/", response_class=HTMLResponse)
 @app.get("/play", response_class=HTMLResponse)
 async def play(request: Request):
     intro = header(
         h1("✊✋✌!"),
         h2("Wanna play?"),
-        div("type 'r' for Rock ✊", br(), "'p' for Paper ✋", br(), "Or 's' for Scissors ✌"),
+        div(
+            "type 'r' for Rock ✊",
+            br(),
+            "'p' for Paper ✋",
+            br(),
+            "Or 's' for Scissors ✌",
+        ),
         main(_id="game"),
     )
     return str(page_wrapper(intro))
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

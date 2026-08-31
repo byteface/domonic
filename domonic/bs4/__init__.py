@@ -17,7 +17,6 @@ from typing import Any
 from domonic import domonic
 from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text
 
-
 _PARSER_ALIASES = {
     None: "auto",
     "": "auto",
@@ -171,9 +170,7 @@ def _indexed_candidates(
     ):
         names = {item.lower() for item in name}
         return (
-            element
-            for element in index.get("*", ())
-            if element.name.lower() in names
+            element for element in index.get("*", ()) if element.name.lower() in names
         )
     if not isinstance(name, str):
         return None
@@ -273,7 +270,9 @@ def _name_matches(name: Any, node: Any) -> bool:
     return candidate == str(name)
 
 
-def _merge_attrs(attrs: dict[str, Any] | None, kwargs: dict[str, Any]) -> dict[str, Any]:
+def _merge_attrs(
+    attrs: dict[str, Any] | None, kwargs: dict[str, Any]
+) -> dict[str, Any]:
     merged = dict(attrs or {})
     for key, value in kwargs.items():
         merged[_attribute_name(key)] = value
@@ -751,7 +750,9 @@ def _select_fast(
         if pseudo_result is None:
             return None
         simple, pseudo = pseudo_result
-        parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
+        parsed_parts.append(
+            (combinator, Element._parse_simple_selector(simple), pseudo)
+        )
     if any(parsed is None for _, parsed, _ in parsed_parts):
         return None
 
@@ -927,9 +928,7 @@ def _find_previous_siblings(
 
 def _all_elements(root: Any) -> list[Any]:
     return [
-        node
-        for node in _document_order(root)
-        if isinstance(node, (Element, str, Text))
+        node for node in _document_order(root) if isinstance(node, (Element, str, Text))
     ]
 
 

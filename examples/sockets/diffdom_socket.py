@@ -31,7 +31,6 @@ from domonic.html import (
     ul,
 )
 
-
 HOST = "127.0.0.1"
 PORT = 5555
 OUTPUT = Path(__file__).with_suffix(".html")

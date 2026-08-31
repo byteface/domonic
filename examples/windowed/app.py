@@ -62,10 +62,14 @@ render(
 )
 
 # render a panel
-render(domonic.loads("templates/panel.pyml", somedata={}, APPNAME=APPNAME), "panel.html")
+render(
+    domonic.loads("templates/panel.pyml", somedata={}, APPNAME=APPNAME), "panel.html"
+)
 
 # create the main page
-render(domonic.loads("templates/index.pyml", tools=tools, APPNAME=APPNAME), "index.html")
+render(
+    domonic.loads("templates/index.pyml", tools=tools, APPNAME=APPNAME), "index.html"
+)
 
 
 try:

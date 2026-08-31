@@ -35,6 +35,7 @@ except ImportError:  # pragma: no cover - optional dependency chain
 
 try:
     from domonic.svg import *
+
     # Keep package-root tag conflicts HTML-first; SVG versions are available from domonic.svg.
     from domonic.html import a, audio, canvas, iframe, script, style, video
 
@@ -197,7 +198,6 @@ class domonic:
         """
         if not isinstance(pyml, str):
             raise ValueError("domonify requires a string not:", type(pyml))
-
 
         s = domonic.evaluate(pyml, *args, **kwargs)
 
@@ -451,7 +451,6 @@ class domonic:
         """
         if not isinstance(page, str):
             raise ValueError("Parse requires a string required not:", type(page))
-
 
         page = "".join(page.split("<!DOCTYPE HTML>"))
         page = "".join(page.split("<!DOCTYPE html>"))
@@ -1161,9 +1160,7 @@ class domonic:
 
                 # Keep boolean/solo attributes out of text content.
                 # aria-hidden also affected.?. by why it doing with no spaces
-                if (
-                    "(" not in line and ")" not in line and line[0] != '"'
-                ):
+                if "(" not in line and ")" not in line and line[0] != '"':
                     for each in solo_attributes:
                         pos = line.find(each)
                         # if pos < 1: continue

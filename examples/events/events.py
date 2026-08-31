@@ -12,19 +12,22 @@ from domonic.javascript import *
 
 # create webpage with a socket connection back to our server so it can get mouse events
 page = html(
-    body(h1("somepage"), div("Move the mouse around and click to see output on the server.", _id="content")),
+    body(
+        h1("somepage"),
+        div(
+            "Move the mouse around and click to see output on the server.",
+            _id="content",
+        ),
+    ),
     # listen on the socket and call draw when we get a message
-    script(
-        """
+    script("""
 const socket = new WebSocket('ws://0.0.0.0:5555');
 socket.onmessage = function(event) {
     document.getElementById('content').textContent = event.data;
 };
-"""
-    ),
+"""),
     # track all mouse events
-    script(
-        """
+    script("""
 var eventCount = 0;
 var eventProperty = [];
 var TrackMouse = function (mouseEvent) {
@@ -37,8 +40,7 @@ var TrackMouse = function (mouseEvent) {
 };
 
 document.addEventListener('click', TrackMouse);
-"""
-    ),
+"""),
 )
 
 # render a page to capture events on
@@ -73,6 +75,7 @@ async def update(websocket):
         page.dispatchEvent(m)
 
         await websocket.send("event receieved")
+
 
 async def main():
     async with websockets.serve(update, "0.0.0.0", 5555):

@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, "../..")
 
 import os
@@ -19,24 +20,24 @@ page_wrapper = lambda content: html(
     head(
         script(_src=CDN_JS.JQUERY),
         link(_rel="stylesheet", _type="text/css", _href=CDN_CSS.MVP),
-        script(_type="text/javascript").html(
-            """
+        script(_type="text/javascript").html("""
                 document.addEventListener('keydown', send_keypress);
                 function send_keypress(event) {
                     $.get('/move?letter='+event.key, function(response){
                         $("#game").html(response);
                     });
                 };
-                """
-        ),
+                """),
     ),
     body(str(content)),
 )
+
 
 def get_word():
     wordArray = "Adult Aeroplane Air Aircraft Carrier Airforce Airport Album Alphabet Apple Arm Army Baby Baby Backpack Balloon Banana Bank Barbecue Bathroom Bathtub Bed Bed Bee Bible Bible Bird Bomb Book Boss Bottle Bowl Box Boy Brain Bridge Butterfly Button Cappuccino Car Carpet Carrot Cave Chair Chess Board Chief Child Chisel Chocolates Church Church Circle Circus Circus Clock Clown Coffee Comet Compact Disc Compass Computer Crystal Cup Cycle Data Base Desk Diamond Dress Drill Drink Drum Dung Ears Earth Egg Electricity Elephant Eraser Explosive Eyes Family Fan Feather Festival Film Finger Fire Floodlight Flower Foot Fork Freeway Fruit Fungus Game Garden Gas Gate Gemstone Girl Gloves God Grapes Guitar Hammer Hat Hieroglyph Highway Horoscope Horse Hose Ice Insect Jet fighter Junk Kaleidoscope Kitchen Knife Leather jacket Leg Library Liquid Magnet Man Map Maze Meat Meteor Microscope Milk Milkshake Mist Money $$$$ Monster Mosquito Mouth Nail Navy Necklace Needle Onion PaintBrush Pants Parachute Passport Pebble Pendulum Pepper Perfume Pillow Plane Planet Pocket Potato Printer Prison Pyramid Radar Rainbow Record Restaurant Rifle Ring Robot Rock Rocket Roof Room Rope Saddle Salt Sandpaper Sandwich Satellite School Sex Ship Shoes Shop Shower Signature Skeleton Slave Snail Software Solid Space Shuttle Spectrum Sphere Spice Spiral Spoon Spot Light Square Staircase Star Stomach Sun Sunglasses Surveyor Swimming Pool Sword Table Tapestry Teeth Telescope Television Tennis racquet Thermometer Tiger Toilet Tongue Torch Torpedo Train Treadmill Triangle Tunnel Typewriter Umbrella Vacuum Vampire Videotape Vulture Water Weapon Web Wheelchair Window Woman Worm".lower().split()
     word = random.choice(wordArray)
     return word
+
 
 def display_hangman(tries):
     stages = [
@@ -59,6 +60,7 @@ class GameData:
     guessed_words: list = field(default_factory=list)
     tries: int = 6
 
+
 class Game:
     """Hangman. The data is stored in a session"""
 
@@ -80,6 +82,7 @@ class Game:
             self.state.guessed_words = data["guessed_words"]
             self.state.tries = data["tries"]
 
+
 @app.get("/move")
 async def move(request: Request, letter: str = Query(...)):
 
@@ -89,7 +92,7 @@ async def move(request: Request, letter: str = Query(...)):
     board = []
 
     if not game.state.guessed and game.state.tries > 0:
-        
+
         guess = str(letter)  # Convert the query parameter to a string
 
         if guess in game.state.guessed_letters:
@@ -113,7 +116,9 @@ async def move(request: Request, letter: str = Query(...)):
     if game.state.guessed:
         board.append("Nice one! You guessed it. You win.")
     elif game.state.tries < 1:
-        board.append(p(f"Out of tries. The word was {game.state.word}. Maybe next time!"))
+        board.append(
+            p(f"Out of tries. The word was {game.state.word}. Maybe next time!")
+        )
 
     page = div(
         div(f"Length of the word: {len(game.state.word)}"),
@@ -157,11 +162,15 @@ async def play(request: Request):
     }
 
     intro = header(
-        h1("HANGMAN!"), div("Can you guess the word? type a letter using the keyboard to guess."), main(_id="game")
+        h1("HANGMAN!"),
+        div("Can you guess the word? type a letter using the keyboard to guess."),
+        main(_id="game"),
     )
 
     return Response(content=str(page_wrapper(intro)), media_type="text/html")
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

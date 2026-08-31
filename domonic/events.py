@@ -15,8 +15,14 @@ import inspect
 import time
 from typing import Any, Callable, ClassVar
 
-from domonic.constants.keyboard import (Code, Key, KeyCode, KeyLocation,
-                                        normalize_code, normalize_key)
+from domonic.constants.keyboard import (
+    Code,
+    Key,
+    KeyCode,
+    KeyLocation,
+    normalize_code,
+    normalize_key,
+)
 
 
 class EventListener:

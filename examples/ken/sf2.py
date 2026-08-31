@@ -22,8 +22,7 @@ code = div(
             _type="audio/mp3",
         )
     ),
-    script(_type="text/javascript").html(
-        """    
+    script(_type="text/javascript").html("""    
 	    $( document ).ready(function() {
 	        $( '.ken' ).on('click', function() {
 	            let sound = document.getElementById("myAudio");
@@ -33,13 +32,11 @@ code = div(
 	            // goFullScreen();
 	        });
 	    });
-	    """
-    ),
+	    """),
 )
 
 level = div(
-    style(
-        """
+    style("""
 	.bg {
 	  background-image: url("bg.png");
 	  height: 100%;
@@ -47,8 +44,7 @@ level = div(
 	  background-repeat: no-repeat;
 	  background-size: cover;
 	}
-	"""
-    ),
+	"""),
     div(_class="bg"),
 )
 
@@ -61,8 +57,7 @@ game = article(
             _id="moveMe",
         ),
     ),
-    script(
-        """
+    script("""
 
 		var p1 = document.getElementById('moveMe'),
 		keyCodes = { left: 37, up: 38, right: 39, down: 40 },
@@ -103,8 +98,7 @@ game = article(
 		}, 1/30);
 
 
-		"""
-    ),
+		"""),
 )
 
 render(html(head(classless_css, jquery, code), body(game)), "sf2.html")

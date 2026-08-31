@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import domonic.xml.atom as atom
 
-
 OUTPUT = Path(__file__).with_suffix(".xml")
 
 

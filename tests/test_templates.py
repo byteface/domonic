@@ -6,8 +6,14 @@ tests for templates
 
 import unittest
 
-from domonic.templates import (blank_page, maintenance_page, message_page,
-                               redirect_page, runtime_page, status_page)
+from domonic.templates import (
+    blank_page,
+    maintenance_page,
+    message_page,
+    redirect_page,
+    runtime_page,
+    status_page,
+)
 
 
 class TestTemplates(unittest.TestCase):

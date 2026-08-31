@@ -117,14 +117,23 @@ def _parse_index(html):
         first = _cell_text(row[0])
         first_code = row[0]["codes"][0]
 
-        if caption == "List of elements" and first not in ("Element", "autonomous custom elements"):
+        if caption == "List of elements" and first not in (
+            "Element",
+            "autonomous custom elements",
+        ):
             if not first.startswith(("MathML ", "SVG ")):
                 for code in row[0]["codes"]:
                     if re.match(r"^[a-z][a-z0-9]*$", code):
                         elements.add(code)
-        elif caption == "List of attributes (excluding event handler content attributes)" and first != "Attribute":
+        elif (
+            caption == "List of attributes (excluding event handler content attributes)"
+            and first != "Attribute"
+        ):
             attributes.add(first_code)
-        elif caption == "List of event handler content attributes" and first != "Attribute":
+        elif (
+            caption == "List of event handler content attributes"
+            and first != "Attribute"
+        ):
             event_handlers.add(first_code)
         elif caption == "List of events" and first != "Event":
             events.add(first_code)
@@ -137,8 +146,14 @@ def audit(source=None):
     from domonic.html import html_attributes, html_tags
 
     elements, attributes, event_handlers, events = _parse_index(_load_html(source))
-    event_values = {value for name, value in Event.__dict__.items() if name.isupper() and isinstance(value, str)}
-    handler_values = set(GlobalEventHandler._handler_names) | set(WindowEventHandler._handler_names)
+    event_values = {
+        value
+        for name, value in Event.__dict__.items()
+        if name.isupper() and isinstance(value, str)
+    }
+    handler_values = set(GlobalEventHandler._handler_names) | set(
+        WindowEventHandler._handler_names
+    )
 
     return {
         "elements": sorted(elements - set(html_tags)),

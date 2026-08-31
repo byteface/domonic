@@ -846,12 +846,14 @@ domonic -v
 
 ```bash
 domonic -q https://example.com 'a'
+domonic -q https://example.com 'a' --parser selectolax
 ```
 
 ### Query a URL with XPath
 
 ```bash
 domonic -x https://example.com '//a'
+domonic -x https://example.com '//a' --parser selectolax
 ```
 
 ### Extract text
@@ -882,14 +884,14 @@ domonic -x https://example.com '//a' --count
 
 ```bash
 domonic --xpath-file ./page.html '//title'
-domonic --query-file ./page.html 'a.cta'
+domonic --query-file ./page.html 'a.cta' --parser selectolax
 ```
 
 ### Pipes
 
 ```bash
 curl -s https://example.com | domonic -x '//a' --count
-cat page.html | domonic -q 'a.cta' --attr href
+cat page.html | domonic -q 'a.cta' --attr href --parser selectolax
 ```
 
 ### Evaluate pyml

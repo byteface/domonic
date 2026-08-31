@@ -13,6 +13,7 @@ domonic.d3
 # from domonic.d3.delaunay import *
 from domonic.d3.dispatch import *
 from domonic.d3.format import *
+
 # from domonic.d3.drag import *
 # from domonic.d3.dsv import *
 # from domonic.d3.ease import *
@@ -25,13 +26,16 @@ from domonic.d3.format import *
 from domonic.d3.path import *
 from domonic.d3.polygon import *
 from domonic.d3.queue import *
+
 # from domonic.d3.quadtree import *
 # from domonic.d3.random import *
 # from domonic.d3.scale-chromatic import *
 # from domonic.d3.scale import *
 from domonic.d3.selection import *
+
 # from domonic.d3.shape import *
 from domonic.d3.tile import *
+
 # from domonic.d3.time-format import *
 # from domonic.d3.time import *
 from domonic.d3.timer import *

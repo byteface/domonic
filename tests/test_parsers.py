@@ -5,11 +5,16 @@ test_parsers
 
 import unittest
 
-from domonic.parsers import (add_cdata_tags_to_every_node,
-                             add_xml_declaration_to_document, create_element,
-                             dent, remove_cdata_tags_from_every_node,
-                             remove_doctype, remove_extra_whitespace,
-                             remove_tags)
+from domonic.parsers import (
+    add_cdata_tags_to_every_node,
+    add_xml_declaration_to_document,
+    create_element,
+    dent,
+    remove_cdata_tags_from_every_node,
+    remove_doctype,
+    remove_extra_whitespace,
+    remove_tags,
+)
 
 
 class TestParsers(unittest.TestCase):

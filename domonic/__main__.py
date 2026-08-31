@@ -9,8 +9,7 @@ import os
 import subprocess  # nosec B404
 import sys
 
-from domonic.ext import (get_hello_world, get_server_requirements,
-                         get_supported_servers)
+from domonic.ext import get_hello_world, get_server_requirements, get_supported_servers
 
 prog = """
 
@@ -398,6 +397,12 @@ def parse_args():
         "--first", help="print only the first match", action="store_true"
     )
     parser.add_argument(
+        "--parser",
+        help="parser backend for CLI HTML input, e.g. selectolax, turbohtml, lxml_html, html.parser",
+        type=str,
+        default=None,
+    )
+    parser.add_argument(
         "-h2p",
         "--html2pyml",
         help="Convert HTML to PyML",
@@ -473,7 +478,7 @@ def do_things(arguments):
         from domonic import domonic
 
         page = domonic.get(arguments.html2pyml)
-        outp = domonic.parseString(page)
+        outp = domonic.parseString(page, parser=arguments.parser)
 
         from domonic.html import render
         from domonic.utils import Utils
@@ -523,7 +528,9 @@ def do_things(arguments):
             xpath = arguments.xpath_stdin
             use_stdin = True
 
-        page = domonic.parseString(_read_source(source, use_stdin))
+        page = domonic.parseString(
+            _read_source(source, use_stdin), parser=arguments.parser
+        )
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpath)
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -545,25 +552,25 @@ def do_things(arguments):
             source, query, use_stdin = _resolve_source_and_expression(
                 arguments.query, "query"
             )
-            if use_stdin:
-                from domonic import domonic
+            from domonic import domonic
 
-                page = domonic.parseString(_read_source(None, True))
-                results = page.querySelectorAll(query)
-            else:
-                from domonic.window import window
-
-                window.location = source
-                results = window.document.querySelectorAll(query)
+            page = domonic.parseString(
+                _read_source(source, use_stdin), parser=arguments.parser
+            )
+            results = page.querySelectorAll(query)
         else:
             from domonic import domonic
 
             if arguments.query_file is not None:
                 source, query = arguments.query_file
-                page = domonic.parseString(_read_source(source))
+                page = domonic.parseString(
+                    _read_source(source), parser=arguments.parser
+                )
             else:
                 query = arguments.query_stdin
-                page = domonic.parseString(_read_source(None, True))
+                page = domonic.parseString(
+                    _read_source(None, True), parser=arguments.parser
+                )
             results = page.querySelectorAll(query)
 
         return _emit_results(

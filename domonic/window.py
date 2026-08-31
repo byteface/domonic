@@ -21,8 +21,15 @@ from typing import Any, Callable
 
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
-from domonic.events import (CloseEvent, Event, EventTarget, FocusEvent,
-                            HashChangeEvent, MessageEvent, PopStateEvent)
+from domonic.events import (
+    CloseEvent,
+    Event,
+    EventTarget,
+    FocusEvent,
+    HashChangeEvent,
+    MessageEvent,
+    PopStateEvent,
+)
 from domonic.javascript import Promise
 from domonic.javascript import Window as JavaScriptWindow
 from domonic.javascript import performance

@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import domonic.xml.odf as odf
 
-
 OUTPUT = Path(__file__).with_suffix(".xml")
 
 

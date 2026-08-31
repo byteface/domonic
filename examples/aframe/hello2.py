@@ -8,17 +8,19 @@ from domonic.html import *
 from domonic.javascript import *
 from domonic.xml.aframe import *
 
-_scripts = script(
-    """
+_scripts = script("""
 	//alert('hi world!')
-"""
-)
+""")
 
 spheres = []
 for loop in range(1000):
     rand = lambda x: -(x) + Math.random() * (x * 2)
     r = Math.random() * 2
-    s = sphere(_position=f"{rand(20)} {rand(20)} {rand(20)}", _radius=f"{r}", _color=Color.random_hex())
+    s = sphere(
+        _position=f"{rand(20)} {rand(20)} {rand(20)}",
+        _radius=f"{r}",
+        _color=Color.random_hex(),
+    )
     spheres.append(s)
 
 _scene = scene(*spheres, sky(_color=Color.paleskyblue))

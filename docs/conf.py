@@ -129,18 +129,26 @@ intersphinx_mapping = {
 # for example image:image and image:loc.
 # The below code is required to skip them
 
+
 def skip_dynamic_classes(app, what, name, obj, would_skip, options):
     # Define a list of namespaces to skip
     namespaces_to_skip = [
-        "image:", "video:", "geo:", "news:", "atom:", "xhtml:", "mobile:"
+        "image:",
+        "video:",
+        "geo:",
+        "news:",
+        "atom:",
+        "xhtml:",
+        "mobile:",
     ]
     # Skip dynamically created classes if the name starts with any of the namespaces
     if any(name.startswith(namespace) for namespace in namespaces_to_skip):
         return True
     if ":" in name:
         return True
-    
+
     return None
 
+
 def setup(app):
-    app.connect('autodoc-skip-member', skip_dynamic_classes)
+    app.connect("autodoc-skip-member", skip_dynamic_classes)

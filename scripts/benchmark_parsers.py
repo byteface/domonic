@@ -10,7 +10,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from domonic import domonic
 
-
 DEFAULT_PARSERS = [
     "selectolax",
     "turbohtml",
@@ -61,11 +60,15 @@ def print_results(results: list[dict[str, object]], page_path: Path, html: str) 
     print(f"Benchmark page: {page_path}")
     print(f"HTML size: {len(html):,} bytes")
     print("")
-    print(f"{'parser':<14} {'status':<8} {'mean ms':>10} {'median ms':>10} {'min ms':>10} {'max ms':>10}  title")
+    print(
+        f"{'parser':<14} {'status':<8} {'mean ms':>10} {'median ms':>10} {'min ms':>10} {'max ms':>10}  title"
+    )
     print("-" * 96)
     for row in results:
         if not row["ok"]:
-            print(f"{row['parser']:<14} {'FAIL':<8} {'-':>10} {'-':>10} {'-':>10} {'-':>10}  {row['error']}")
+            print(
+                f"{row['parser']:<14} {'FAIL':<8} {'-':>10} {'-':>10} {'-':>10} {'-':>10}  {row['error']}"
+            )
             continue
         print(
             f"{row['parser']:<14} {'OK':<8} "
@@ -75,7 +78,9 @@ def print_results(results: list[dict[str, object]], page_path: Path, html: str) 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Benchmark domonic parser backends on a saved HTML page.")
+    parser = argparse.ArgumentParser(
+        description="Benchmark domonic parser backends on a saved HTML page."
+    )
     parser.add_argument("page", nargs="?", default="benchmarks/html_meaty_page.html")
     parser.add_argument("--iterations", type=int, default=7)
     parser.add_argument("--parsers", nargs="*", default=DEFAULT_PARSERS)
@@ -84,7 +89,10 @@ def main() -> None:
     page_path = Path(args.page)
     html = page_path.read_text(encoding="utf-8")
 
-    results = [benchmark_parser(html, parser_name, args.iterations) for parser_name in args.parsers]
+    results = [
+        benchmark_parser(html, parser_name, args.iterations)
+        for parser_name in args.parsers
+    ]
     print_results(results, page_path, html)
 
 

@@ -12,8 +12,14 @@ import importlib
 
 from lxml.etree import _Comment
 
-from domonic.dom import (MATHML_NAMESPACE, Comment, Element, MathMLElement, Text,
-                         XMLDocument)
+from domonic.dom import (
+    MATHML_NAMESPACE,
+    Comment,
+    Element,
+    MathMLElement,
+    Text,
+    XMLDocument,
+)
 
 try:
     dict_items = dict.iteritems
@@ -113,7 +119,9 @@ def initialize_element_raw(element, namespace_uri):
 
 
 def create_text_raw(data):
-    return initialize_node_raw(object.__new__(Text), ("" if data is None else str(data),))
+    return initialize_node_raw(
+        object.__new__(Text), ("" if data is None else str(data),)
+    )
 
 
 def create_comment_raw(data):

@@ -12,7 +12,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from domonic.html import *
 
-
 OUTPUT = Path(__file__).with_suffix(".html")
 
 
@@ -22,8 +21,7 @@ def build_page():
             meta(_charset="utf-8"),
             meta(_name="viewport", _content="width=device-width, initial-scale=1"),
             title("domonic WebMCP form"),
-            style(
-                """
+            style("""
                 body {
                     font-family: system-ui, sans-serif;
                     margin: 2rem;
@@ -41,8 +39,7 @@ def build_page():
                     font: inherit;
                     padding: .55rem .65rem;
                 }
-                """
-            ),
+                """),
         ),
         body(
             main(
@@ -55,8 +52,12 @@ def build_page():
                     label("Request type", _for="requestType"),
                     select(
                         option("Return my purchase.", _value="Customer happiness team"),
-                        option("Check where my package is.", _value="Distribution team"),
-                        option("Get help on the website.", _value="Website support team"),
+                        option(
+                            "Check where my package is.", _value="Distribution team"
+                        ),
+                        option(
+                            "Get help on the website.", _value="Website support team"
+                        ),
                         _name="requestType",
                         _id="requestType",
                         _required="",

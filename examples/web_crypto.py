@@ -13,7 +13,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from domonic.javascript import Uint8Array
 from domonic.webapi.crypto import crypto
 
-
 token = Uint8Array(16)
 crypto.getRandomValues(token)
 print("Token bytes:", bytes(token.buffer.buffer).hex())

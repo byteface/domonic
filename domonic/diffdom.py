@@ -15,7 +15,6 @@ from typing import Any
 
 from domonic.dom import Comment, Document, Element, Node, Text
 
-
 TEXT_NODE_NAME = "#text"
 COMMENT_NODE_NAME = "#comment"
 
@@ -281,7 +280,9 @@ class DiffDOM:
             child = target_children[index]
             changes.append(
                 {
-                    "action": "addTextElement" if _is_text_node(child) else "addElement",
+                    "action": (
+                        "addTextElement" if _is_text_node(child) else "addElement"
+                    ),
                     "route": route + [index],
                     "element": nodeToObj(child),
                 }
@@ -392,9 +393,7 @@ class DiffDOM:
             )
         elif action in {"addElement", "addTextElement"}:
             inverse["action"] = (
-                "removeTextElement"
-                if action == "addTextElement"
-                else "removeElement"
+                "removeTextElement" if action == "addTextElement" else "removeElement"
             )
             inverse["oldValue"] = change.get("element")
         elif action in {"removeElement", "removeTextElement"}:

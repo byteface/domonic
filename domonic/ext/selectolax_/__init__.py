@@ -14,7 +14,6 @@ from typing import Any
 
 from domonic import dom
 
-
 _HTML_ELEMENT_CLASS_CACHE = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE = {}
 
@@ -153,12 +152,17 @@ def _adapt_node(node: Any) -> Any:
     if tag in ("-doctype", "!doctype"):
         return _create_doctype_raw(getattr(node, "html", ""))
     if tag == "-text":
+        text = getattr(node, "text", None)
+        if callable(text):
+            return _create_text_raw(text())
         return _create_text_raw(_node_text(node))
     if tag in ("-comment", "_comment"):
         comment = getattr(node, "comment_content", None)
         if comment is None:
             html = getattr(node, "html", "") or ""
-            comment = html[4:-3] if html.startswith("<!--") and html.endswith("-->") else ""
+            comment = (
+                html[4:-3] if html.startswith("<!--") and html.endswith("-->") else ""
+            )
         return _create_comment_raw(comment)
     if not tag:
         return None

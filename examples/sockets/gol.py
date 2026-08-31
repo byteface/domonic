@@ -25,7 +25,13 @@ def update_cell(grid, x, y):  # apply the rules
     score = 0
     for ny in range(y - 1, y + 2):
         for nx in range(x - 1, x + 2):
-            if ny >= 0 and nx >= 0 and ny < WIDTH and nx < HEIGHT and (ny != y or nx != x):
+            if (
+                ny >= 0
+                and nx >= 0
+                and ny < WIDTH
+                and nx < HEIGHT
+                and (ny != y or nx != x)
+            ):
                 if grid[ny][nx] == 1:
                     score += 1
     if grid[y][x] == 1:
@@ -69,16 +75,13 @@ page = html(
     body(
         canvas(_id="canvas", _width="500", _height="500"),
         # listen on the socket and call draw when we get a message
-        script(
-            """
+        script("""
 const socket = new WebSocket('ws://0.0.0.0:5555');
 socket.onmessage = function(event) { grid = JSON.parse(event.data); draw(); };
 socket.send('!');
-"""
-        ),
+"""),
         # draw the grid
-        script(
-            """
+        script("""
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     var WIDTH=canvas.width;
@@ -156,13 +159,13 @@ socket.send('!');
     resizeCanvas();
     */
 
-"""
-        ),
+"""),
     ),
 )
 
 # render the page you need to visit while the socket server is running
 render(page, "gol.html")
+
 
 # run the socket server
 async def update(websocket):
@@ -171,6 +174,7 @@ async def update(websocket):
         await websocket.send(json.dumps(gridNew, default=vars))
         msg = await websocket.recv()
         await websocket.send(json.dumps(gridNew, default=vars))
+
 
 async def main():
     async with websockets.serve(update, "0.0.0.0", 5555):

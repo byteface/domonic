@@ -106,8 +106,8 @@ CLI Scraping
 .. code-block:: bash
 
    domonic -q https://example.com 'a[href]' --attr href
-   domonic -q https://example.com 'main h1' --text --first
-   domonic -x https://example.com '//a' --count
+   domonic -q https://example.com 'main h1' --text --first --parser selectolax
+   domonic -x https://example.com '//a' --count --parser selectolax
 
 Next Steps
 ----------
