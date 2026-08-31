@@ -72,7 +72,6 @@ def getDomBuilder(ignore: object):
             return len(self.element.attributes)
 
         def items(self):
-            # print(self.element, self.element.attributes)
             # return list(self.element.attributes.items())
             return list(self.element.attributes.items())
             # return self.element.attributes
@@ -84,13 +83,9 @@ def getDomBuilder(ignore: object):
             if isinstance(name, tuple):
                 raise NotImplementedError
             else:
-                # print(self.element)
-                # print(self.element.attributes, name)
                 try:
                     return self.element.attributes[name].value
                 except Exception as e:
-                    # print(e)
-                    # print('failed on :', name)  # TODO
                     return ""
 
         def __delitem__(self, name):
@@ -212,7 +207,6 @@ def getDomBuilder(ignore: object):
             if isinstance(self.dom, HTMLDocument) and isinstance(
                 node.element, HTMLDocument
             ):
-                # print('HERE IS THE PROBLEM!!!!')
                 # TODO - this can't be the final solution as a nested html would replace the outer
                 self.dom = node.element
                 # transfer all props from node.element to self.dom

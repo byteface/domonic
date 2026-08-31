@@ -7,11 +7,17 @@ Adapter for Python's standard-library ``html.parser`` module.
 
 from __future__ import annotations
 
+import importlib
 from html import unescape
 from html.parser import HTMLParser
 from typing import Any
 
-from domonic.dom import Comment, Document, DocumentFragment, Node, Text
+from domonic import dom
+from domonic.dom import Comment, DocumentFragment, Element, Node, Text
+
+
+_HTML_ELEMENT_CLASS_CACHE = {}
+_UNKNOWN_ELEMENT_CLASS_CACHE = {}
 
 
 VOID_ELEMENTS = {
@@ -45,12 +51,77 @@ def _set_attribute_raw(element: Node, name: str, value: str) -> None:
     element.__dict__["kwargs"][name] = value
 
 
+def _initialize_node_raw(node: Node, args: tuple[Any, ...] = ()) -> Node:
+    state = node.__dict__
+    state["args"] = args
+    state["kwargs"] = {}
+    state["_baseURI"] = ""
+    state["isConnected"] = True
+    state["namespaceURI"] = "http://www.w3.org/1999/xhtml"
+    state["outerText"] = None
+    state["_ownerDocument"] = None
+    state["parentNode"] = None
+    state["prefix"] = None
+    return node
+
+
+def _initialize_element_raw(element: Element) -> Element:
+    _initialize_node_raw(element)
+    state = element.__dict__
+    state["lang"] = None
+    state["tabIndex"] = None
+    state["_Element__style"] = None
+    state["shadowRoot"] = None
+    state["dir"] = None
+    return element
+
+
+def _html_element_class(name: str) -> type[Element]:
+    normalized_name = str(name).strip().lower()
+    cached = _HTML_ELEMENT_CLASS_CACHE.get(normalized_name)
+    if cached is not None:
+        return cached
+
+    html = importlib.import_module("domonic.html")
+
+    if normalized_name in html._HTML_TAG_LOOKUP:
+        tag_name = html._TAG_ALIASES.get(normalized_name, normalized_name)
+        element_class = getattr(html, tag_name)
+    else:
+        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
+        if element_class is None:
+            element_class = type("custom_tag", (dom.Element,), {"name": name})
+            _UNKNOWN_ELEMENT_CLASS_CACHE[normalized_name] = element_class
+
+    _HTML_ELEMENT_CLASS_CACHE[normalized_name] = element_class
+    return element_class
+
+
+def _create_element_raw(name: str) -> Element:
+    element_class = _html_element_class(name)
+    return _initialize_element_raw(element_class.__new__(element_class))
+
+
+def _create_text_raw(data: str) -> Text:
+    return _initialize_node_raw(object.__new__(Text), (data,))
+
+
+def _create_comment_raw(data: str) -> Comment:
+    comment = _initialize_node_raw(object.__new__(Comment))
+    comment.data = data
+    return comment
+
+
+def _create_fragment_raw() -> DocumentFragment:
+    return _initialize_node_raw(object.__new__(DocumentFragment))
+
+
 class DomonicHTMLParser(HTMLParser):
     """Build a domonic tree from stdlib ``HTMLParser`` callbacks."""
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=False)
-        self.root = Document.createDocumentFragment()
+        self.root = _create_fragment_raw()
         self.stack: list[Node] = [self.root]
         self.child_stack: list[list[Node]] = [[]]
 
@@ -94,10 +165,10 @@ class DomonicHTMLParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         if data:
-            _append_child_raw(self.current, Text(data), self.child_stack[-1])
+            _append_child_raw(self.current, _create_text_raw(data), self.child_stack[-1])
 
     def handle_comment(self, data: str) -> None:
-        _append_child_raw(self.current, Comment(data), self.child_stack[-1])
+        _append_child_raw(self.current, _create_comment_raw(data), self.child_stack[-1])
 
     def handle_entityref(self, name: str) -> None:
         self.handle_data(unescape(f"&{name};"))
@@ -106,7 +177,7 @@ class DomonicHTMLParser(HTMLParser):
         self.handle_data(unescape(f"&#{name};"))
 
     def _create_element(self, tag: str, attrs: list[tuple[str, str | None]]) -> Node:
-        element = Document.createElement(tag)
+        element = _create_element_raw(tag)
         for name, value in attrs:
             _set_attribute_raw(element, name, name if value is None else value)
         return element

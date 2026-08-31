@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 from domonic import attributes, domonic
 from domonic.CDN import CDN_CSS, CDN_JS
+from domonic.dom import HTMLDocument
 
 
 def _debug_print(*args, **kwargs):
@@ -252,9 +253,22 @@ _id="one", _class="two",
             parser="html.parser",
         )
 
-        self.assertEqual(page.tagName, "html")
+        self.assertIsInstance(page, HTMLDocument)
+        self.assertEqual(page.documentElement.tagName, "html")
         self.assertEqual(page.querySelector("title").text, "T")
         self.assertEqual(page.querySelector("p").text, "Hi")
+
+    def test_parse_string_full_document_base_uri_uses_base_href(self):
+        page = domonic.parseString(
+            '<!doctype html><html><head><base href="https://example.com/docs/"></head>'
+            '<body><main id="content">Hi</main></body></html>',
+            parser="html.parser",
+        )
+        content = page.getElementById("content")
+
+        self.assertIsInstance(page, HTMLDocument)
+        self.assertEqual(page.baseURI, "https://example.com/docs/")
+        self.assertEqual(content.baseURI, "https://example.com/docs/")
 
     def test_parse_string_with_stdlib_html_parser_malformed_reasonable_html(self):
         page = domonic.parseString("<div><p>One<p>Two</div>", parser="html.parser")
@@ -355,13 +369,159 @@ _id="one", _class="two",
     def test_parse_string_with_selectolax_option(self):
         try:
             page = domonic.parseString(
-                "<html><body><p>Hi</p></body></html>", parser="selectolax"
+                '<!doctype html><html><head><base href="https://example.com/">'
+                '<script type="application/ld+json">{"name":"Ada"}</script></head>'
+                '<body><p id="p" style="color:red" data-src="/img.png">Hi '
+                "<b>there</b></p><!--note--></body></html>",
+                parser="selectolax",
             )
         except ImportError:
             self.skipTest("selectolax is not installed")
         else:
-            self.assertIsNotNone(page)
-            self.assertEqual(page.querySelector("p").text, "Hi")
+            paragraph = page.querySelector("#p")
+            script = page.querySelector("script")
+
+            self.assertIsInstance(page, HTMLDocument)
+            self.assertEqual(page.documentElement.tagName, "html")
+            self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
+            self.assertEqual(page.baseURI, "https://example.com/")
+            self.assertEqual(paragraph.baseURI, "https://example.com/")
+            self.assertEqual(paragraph.getAttribute("data-src"), "/img.png")
+            self.assertEqual(paragraph.style.color, "red")
+            self.assertEqual(paragraph.textContent, "Hi there")
+            self.assertEqual(script.textContent, '{"name":"Ada"}')
+            self.assertIn("<!--note-->", str(page))
+
+    def test_parse_string_with_selectolax_fragments(self):
+        try:
+            page = domonic.parseString(
+                '<p id="one">One</p><p id="two">Two</p>', parser="selectolax"
+            )
+        except ImportError:
+            self.skipTest("selectolax is not installed")
+        else:
+            self.assertEqual(len(page.childNodes), 2)
+            self.assertEqual(
+                [child.getAttribute("id") for child in page.childNodes],
+                ["one", "two"],
+            )
+            self.assertEqual(page.textContent, "OneTwo")
+
+    def test_selectolax_adapter_does_not_require_lxml(self):
+        try:
+            import selectolax  # noqa: F401
+        except ImportError:
+            self.skipTest("selectolax is not installed")
+
+        module_name = "domonic.ext.selectolax_"
+        cached_adapter = sys.modules.pop(module_name, None)
+
+        try:
+            with patch.dict(
+                sys.modules, {"lxml": None, "lxml.etree": None, "lxml.html": None}
+            ):
+                import_module(module_name)
+                page = domonic.parseString('<p data-x="1">Hi</p>', parser="selectolax")
+        finally:
+            if cached_adapter is not None:
+                sys.modules[module_name] = cached_adapter
+
+        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.getAttribute("data-x"), "1")
+        self.assertEqual(page.textContent, "Hi")
+
+    def test_parse_string_with_turbohtml_option(self):
+        try:
+            page = domonic.parseString(
+                '<!doctype html><html><head><base href="https://example.com/">'
+                '<script type="application/ld+json">{"name":"Ada"}</script></head>'
+                '<body><p id="p" data-src="/img.png">Hi <b>there</b></p>'
+                "<!--note--></body></html>",
+                parser="turbohtml",
+            )
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+        else:
+            paragraph = page.querySelector("#p")
+            script = page.querySelector("script")
+
+            self.assertIsInstance(page, HTMLDocument)
+            self.assertEqual(page.documentElement.tagName, "html")
+            self.assertEqual(page.baseURI, "https://example.com/")
+            self.assertEqual(paragraph.baseURI, "https://example.com/")
+            self.assertEqual(paragraph.getAttribute("data-src"), "/img.png")
+            self.assertEqual(paragraph.textContent, "Hi there")
+            self.assertEqual(script.textContent, '{"name":"Ada"}')
+            self.assertIn("<!--note-->", str(page))
+
+    def test_parse_string_with_turbohtml_fragments(self):
+        try:
+            page = domonic.parseString(
+                '<p id="one">One</p><p id="two">Two</p>', parser="turbohtml"
+            )
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+        else:
+            self.assertEqual(len(page.childNodes), 2)
+            self.assertEqual(
+                [child.getAttribute("id") for child in page.childNodes],
+                ["one", "two"],
+            )
+            self.assertEqual(page.textContent, "OneTwo")
+
+    def test_turbohtml_adapter_does_not_require_lxml(self):
+        try:
+            import turbohtml  # noqa: F401
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+
+        module_name = "domonic.ext.turbohtml_"
+        cached_adapter = sys.modules.pop(module_name, None)
+
+        try:
+            with patch.dict(
+                sys.modules, {"lxml": None, "lxml.etree": None, "lxml.html": None}
+            ):
+                import_module(module_name)
+                page = domonic.parseString('<p data-x="1">Hi</p>', parser="turbohtml")
+        finally:
+            if cached_adapter is not None:
+                sys.modules[module_name] = cached_adapter
+
+        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.getAttribute("data-x"), "1")
+        self.assertEqual(page.textContent, "Hi")
+
+    def test_turbohtml_doctype_documents_parse(self):
+        try:
+            import turbohtml  # noqa: F401
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+
+        page = domonic.parseString(
+            "<!doctype html><html><head><title>ok</title></head><body></body></html>",
+            parser="turbohtml",
+        )
+
+        self.assertIsInstance(page, HTMLDocument)
+        self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
+        self.assertEqual(page.querySelector("title").textContent, "ok")
+
+    def test_turbohtml_class_attributes_are_selector_compatible(self):
+        try:
+            import turbohtml  # noqa: F401
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+
+        page = domonic.parseString(
+            '<main><div class="mw-parser-output prose">ok</div></main>',
+            parser="turbohtml",
+        )
+        output = page.querySelector(".mw-parser-output")
+
+        self.assertIsNotNone(output)
+        self.assertEqual(output.getAttribute("class"), "mw-parser-output prose")
+        self.assertEqual(output.textContent, "ok")
 
     def test_parse_string_with_justhtml_option(self):
         try:

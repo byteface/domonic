@@ -12,13 +12,14 @@ from domonic import domonic
 
 
 DEFAULT_PARSERS = [
+    "selectolax",
+    "turbohtml",
+    "lxml_html",
+    "markupever",
+    "html5_parser",
     "html.parser",
     "html5lib",
-    "html5_parser",
-    "lxml_html",
     "justhtml",
-    "markupever",
-    "selectolax",
     "expat",
 ]
 

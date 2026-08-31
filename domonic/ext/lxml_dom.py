@@ -12,10 +12,8 @@ import importlib
 
 from lxml.etree import _Comment
 
-from domonic.dom import (DOMImplementation, MATHML_NAMESPACE, Comment, Element,
-                         MathMLElement, Text)
-
-impl = DOMImplementation()
+from domonic.dom import (MATHML_NAMESPACE, Comment, Element, MathMLElement, Text,
+                         XMLDocument)
 
 try:
     dict_items = dict.iteritems
@@ -89,26 +87,68 @@ def append_child_raw(parent, child, children):
     child.__dict__["parentNode"] = parent
 
 
+def initialize_node_raw(node, args=(), namespace_uri=None):
+    state = node.__dict__
+    state["args"] = args
+    state["kwargs"] = {}
+    state["_baseURI"] = ""
+    state["isConnected"] = True
+    state["namespaceURI"] = namespace_uri or "http://www.w3.org/1999/xhtml"
+    state["outerText"] = None
+    state["_ownerDocument"] = None
+    state["parentNode"] = None
+    state["prefix"] = None
+    return node
+
+
 def initialize_element_raw(element, namespace_uri):
-    element.__dict__.update(
+    initialize_node_raw(element, namespace_uri=namespace_uri)
+    state = element.__dict__
+    state["lang"] = None
+    state["tabIndex"] = None
+    state["_Element__style"] = None
+    state["shadowRoot"] = None
+    state["dir"] = None
+    return element
+
+
+def create_text_raw(data):
+    return initialize_node_raw(object.__new__(Text), ("" if data is None else str(data),))
+
+
+def create_comment_raw(data):
+    comment = initialize_node_raw(object.__new__(Comment))
+    comment.data = "" if data is None else str(data)
+    return comment
+
+
+def create_document_raw(namespace_uri, qualified_name, doctype):
+    document = object.__new__(XMLDocument)
+    initialize_element_raw(document, namespace_uri)
+    document.__dict__.update(
         {
-            "args": (),
-            "kwargs": {},
-            "_baseURI": "",
-            "isConnected": True,
-            "namespaceURI": namespace_uri or "http://www.w3.org/1999/xhtml",
-            "outerText": None,
-            "_ownerDocument": None,
-            "parentNode": None,
-            "prefix": None,
-            "lang": None,
-            "tabIndex": None,
-            "style": None,
-            "shadowRoot": None,
-            "dir": None,
+            "_open_filename": None,
+            "_activeElement": None,
+            "_defaultView": None,
+            "_designMode": "off",
+            "_currentScript": None,
+            "_cookie_store": {},
+            "_fonts": None,
+            "_lastModified": "",
+            "_referrer": "",
+            "_timeline": None,
+            "_Document__stylesheets": None,
+            "_doctype": doctype,
+            "documentElement": document,
+            "URL": "",
         }
     )
-    return element
+    if qualified_name:
+        root = create_element_ns_raw(namespace_uri, qualified_name)
+        document.__dict__["args"] = (root,)
+        root.__dict__["parentNode"] = document
+        document.__dict__["documentElement"] = root
+    return document
 
 
 def html_element_class(qualified_name):
@@ -149,8 +189,7 @@ def adapt(source_tree, return_root=True, **kw):
     """Build a domonic tree from an lxml tree."""
     source_root = source_tree.getroot()
     uri, qname = elem_name_parts(source_root)
-    dest_tree = impl.createDocument(uri, qname, None)
-    dest_tree.doctype = source_tree.docinfo.doctype
+    dest_tree = create_document_raw(uri, qname, source_tree.docinfo.doctype)
     dest_root = dest_tree.documentElement
     stack = [(source_root, dest_root)]
 
@@ -159,21 +198,21 @@ def adapt(source_tree, return_root=True, **kw):
         children = []
         text = src.text
         if text:
-            append_child_raw(dest, Text(text), children)
+            append_child_raw(dest, create_text_raw(text), children)
         add_namespace_declarations_raw(src, dest)
         for name, val in src.items():
             _, attr_name, attr_value = attr_name_parts(name, src, val)
             set_attribute_raw(dest, attr_name, attr_value)
         for child in src.iterchildren():
             if isinstance(child, _Comment):
-                dchild = Comment((child.text or "").replace("--", "—"))
+                dchild = create_comment_raw((child.text or "").replace("--", "—"))
             else:
                 dchild = create_element_ns_raw(*elem_name_parts(child))
                 stack.append((child, dchild))
             append_child_raw(dest, dchild, children)
             tail = child.tail
             if tail:
-                append_child_raw(dest, Text(tail), children)
+                append_child_raw(dest, create_text_raw(tail), children)
         dest.__dict__["args"] = tuple(children)
 
     if return_root or (qname and qname.lower() == "html"):

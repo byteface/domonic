@@ -76,6 +76,7 @@ class domonic:
             "selectolax",
             "markupever",
             "justhtml",
+            "turbohtml",
         }
         if parser_name not in valid:
             raise ValueError(f"Unknown parser: {parser}")
@@ -115,7 +116,6 @@ class domonic:
         """
         with open(path, "r") as pyml_string:
             content = pyml_string.read()
-            # print("++++",content, type(content) )
             prog = domonic.domonify(str(content), *args, **kwargs)
             if type(prog) is tuple:
                 prog = prog[0]
@@ -195,11 +195,9 @@ class domonic:
             The resulting domonic node, or a tuple of nodes for top-level
             sibling expressions.
         """
-        # print(pyml)
         if not isinstance(pyml, str):
             raise ValueError("domonify requires a string not:", type(pyml))
 
-        # print("HI>>", pyml)
 
         s = domonic.evaluate(pyml, *args, **kwargs)
 
@@ -234,7 +232,6 @@ class domonic:
             A corrected PyML expression string when possible.
         """
 
-        # print(pyml)
         if not isinstance(pyml, str):
             raise ValueError("evaluate requires a string not:", type(pyml))
 
@@ -247,7 +244,6 @@ class domonic:
             # old_log = sys.stdout
             # log_file = open("fail.log","w")
             # sys.stdout = log_file
-            # print(e)
             # sys.stdout = old_log
 
             # if end of file err. add a closed curly
@@ -261,7 +257,6 @@ class domonic:
             if "positional argument follows keyword argument" in str(e):
 
                 """
-                # print(Utils.digits(e))
                 if str(e) == domonic.LAST_ERR:  # only allow 1 error per line
                     # raise ValueError("Recursion limit exceeded")
                     domonic.LAST_ERR = None
@@ -390,7 +385,6 @@ class domonic:
                 return False, ""
             return True, line
         except Exception:
-            # print(e)
             # rety fix_hyphen_tags
             if ")" in line:  # if there was a bracket return that at least
                 return False, ""
@@ -458,7 +452,6 @@ class domonic:
         if not isinstance(page, str):
             raise ValueError("Parse requires a string required not:", type(page))
 
-        # print('parsing parsing parsing!!')
 
         page = "".join(page.split("<!DOCTYPE HTML>"))
         page = "".join(page.split("<!DOCTYPE html>"))
@@ -792,7 +785,6 @@ class domonic:
         customtags = re.findall(r"<[-a-zA-Z]+", page)
         if len(customtags) > 0:
             for t in customtags:
-                # print(t)
                 page = page.replace(
                     t, '\ncreate_element(\n"' + t.lstrip("<") + '"'
                 )  # < note. changed to not closing tag
@@ -800,7 +792,6 @@ class domonic:
         customtags = re.findall(r"<[/][-a-zA-Z]+", page)
         if len(customtags) > 0:
             for t in customtags:
-                # print(t)
                 page = page.replace(t, "\n),\n")  # < note. changed to not closing tag
 
         # any stragglers or custom tags
@@ -808,7 +799,6 @@ class domonic:
         page = page.replace(">", "\n(\n")
         page = page.replace("<", "")
 
-        # print(":::",page)
         # page = page.replace('>', '\n,\n')  # < note. changed to not closing tag
         # page = page.replace('<', '\n(\n')
 
@@ -871,7 +861,6 @@ class domonic:
                     )  # if already has an underscore remove it as we add it below
                     END = ""
                     if len(line) - (line.find(val) + len(val)) < 3:
-                        # print('last attribute in line')
                         END = ","
 
                     newparam = f'**\u007b"_{key}":{val}\u007d{END}'
@@ -1045,7 +1034,6 @@ class domonic:
                     line = line.replace(",", "$COMMA$")
                     parts = line.split("=")
                     line = parts[0] + "=" + '"' + parts[1] + '"'
-                    # print(line)
 
             attribs = scan_attribute_assignments(line)
 
@@ -1375,30 +1363,25 @@ class domonic:
                 if is_fixed:
                     fixed.append(newline)
                 else:  # break line into bits to keep any working parts
-                    # print("BAD:", line)
                     parts = line.split(",")
                     keepers = []
                     for piece in parts:
                         piece = piece.strip()
                         piece = piece.strip("\n")
                         is_working, p = domonic._is_valid_pyml(piece)
-                        # print(is_working,p)
                         if is_working:
                             keepers.append(p)
                     line = ",".join(keepers)
                     is_fixed, newline = domonic._is_valid_pyml(line + ",")
                     if is_fixed:
                         fixed.append(newline)
-                        # print("FIXED:", line)
             page = "\n".join(fixed)
 
         # page = ''.join(page.splitlines())
         # page = ''.join(page.splitlines())
 
         # if not minify and indent:
-        #     print('>>',len(page))
         # page = domonic.dent(page)
-        #     print('<<',len(page))
 
         return page
 
@@ -1431,9 +1414,6 @@ class domonic:
         def _normalize_parsed_page(page, source: str):
             is_full_document = _looks_like_full_html_document(source)
 
-            if isinstance(page, dom.DocumentFragment):
-                return page
-
             html_root = None
             if getattr(page, "tagName", "").lower() == "html":
                 html_root = page
@@ -1447,7 +1427,20 @@ class domonic:
                 return page
 
             if is_full_document:
-                return html_root
+                if isinstance(page, dom.Document) and not isinstance(
+                    page, dom.DocumentFragment
+                ):
+                    page.documentElement = html_root
+                    if page is html_root:
+                        page.parentNode = None
+                    elif html_root.parentNode is not page:
+                        html_root.parentNode = page
+                    return page
+                document = dom.HTMLDocument()
+                document.args = (html_root,)
+                html_root.parentNode = document
+                document.documentElement = html_root
+                return document
 
             body = (
                 html_root.querySelector("body")
@@ -1505,6 +1498,12 @@ class domonic:
             page = selectolax_parse(string, return_root=False)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
 
+        def _parse_with_turbohtml():
+            from domonic.ext.turbohtml_ import parse as turbohtml_parse
+
+            page = turbohtml_parse(string, return_root=False)
+            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
         def _parse_with_justhtml():
             from domonic.ext.justhtml_ import parse as justhtml_parse
 
@@ -1523,6 +1522,8 @@ class domonic:
             return _parse_with_markupever()
         if parser == "selectolax":
             return _parse_with_selectolax()
+        if parser == "turbohtml":
+            return _parse_with_turbohtml()
         if parser == "justhtml":
             return _parse_with_justhtml()
         if parser == "expat":
@@ -1540,6 +1541,7 @@ class domonic:
             (_parse_with_justhtml, (Exception,)),
             (_parse_with_markupever, (Exception,)),
             (_parse_with_selectolax, (Exception,)),
+            (_parse_with_turbohtml, (Exception,)),
         )
         for parse_with, handled_errors in fallback_parsers:
             try:
