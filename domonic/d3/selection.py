@@ -59,8 +59,6 @@ def creatorInherit(name):
 
 
 def creatorFixed(fullname):
-    # print('this one')
-    # return lambda this: print(this[0] , "TESTESTESTE")
     # return lambda this: this.ownerDocument.createElementNS(fullname['space'], fullname['local'])
     from domonic.dom import document  # bring in the global document
 
@@ -71,7 +69,6 @@ def creatorFixed(fullname):
 
 def creator(name):
     fullname = namespace(name)
-    # print(fullname)
     func = creatorFixed if isinstance(fullname, dict) else creatorInherit
     return func(fullname)
 
@@ -145,7 +142,6 @@ class EnterNode:
 
 class ClassList:
     def __init__(self, node):
-        # print('class list is in town')
         self._node = node
         self._names = classArray(node.getAttribute("class") or "")
 
@@ -305,7 +301,6 @@ class Selection:
                 subgroup[i] = subnode
             j += 1
 
-        # print("this was set to", self.this)
         return Selection(subgroups, self._parents, self.this)
 
     # import selection_selectAll from "./selectAll.js";
@@ -726,8 +721,6 @@ class Selection:
         return anon
 
     def attrConstant(self, name, value):
-        # print('setting:::', name, value)
-        # print('setting:::', self.this)
         # return lambda: self.setAttribute(name, value)
         # self.this.setAttribute(name, value)
         # return self
@@ -771,7 +764,6 @@ class Selection:
         return anon
 
     def attr(self, name, value=_MISSING, *args):
-        # print("NAME!!", name, value, args)
         fullname = namespace(name)
 
         if value is _MISSING:
@@ -802,39 +794,26 @@ class Selection:
     # def style: selection_style,
     # import defaultView from "../window.js";
     def _styleRemove(self, name, value, priority=None):
-        # print('styleing remove')
         def anon(this, *args):
-            # print('_styleRemove :anon/name', name)
             this.style.removeProperty(name)
 
         return anon
 
     def _styleConstant(self, name, value, priority=None):
-        # print('style constant was called')
         def anon(this, *args):
-            # print('THE FUNC WAS CALLED')
             nonlocal name
             nonlocal value
             nonlocal priority
-            # print('_styleConstantxxx :anon/name', name, type(this), this)
-            # print('aaa',this)
-            # print('aaaaawtf')
-            # print('bbb',this.style)
-            # print('ccc')
             this.style.setProperty(name, value, priority)
 
         return anon
 
     def _styleFunction(self, name, value, priority=None):
-        # print('styling fucntion')
         def anon(this, *args):
-            # print('styling fucntion:anon/name', name)
             v = _invoke_callback(value, *args)
-            # print('dark mavis',v)
             if v == None:
                 this.style.removeProperty(name)
             else:
-                # print('how you doin')
                 this.style.setProperty(name, v, priority)
 
         return anon
@@ -843,7 +822,6 @@ class Selection:
         if value == None:
             return styleValue(self.node(), name)
 
-        # print('hi!!!!!!!!')
         if value == None:  # ?? need to understand what below is doing
             func = self._styleRemove  # (name, value, priority)
         elif callable(value):
@@ -907,7 +885,6 @@ class Selection:
     # def classed: selection_classed,
 
     def classedTrue(self, names, value):
-        # print("classedTrue::::")
         return lambda this, *args: classedAdd(this, names)
 
     def classedFalse(self, names, value):
@@ -1240,8 +1217,6 @@ def selection_selection():
 
 
 def select(selector):
-    # print(selector)
-    # print(document)
     from domonic.dom import document  # bring in the global document
 
     if isinstance(selector, str):
@@ -1353,7 +1328,6 @@ def empty():
 def selectAll(selector):
     from domonic.dom import document  # bring in the global document
 
-    # print(document)
     if isinstance(selector, str):
         return Selection(
             [document.querySelectorAll(selector)], [document.documentElement]

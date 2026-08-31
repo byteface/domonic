@@ -33,7 +33,6 @@ class Websocket:
         except Exception as e:
             return  # pass on non json message
 
-        # print(msg)
         event_string = dom_event["type"]
 
         if event_string == "keydown" or event_string == "keyup":
@@ -75,20 +74,16 @@ class Websocket:
                 evt.dataTransfer = dom_event["dataTransfer"]
 
         elif event_string == "hashchange":
-            # print(dom_event)
             evt = HashChangeEvent(event_string)
             evt.oldURL = dom_event["oldURL"]
             evt.newURL = dom_event["newURL"]
 
         elif event_string == "cut" or event_string == "copy" or event_string == "paste":
-            # print("SUP::",event_string, dom_event)
             evt = ClipboardEvent(event_string)
             evt.clipboardData = dom_event["clipboardData"]
 
         elif event_string == "wheel":
             evt = WheelEvent(event_string)
-            # print(evt)
-            # print(dom_event)
             evt.deltaX = dom_event["deltaX"]
             evt.deltaY = dom_event["deltaY"]
             evt.deltaZ = dom_event["deltaZ"]

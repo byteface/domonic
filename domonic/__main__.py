@@ -267,9 +267,7 @@ run:
     write_activation_script(server_choice)
 
     # license_opt = ["none", "mit", "gpl", "apache", "bsd", "mpl"]
-    # print("You want a license?")
     # for i, license in enumerate(license_opt):
-    #     print(str(i) + ": " + license)
     # license_choice = input("Enter a number: ")
     # license_choice = license_opt[int(license_choice)]
     # dl the license
@@ -458,7 +456,6 @@ def do_things(arguments):
     except TerminalException as e:
         print(e)
 
-    # print(arguments.download)
     if arguments.download is not None:
         print("creating domonic template from url:")
         from domonic import domonic
@@ -471,7 +468,6 @@ def do_things(arguments):
         print("filename:", Utils.url2file(arguments.download))
         render(page, Utils.url2file(arguments.download))
 
-    # print(arguments.download)
     if arguments.html2pyml is not None:
         print("creating domonic code from url:")
         from domonic import domonic
@@ -482,7 +478,6 @@ def do_things(arguments):
         from domonic.html import render
         from domonic.utils import Utils
 
-        # print("filename:", Utils.url2file(arguments.download))
         print(render(outp, to="pyml"))
 
     if arguments.project is not None:

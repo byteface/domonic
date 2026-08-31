@@ -198,7 +198,6 @@ class dQuery_el:
         self.prevObject = None
         self.eventHandler = EventHandler()
         if type(dom) == str:
-            # print("DO NOT CALL THIS METHOD DIRECTLY! use dQuery or º ")
             return
         if dom in (None, 0):
             return
@@ -209,13 +208,10 @@ class dQuery_el:
             self.elements = dom
 
     def __str__(self):
-        # print(type(self.elements))
         if isinstance(self.elements, (list, tuple)):
             # if isinstance(self.elements, (list, tuple)):
-            # print([str(el) for el in self.elements])
             return "".join([str(el) for el in self.elements])
         else:
-            # print('asd')
             return str(self.elements)
 
     def __getitem__(self, index):
@@ -434,13 +430,11 @@ class dQuery_el:
 
     @property
     def dom(self):
-        # print('getting')
         if dQuery_el.DOM is None:
             from domonic.dom import document
 
             return document
         # else:
-        # print('GOT ONE')
         return dQuery_el.DOM
 
     @dom.setter
@@ -459,8 +453,6 @@ class dQuery_el:
             from domonic import domonic
 
             self.elements = domonic.load(self.q)
-            # print(self.elements)
-            # print(type(self.elements))
             if isinstance(self.elements, (html, Document)):
                 self.dom = self.elements
         else:

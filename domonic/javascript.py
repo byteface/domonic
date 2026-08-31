@@ -278,7 +278,6 @@ class Object:
         Args:
             obj ([type]): [pass an object, dict or callable to the contructor]
         """
-        # print('object created!')
         if obj is None:
             obj = {}
 
@@ -2009,7 +2008,6 @@ class Date(Object):
                 date = str(date)
             for arg in args:
                 date += " " + str(arg)
-            # print("date is:::::::::::::::::::::::::::::::::::::", date)
             date = date.strip()
             if date == "":
                 date = None
@@ -2567,7 +2565,6 @@ class Promise:
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        # print('init')
         self.data = None
         self.state = "pending"  # fullfilled, rejected
         self._then_callbacks: list[Callable[[Any], Any]] = []
@@ -2579,9 +2576,7 @@ class Promise:
         if func is None:
             return self
         if self.state == "fulfilled":
-            # print('--->',self.data)
             self._run_then(func)
-            # print('-->',self.data)
         elif self.state == "pending":
             self._then_callbacks.append(func)
         return self
@@ -2596,7 +2591,6 @@ class Promise:
         return self
 
     def resolve(self, data: Any) -> Promise:
-        # print( 'resolve called::', data )
         if self.state != "pending":
             return self
         self.data = data
@@ -2631,7 +2625,6 @@ class Promise:
     #     try:
     #         return self.data.text
     #     except Exception as e:
-    #         print(e)
     #     return str(self)
 
 
@@ -2718,7 +2711,6 @@ class Window:
             req = Request(method, url)
             prepped = s.prepare_request(req)
             r = s.send(prepped, **kwargs)
-            # print(r.status_code)
             s.close()
 
             if f is not None and type(f) is FetchedSet:
@@ -3224,7 +3216,6 @@ class Array:
         Returns:
             [list]: [a new array]
         """
-        # print(func)
         return [func(value) for value in self.args]
         # return map(self.args, func)
 
@@ -3490,7 +3481,6 @@ class Set:
 class Number(float):
     """javascript Number methods"""
 
-    # print(sys.float_info)
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
@@ -3660,7 +3650,6 @@ class Number(float):
         if n == "0.":
             n = "0"
 
-        # print(  "AND:", n, "e" , e )
         if n.endswith("."):
             n = n.strip(".")
 
@@ -3675,7 +3664,6 @@ class Number(float):
         Returns:
             [str]: [A string representing the given number using fixed-point notation.]
         """
-        # print("DIGIT!", digits)
         if digits < 0:
             digits = 0
 
@@ -3808,7 +3796,6 @@ class String:
     #     return self.x
 
     def __getitem__(self, item: int | slice) -> str:
-        # print(item)
         return self.x[item]
 
     def __add__(self, other: str) -> str:
@@ -3905,7 +3892,6 @@ class String:
         start = max(int(start), 0)
         if end is None:
             end = len(self.x)
-        # print(self.x.startswith(x, start, end))
         return self.x.startswith(x, start, end)
 
     def substring(self, start: int, end: int = None) -> str:
@@ -4500,9 +4486,7 @@ class RegExp:
 
     def exec(self, s: str) -> list[str] | None:
         """Executes a search for a match in its string parameter."""
-        # print("exec:", self.expression, s)
         m = re.search(self.expression, s, self._re_flags())
-        # print(m)
         if m:
             groups = m.groups()
             return [group for group in groups] if groups else [m.group(0)]
@@ -4517,7 +4501,6 @@ class RegExp:
             [bool]: [True if match else False]
         """
         m = re.search(self.expression, s, self._re_flags())
-        # print(m)
         if m:
             return True
         else:
@@ -4751,8 +4734,6 @@ class TypedArray:
 
         arg = args[0]
 
-        # print(arg)
-        # print(type(arg))
         if isinstance(arg, (Int8Array, ArrayBuffer)):
             # self.buffer = arg.buffer
             # self.byteLength = arg.byteLength
@@ -4805,7 +4786,6 @@ class TypedArray:
 
             return
         # elif isinstance(arg, array.array):
-        #     print('c!!!!')
         #     self.buffer = arg
         #     self.byteLength = len(arg)
         #     self.length = len(arg)
@@ -4844,7 +4824,6 @@ class TypedArray:
             return
         elif isinstance(arg, list):
 
-            # print('bb!', arg)
             # self.buffer = array.array('B', arg)
             # self.byteLength = len(arg)
             # self.length = len(arg)
@@ -4918,7 +4897,6 @@ class TypedArray:
 
     # // setter void (unsigned long index, type value);
     def __setitem__(self, index: int | None, value: Any) -> None:
-        # print('set', index, value)
         if index is None and value is None:
             raise SyntaxError("Not enough arguments")
 
@@ -4928,10 +4906,6 @@ class TypedArray:
 
         packed_value = value.x if isinstance(value, Number) else value
         b = self._pack(packed_value)
-        # print(b)
-        # print(  self._pack(10) )
-        # print(  self._pack(20) )
-        # print(  self._pack(30) )
         i = 0
         o = self.byteOffset + index * self.BYTES_PER_ELEMENT
         for i in range(0, self.BYTES_PER_ELEMENT):

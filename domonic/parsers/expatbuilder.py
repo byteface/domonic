@@ -261,7 +261,6 @@ class ExpatBuilder:
         )
         # doctype.ownerDocument = self.document
         # _append_child(self.document, doctype)
-        # print(">>.", node, type(node))
         # if isinstance(node, Document):
         #     self.document = node
         #     return
@@ -300,9 +299,6 @@ class ExpatBuilder:
     def character_data_handler_cdata(self, data):
         childNodes = self.curNode.childNodes
 
-        # print("HERE I AM::::::::::::::::::", self.curNode, type(self.curNode))
-        # print("HERE I AM::::::::::::::::::", childNodes)
-        # print("HERE I AM::::::::::::::::::", childNodes[-1], type(childNodes[-1]))
         if self._cdata:
             if self._cdata_continue and childNodes[-1].nodeType == CDATA_SECTION_NODE:
                 childNodes[-1].appendData(data)
@@ -358,7 +354,6 @@ class ExpatBuilder:
         if value is not None:
             # internal entity
             # node *should* be readonly, but we'll cheat
-            # print('^^^^^^^&&&&^^^^^^^^^')
             child = self.document.createTextNode(value)
             node.childNodes.append(child)
         self.document.doctype.entities._seq.append(node)
@@ -804,23 +799,18 @@ class Namespaces:
             localname = None
             prefix = EMPTY_PREFIX
         # node = minidom.Element(qname, uri, prefix, localname)
-        # print(qname, uri, prefix, localname)
         from domonic.parsers import create_element
 
         # from domonic.html import create_element
         # node = Element(qname, uri, prefix, localname)
         node = create_element(qname)  # , uri, prefix, localname)
-        # print( "NODE", node )
         node.namespaceURI = uri
         node.prefix = prefix
         # node.ownerDocument = self.document
         node.parentNode = self.curNode  # self.document
-        # print("THIS::::", self.curNode, node)
-        # print("THIS::::", type(self.curNode), type(node))
         # _append_child(self.curNode, node)
         if isinstance(self.curNode, Document) and isinstance(node, Document):
             # NOTE - because the domonic Document is a tag. the first one needs to be the root
-            # print("this is the thing **** ****************************")
             self.curNode = node
             self.document = node
             # return
@@ -838,7 +828,6 @@ class Namespaces:
                 # else:
                 #     a = minidom.Attr("xmlns", XMLNS_NAMESPACE,
                 #                      "xmlns", EMPTY_PREFIX)
-                # print('YOUARE<<<<<', qname, uri)
                 a = Attr("xmlns", uri)
                 # a.namespaceURI = XMLNS_NAMESPACE
                 # a.localName = "xmlns"
@@ -881,7 +870,6 @@ class Namespaces:
             for i in range(0, len(attributes), 2):
                 name = attributes[i]
                 value = attributes[i + 1]
-                # print('SETTING', name ,value)
                 node.setAttribute(name, value)
 
     if __debug__:
@@ -901,9 +889,6 @@ class Namespaces:
                 ):
                     raise AssertionError("element stack messed up! (namespace)")
             else:
-                # print(name, curNode, curNode.nodeName, type(curNode))
-                # print(curNode.nodeName, name)
-                # print(curNode.nodeName == name)
 
                 if curNode.nodeName != "#document":
                     if curNode.nodeName.upper() != name.upper():

@@ -68,7 +68,6 @@ class URL:
             self._load_from_href(href)
 
     def __update__(self) -> None:
-        # print( "update URL:", type(self), self  )
         try:
             self._ensure_url_state()
             new = {
@@ -101,8 +100,6 @@ class URL:
             object.__setattr__(self, "_url_state_source", self.url.geturl())
 
         except Exception:  # as e:
-            # print('fails on props called by init as they dont exist yet')
-            # print(e)
             return
 
     def __init__(
