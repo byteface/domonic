@@ -249,6 +249,7 @@ class BeautifulSlopTest(unittest.TestCase):
         text = soup.new_string("two")
 
         self.assertIsInstance(text, Text)
+        self.assertEqual(text.get_text(strip=True), "two")
         soup.find("p").append(text)
         self.assertEqual(soup.find("p").text, "onetwo")
         soup.find("p").smooth()
@@ -276,6 +277,20 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertTrue(hasattr(new_tag, "find"))
         self.assertTrue(hasattr(clone, "find"))
         self.assertEqual(clone.find("p").text, "one")
+
+    def test_turbohtml_tokenized_class_attributes_are_findable(self):
+        try:
+            import turbohtml  # noqa: F401
+        except ImportError:
+            self.skipTest("turbohtml is not installed")
+
+        soup = BeautifulSlop(
+            '<main><div class="mw-parser-output prose">ok</div></main>',
+            "turbohtml",
+        )
+
+        self.assertEqual(soup.find(class_="mw-parser-output").name, "div")
+        self.assertEqual(soup.select_one(".mw-parser-output").text, "ok")
 
 
 if __name__ == "__main__":

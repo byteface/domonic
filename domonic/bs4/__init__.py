@@ -31,6 +31,7 @@ _PARSER_ALIASES = {
     "html5-parser": "html5_parser",
     "markupever": "markupever",
     "selectolax": "selectolax",
+    "turbohtml": "turbohtml",
     "justhtml": "justhtml",
     "expat": "expat",
 }
@@ -1012,20 +1013,33 @@ def _find_all_previous(
 
 
 def _strings(self: Node) -> Iterator[str]:
-    if isinstance(self, Text):
-        yield self.data
+    if type(self) is Text:
+        args = self.__dict__.get("args", ())
+        if args:
+            yield args[0]
         return
-    stack = list(reversed(getattr(self, "args", ()) or ()))
+    stack = list(reversed(self.__dict__.get("args", ()) or ()))
+    text_type = Text
+    comment_type = Comment
+    element_type = Element
+    node_type = Node
+    isinstance_ = isinstance
+    skipped_names = {"script", "style"}
     while stack:
         node = stack.pop()
-        if isinstance(node, Text):
-            yield node.data
-        elif isinstance(node, str):
+        node_class = type(node)
+        if node_class is text_type:
+            args = node.__dict__.get("args", ())
+            if args:
+                yield args[0]
+        elif node_class is str:
             yield node
-        elif isinstance(node, Element) and node.name.lower() in {"script", "style"}:
-            continue
-        elif isinstance(node, Node) and not isinstance(node, Comment):
-            stack.extend(reversed(getattr(node, "args", ()) or ()))
+        elif isinstance_(node, element_type):
+            if node.name.lower() in skipped_names:
+                continue
+            stack.extend(reversed(node.__dict__.get("args", ()) or ()))
+        elif isinstance_(node, node_type) and not isinstance_(node, comment_type):
+            stack.extend(reversed(node.__dict__.get("args", ()) or ()))
 
 
 def _stripped_strings(self: Node) -> Iterator[str]:
@@ -1041,8 +1055,43 @@ def _get_text(
     strip: bool = False,
     types: Any = None,
 ) -> str:
-    values = _stripped_strings(self) if strip else _strings(self)
-    return separator.join(values)
+    if strip:
+        if type(self) is Text:
+            text = self.__dict__.get("args", ("",))[0].strip()
+            return text if text else ""
+        parts = []
+        append = parts.append
+        stack = list(self.__dict__.get("args", ()) or ())
+        stack.reverse()
+        text_type = Text
+        element_type = Element
+        node_type = Node
+        comment_type = Comment
+        isinstance_ = isinstance
+        while stack:
+            node = stack.pop()
+            node_class = type(node)
+            if node_class is text_type:
+                stripped = node.__dict__["args"][0].strip()
+                if stripped:
+                    append(stripped)
+            elif node_class is str:
+                stripped = node.strip()
+                if stripped:
+                    append(stripped)
+            elif isinstance_(node, element_type):
+                name = node.name
+                if name == "script" or name == "style":
+                    continue
+                children = node.__dict__["args"]
+                if children:
+                    stack.extend(children[::-1])
+            elif isinstance_(node, node_type) and not isinstance_(node, comment_type):
+                children = node.__dict__.get("args")
+                if children:
+                    stack.extend(children[::-1])
+        return separator.join(parts)
+    return separator.join(_strings(self))
 
 
 def _attrs_get(self: Element) -> dict[str, Any]:

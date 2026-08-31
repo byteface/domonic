@@ -56,6 +56,7 @@ Parse
    BeautifulSlop(markup, "lxml_html")
    BeautifulSlop(markup, "markupever")
    BeautifulSlop(markup, "selectolax")
+   BeautifulSlop(markup, "turbohtml")
    BeautifulSlop(markup, "html5_parser")
    BeautifulSlop(markup, "justhtml")
    BeautifulSlop(markup, "expat")
@@ -72,9 +73,10 @@ Install optional parser backends as needed:
 
 .. code-block:: bash
 
+   python -m pip install selectolax
+   python -m pip install turbohtml
    python -m pip install lxml
    python -m pip install markupever lxml
-   python -m pip install selectolax lxml
 
 Scrape Links
 ------------
