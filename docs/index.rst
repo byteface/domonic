@@ -60,6 +60,15 @@ Install
    python3 -m pip install domonic
    python3 -m pip install --upgrade domonic
 
+For the ``domonic`` command line tool, install with ``pipx``:
+
+.. code-block:: bash
+
+   brew install pipx
+   pipx ensurepath
+   pipx install domonic
+   domonic -x https://example.com '//title'
+
 Quick Example
 -------------
 
@@ -181,6 +190,15 @@ The guide section includes task-focused walkthroughs for :doc:`guides/scrape-htm
 
 CLI
 ---
+
+If you primarily want the CLI, install it with ``pipx`` so the command is
+available on your shell path:
+
+.. code-block:: bash
+
+   brew install pipx
+   pipx ensurepath
+   pipx install domonic
 
 Query a remote page:
 

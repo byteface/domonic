@@ -88,8 +88,9 @@ Install optional native parsers when you want faster repair or larger-page work.
 
 .. code-block:: bash
 
+   python -m pip install selectolax
+   python -m pip install turbohtml
    python -m pip install markupever lxml
-   python -m pip install selectolax lxml
    python -m pip install html5-parser lxml
 
 .. code-block:: python

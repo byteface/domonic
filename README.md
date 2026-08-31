@@ -125,6 +125,21 @@ def card(title, body, href):
 print(card("Python DOM", "Generate HTML with Python objects.", "/docs"))
 ```
 
+### Stream large HTML responses
+
+```python
+from fastapi.responses import StreamingResponse
+from domonic.html import body, html, table, td, tr
+
+def rows():
+    for index in range(50000):
+        yield tr(td(f"Row {index}"), td(f"Data {index}"))
+
+page = html(body(table(rows())))
+
+return StreamingResponse(page.stream(), media_type="text/html")
+```
+
 ### Sanitize user HTML
 
 ```python
@@ -204,6 +219,16 @@ Upgrade:
 
 ```bash
 python3 -m pip install --upgrade domonic
+```
+
+For the `domonic` command line tool, `pipx` keeps the executable isolated
+and on your shell path:
+
+```bash
+brew install pipx
+pipx ensurepath
+pipx install domonic
+domonic -x https://example.com '//title'
 ```
 
 Then:
@@ -403,14 +428,15 @@ domonic lets you choose between **zero dependencies, pure Python compatibility, 
 ```python
 from domonic import domonic
 
-page = domonic.parseString("<p>Hello</p>", parser="html.parser")
-page = domonic.parseString("<p>Hello</p>", parser="html5lib")
+page = domonic.parseString("<p>Hello</p>", parser="selectolax")
+page = domonic.parseString("<p>Hello</p>", parser="turbohtml")
 page = domonic.parseString("<p>Hello</p>", parser="lxml_html")
 page = domonic.parseString("<p>Hello</p>", parser="markupever")
-page = domonic.parseString("<p>Hello</p>", parser="selectolax")
 page = domonic.parseString("<p>Hello</p>", parser="html5_parser")
-page = domonic.parseString("<p>Hello</p>", parser="justhtml")
+page = domonic.parseString("<p>Hello</p>", parser="html.parser")
+page = domonic.parseString("<p>Hello</p>", parser="html5lib")
 page = domonic.parseString("<p>Hello</p>", parser="expat")
+page = domonic.parseString("<p>Hello</p>", parser="justhtml")
 ```
 
 Set one for your application:
@@ -425,15 +451,18 @@ page = domonic.parseString("<p>Hello</p>")
 
 ### Parser choices
 
+Fastest on the bundled large-page benchmark first:
+
 | Parser         | Why use it?                                   |
 | -------------- | --------------------------------------------- |
-| `markupever`   | Fast Rust-powered HTML repair; uses the shared lxml DOM adapter |
+| `selectolax`   | Fast native HTML parsing with direct domonic DOM adaptation |
+| `turbohtml`    | Fast native WHATWG parsing with direct domonic DOM adaptation |
 | `lxml_html`    | Very fast lxml-backed parsing and direct lxml DOM adaptation |
-| `html.parser`  | Python standard library; no extra dependency |
-| `selectolax`   | Fast native HTML parsing through the shared lxml DOM adapter |
+| `markupever`   | Fast Rust-powered HTML repair; uses the shared lxml DOM adapter |
 | `html5_parser` | Fast HTML5 parsing through the shared lxml DOM adapter |
-| `justhtml`     | Pure-Python alternative                       |
+| `html.parser`  | Python standard library; no extra dependency |
 | `html5lib`     | Pure Python and bundled with domonic          |
+| `justhtml`     | Pure-Python alternative                       |
 | `expat`        | Built into Python; useful for XML-like input  |
 
 Optional parsers require their respective packages.
@@ -441,8 +470,10 @@ Optional parsers require their respective packages.
 Install the native parser stack like this:
 
 ```bash
+python -m pip install selectolax
+python -m pip install turbohtml
+python -m pip install lxml
 python -m pip install markupever lxml
-python -m pip install selectolax lxml
 python -m pip install html5-parser lxml
 ```
 
@@ -790,6 +821,15 @@ These utilities are not the core reason to install domonic, but they're part of 
 
 domonic comes with a CLI for working with HTML without writing a script.
 
+Install it as a standalone command with `pipx`:
+
+```bash
+brew install pipx
+pipx ensurepath
+pipx install domonic
+domonic -x https://example.com '//title'
+```
+
 ### Help
 
 ```bash
@@ -898,7 +938,7 @@ A rough map of the project:
 | **HTML**            | HTML5 tag generation and rendering                                                 |
 | **DOM**             | Document, Element, Node, events, ranges, traversal, fragments, observers           |
 | **Selectors**       | CSS selectors + XPath                                                              |
-| **Parsing**         | html5lib, html.parser, lxml, markupever, selectolax, html5_parser, justhtml, expat |
+| **Parsing**         | html5lib, html.parser, lxml, markupever, selectolax, turbohtml, html5_parser, justhtml, expat |
 | **Documents**       | SVG, XML, MathML, RSS, Atom, ODF, sitemaps, A-Frame, X3D                           |
 | **Web APIs**        | URL, storage, workers, crypto, messaging, permissions, performance and more        |
 | **JavaScript**      | Array, Date, Math, Promise, timers, typed arrays and helpers                       |

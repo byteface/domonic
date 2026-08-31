@@ -118,6 +118,9 @@
 .. automodule:: domonic.ext.selectolax_
     :members:
 
+.. automodule:: domonic.ext.turbohtml_
+    :members:
+
 .. automodule:: domonic.ext.html5_parser_
     :members:
 
