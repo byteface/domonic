@@ -496,7 +496,12 @@ def render(inp: Node, outp: str = "", to: str | None = None) -> str:
     # else:
     if outp != "":
         with open(outp, "w+") as f:
-            f.write(str(inp))
+            stream = getattr(inp, "stream", None)
+            if callable(stream):
+                for chunk in stream():
+                    f.write(chunk)
+            else:
+                f.write(str(inp))
     return str(inp)
 
 
@@ -571,12 +576,16 @@ tag = Node  # legacy support
 
 class closed_tag(Node):
     def __str__(self):
+        return "".join(self.stream())
+
+    def stream(self):
         if DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH:
             if DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH:
-                return f"<{self.name}{self.__attributes__} />"
+                yield f"<{self.name}{self.__attributes__} />"
             else:
-                return f"<{self.name}{self.__attributes__}/>"
-        return f"<{self.name}{self.__attributes__}>"
+                yield f"<{self.name}{self.__attributes__}/>"
+            return
+        yield f"<{self.name}{self.__attributes__}>"
 
 
 html = type("html", (HTMLDocument,), {"name": "html"})
@@ -624,7 +633,6 @@ class form(HTMLFormElement):
         new_kwargs = {}
         for k, v in kwargs.items():
             if k[0] != "_":
-                # print("WARNING: kwarg '{}' should begin with an underscore".format(k))
                 new_kwargs[f"_{k}"] = v
             else:
                 new_kwargs[k] = v

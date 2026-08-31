@@ -48,6 +48,38 @@ There is also a ``render`` method that takes PyML and an optional output file.
     page = div(span('Hello World'))
     render(page, 'index.html')
 
+For large responses or reports, every node also has ``stream()``. It yields
+HTML chunks on demand, while ``str(node)`` remains equivalent to
+``"".join(node.stream())``.
+
+.. code-block :: python
+
+    from fastapi.responses import StreamingResponse
+    from domonic.html import body, html, table, td, tr
+
+    def rows():
+        for index in range(50000):
+            yield tr(td(f"Row {index}"), td(f"Data {index}"))
+
+    page = html(body(table(rows())))
+
+    # ASGI frameworks can send the first chunks before every row is rendered.
+    response = StreamingResponse(page.stream(), media_type="text/html")
+
+Write streamed output directly to disk when building large static files:
+
+.. code-block :: python
+
+    with open("report.html", "w") as f:
+        for chunk in page.stream():
+            f.write(chunk)
+
+Benchmark streaming memory locally:
+
+.. code-block :: bash
+
+    python scripts/benchmark_streaming.py --rows 10000 --iterations 5
+
 
 templating
 ----------------
@@ -387,17 +419,17 @@ This gives you a few ways to control output from domonic.
 
 .. code-block :: python
     
-    print(f"{mydom}")
+    print(f"{mydom}")       # Pretty HTML through mydom.__format__("")
     
-    print(f"{mydom!s}")
+    print(f"{mydom!s}")     # str(mydom): compact HTML
     
-    print(f"{mydom!r}")
+    print(f"{mydom!r}")     # repr(mydom): Python/debug representation
     
-    print(f"{mydom!a}")
+    print(f"{mydom!a}")     # ascii(mydom): escaped non-ASCII representation
     
-    print(str(mydom))
+    print(str(mydom))       # Compact HTML
 
-    print(mydom.__format__(''))
+    print(mydom.__format__(''))  # Explicit pretty formatter call
 
 
 If the built-in formatter is not enough, you can also use libraries that work with Beautiful Soup:
@@ -614,13 +646,15 @@ You can also choose a parser directly through ``domonic.parseString()``:
 
     from domonic import domonic
 
-    page = domonic.parseString("<p>Hello World!</p>", parser="html.parser")
-    page = domonic.parseString("<p>Hello World!</p>", parser="markupever")
+    page = domonic.parseString("<p>Hello World!</p>", parser="selectolax")
+    page = domonic.parseString("<p>Hello World!</p>", parser="turbohtml")
     page = domonic.parseString("<p>Hello World!</p>", parser="lxml_html")
+    page = domonic.parseString("<p>Hello World!</p>", parser="markupever")
     page = domonic.parseString("<p>Hello World!</p>", parser="html5_parser")
+    page = domonic.parseString("<p>Hello World!</p>", parser="html.parser")
     print(page.querySelector("p").text)
 
-Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, and ``expat``.
+Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, ``turbohtml``, and ``expat``.
 
 ``html.parser`` uses Python's standard library and has no external dependency.
 
@@ -638,24 +672,26 @@ Choose a parser based on the job:
 
     assert page.querySelector("h1").text == "Hello"
 
-The current practical parser order for HTML work is:
+The current practical parser order for large HTML pages is:
 
-- ``markupever``: fast Rust-powered HTML repair, adapted through lxml
+- ``selectolax``: fastest native parser in the bundled benchmark, adapted directly into domonic
+- ``turbohtml``: fast native WHATWG parser, adapted directly into domonic
 - ``lxml_html``: fast lxml-backed HTML parsing and DOM adaptation
-- ``html.parser``: Python standard library, no external dependency
-- ``selectolax``: fast native parser, adapted through lxml
+- ``markupever``: fast Rust-powered HTML repair, adapted through lxml
 - ``html5_parser``: fast HTML5 parser, adapted through lxml
-- ``justhtml``: pure-Python alternative
+- ``html.parser``: Python standard library, no external dependency
 - ``html5lib``: bundled Python parser with broad compatibility
+- ``justhtml``: pure-Python alternative
 - ``expat``: useful for XML-like input
 
 Install optional native parsers as needed:
 
 .. code-block:: bash
 
-    python -m pip install markupever lxml
+    python -m pip install selectolax
+    python -m pip install turbohtml
     python -m pip install lxml
-    python -m pip install selectolax lxml
+    python -m pip install markupever lxml
     python -m pip install html5-parser lxml
 
 For a quick parse, try the window module:
