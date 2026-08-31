@@ -777,13 +777,6 @@ class CSSDocumentRule(CSSRule):
     #     raise NotImplementedError
 
 
-# class CSSValue(DOMObject): # deprecated
-# class CSSValueList(list):
-
-# class CSSRuleList(DOMObject):
-# class CSSRuleList(list):
-
-
 class CSSColorProfileRule(CSSRule):
     """The CSSColorProfileRule interface represents an @color-profile rule."""
 
@@ -1198,7 +1191,6 @@ class Style:
     """JavaScript-style accessors for CSS declarations."""
 
     def __init__(self, parent_node=None):
-        # print("*** MADE A STYLE11 ***")
 
         self._members_checked = False
 
@@ -5707,7 +5699,6 @@ class CSSStyleDeclaration(Style):
     """
 
     def __init__(self, parentNode=None, *args, **kwargs):
-        # print("*** MADE A STYLE ***")
         # super(Style).__init__(*args, **kwargs)
         self._css_text = ""
         self._declared_properties = set()

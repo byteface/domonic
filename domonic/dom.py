@@ -17,6 +17,7 @@ import copy
 import os
 import re
 import time
+import warnings
 from collections.abc import Iterable as IterableABC
 from email.utils import formatdate
 from html import escape as _escape_html
@@ -860,7 +861,6 @@ class Node(EventTarget):
             nm = self.rootNode.tagName
         except AttributeError:
             nm = None
-        # print(n)
         if nm == "html":
             self.namespaceURI = "http://www.w3.org/1999/xhtml"
         elif nm == "svg":
@@ -921,28 +921,7 @@ class Node(EventTarget):
 
     @property
     def content(self):
-        # return ''.join([each.__str__() for each in self.args])
-
-        # if any child are lists by mistake, loop and call __str__ on each first
-        cnt = self.args
-        for i, arg in enumerate(cnt):
-            if isinstance(arg, list):
-                cnt = list(cnt)
-                cnt[i] = "".join([each.__str__() for each in arg])
-                cnt = tuple(cnt)
-
-        if DOMConfig.GLOBAL_AUTOESCAPE:
-            import html as fix
-
-            cnt = list(cnt)
-            for each, child in enumerate(cnt):
-                if isinstance(child, str) or isinstance(child, Text):
-                    child = fix.escape(str(child))
-                    cnt[each] = child
-            cnt = tuple(cnt)
-            return "".join([each.__str__() for each in cnt])
-        # else:
-        return "".join([each.__str__() for each in cnt])
+        return "".join(self._stream_content())
 
     @content.setter
     def content(self, ignore):
@@ -1026,7 +1005,6 @@ class Node(EventTarget):
 
             raise TemplateError(e)
         # except Exception as e:
-        # print(e)
 
     @__attributes__.setter
     def __attributes__(self, ignore):
@@ -1042,29 +1020,102 @@ class Node(EventTarget):
 
             raise TemplateError(e)
         # except Exception as e:
-        # print(e)
 
     def __str__(self):
-        if not DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
-            if self.name in [
-                "html",
-                "head",
-                "body",
-                "p",
-                "dt",
-                "dd",
-                "li",
-                "option",
-                "thead",
-                "th",
-                "tbody",
-                "tr",
-                "td",
-                "tfoot",
-                "colgroup",
-            ]:
-                return f"<{self.name}{self.__attributes__}>{self.content}"
-        return f"<{self.name}{self.__attributes__}>{self.content}</{self.name}>"
+        return "".join(self.stream())
+
+    def _stream_value(self, value: Any) -> Iterator[str]:
+        if callable(value) and not isinstance(value, Node):
+            value = value()
+
+        if isinstance(value, Text):
+            value = str(value)
+            yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+            return
+
+        if isinstance(value, Node):
+            yield from value.stream()
+            return
+
+        if isinstance(value, IterableABC) and not isinstance(
+            value, (str, bytes, bytearray, dict)
+        ):
+            for child in value:
+                yield from self._stream_value(child)
+            return
+
+        value = str(value)
+        yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+
+    def _stream_content(self) -> Iterator[str]:
+        for child in self.args:
+            yield from self._stream_value(child)
+
+    def stream(self) -> Iterator[str]:
+        """Yield rendered HTML chunks without materialising the full subtree."""
+        optional_closing_tags = {
+            "html",
+            "head",
+            "body",
+            "p",
+            "dt",
+            "dd",
+            "li",
+            "option",
+            "thead",
+            "th",
+            "tbody",
+            "tr",
+            "td",
+            "tfoot",
+            "colgroup",
+        }
+        stack: list[tuple[str, Any]] = [("value", self)]
+        while stack:
+            kind, value = stack.pop()
+            if kind == "close":
+                yield f"</{value.name}>"
+                continue
+            if kind == "iter":
+                try:
+                    child = next(value)
+                except StopIteration:
+                    continue
+                stack.append(("iter", value))
+                stack.append(("value", child))
+                continue
+
+            if callable(value) and not isinstance(value, Node):
+                value = value()
+
+            if isinstance(value, Text):
+                value = str(value)
+                yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+                continue
+
+            if isinstance(value, Node):
+                custom_stream = getattr(type(value), "stream", None)
+                if custom_stream is not None and custom_stream is not Node.stream:
+                    yield from value.stream()
+                    continue
+
+                yield f"<{value.name}{value.__attributes__}>"
+                if (
+                    DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
+                    or value.name not in optional_closing_tags
+                ):
+                    stack.append(("close", value))
+                stack.append(("iter", iter(value.args)))
+                continue
+
+            if isinstance(value, IterableABC) and not isinstance(
+                value, (str, bytes, bytearray, dict)
+            ):
+                stack.append(("iter", iter(value)))
+                continue
+
+            value = str(value)
+            yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
 
     def __mul__(self, other):
         """
@@ -1138,9 +1189,7 @@ class Node(EventTarget):
 
     def __isub__(self, item):
         """removes an item from the list of children"""
-        replace_args = list(self.args)
-        replace_args.remove(item)
-        self.args = tuple(replace_args)
+        self.removeChild(item)
         return self
 
     def __getitem__(self, index):
@@ -1162,16 +1211,14 @@ class Node(EventTarget):
             for key in item.keys():
                 self.kwargs[key] = item[key]
             return self
-        except Exception as e:
-            print(e)
-            raise ValueError
+        except (AttributeError, TypeError) as exc:
+            raise ValueError from exc
 
     # def __add__(self, item):
     #     try:
     #         self.args = self.args + (item,)
     #         return self
     #     except Exception as e:
-    #         print(e)
     #         raise ValueError
 
     # def __sub__(self, item):
@@ -1179,7 +1226,6 @@ class Node(EventTarget):
     #         self.args = self.args - (item,)
     #         return self
     #     except Exception as e:
-    #         print(e)
     #         raise ValueError
 
     # def render()
@@ -1254,9 +1300,8 @@ class Node(EventTarget):
         try:
             self.kwargs[key] = value
             return self
-        except Exception as e:
-            print(e)
-            raise ValueError
+        except (AttributeError, TypeError) as exc:
+            raise ValueError from exc
 
     def __enter__(self):
         if Node.__context is None:
@@ -1284,13 +1329,11 @@ class Node(EventTarget):
         n = self
         depth = 0
         while n is not None:
-            # print(type(n), type(n.parentNode))
             n = n.parentNode
             depth += 1
 
         depth -= 1
 
-        # print(f"depth: {depth}")
         # dent = '    ' * depth
         dent = "\t" * depth
 
@@ -1376,38 +1419,26 @@ class Node(EventTarget):
     #     """
     #     allows for calling the object as a function
     #     """
-    #     print('calling a tag')
-    #     print(args)
-    #     print(kwargs)
-    #     print(self.name)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        try:
-            if name == "args":
-                super().__setattr__(name, value)
-                self._update_parents()
-                return
-        except Exception as e:
-            print(e)
-            # pass
+        if name == "args":
+            super().__setattr__(name, value)
+            self._update_parents()
+            return
         super().__setattr__(name, value)
 
     # def __getattr__(self, name):
-    #     # print(name)
     #     try:
     #         if name == "args":
     #             return super(Node, self).__getattr__(name)
     #     except Exception as e:
-    #         print(e)
     #     return super(Node, self).__getattr__(name)
 
     # def __getattribute__(self, name):
-    # print('how are you doing today', name)
     # try:
     #     if name == "args":
     #         return super(Node, self).__getattribute__(name)
     # except Exception as e:
-    #     print(e)
     # check if its a property on the class
     # if name in self.__dict__:
     # return super(Node, self).__getattribute__(name)
@@ -1427,14 +1458,13 @@ class Node(EventTarget):
         here would interfere with JSON serialisation in a few older helpers.
         """
         try:
-            # print(self.args)
             for el in self.args:
                 # if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                 if isinstance(el, (Element, Node)):
                     el.parentNode = self
                     el._update_parents()
-        except Exception as e:
-            print("unable to update parent", e)
+        except (AttributeError, TypeError) as exc:
+            warnings.warn(f"unable to update parent: {exc}", RuntimeWarning)
 
     def _iterate(self, element, callback) -> None:
         """Walk descendant nodes and call ``callback`` for each node.
@@ -1448,28 +1478,25 @@ class Node(EventTarget):
             elements = element.args
         elif isinstance(element, list):
             elements = element
-        try:
-            for el in elements:
-                if type(el) not in [str, list, dict, int, float, tuple, object, set]:
-                    # callback(el)
-                    el._iterate(el, callback)
-                elif isinstance(
-                    el, list
-                ):  # if someone is incorrectly using a list as a child
-                    for e in el:
-                        if type(e) not in (
-                            str,
-                            list,
-                            dict,
-                            int,
-                            float,
-                            tuple,
-                            object,
-                            set,
-                        ):
-                            e._iterate(e, callback)
-        except Exception:
-            return
+        for el in elements:
+            if type(el) not in [str, list, dict, int, float, tuple, object, set]:
+                # callback(el)
+                el._iterate(el, callback)
+            elif isinstance(
+                el, list
+            ):  # if someone is incorrectly using a list as a child
+                for e in el:
+                    if type(e) not in (
+                        str,
+                        list,
+                        dict,
+                        int,
+                        float,
+                        tuple,
+                        object,
+                        set,
+                    ):
+                        e._iterate(e, callback)
 
     def __bool__(self) -> bool:
         # Nodes should be truthy by existence, not by child count.
@@ -1576,7 +1603,6 @@ class Node(EventTarget):
         while otherTop.parentNode is not None:
             otherTop = otherTop.parentNode
 
-        # print(referenceTop, otherTop)
         if referenceTop != otherTop:
             return Node.DOCUMENT_POSITION_DISCONNECTED
 
@@ -1662,7 +1688,6 @@ class Node(EventTarget):
         elif isinstance(self, DocumentType):
             return self.name
 
-        # print(type(self))
         if isinstance(self, Element):
             return self.tagName  # .upper()
         else:
@@ -1676,33 +1701,11 @@ class Node(EventTarget):
     @property
     def nodeValue(self) -> str | None:
         """Sets or returns the value of a node"""
-        outp = ""
-        for each in self.args:
-            if type(each) is str:
-                outp = outp + each
-            else:
-                val = each.nodeValue
-                if val is not None:
-                    outp = outp + val
-                else:
-                    return None
-        if outp == "":
-            outp = None
-        return outp
+        return None
 
     @nodeValue.setter
     def nodeValue(self, content: Any):
         """Sets or returns the value of a node"""
-        old_value = self.nodeValue
-        removed_nodes = [node for node in self.args if isinstance(node, Node)]
-        for node in removed_nodes:
-            _disconnect_tree(node)
-            node.parentNode = None
-        self.args = (content,)
-        if isinstance(self, CharacterData):
-            _queue_mutation_record("characterData", self, old_value=old_value)
-        elif removed_nodes:
-            _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return content
 
     @property
@@ -1796,11 +1799,17 @@ class Node(EventTarget):
         _notify_slot_change(self)
         return new_node
 
-    def removeChild(self, node: Node) -> Node | None:
+    def removeChild(self, node: Any) -> Any:
         """removes a child node from the DOM and returns the removed node."""
         for count, each in enumerate(self.args):
             if type(each) == str:
-                continue
+                if each != node:
+                    continue
+                replace_args = list(self.args)
+                replace_args.pop(count)
+                self.args = tuple(replace_args)
+                _notify_slot_change(self)
+                return each
 
             if each is node:
                 n = node
@@ -1987,11 +1996,14 @@ class Node(EventTarget):
             if type(each) is str:
                 outp = outp + each
             else:
+                if getattr(each, "nodeType", None) in (
+                    Node.COMMENT_NODE,
+                    Node.PROCESSING_INSTRUCTION_NODE,
+                ):
+                    continue
                 val = each.textContent
                 if val is not None:
                     outp = outp + val
-                else:
-                    return None
         if outp == "":
             outp = None
         return outp
@@ -2052,10 +2064,8 @@ class Node(EventTarget):
     def attrib(self):
         """Returns the attributes of the current node as a dict not a NamedNodeMap"""
         try:
-            # print(self.kwargs)
             return self.kwargs
         except Exception as e:
-            # print('failed::', e)
             return None
 
     @property
@@ -2079,8 +2089,6 @@ class Node(EventTarget):
 
 
 class ParentNode:
-    """not tested yet"""
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -2110,23 +2118,34 @@ class ParentNode:
         return None
 
     def append(self, *args):
-        self.args += _coerce_insertion_nodes(*args)
-        self._update_parents()
+        items = _coerce_insertion_nodes(*args)
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
+        self.args += items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
         return self
 
     def prepend(self, *args):
-        self.args = _coerce_insertion_nodes(*args) + tuple(self.args)
-        self._update_parents()
+        items = _coerce_insertion_nodes(*args)
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
+        self.args = items + tuple(self.args)
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
         return self
 
     def replaceChildren(self, *children):
-        self.args = _coerce_replacement_nodes(*children)
-        self._update_parents()
+        for child in self.args:
+            if isinstance(child, Node):
+                _disconnect_tree(child)
+                child.parentNode = None
+        items = _coerce_replacement_nodes(*children)
+        old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
+        self.args = items
+        for item, old_document in old_documents:
+            _connect_inserted_node(self, item, old_document)
 
 
 class ChildNode(Node):
-    """not tested yet"""
-
     def remove(self):
         """Removes this ChildNode from the children list of its parent."""
         if self.parentNode is None:
@@ -3099,6 +3118,9 @@ class DocumentType(Node):
         full_str += ">"
         return full_str
 
+    def stream(self) -> Iterator[str]:
+        yield str(self)
+
 
 _ARIA_REFLECTED_ATTRIBUTES: tuple[tuple[str, str], ...] = (
     ("role", "role"),
@@ -3494,13 +3516,20 @@ class Element(Node):
         """Returns child elements, excluding text, comments, and strings."""
         return _LiveNodeList(self, lambda child: isinstance(child, Element))
 
-    def _getElementById(self, _id: str):
+    def _find_element_by_id(self, _id: str) -> Element | None:
         if self.getAttribute("id") == _id:
             return self
-        for element in self.getElementsByTagName("*"):
-            if element.getAttribute("id") == _id:
-                return element
-        return False
+        for child in self.childNodes:
+            if not isinstance(child, Element):
+                continue
+            match = child._find_element_by_id(_id)
+            if match is not None:
+                return match
+        return None
+
+    def _getElementById(self, _id: str) -> Element | None:
+        """Compatibility wrapper for older internal callers."""
+        return self._find_element_by_id(_id)
 
     def _getElementByAttrVal(self, attr: str, val: str):
         # Recursion keeps this in sync with live tree mutations.
@@ -3513,7 +3542,7 @@ class Element(Node):
             match = get_by_attr(attr, val)
             if match:
                 return match
-        return False
+        return None
 
     @staticmethod
     def _read_simple_selector_token(selector: str, start: int) -> tuple[str, int]:
@@ -4071,6 +4100,7 @@ class Element(Node):
             doc._fullscreenElement = None
         return None
 
+    @property
     def firstElementChild(self):
         """Returns the first child element of an element"""
         for child in self.args:
@@ -4214,8 +4244,8 @@ class Element(Node):
         for child in self.childNodes:
             if not isinstance(child, Element):
                 continue
-            match = child._getElementById(_id)
-            if match is not False and match is not None:
+            match = child._find_element_by_id(_id)
+            if match is not None:
                 return match
         return None
 
@@ -4453,6 +4483,7 @@ class Element(Node):
     def lang(self, value: str) -> None:
         self.setAttribute("lang", value)
 
+    @property
     def lastElementChild(self) -> Node | None:
         """[Returns the last child element of an element]
 
@@ -4626,7 +4657,7 @@ class Element(Node):
         """
         try:
             return self.querySelectorAll(query)[0]
-        except Exception as e:
+        except IndexError:
             return None
 
     def querySelectorAll(self, query: str) -> list[Element]:
@@ -4694,7 +4725,6 @@ class Element(Node):
         # try:
         #     self.parentNode.args.remove(self)
         # except Exception:
-        #     # print("Element not found")
         #     pass
         # if self.parentNode is None:
         # self._update_parents()
@@ -4777,23 +4807,23 @@ class Element(Node):
 
     def setAttribute(self, attribute, value):
         """Sets or changes the specified attribute, to the specified value"""
+        if attribute[0:1] != "_":
+            attribute = "_" + attribute
         try:
-            if attribute[0:1] != "_":
-                attribute = "_" + attribute
-            old_value = self.kwargs.get(attribute)
-            self.kwargs[attribute] = value
-            _notify_attribute_changed(self, attribute, old_value, value)
-            _queue_mutation_record(
-                "attributes",
-                self,
-                attribute_name=(
-                    attribute[1:] if attribute.startswith("_") else attribute
-                ),
-                old_value=str(old_value) if old_value is not None else None,
-            )
-        except Exception as e:
-            # print('failed to set attribute', e)
+            kwargs = object.__getattribute__(self, "kwargs")
+        except AttributeError:
             return None
+        old_value = kwargs.get(attribute)
+        kwargs[attribute] = value
+        _notify_attribute_changed(self, attribute, old_value, value)
+        _queue_mutation_record(
+            "attributes",
+            self,
+            attribute_name=(
+                attribute[1:] if attribute.startswith("_") else attribute
+            ),
+            old_value=str(old_value) if old_value is not None else None,
+        )
 
     def toggleAttribute(self, attribute: str, force: bool | None = None) -> bool:
         """Adds or removes an attribute and returns whether it is present afterwards."""
@@ -5018,10 +5048,23 @@ class ProcessingInstruction(Node):
         self.target = target
         self.data = data
 
+    @property
+    def nodeValue(self) -> str:
+        return self.data
+
+    @nodeValue.setter
+    def nodeValue(self, value: Any) -> None:
+        self.data = "" if value is None else str(value)
+
+    textContent = nodeValue
+
     def toString(self) -> str:
         return f"<?{self.target} {self.data}?>"
 
     __str__ = toString
+
+    def stream(self) -> Iterator[str]:
+        yield self.toString()
 
 
 class Comment(Node):
@@ -5034,10 +5077,23 @@ class Comment(Node):
         self.data = "".join(str(part) for part in data)
         super().__init__()
 
+    @property
+    def nodeValue(self) -> str:
+        return self.data
+
+    @nodeValue.setter
+    def nodeValue(self, value: Any) -> None:
+        self.data = "" if value is None else str(value)
+
+    textContent = nodeValue
+
     def toString(self) -> str:
         return f"<!--{self.data}-->"
 
     __str__ = toString
+
+    def stream(self) -> Iterator[str]:
+        yield self.toString()
 
     def __format__(self, format_spec):
         return str(self)
@@ -5061,10 +5117,23 @@ class CDATASection(Node):
     def __init__(self, data) -> None:
         self.data = data
 
+    @property
+    def nodeValue(self) -> str:
+        return self.data
+
+    @nodeValue.setter
+    def nodeValue(self, value: Any) -> None:
+        self.data = "" if value is None else str(value)
+
+    textContent = nodeValue
+
     def toString(self) -> str:
         return f"<![CDATA[{self.data}]]>"
 
     __str__ = toString
+
+    def stream(self) -> Iterator[str]:
+        yield self.toString()
 
     def __len__(self) -> int:
         return len(self.data)
@@ -5890,8 +5959,8 @@ class Document(Element):
         try:
             global document
             document = self
-        except Exception as e:
-            print("failed to set document", e)
+        except Exception as exc:
+            warnings.warn(f"failed to set document: {exc}", RuntimeWarning)
 
     def __new__(cls, *args, **kwargs):
         instance = super().__new__(cls)
@@ -5902,8 +5971,8 @@ class Document(Element):
         try:
             global document
             document = instance
-        except Exception as e:
-            print("failed to set document", e)
+        except Exception as exc:
+            warnings.warn(f"failed to set document: {exc}", RuntimeWarning)
         return instance
 
     def _document_base_uri(self) -> str:
@@ -6444,8 +6513,8 @@ class Document(Element):
         for each in self.childNodes:
             if not isinstance(each, Element):
                 continue
-            match = each._getElementById(_id)
-            if match is not False and match is not None:
+            match = each._find_element_by_id(_id)
+            if match is not None:
                 return match
 
         return None
@@ -6819,7 +6888,11 @@ class DocumentFragment(Node):
         return self.__str__()
 
     def __str__(self) -> str:
-        return "".join([str(a) for a in self.args])
+        return "".join(self.stream())
+
+    def stream(self) -> Iterator[str]:
+        for child in self.args:
+            yield from self._stream_value(child)
 
 
 class CharacterData(Node):
@@ -6849,6 +6922,22 @@ class CharacterData(Node):
             if count < 0:
                 raise IndexError("CharacterData count is out of bounds")
         return data
+
+    @property
+    def nodeValue(self) -> str:
+        return self.data
+
+    @nodeValue.setter
+    def nodeValue(self, content: Any) -> None:
+        self.data = "" if content is None else str(content)
+
+    @property
+    def textContent(self) -> str:
+        return self.data
+
+    @textContent.setter
+    def textContent(self, content: Any) -> None:
+        self.data = "" if content is None else str(content)
 
     def appendData(self, data):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
@@ -6909,7 +6998,11 @@ class EntityReference(Node):
         self.args = args
 
     def __str__(self) -> str:
-        return "".join([str(a) for a in self.args])
+        return "".join(self.stream())
+
+    def stream(self) -> Iterator[str]:
+        for child in self.args:
+            yield from self._stream_value(child)
 
     @staticmethod
     def ordinal(entityName: str):
@@ -6952,7 +7045,11 @@ class Entity(Node):
         return self.name
 
     def __str__(self) -> str:
-        return "".join([str(a) for a in self.args])
+        return "".join(self.stream())
+
+    def stream(self) -> Iterator[str]:
+        for child in self.args:
+            yield from self._stream_value(child)
 
     @staticmethod
     def fromName(entityName: str) -> str:
@@ -6989,6 +7086,9 @@ class Notation(Node):
 
     def __str__(self) -> str:
         return self.name
+
+    def stream(self) -> Iterator[str]:
+        yield self.name
 
 
 class Text(CharacterData):
@@ -7071,6 +7171,9 @@ class Text(CharacterData):
 
     def __format__(self, format_spec):
         return str(self.textContent)
+
+    def stream(self) -> Iterator[str]:
+        yield str(self.textContent)
 
     # def __repr__(self):
     # return str(self.textContent)
@@ -8173,13 +8276,11 @@ mapSibling = {"next": "nextSibling", "previous": "previousSibling"}
 # toString = mapChild.toString
 
 # def _is(x, _type):
-#     print('!!!!!!!!!!!!!!!!!!! comparing', x, _type)
 #     return mapChild[x].toLowerCase() == '[object ' + _type.toLowerCase() + ']'
 
 
 def nodeFilter(tw: NodeIterator | TreeWalker, node: Node) -> int:
     # Maps nodeType to whatToShow
-    # print(node, type(node))
     # if isinstance(node, (str)): #, Text)):
     # node = Text(node)
     # return NodeFilter.FILTER_SKIP
@@ -8201,9 +8302,7 @@ def str_to_TextNode(content_str: Any) -> Any:
 
 def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
     # var child, node, parent, result, sibling
-    # print('mapChild[_type]', mapChild[_type])
     node = getattr(tw.currentNode, mapChild[_type])
-    # print('tw.currentNode', tw.currentNode)
     # node = str_to_TextNode(node)
     while node != None:
         # node = str_to_TextNode(node)
@@ -8256,20 +8355,15 @@ def traverseSiblings(tw: TreeWalker, type: str) -> Node | None:
 
 def nextSkippingChildren(node: Node, stayWithin: Node) -> Node | None:
     if node == stayWithin:
-        # print('a')
         return None
     if node.nextSibling != None:
-        # print('b')
         return node.nextSibling
 
     while node.parentNode != None:
-        # print('c')
         node = node.parentNode
         if node == stayWithin:
-            # print('d')
             return None
         if node.nextSibling != None:
-            # print('e')
             return node.nextSibling
     return None
 
@@ -8290,7 +8384,6 @@ class TreeWalker:
                 return
             for child in el:
                 if isinstance(child, str):
-                    # print('doin one')
                     newchild = Text(child)
                     el.replaceChild(newchild, child)
                     newchild.parentNode = el
@@ -8306,7 +8399,6 @@ class TreeWalker:
     ) -> None:
         self._root = node
         self._upgrade_dom()
-        # print("test", type(self._root[0][0]))
 
         self.currentNode = node
         self.whatToShow = _coerce_what_to_show(whatToShow)
@@ -8445,13 +8537,11 @@ class TreeWalker:
 
         result = NodeFilter.FILTER_ACCEPT
         while True:
-            # print('rrr:::', result, node)
             if isinstance(node, str):
                 Text(node)
                 # continue
 
             while result != NodeFilter.FILTER_REJECT and node.firstChild != None:
-                # print('rrr222:::', result, node)
                 node = node.firstChild
                 if isinstance(node, str):
                     node = Text(node)
@@ -8468,7 +8558,6 @@ class TreeWalker:
             if following != None:
                 node = following
             else:
-                # print('NONE')
                 return None
             result = nodeFilter(self, node)
             if result == NodeFilter.FILTER_ACCEPT:
@@ -8847,12 +8936,16 @@ class HTMLBRElement(HTMLElement):
     __isempty = True
 
     def __str__(self):
+        return "".join(self.stream())
+
+    def stream(self) -> Iterator[str]:
         if DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH:
             if DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH:
-                return f"<{self.name}{self.__attributes__} />"
+                yield f"<{self.name}{self.__attributes__} />"
             else:
-                return f"<{self.name}{self.__attributes__}/>"
-        return f"<{self.name}{self.__attributes__} >"
+                yield f"<{self.name}{self.__attributes__}/>"
+            return
+        yield f"<{self.name}{self.__attributes__} >"
 
 
 class HTMLBaseElement(HTMLElement):
@@ -10973,47 +11066,3 @@ class HTMLPortalElement(HTMLElement):
 global document
 document = Document()
 console = Console  # legacy. should access via window
-
-# Considered obsolete dom classes ----
-# DOMConfiguration - we now use a variation of this name DOMConfig for render settings
-# DOMErrorHandler
-# DOMImplementationList
-# DOMImplementationRegistry
-# DOMImplementationSource
-# DOMLocator
-# DOMObject
-# DOMSettableTokenList
-# DOMUserData
-# ElementTraversal
-# Entity
-# EntityReference
-# NameList
-# Notation
-# TypeInfo
-# UserDataHandler
-
-
-"""
-# self.screen = type('screen', (DOM,), {'name':'screen'})
-"""
-
-
-# https://developer.mozilla.org/en-US/docs/Glossary/Empty_element
-# def is_empty(node):
-# if its a class,
-# if its an instance
-# if its a string
-
-# meta = HTMLMetaElement
-# br = HTMLBRElement
-# img = HTMLImageElement
-# input = HTMLInputElement
-# param = HTMLParamElement
-# source = HTMLSourceElement
-# track = HTMLTrackElement
-# col = HTMLTableColElement
-# keygen = HTMLKeygenElement
-
-# hr = type("hr", (closed_tag, Element), {"name": "hr"})
-# wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
-# command = type("command", (closed_tag, Element), {"name": "command"})

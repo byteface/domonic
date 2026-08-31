@@ -402,7 +402,7 @@ class DOMTest(unittest.TestCase):
 
         self.assertEqual("div", d.nodeName)
 
-        self.assertEqual("test", d.nodeValue)
+        self.assertEqual(None, d.nodeValue)
         self.assertEqual(True, n.contains(c))
 
         n.insertBefore(d, c)
@@ -423,10 +423,11 @@ class DOMTest(unittest.TestCase):
         a2 = div("hi")
         self.assertEqual(True, a1.isEqualNode(a2))
 
-        self.assertEqual(True, a1.nodeValue == "hi")
+        self.assertEqual(None, a1.nodeValue)
 
         a1.nodeValue = "something else"
-        self.assertEqual(True, a1.nodeValue == "something else")
+        self.assertEqual(None, a1.nodeValue)
+        self.assertEqual(True, a1.textContent == "hi")
         # print(a1.nodeValue)
 
         a1.textContent = "something new"
@@ -698,6 +699,8 @@ class DOMTest(unittest.TestCase):
         result = dom1.getElementById("test")
         assert result.tagName == "article"
         self.assertIsNone(dom1.getElementById("missing"))
+        self.assertIsNone(dom1._getElementById("missing"))
+        self.assertIs(result._getElementById("test"), result)
 
         doc = Document()
         doc.appendChild(div(_id="doc-hit"))
@@ -821,6 +824,9 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(
             [element.id for element in scoped.querySelectorAll("*")], ["child"]
         )
+        self.assertEqual(scoped.getElementsBySelector("div[", scoped), [])
+        self.assertEqual(scoped.querySelectorAll("div["), [])
+        self.assertIsNone(scoped.querySelector("div["))
 
         links = self.page.querySelectorAll("a[rel=nofollow]")
         # for linky in links:
@@ -2534,6 +2540,69 @@ class DOMTest(unittest.TestCase):
         finally:
             DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = original_optional
             DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
+
+    def test_stream_matches_string_rendering_and_supports_lazy_children(self):
+        page = div("Hello ", span("there"), br(), "!")
+
+        self.assertEqual("".join(page.stream()), str(page))
+        self.assertEqual(
+            list(page.stream()),
+            ["<div>", "Hello ", "<span>", "there", "</span>", str(br()), "!", "</div>"],
+        )
+
+        events = []
+
+        def lazy_child():
+            events.append("called")
+            return span("late")
+
+        lazy_page = div(lazy_child)
+        chunks = lazy_page.stream()
+
+        self.assertEqual(next(chunks), "<div>")
+        self.assertEqual(events, [])
+        self.assertEqual(next(chunks), "<span>")
+        self.assertEqual(events, ["called"])
+
+        def rows():
+            for index in range(3):
+                yield li(str(index))
+
+        self.assertEqual(str(ul(rows())), "<ul><li>0</li><li>1</li><li>2</li></ul>")
+
+    def test_stream_respects_autoescape_and_file_rendering(self):
+        original_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        try:
+            DOMConfig.GLOBAL_AUTOESCAPE = True
+            page = div("<safe>", span(Document.createTextNode("<node>")))
+
+            self.assertEqual("".join(page.stream()), str(page))
+            self.assertIn("&lt;safe&gt;", str(page))
+            self.assertIn("&lt;node&gt;", str(page))
+
+            with tempfile.NamedTemporaryFile(delete=False) as tmp:
+                path = tmp.name
+            try:
+                rendered = render(page, outp=path)
+                with open(path) as f:
+                    from_file = f.read()
+                self.assertEqual(from_file, rendered)
+            finally:
+                os.unlink(path)
+        finally:
+            DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
+
+    def test_stream_handles_deep_trees_without_recursive_rendering(self):
+        root = div()
+        current = root
+        for _ in range(1200):
+            child = div()
+            child.parentNode = current
+            current.args = (child,)
+            current = child
+        current.args = ("leaf",)
+
+        self.assertIn("leaf", "".join(root.stream()))
 
     def test_document_value_type_helpers(self):
         instruction = ProcessingInstruction("xml-stylesheet", 'href="style.css"')
@@ -4408,12 +4477,51 @@ class NodeTest(unittest.TestCase):
 
         self.assertEqual(node.childElementCount, 2)
         self.assertEqual(node.children, [one, two])
-        self.assertIs(node.firstElementChild(), one)
-        self.assertIs(node.lastElementChild(), two)
+        self.assertIs(node.firstElementChild, one)
+        self.assertIs(node.lastElementChild, two)
         self.assertIs(one.nextElementSibling, two)
         self.assertIs(two.previousElementSibling, one)
         self.assertIsNone(two.nextElementSibling)
         self.assertIsNone(one.previousElementSibling)
+
+    def test_node_textcontent_ignores_empty_descendant_text(self):
+        node = div("alpha", span(), "beta")
+
+        self.assertEqual(node.textContent, "alphabeta")
+
+    def test_parentnode_mixin_child_helpers(self):
+        class ParentElement(ParentNode, Element):
+            name = "parent-element"
+
+        node = ParentElement("lead", span("one", _id="one"))
+        one = node.querySelector("#one")
+        two = p("two", _id="two")
+        child_nodes = node.childNodes
+        children = node.children
+
+        node.append(" gap ", two)
+        node.prepend(em("zero", _id="zero"))
+
+        self.assertEqual(
+            [child.getAttribute("id") for child in node.children],
+            ["zero", "one", "two"],
+        )
+        self.assertIs(node.firstElementChild, node.querySelector("#zero"))
+        self.assertIs(node.lastElementChild, two)
+        self.assertEqual(list(child_nodes), list(node.args))
+        self.assertEqual(list(children), [node.querySelector("#zero"), one, two])
+        self.assertIs(two.parentNode, node)
+
+        node.replaceChildren(strong("replacement", _id="replacement"), " tail")
+
+        self.assertIsNone(one.parentNode)
+        self.assertIsNone(two.parentNode)
+        self.assertEqual(
+            [child.getAttribute("id") for child in node.children], ["replacement"]
+        )
+        self.assertEqual(list(child_nodes), list(node.args))
+        self.assertEqual(list(children), list(node.children))
+        self.assertEqual(node.textContent, "replacement tail")
 
     def test_childnode_text_helpers_insert_in_the_right_order(self):
         node = div(Document.createTextNode("one"), span("two", _id="two"))
@@ -4541,6 +4649,47 @@ class NodeTest(unittest.TestCase):
         res = node.removeChild(two)
         assert res is two, f'"{res}" != "{two}"'
         assert len(node) == 0, f"{len(node)} != {0}"
+
+    def test_removeChild_text_nodes_and_string_children_update_textcontent(self):
+        parsed = domonic.parseString(
+            "<div>alpha<span></span>beta</div>", parser="html.parser"
+        )
+        parsed_text = parsed.firstChild
+
+        self.assertIsInstance(parsed_text, Text)
+        self.assertIs(parsed.removeChild(parsed_text), parsed_text)
+        self.assertIsNone(parsed_text.parentNode)
+        self.assertEqual(parsed.textContent, "beta")
+
+        manual_text = div(
+            Document.createTextNode("alpha"), Document.createTextNode("beta")
+        )
+        created_text = manual_text.firstChild
+
+        self.assertIs(manual_text.removeChild(created_text), created_text)
+        self.assertIsNone(created_text.parentNode)
+        self.assertEqual(manual_text.textContent, "beta")
+
+        raw_string = div("alpha", "beta")
+
+        self.assertEqual(raw_string.removeChild("alpha"), "alpha")
+        self.assertEqual(raw_string.args, ("beta",))
+        self.assertEqual(raw_string.textContent, "beta")
+
+    def test_isub_detaches_removed_child_and_updates_live_lists(self):
+        node = div(span("one", _id="one"), span("two", _id="two"))
+        one = node.querySelector("#one")
+        two = node.querySelector("#two")
+        child_nodes = node.childNodes
+        children = node.children
+
+        node -= one
+
+        self.assertEqual(str(node), '<div><span id="two">two</span></div>')
+        self.assertIsNone(one.parentNode)
+        self.assertEqual(list(child_nodes), [two])
+        self.assertEqual(list(children), [two])
+        self.assertIsNone(two.previousElementSibling)
 
     def test_removeChild_only_removes_direct_children(self):
         inner = div(span("kid", _id="kid"), _id="inner")
@@ -4938,7 +5087,8 @@ class NodeTest(unittest.TestCase):
         res = node.textContent
         expected = "onethreefour"
         assert res == expected, f'"{res}" != "{expected}"'
-        self.assertEqual(node.nodeValue, expected)
+        self.assertIsNone(node.nodeValue)
+        self.assertEqual(one.nodeValue, "one")
 
         node.textContent = "plain"
         assert node.textContent == "plain"
@@ -4947,15 +5097,34 @@ class NodeTest(unittest.TestCase):
         assert two.parentNode is None
         assert three.parentNode is two
 
-    def test_nodeValue_replaces_children_and_detaches_old_nodes(self):
+    def test_nodeValue_on_elements_does_not_replace_children(self):
         node = div(span("old", _id="old"))
         old = node.querySelector("#old")
 
         node.nodeValue = "plain"
 
-        self.assertEqual(node.nodeValue, "plain")
-        self.assertEqual(node.args, ("plain",))
-        self.assertIsNone(old.parentNode)
+        self.assertIsNone(node.nodeValue)
+        self.assertEqual(node.textContent, "old")
+        self.assertIs(old.parentNode, node)
+
+    def test_nodeValue_distinguishes_character_data_from_elements(self):
+        parsed = domonic.parseString(
+            "<div>alpha<span>beta</span><!--note--></div>", parser="html.parser"
+        )
+        text = parsed.firstChild
+        span_text = parsed.querySelector("span").firstChild
+        comment = parsed.childNodes[-1]
+
+        self.assertIsNone(parsed.nodeValue)
+        self.assertEqual(parsed.textContent, "alphabeta")
+        self.assertIsInstance(text, Text)
+        self.assertEqual(text.nodeValue, "alpha")
+        self.assertEqual(span_text.nodeValue, "beta")
+        self.assertEqual(comment.nodeValue, "note")
+
+        text.nodeValue = "omega"
+        self.assertEqual(text.textContent, "omega")
+        self.assertEqual(parsed.textContent, "omegabeta")
 
     def test_insert_before_missing_reference_gets_clear_error(self):
         parent = div(span("one"))

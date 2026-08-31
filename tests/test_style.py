@@ -14,6 +14,10 @@ from domonic.style import *
 class TestCase(unittest.TestCase):
     def test_domonic_css(self):
 
+        empty = div()
+        self.assertIsInstance(empty.style, CSSStyleDeclaration)
+        self.assertEqual(empty.style.getPropertyValue("display"), "")
+
         test = div("huh?", _style="alignContent: center;")
         assert test.style.alignContent == "center"
         assert test.style.getPropertyValue("align-content") == "center"
@@ -62,6 +66,12 @@ class TestCase(unittest.TestCase):
         # print(sometag.tagName)
         # s = Style()
         # print(sometag)
+
+    def test_document_stylesheets_lazy_initializes(self):
+        doc = Document(head(link(_rel="stylesheet", _href="/main.css")))
+
+        self.assertIsInstance(doc.stylesheets, StyleSheetList)
+        self.assertEqual(len(doc.stylesheets), 1)
 
     # create some failing tests
 
