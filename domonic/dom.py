@@ -256,6 +256,8 @@ def _coerce_insertion_nodes(*nodes: Any) -> tuple[Any, ...]:
     for node in nodes:
         if isinstance(node, DocumentFragment):
             prepared.extend(_drain_document_fragment(node))
+        elif isinstance(node, (list, tuple)):
+            prepared.extend(_coerce_insertion_nodes(*node))
         else:
             prepared.append(node)
     last_node_positions = {
@@ -834,7 +836,7 @@ class Node(EventTarget):
     #              'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
-        self.args = args
+        self.args = _coerce_insertion_nodes(*args)
         self.kwargs = kwargs
 
         if getattr(self, "name", None) is None:
@@ -1529,7 +1531,7 @@ class Node(EventTarget):
         items = _coerce_insertion_nodes(aChild)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
-        self.args = self.args + items
+        self.__dict__["args"] = self.args + items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -1786,7 +1788,7 @@ class Node(EventTarget):
             if index > 0 and isinstance(self.args[index - 1], Node)
             else None
         )
-        self.args = self.args[:index] + items + self.args[index:]
+        self.__dict__["args"] = self.args[:index] + items + self.args[index:]
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -2124,7 +2126,7 @@ class ParentNode:
     def append(self, *args):
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args += items
+        self.__dict__["args"] = self.args + items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         return self
@@ -2132,7 +2134,7 @@ class ParentNode:
     def prepend(self, *args):
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = items + tuple(self.args)
+        self.__dict__["args"] = items + tuple(self.args)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         return self
@@ -2144,7 +2146,7 @@ class ParentNode:
                 child.parentNode = None
         items = _coerce_replacement_nodes(*children)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = items
+        self.__dict__["args"] = items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -4641,7 +4643,7 @@ class Element(Node):
         next_sibling = (
             self.args[0] if len(self.args) and isinstance(self.args[0], Node) else None
         )
-        self.args = items + tuple(self.args)
+        self.__dict__["args"] = items + tuple(self.args)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -4650,7 +4652,6 @@ class Element(Node):
                 "childList", self, added_nodes=added_nodes, next_sibling=next_sibling
             )
         _notify_slot_change(self)
-        self._update_parents()
 
     def replaceChildren(self, *nodes: Any) -> None:
         """Replaces the element's children with the supplied nodes."""
@@ -4660,7 +4661,7 @@ class Element(Node):
             _disconnect_tree(node)
             node.parentNode = None
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = items
+        self.__dict__["args"] = items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -4672,7 +4673,6 @@ class Element(Node):
                 removed_nodes=removed_nodes,
             )
         _notify_slot_change(self)
-        self._update_parents()
 
     def querySelector(self, query: str) -> Element | None:
         """[Returns the first child element that matches a specified CSS selector(s) of an element]
@@ -6949,7 +6949,7 @@ class DocumentFragment(Node):
         """Appends nodes or strings to the DocumentFragment."""
         items = _coerce_insertion_nodes(*nodes)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = self.args + items
+        self.__dict__["args"] = self.args + items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -6957,7 +6957,7 @@ class DocumentFragment(Node):
         """Prepends nodes or strings to the DocumentFragment."""
         items = _coerce_insertion_nodes(*nodes)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = items + self.args
+        self.__dict__["args"] = items + self.args
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -6970,7 +6970,7 @@ class DocumentFragment(Node):
 
         items = _coerce_replacement_nodes(*newChildren)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        self.args = items
+        self.__dict__["args"] = items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 

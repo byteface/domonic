@@ -8,16 +8,16 @@ Scrape HTML
 Use domonic when you want to parse real HTML, query it with CSS selectors or
 XPath, mutate the tree, and render the result back out.
 
-Beautiful Soup Style
---------------------
+Parse To A DOM
+--------------
 
-``BeautifulSlop`` gives you familiar ``find()``, ``find_all()``, ``select()``,
-``select_one()``, ``get_text()``, and mutation methods while returning ordinary
-domonic DOM nodes.
+Start with ``domonic.parseString()`` when you want a normal domonic document
+tree. Parsed nodes support the same DOM methods as nodes created with
+``domonic.html`` tags.
 
 .. code-block:: python
 
-   from domonic.bs4 import BeautifulSlop
+   from domonic import domonic
 
    markup = """
    <main>
@@ -29,26 +29,27 @@ domonic DOM nodes.
    </main>
    """
 
-   soup = BeautifulSlop(markup, "html.parser")
+   page = domonic.parseString(markup, parser="html.parser")
 
-   for link in soup.find_all("a", href=True):
-       print(link.text, link["href"])
+   article = page.querySelector("article.post")
+   print(article.querySelector("h1").textContent)
 
-   soup.find("article").setAttribute("data-seen", "yes")
-   print(soup.querySelector("article").getAttribute("data-seen"))
+   for link in page.querySelectorAll("article a"):
+       print(link.textContent, link.getAttribute("href"))
+
+   article.setAttribute("data-seen", "yes")
+   print(article.getAttribute("data-seen"))
 
 CSS Selectors
 -------------
 
 .. code-block:: python
 
-   from domonic.bs4 import BeautifulSlop
+   page = domonic.parseString(markup, parser="html.parser")
 
-   soup = BeautifulSlop(markup, "html.parser")
-
-   print(soup.select_one("article.post > h1").text)
-   print([a["href"] for a in soup.select('a[href^="/"]')])
-   print(soup.select("article a.external"))
+   print(page.querySelector("article.post > h1").textContent)
+   print([a.getAttribute("href") for a in page.querySelectorAll('a[href^="/"]')])
+   print(page.querySelectorAll("article a.external"))
 
 XPath
 -----
@@ -71,14 +72,14 @@ Clean a Page
 
 .. code-block:: python
 
-   from domonic.bs4 import BeautifulSlop
+   from domonic import domonic
 
-   soup = BeautifulSlop(markup, "html.parser")
+   page = domonic.parseString(markup, parser="html.parser")
 
-   for node in soup.select("script, style, aside, nav"):
-       node.decompose()
+   for node in page.querySelectorAll("script, style, aside, nav"):
+       node.remove()
 
-   print(soup.get_text(" ", strip=True))
+   print(page.textContent.strip())
 
 Choose a Parser
 ---------------
@@ -95,10 +96,30 @@ Install optional native parsers when you want faster repair or larger-page work.
 
 .. code-block:: python
 
+   from domonic import domonic
+
+   page = domonic.parseString(markup, parser="markupever")
+   print(page.querySelector("h1").textContent)
+
+Beautiful Soup Style
+--------------------
+
+``BeautifulSlop`` is the compatibility layer for Beautiful Soup style code. Use
+it when you are porting BS4 examples or want familiar ``find()``,
+``find_all()``, ``select()``, ``select_one()``, and ``get_text()`` helpers. It
+still returns ordinary domonic DOM nodes.
+
+.. code-block:: python
+
    from domonic.bs4 import BeautifulSlop
 
-   soup = BeautifulSlop(markup, "markupever")
-   print(soup.find("h1").text)
+   soup = BeautifulSlop(markup, "html.parser")
+
+   for link in soup.find_all("a", href=True):
+       print(link.text, link["href"])
+
+   soup.find("article").setAttribute("data-seen", "yes")
+   print(soup.querySelector("article").getAttribute("data-seen"))
 
 CLI Scraping
 ------------

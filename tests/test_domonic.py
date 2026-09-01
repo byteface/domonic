@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from domonic import attributes, domonic
 from domonic.CDN import CDN_CSS, CDN_JS
-from domonic.dom import HTMLDocument
+from domonic.dom import DocumentFragment, HTMLDocument, Node
 
 
 def _debug_print(*args, **kwargs):
@@ -138,6 +138,28 @@ _id="one", _class="two",
         self.assertEqual(domonic.parse("\n\n"), "")
         self.assertEqual(domonic.parse("<!doctype html>"), "")
 
+    def test_parse_string_empty_input_returns_document_fragment(self):
+        page = domonic.parseString("", parser="html.parser")
+
+        self.assertIsInstance(page, DocumentFragment)
+        self.assertEqual(page.nodeType, Node.DOCUMENT_FRAGMENT_NODE)
+        self.assertEqual(page.childNodes.length, 0)
+
+    def test_parse_string_doctype_only_returns_html_document(self):
+        parsers = ["html.parser", "selectolax", "turbohtml", "html5lib"]
+
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString("<!doctype html>", parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                self.assertIsInstance(page, HTMLDocument)
+                self.assertEqual(page.nodeType, Node.DOCUMENT_NODE)
+                self.assertEqual(page.documentElement.tagName, "html")
+                self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
+
     def test_parse_does_not_mutate_global_attributes(self):
         before = list(attributes)
 
@@ -259,6 +281,7 @@ _id="one", _class="two",
 
         self.assertIsInstance(page, HTMLDocument)
         self.assertEqual(page.documentElement.tagName, "html")
+        self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
         self.assertEqual(page.querySelector("title").text, "T")
         self.assertEqual(page.querySelector("p").text, "Hi")
 

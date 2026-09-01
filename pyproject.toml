@@ -1,3 +1,15 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+files = [
+    "domonic/ext/html_parser_.py",
+    "domonic/ext/lxml_dom.py",
+    "domonic/ext/selectolax_/__init__.py",
+    "domonic/ext/turbohtml_/__init__.py",
+]
+follow_imports = "skip"
+ignore_missing_imports = true
+allow_untyped_globals = true
+warn_unused_ignores = true

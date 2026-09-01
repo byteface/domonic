@@ -1403,17 +1403,65 @@ class domonic:
         def _looks_like_full_html_document(source: str) -> bool:
             probe = source.lstrip().lower()
             return (
-                probe.startswith("<!doctype")
+                probe.startswith("<!doctype html")
                 or probe.startswith("<html")
                 or "<html" in probe[:512]
             )
 
+        def _doctype_from_source(source: str):
+            match = re.match(
+                r"^\s*<!doctype\s+([a-zA-Z][^\s>]*)[^>]*>",
+                source,
+                re.I,
+            )
+            if match is None:
+                return None
+            return dom.DocumentType(match.group(1).lower(), "", "")
+
+        def _is_doctype_only(source: str) -> bool:
+            return (
+                re.match(
+                    r"^\s*<!doctype\s+html[^>]*>\s*$",
+                    source,
+                    re.I,
+                )
+                is not None
+            )
+
+        def _html_document_from_doctype(source: str):
+            document = HTMLDocument()
+            document.doctype = _doctype_from_source(source)
+            document.documentElement = document
+            return document
+
+        def _extract_child_doctype(page):
+            for child in getattr(page, "childNodes", []) or []:
+                if isinstance(child, dom.DocumentType):
+                    page.__dict__["args"] = tuple(
+                        item
+                        for item in getattr(page, "args", ())
+                        if item is not child
+                    )
+                    child.parentNode = None
+                    return child
+            return None
+
         def _normalize_parsed_page(page, source: str):
             is_full_document = _looks_like_full_html_document(source)
+            doctype = (
+                getattr(page, "_doctype", None)
+                or _extract_child_doctype(page)
+                or _doctype_from_source(source)
+            )
 
             html_root = None
             if getattr(page, "tagName", "").lower() == "html":
                 html_root = page
+                if is_full_document:
+                    for child in getattr(page, "childNodes", []) or []:
+                        if getattr(child, "tagName", "").lower() == "html":
+                            html_root = child
+                            break
             else:
                 for child in getattr(page, "childNodes", []) or []:
                     if getattr(child, "tagName", "").lower() == "html":
@@ -1421,12 +1469,22 @@ class domonic:
                         break
 
             if html_root is None:
+                if is_full_document and doctype is not None:
+                    return _html_document_from_doctype(source)
                 return page
 
             if is_full_document:
+                if doctype is not None:
+                    html_root.doctype = doctype
+                if isinstance(html_root, dom.HTMLDocument):
+                    html_root.parentNode = None
+                    html_root.documentElement = html_root
+                    return html_root
                 if isinstance(page, dom.Document) and not isinstance(
                     page, dom.DocumentFragment
                 ):
+                    if doctype is not None:
+                        page.doctype = doctype
                     page.documentElement = html_root
                     if page is html_root:
                         page.parentNode = None
@@ -1434,6 +1492,8 @@ class domonic:
                         html_root.parentNode = page
                     return page
                 document = dom.HTMLDocument()
+                if doctype is not None:
+                    document.doctype = doctype
                 document.args = (html_root,)
                 html_root.parentNode = document
                 document.documentElement = html_root
@@ -1506,6 +1566,9 @@ class domonic:
 
             page = justhtml_parse(string, return_root=False)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        if _is_doctype_only(string):
+            return _upgrade_custom_elements(_html_document_from_doctype(string))
 
         if parser == "html5lib":
             return _parse_with_html5lib()

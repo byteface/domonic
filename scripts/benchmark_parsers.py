@@ -27,6 +27,7 @@ def benchmark_parser(html: str, parser_name: str, iterations: int) -> dict[str, 
     timings: list[float] = []
     title_text = ""
     error = None
+    skipped = None
 
     for _ in range(iterations):
         start = time.perf_counter()
@@ -37,16 +38,26 @@ def benchmark_parser(html: str, parser_name: str, iterations: int) -> dict[str, 
             if not title_text and page is not None:
                 title = page.querySelector("title")
                 title_text = title.text if title is not None else ""
+        except ModuleNotFoundError as exc:  # pragma: no cover - benchmark reporting path
+            skipped = f"missing optional dependency: {exc.name}"
+            break
+        except ImportError as exc:  # pragma: no cover - benchmark reporting path
+            skipped = f"missing optional dependency: {exc}"
+            break
         except Exception as exc:  # pragma: no cover - benchmark reporting path
             error = f"{type(exc).__name__}: {exc}"
             break
 
+    if skipped is not None:
+        return {"parser": parser_name, "ok": False, "skipped": True, "error": skipped}
+
     if error is not None:
-        return {"parser": parser_name, "ok": False, "error": error}
+        return {"parser": parser_name, "ok": False, "skipped": False, "error": error}
 
     return {
         "parser": parser_name,
         "ok": True,
+        "skipped": False,
         "iterations": iterations,
         "mean_ms": statistics.mean(timings) * 1000,
         "median_ms": statistics.median(timings) * 1000,
@@ -66,8 +77,9 @@ def print_results(results: list[dict[str, object]], page_path: Path, html: str) 
     print("-" * 96)
     for row in results:
         if not row["ok"]:
+            status = "SKIP" if row.get("skipped") else "FAIL"
             print(
-                f"{row['parser']:<14} {'FAIL':<8} {'-':>10} {'-':>10} {'-':>10} {'-':>10}  {row['error']}"
+                f"{row['parser']:<14} {status:<8} {'-':>10} {'-':>10} {'-':>10} {'-':>10}  {row['error']}"
             )
             continue
         print(

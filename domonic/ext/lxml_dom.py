@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import importlib
+from typing import Any
 
 from lxml.etree import _Comment
 
@@ -21,15 +22,13 @@ from domonic.dom import (
     XMLDocument,
 )
 
-try:
-    dict_items = dict.iteritems
-except AttributeError:
-    dict_items = dict.items
+HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 
-_ELEM_NAME_CACHE = {}
-_MATHML_ELEMENT_CACHE = {}
-_HTML_ELEMENT_CLASS_CACHE = {}
-_UNKNOWN_ELEMENT_CLASS_CACHE = {}
+_ELEM_NAME_CACHE: dict[tuple[Any, Any], tuple[str | None, str]] = {}
+_MATHML_ELEMENT_CACHE: dict[str, type[MathMLElement]] = {}
+_HTML_ELEMENT_CLASS_CACHE: dict[str, type[Element]] = {}
+_UNKNOWN_ELEMENT_CLASS_CACHE: dict[str, type[Element]] = {}
 
 
 def elem_name_parts(elem):
@@ -55,7 +54,7 @@ def attr_name_parts(name, elem, val):
     if name.startswith("{"):
         uri, _, name = name.rpartition("}")
         uri = uri[1:]
-        for prefix, quri in dict_items(elem.nsmap):
+        for prefix, quri in elem.nsmap.items():
             if quri == uri:
                 break
         else:
@@ -80,10 +79,10 @@ def add_namespace_declarations_raw(src, dest):
             parent_namespaces = parent.nsmap or {}
             changed = {
                 key: value
-                for key, value in dict_items(changed)
+                for key, value in changed.items()
                 if value != parent_namespaces.get(key)
             }
-        for prefix, uri in dict_items(changed):
+        for prefix, uri in changed.items():
             attr = ("xmlns:" + prefix) if prefix else "xmlns"
             set_attribute_raw(dest, attr, uri)
 
@@ -97,9 +96,11 @@ def initialize_node_raw(node, args=(), namespace_uri=None):
     state = node.__dict__
     state["args"] = args
     state["kwargs"] = {}
+    state["listeners"] = {}
+    state["_listener_options"] = {}
     state["_baseURI"] = ""
     state["isConnected"] = True
-    state["namespaceURI"] = namespace_uri or "http://www.w3.org/1999/xhtml"
+    state["namespaceURI"] = namespace_uri or HTML_NAMESPACE
     state["outerText"] = None
     state["_ownerDocument"] = None
     state["parentNode"] = None
@@ -173,36 +174,93 @@ def html_element_class(qualified_name):
     else:
         element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
         if element_class is None:
-            element_class = type("custom_tag", (Element,), {"name": qualified_name})
+            element_class = type(
+                "custom_tag", (Element,), {"name": qualified_name}
+            )
             _UNKNOWN_ELEMENT_CLASS_CACHE[normalized_name] = element_class
 
     _HTML_ELEMENT_CLASS_CACHE[normalized_name] = element_class
     return element_class
 
 
+def svg_element_class(qualified_name):
+    normalized_name = str(qualified_name).strip()
+    cache_key = f"{SVG_NAMESPACE}:{normalized_name}"
+    cached = _HTML_ELEMENT_CLASS_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    svg_module = importlib.import_module("domonic.svg")
+    tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(
+        normalized_name, normalized_name
+    )
+    if tag_name in svg_module._SVG_TAG_LOOKUP:
+        element_class = getattr(
+            svg_module, svg_module._svg_class_name(tag_name)
+        )
+    else:
+        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
+        if element_class is None:
+            element_class = type(
+                "custom_tag", (Element,), {"name": normalized_name}
+            )
+            _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
+
+    _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
+    return element_class
+
+
+def _namespace_for_tag(qualified_name, parent_namespace=None, parent_tag=""):
+    normalized_name = str(qualified_name).split(":", 1)[-1].lower()
+    if normalized_name == "svg":
+        return SVG_NAMESPACE
+    if normalized_name == "math":
+        return MATHML_NAMESPACE
+    if parent_namespace == SVG_NAMESPACE:
+        if str(parent_tag).lower() == "foreignobject":
+            return HTML_NAMESPACE
+        return SVG_NAMESPACE
+    if parent_namespace == MATHML_NAMESPACE:
+        return MATHML_NAMESPACE
+    return HTML_NAMESPACE
+
+
 def create_element_ns_raw(namespace_uri, qualified_name):
     local_name = str(qualified_name).split(":", 1)[-1]
+    namespace_uri = namespace_uri or _namespace_for_tag(qualified_name)
+    if namespace_uri == SVG_NAMESPACE:
+        element_class = svg_element_class(qualified_name)
+        return initialize_element_raw(
+            element_class.__new__(element_class), namespace_uri
+        )
     if namespace_uri == MATHML_NAMESPACE:
         element_type = _MATHML_ELEMENT_CACHE.get(local_name)
         if element_type is None:
-            element_type = type(local_name, (MathMLElement,), {"name": local_name})
+            element_type = type(
+                local_name, (MathMLElement,), {"name": local_name}
+            )
             _MATHML_ELEMENT_CACHE[local_name] = element_type
-        return initialize_element_raw(element_type.__new__(element_type), namespace_uri)
+        return initialize_element_raw(
+            element_type.__new__(element_type), namespace_uri
+        )
 
     element_class = html_element_class(qualified_name)
-    return initialize_element_raw(element_class.__new__(element_class), namespace_uri)
+    return initialize_element_raw(
+        element_class.__new__(element_class), namespace_uri
+    )
 
 
 def adapt(source_tree, return_root=True, **kw):
     """Build a domonic tree from an lxml tree."""
     source_root = source_tree.getroot()
     uri, qname = elem_name_parts(source_root)
+    uri = uri or _namespace_for_tag(qname)
     dest_tree = create_document_raw(uri, qname, source_tree.docinfo.doctype)
     dest_root = dest_tree.documentElement
-    stack = [(source_root, dest_root)]
+    stack = [(source_root, dest_root, uri, qname)]
 
     while stack:
-        src, dest = stack.pop()
+        src, dest, parent_namespace, parent_tag = stack.pop()
         children = []
         text = src.text
         if text:
@@ -213,10 +271,16 @@ def adapt(source_tree, return_root=True, **kw):
             set_attribute_raw(dest, attr_name, attr_value)
         for child in src.iterchildren():
             if isinstance(child, _Comment):
-                dchild = create_comment_raw((child.text or "").replace("--", "—"))
+                dchild = create_comment_raw(
+                    (child.text or "").replace("--", "—")
+                )
             else:
-                dchild = create_element_ns_raw(*elem_name_parts(child))
-                stack.append((child, dchild))
+                child_uri, child_name = elem_name_parts(child)
+                child_uri = child_uri or _namespace_for_tag(
+                    child_name, parent_namespace, parent_tag
+                )
+                dchild = create_element_ns_raw(child_uri, child_name)
+                stack.append((child, dchild, child_uri, child_name))
             append_child_raw(dest, dchild, children)
             tail = child.tail
             if tail:

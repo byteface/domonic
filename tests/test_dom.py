@@ -12,7 +12,7 @@ import unittest
 from domonic import *
 from domonic.CDN import CDN_CSS
 from domonic.dom import *
-from domonic.events import FormDataEvent, InputEvent, ToggleEvent, TrackEvent
+from domonic.events import Event, FormDataEvent, InputEvent, ToggleEvent, TrackEvent
 from domonic.html import *
 from domonic.style import *
 
@@ -5376,6 +5376,78 @@ class TestDomTokenList(unittest.TestCase):
         self.assertEqual(tokens.toString(), "five")
         tokens.remove("five")
         self.assertEqual(sample.className, "")
+
+    def test_list_and_fragment_children_are_inserted_as_children(self):
+        list_children = domonic.load("<h1 id='one'></h1><h1 id='two'></h1>")
+        page = html(body(list_children))
+
+        self.assertEqual(
+            [child.tagName for child in page.querySelector("body").children],
+            ["h1", "h1"],
+        )
+        self.assertEqual(page.querySelector("#one").tagName, "h1")
+        self.assertEqual(page.querySelector("#two").tagName, "h1")
+
+        fragment = DocumentFragment(*domonic.load("<p id='p'></p><p id='q'></p>"))
+        page = html(body(fragment))
+
+        self.assertEqual(
+            [child.tagName for child in page.querySelector("body").children],
+            ["p", "p"],
+        )
+        self.assertEqual(fragment.childNodes.length, 0)
+        self.assertEqual(page.querySelector("#q").tagName, "p")
+
+    def test_raw_parsed_nodes_support_event_listeners(self):
+        parsers = ["html.parser", "lxml_html", "selectolax", "turbohtml"]
+
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString(
+                        "<main><button id='go'>Go</button></main>",
+                        parser=parser,
+                    )
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                button = page.querySelector("#go")
+                seen = []
+                button.addEventListener("click", lambda event: seen.append(event.type))
+                button.dispatchEvent(Event("click"))
+                self.assertEqual(seen, ["click"])
+
+    def test_parsed_svg_and_mathml_children_keep_namespaces(self):
+        parsers = ["html.parser", "lxml_html", "selectolax", "turbohtml", "html5lib"]
+        markup = '<svg><g><path d="M0 0"/></g></svg><math><mi>x</mi></math>'
+
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString(markup, parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                self.assertEqual(
+                    page.querySelector("svg").namespaceURI,
+                    "http://www.w3.org/2000/svg",
+                )
+                self.assertEqual(
+                    page.querySelector("g").namespaceURI,
+                    "http://www.w3.org/2000/svg",
+                )
+                self.assertEqual(
+                    page.querySelector("path").namespaceURI,
+                    "http://www.w3.org/2000/svg",
+                )
+                self.assertEqual(
+                    page.querySelector("math").namespaceURI,
+                    "http://www.w3.org/1998/Math/MathML",
+                )
+                self.assertEqual(
+                    page.querySelector("mi").namespaceURI,
+                    "http://www.w3.org/1998/Math/MathML",
+                )
 
 
 if __name__ == "__main__":
