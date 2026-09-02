@@ -926,6 +926,35 @@ class TestCase(unittest.TestCase):
         self.assertFalse(rule.inherits)
         self.assertEqual(rule.initialValue, "8px")
 
+    def test_important_author_rule_beats_inline_style(self):
+        from domonic.window import window
+
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            "#a { color: red !important; padding-left: 1px }"
+            "</style></head>"
+            "<body>"
+            "<div id='a' style='color: blue; padding-left: 9px'></div>"
+            "</body>"
+        )
+        a = window.getComputedStyle(page.querySelector("#a"))
+        # important author beats normal inline...
+        self.assertEqual(a.getPropertyValue("color"), "red")
+        # ...but normal author loses to normal inline
+        self.assertEqual(a.getPropertyValue("padding-left"), "9px")
+
+        b = document.createElement("html")
+        b.innerHTML = (
+            "<head><style>#c { color: red !important }</style></head>"
+            "<body><div id='c' style='color: blue !important'></div></body>"
+        )
+        # important inline still wins over important author
+        self.assertEqual(
+            window.getComputedStyle(b.querySelector("#c")).getPropertyValue("color"),
+            "blue",
+        )
+
     def test_get_computed_style_substitutes_var_references(self):
         from domonic.window import window
 

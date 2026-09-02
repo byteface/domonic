@@ -6227,7 +6227,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         for cls in str(element.getAttribute("class") or "").split():
             buckets.append(f".{cls}")
 
-        cascade: dict[str, tuple[tuple, str]] = {}
+        cascade: dict[str, tuple[tuple, str, bool]] = {}
         for bucket in buckets:
             for selector, spec, order, entries in index.get(bucket, ()):
                 try:
@@ -6239,19 +6239,31 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 if not ok:
                     continue
                 for name, value, priority in entries:
-                    key = (priority == "important", spec, order)
+                    important = priority == "important"
+                    key = (important, spec, order)
                     if name not in cascade or key > cascade[name][0]:
-                        cascade[name] = (key, value)
-        return {name: value for name, (_, value) in cascade.items()}
+                        cascade[name] = (key, value, important)
+        return {name: (value, important) for name, (_, value, important) in cascade.items()}
 
     def _resolve(self):
         element = self._element
         resolved: dict[str, str] = {}
 
-        # 1 + 2: author rules then inline style (inline wins over non-important)
-        resolved.update(self._collect_author_declarations())
+        # 1 + 2: author rules then the inline style attribute. Per the cascade,
+        # normal inline beats normal author but loses to important author;
+        # important inline beats everything here.
+        author = self._collect_author_declarations()
+        important_author = {name for name, (_, imp) in author.items() if imp}
+        for name, (value, _) in author.items():
+            resolved[name] = value
         inline = getattr(element, "getAttribute", lambda *_: "")("style") or ""
-        for name, value, _ in _parse_css_declarations(inline):
+        for name, value, priority in _parse_css_declarations(inline):
+            if priority != "important":
+                covering = _cssom.LONGHAND_TO_SHORTHANDS.get(name, ())
+                if name in important_author or any(
+                    shorthand in important_author for shorthand in covering
+                ):
+                    continue
             resolved[name] = value
 
         # expand shorthands so longhand lookups work
