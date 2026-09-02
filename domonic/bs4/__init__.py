@@ -85,13 +85,15 @@ def _descendants(node: Any) -> Iterator[Any]:
     stack = list(kids)
     stack.reverse()
     leaf_types = _LEAF_NODE_TYPES
+    extend = stack.extend
+    pop = stack.pop
     while stack:
-        child = stack.pop()
+        child = pop()
         yield child
         if type(child) not in leaf_types:
             grand = getattr(child, "args", None)
             if grand:
-                stack.extend(reversed(grand))
+                extend(grand[::-1])
 
 
 def _document_order(root: Any) -> list[Any]:
@@ -108,17 +110,19 @@ def _element_descendants(node: Any) -> Iterator[Element]:
     stack.reverse()
     element_type = Element
     leaf_types = _LEAF_NODE_TYPES
+    extend = stack.extend
+    pop = stack.pop
     while stack:
-        child = stack.pop()
+        child = pop()
+        # ~2/3 of the nodes walked are text/comment leaves -- rule those out
+        # with a single exact-type check before the isinstance() MRO walk
+        if type(child) in leaf_types:
+            continue
+        grand = getattr(child, "args", None)
+        if grand:
+            extend(grand[::-1])
         if isinstance(child, element_type):
             yield child
-            grand = getattr(child, "args", None)
-            if grand:
-                stack.extend(reversed(grand))
-        elif type(child) not in leaf_types:
-            grand = getattr(child, "args", None)
-            if grand:
-                stack.extend(reversed(grand))
 
 
 def _element_children(node: Any) -> Iterator[Element]:

@@ -273,7 +273,9 @@ def _iter_dom_nodes(node):
     if not isinstance(node, Node):
         return
     yield node
-    for child in getattr(node, "childNodes", []):
+    # iterate ``args`` directly rather than the ``childNodes`` property, which
+    # allocates a fresh live NodeList wrapper on every (recursive) call
+    for child in node.__dict__.get("args", ()):
         if isinstance(child, Node):
             yield from _iter_dom_nodes(child)
 
