@@ -171,11 +171,11 @@ def formatNumerals(numerals):
     return func
 
 
-re = r"^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$"
+_FORMAT_SPEC_RE = r"^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$"
 
 
 def formatSpecifier(specifier):
-    match = RegExp(re).exec(str(specifier))
+    match = RegExp(_FORMAT_SPEC_RE).exec(str(specifier))
     if not match:
         raise Exception("invalid format: " + specifier)
 

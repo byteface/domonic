@@ -24,7 +24,7 @@ def _create_promise():
 
 
 def _canvas_dimension(canvas: Any, name: str, default: int) -> int:
-    value = None
+    value: Any = None
     if hasattr(canvas, "getAttribute"):
         value = canvas.getAttribute(name)
     if value is None:
@@ -173,7 +173,9 @@ class CanvasRenderingContext2D:
         self._path = Path2D()
         self._line_dash: list[float] = []
         self._state_stack: list[dict[str, Any]] = []
-        self._transform = (1, 0, 0, 1, 0, 0)
+        self._transform: tuple[float, float, float, float, float, float] = (
+            1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+        )
 
     @property
     def width(self) -> int:
@@ -606,6 +608,7 @@ def get_canvas_context(
             return existing
         return None
 
+    context: Any
     if kind == "2d":
         context = CanvasRenderingContext2D(canvas, options)
     elif kind in {"webgl", "experimental-webgl"}:

@@ -6,7 +6,7 @@ domonic.d3.dispatch
 
 from domonic.javascript import Array, Object, RegExp, String
 
-noop = {"value": lambda *args: {}}
+noop: dict = {"value": lambda *args: {}}
 _MISSING = object()
 
 
@@ -43,10 +43,10 @@ class Dispatch:
 
         # If no callback was specified, return the callback of the given type and name.
         if callback is _MISSING:
-            for typename in T:
-                if not typename["type"]:
+            for tn in T:
+                if not tn["type"]:
                     continue
-                t = self.get(_[typename["type"]], typename["name"])
+                t = self.get(_[tn["type"]], tn["name"])
                 if t is not None:
                     return t
             return None
@@ -55,14 +55,14 @@ class Dispatch:
         # Otherwise, if a None callback was specified, remove callbacks of the given name.
         if callback != None and not callable(callback):
             raise Exception("invalid callback: " + callback)
-        for typename in T:
-            if typename["type"] is not None:
-                _[typename["type"]] = self.set(
-                    _[typename["type"]], typename["name"], callback
+        for tn in T:
+            if tn["type"] is not None:
+                _[tn["type"]] = self.set(
+                    _[tn["type"]], tn["name"], callback
                 )
             elif callback == None:
                 for t in _:
-                    _[t] = self.set(_[t], typename["name"], None)
+                    _[t] = self.set(_[t], tn["name"], None)
 
         return self
 

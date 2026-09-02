@@ -10,7 +10,7 @@ import functools
 import json
 import re
 import sys
-import time
+import time as _time  # star imports below shadow the name `time` with the HTML <time> element
 
 from domonic.dom import *
 from domonic.events import (
@@ -1911,7 +1911,7 @@ class dQuery_el:
         """Bind an event handler to the “submit” JavaScript event, or trigger that event on an element."""
         return self._simple_event("submit", handler)
 
-    def text(self, newVal: str = None):
+    def text(self, newVal: str | None = None):
         """Get the combined text contents of each element in the set of matched elements, including their descendants,
         or set the text contents of the matched elements."""
         elements = self._ensure_list()
@@ -2109,7 +2109,7 @@ class º(dQuery_el):
         "cache": True,
         "global": True,
     }
-    _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}
+    _ajax_event_handlers: dict = {event: [] for event in _AJAX_EVENTS}
     _ajax_prefilters = []
     _ajax_transports = []
     _ajax_active = 0
@@ -2329,7 +2329,7 @@ class º(dQuery_el):
                 request_kwargs["data"] = request_data
 
         if options.get("cache") is False and method in ("GET", "HEAD"):
-            request_params.setdefault("_", int(time.time() * 1000))
+            request_params.setdefault("_", int(_time.time() * 1000))
         if request_params:
             request_kwargs["params"] = request_params
 
@@ -2903,7 +2903,7 @@ class º(dQuery_el):
 
         class dQuerySub(º):
             ajaxSettings = copy.deepcopy(º.ajaxSettings)
-            _ajax_event_handlers = {event: [] for event in _AJAX_EVENTS}
+            _ajax_event_handlers: dict = {event: [] for event in _AJAX_EVENTS}
             _ajax_prefilters = []
             _ajax_transports = []
             _ajax_active = 0
@@ -2957,7 +2957,7 @@ class º(dQuery_el):
 
     # Python does not support separate static and instance methods with the same name,
     # so these adapters keep the jQuery-like surface usable in both styles.
-    def each(self, func=None):
+    def each(self, func=None):  # type: ignore[no-redef]
         if isinstance(self, dQuery_el):
             return dQuery_el.each(self, func)
         for index, value in enumerate(self):
@@ -2993,7 +2993,7 @@ class º(dQuery_el):
             return None
         return response.data
 
-    def map(self, func=None):
+    def map(self, func=None):  # type: ignore[no-redef]
         if isinstance(self, dQuery_el):
             return dQuery_el.map(self, func)
         return [
@@ -3001,7 +3001,7 @@ class º(dQuery_el):
             for index, value in enumerate(self)
         ]
 
-    def data(self, key=_UNSET, value=_UNSET):
+    def data(self, key=_UNSET, value=_UNSET):  # type: ignore[no-redef]
         if isinstance(self, dQuery_el):
             return dQuery_el.data(self, key, value)
         element = self
@@ -3024,7 +3024,7 @@ class º(dQuery_el):
         setattr(element, "_dquery_data", store)
         return value
 
-    def dequeue(self):
+    def dequeue(self):  # type: ignore[no-redef]
         if isinstance(self, dQuery_el):
             return dQuery_el.dequeue(self)
         queue = getattr(self, "_dquery_queue", [])
@@ -3053,7 +3053,7 @@ class º(dQuery_el):
             setattr(self, "_dquery_queue", queue)
         return queue
 
-    def removeData(self, key=_UNSET):
+    def removeData(self, key=_UNSET):  # type: ignore[no-redef]
         if isinstance(self, dQuery_el):
             return dQuery_el.removeData(self, key)
         store = getattr(self, "_dquery_data", {}).copy()

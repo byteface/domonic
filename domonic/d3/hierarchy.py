@@ -292,8 +292,8 @@ def stratify():
         parent_id_accessor = fn
         return stratifier
 
-    stratifier.id = id_fn
-    stratifier.parentId = parent_id_fn
+    setattr(stratifier, "id", id_fn)
+    setattr(stratifier, "parentId", parent_id_fn)
     return stratifier
 
 
@@ -377,9 +377,9 @@ def _tidy_layout(is_tree: bool):
         separation = fn
         return layout
 
-    layout.size = size_fn
-    layout.nodeSize = node_size_fn
-    layout.separation = separation_fn
+    setattr(layout, "size", size_fn)
+    setattr(layout, "nodeSize", node_size_fn)
+    setattr(layout, "separation", separation_fn)
     return layout
 
 
@@ -488,9 +488,9 @@ def cluster():
         separation = fn
         return layout
 
-    layout.size = size_fn
-    layout.nodeSize = node_size_fn
-    layout.separation = separation_fn
+    setattr(layout, "size", size_fn)
+    setattr(layout, "nodeSize", node_size_fn)
+    setattr(layout, "separation", separation_fn)
     return layout
 
 
@@ -551,9 +551,9 @@ def partition():
         round_ = bool(value)
         return layout
 
-    layout.size = size_fn
-    layout.padding = padding_fn
-    layout.round = round_fn
+    setattr(layout, "size", size_fn)
+    setattr(layout, "padding", padding_fn)
+    setattr(layout, "round", round_fn)
     return layout
 
 
@@ -765,16 +765,16 @@ def treemap():
 
         return setter
 
-    layout.tile = tile_fn
-    layout.size = size_fn
-    layout.round = round_fn
-    layout.padding = _pad_setter("all")
-    layout.paddingInner = _pad_setter("inner")
-    layout.paddingOuter = _pad_setter("outer")
-    layout.paddingTop = _pad_setter("top")
-    layout.paddingRight = _pad_setter("right")
-    layout.paddingBottom = _pad_setter("bottom")
-    layout.paddingLeft = _pad_setter("left")
+    setattr(layout, "tile", tile_fn)
+    setattr(layout, "size", size_fn)
+    setattr(layout, "round", round_fn)
+    setattr(layout, "padding", _pad_setter("all"))
+    setattr(layout, "paddingInner", _pad_setter("inner"))
+    setattr(layout, "paddingOuter", _pad_setter("outer"))
+    setattr(layout, "paddingTop", _pad_setter("top"))
+    setattr(layout, "paddingRight", _pad_setter("right"))
+    setattr(layout, "paddingBottom", _pad_setter("bottom"))
+    setattr(layout, "paddingLeft", _pad_setter("left"))
     return layout
 
 
@@ -886,7 +886,8 @@ def pack():
         root.x = dx / 2
         root.y = dy / 2
         if radius is not None:
-            root.eachBefore(lambda n, *_: setattr(n, "r", radius(n)))
+            radius_fn_ = radius
+            root.eachBefore(lambda n, *_: setattr(n, "r", radius_fn_(n)))
         else:
             root.eachBefore(_radius_leaf)
             root.eachAfter(_radius_parent)
@@ -938,7 +939,7 @@ def pack():
         padding = value if callable(value) else (lambda d: float(value))
         return layout
 
-    layout.radius = radius_fn
-    layout.size = size_fn
-    layout.padding = padding_fn
+    setattr(layout, "radius", radius_fn)
+    setattr(layout, "size", size_fn)
+    setattr(layout, "padding", padding_fn)
     return layout
