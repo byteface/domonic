@@ -73,13 +73,25 @@ def _iter_child_nodes(node: Any) -> Iterator[Any]:
     yield from getattr(node, "args", ()) or ()
 
 
+# node types that never contribute descendants (a str / Text / Comment stores
+# its own text in ``.args`` and must not be descended into).
+_LEAF_NODE_TYPES = frozenset((str, Text, Comment))
+
+
 def _descendants(node: Any) -> Iterator[Any]:
-    stack = list(reversed(tuple(_iter_child_nodes(node))))
+    kids = getattr(node, "args", None)
+    if not kids:
+        return
+    stack = list(kids)
+    stack.reverse()
+    leaf_types = _LEAF_NODE_TYPES
     while stack:
         child = stack.pop()
         yield child
-        if isinstance(child, Node) and not isinstance(child, (Text, Comment)):
-            stack.extend(reversed(getattr(child, "args", ()) or ()))
+        if type(child) not in leaf_types:
+            grand = getattr(child, "args", None)
+            if grand:
+                stack.extend(reversed(grand))
 
 
 def _document_order(root: Any) -> list[Any]:
@@ -89,14 +101,24 @@ def _document_order(root: Any) -> list[Any]:
 
 
 def _element_descendants(node: Any) -> Iterator[Element]:
-    stack = list(reversed(tuple(_iter_child_nodes(node))))
+    kids = getattr(node, "args", None)
+    if not kids:
+        return
+    stack = list(kids)
+    stack.reverse()
+    element_type = Element
+    leaf_types = _LEAF_NODE_TYPES
     while stack:
         child = stack.pop()
-        if isinstance(child, Element):
+        if isinstance(child, element_type):
             yield child
-            stack.extend(reversed(getattr(child, "args", ()) or ()))
-        elif isinstance(child, Node) and not isinstance(child, (Text, Comment)):
-            stack.extend(reversed(getattr(child, "args", ()) or ()))
+            grand = getattr(child, "args", None)
+            if grand:
+                stack.extend(reversed(grand))
+        elif type(child) not in leaf_types:
+            grand = getattr(child, "args", None)
+            if grand:
+                stack.extend(reversed(grand))
 
 
 def _element_children(node: Any) -> Iterator[Element]:
@@ -510,6 +532,14 @@ def _find_all(
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
     merged_attrs = _merge_attrs(attrs, kwargs)
+    if string is None and not merged_attrs and (name is True or name is None):
+        # ``find_all(True)`` / ``find_all()`` -- every tag, no filtering
+        return _limit(
+            _element_descendants(self)
+            if recursive
+            else _element_children(self),
+            limit,
+        )
     if (
         recursive
         and string is None
