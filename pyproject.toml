@@ -15,6 +15,7 @@ files = [
     "domonic/webapi/__init__.py",
     "domonic/xml/__init__.py",
     "domonic/CDN.py",
+    "domonic/bs4/__init__.py",
     "domonic/__main__.py",
     "domonic/_cssom.py",
     "domonic/_fontmetrics.py",

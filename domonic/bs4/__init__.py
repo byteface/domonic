@@ -891,7 +891,7 @@ def _select_fast(
                 if id(candidate) in first_ids:
                     return [candidate]
             return firsts[:1]
-        matched_ids = set()
+        matched_ids: set = set()
         for group in groups:
             matches = _select_fast(self, group)
             if matches is None:
@@ -1312,7 +1312,7 @@ def _get_text(
         if type(self) is Text:
             text = self.__dict__.get("args", ("",))[0].strip()
             return text if text else ""
-        parts = []
+        parts: list = []
         append = parts.append
         stack = list(self.__dict__.get("args", ()) or ())
         stack.reverse()
@@ -1690,7 +1690,7 @@ def _encode(
     return str(self).encode(encoding, "xmlcharrefreplace")
 
 
-def _install_node_api(cls: type) -> None:
+def _install_node_api(cls: Any) -> None:
     cls.find = _find
     cls.find_all = _find_all
     cls.findAll = _find_all
@@ -1757,13 +1757,14 @@ def _install_node_api(cls: type) -> None:
 
 
 def _install_element_api() -> None:
-    Element.attrs = property(_attrs_get, _attrs_set)
-    Element.get = _get
-    Element.has_attr = _has_attr
-    Element.has_key = _has_key
-    Element.__getitem__ = _getitem
-    Element.__setitem__ = _setitem
-    Element.__delitem__ = _delitem
+    element: Any = Element
+    element.attrs = property(_attrs_get, _attrs_set)
+    element.get = _get
+    element.has_attr = _has_attr
+    element.has_key = _has_key
+    element.__getitem__ = _getitem
+    element.__setitem__ = _setitem
+    element.__delitem__ = _delitem
 
 
 _ORIGINAL_GETITEM = Element.__getitem__
