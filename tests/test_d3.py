@@ -2637,6 +2637,29 @@ class ShapeTestCase(unittest.TestCase):
             sum(w["endAngle"] - w["startAngle"] for w in wedges), math.tau
         )
 
+        # wrinkle #12: pie() wedges feed straight into arc() with only the radii
+        # set -- each renders as its own segment, not a full circle
+        ring = sh.arc().innerRadius(40).outerRadius(100)
+        paths = [ring(w) for w in wedges]
+        self.assertEqual(len(set(paths)), 3)
+        for w, p in zip(wedges, paths):
+            full = (w["endAngle"] - w["startAngle"]) > math.tau - 1e-9
+            self.assertEqual("L" in p, not full)  # partial wedges have radial edges
+        self.assertEqual(len(ring.centroid(wedges[0])), 2)
+
+        # accessor arity: a plain `lambda d: ...` works even though pie/line
+        # invoke accessors as fn(datum, index, data)
+        by_n = sh.pie().value(lambda d: d["n"])([{"n": 2}, {"n": 3}])
+        self.assertAlmostEqual(
+            sum(w["endAngle"] - w["startAngle"] for w in by_n), math.tau
+        )
+        self.assertEqual(
+            sh.line().x(lambda d: d["x"]).y(lambda d: d["y"])(
+                [{"x": 0, "y": 0}, {"x": 1, "y": 1}]
+            ),
+            "M0,0L1,1",
+        )
+
     def test_symbols(self):
         sh = self.sh
         for t in sh.symbolsFill:

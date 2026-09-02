@@ -13,6 +13,7 @@ value when called with no argument and ``self`` otherwise.
 
 from __future__ import annotations
 
+import inspect
 import math
 from typing import Any, Callable, Sequence
 
@@ -41,6 +42,40 @@ _EPSILON = 1e-12
 
 def _constant(x: Any) -> Callable[..., Any]:
     return lambda *_a: x
+
+
+def _accessor(value: Any) -> Callable[..., Any]:
+    """Coerce a scale/shape accessor argument.
+
+    Non-callables become a constant. Callables are made tolerant of extra
+    positional arguments, so a plain ``lambda d: d["x"]`` works even though the
+    generators (like d3) invoke accessors as ``fn(datum, index, data)``.
+    """
+    if not callable(value):
+        return _constant(value)
+    try:
+        params = list(inspect.signature(value).parameters.values())
+    except (ValueError, TypeError):
+        return value
+    if any(p.kind is inspect.Parameter.VAR_POSITIONAL for p in params):
+        return value
+    npos = sum(
+        1
+        for p in params
+        if p.kind in (inspect.Parameter.POSITIONAL_ONLY,
+                      inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        and p.default is inspect.Parameter.empty
+    ) or sum(
+        1
+        for p in params
+        if p.kind in (inspect.Parameter.POSITIONAL_ONLY,
+                      inspect.Parameter.POSITIONAL_OR_KEYWORD)
+    )
+
+    def tolerant(*args: Any) -> Any:
+        return value(*args[:npos])
+
+    return tolerant
 
 
 def _identity(d: Any, *_a: Any) -> Any:
@@ -671,8 +706,8 @@ def curveBumpY(context):
 
 class Line:
     def __init__(self, x=None, y=None):
-        self._x = x if callable(x) else _constant(x) if x is not None else _x_of
-        self._y = y if callable(y) else _constant(y) if y is not None else _y_of
+        self._x = _accessor(x) if x is not None else _x_of
+        self._y = _accessor(y) if y is not None else _y_of
         self._defined: Callable = _constant(True)
         self._curve = curveLinear
         self._context = None
@@ -704,19 +739,19 @@ class Line:
     def x(self, value=None):
         if value is None:
             return self._x
-        self._x = value if callable(value) else _constant(value)
+        self._x = _accessor(value)
         return self
 
     def y(self, value=None):
         if value is None:
             return self._y
-        self._y = value if callable(value) else _constant(value)
+        self._y = _accessor(value)
         return self
 
     def defined(self, value=None):
         if value is None:
             return self._defined
-        self._defined = value if callable(value) else _constant(bool(value))
+        self._defined = _accessor(value)
         return self
 
     def curve(self, value=None):
@@ -743,7 +778,7 @@ def lineRadial(angle=None, radius=None) -> Line:
     def call(data):
         return _radial_reproject(gen, data)
 
-    gen.__call__ = call  # type: ignore[assignment]
+    gen.__call__ = call  # type: ignore[method-assign]
     return gen
 
 
@@ -769,10 +804,10 @@ def _radial_reproject(gen: Line, data):
 
 class Area:
     def __init__(self, x0=None, y0=None, y1=None):
-        self._x0 = x0 if callable(x0) else _constant(x0) if x0 is not None else _x_of
+        self._x0 = _accessor(x0) if x0 is not None else _x_of
         self._x1: Callable | None = None
-        self._y0 = y0 if callable(y0) else _constant(y0) if y0 is not None else _constant(0)
-        self._y1 = y1 if callable(y1) else _constant(y1) if y1 is not None else _y_of
+        self._y0 = _accessor(y0) if y0 is not None else _constant(0)
+        self._y1 = _accessor(y1) if y1 is not None else _y_of
         self._defined: Callable = _constant(True)
         self._curve = curveLinear
         self._context = None
@@ -819,45 +854,45 @@ class Area:
     def x(self, value=None):
         if value is None:
             return self._x0
-        self._x0 = value if callable(value) else _constant(value)
+        self._x0 = _accessor(value)
         self._x1 = None
         return self
 
     def x0(self, value=None):
         if value is None:
             return self._x0
-        self._x0 = value if callable(value) else _constant(value)
+        self._x0 = _accessor(value)
         return self
 
     def x1(self, value=None):
         if value is None:
             return self._x1
-        self._x1 = value if callable(value) else (_constant(value) if value is not None else None)
+        self._x1 = _accessor(value) if value is not None else None
         return self
 
     def y(self, value=None):
         if value is None:
             return self._y1
         self._y0 = _constant(0) if not callable(value) else value
-        self._y1 = value if callable(value) else _constant(value)
+        self._y1 = _accessor(value)
         return self
 
     def y0(self, value=None):
         if value is None:
             return self._y0
-        self._y0 = value if callable(value) else _constant(value)
+        self._y0 = _accessor(value)
         return self
 
     def y1(self, value=None):
         if value is None:
             return self._y1
-        self._y1 = value if callable(value) else _constant(value)
+        self._y1 = _accessor(value)
         return self
 
     def defined(self, value=None):
         if value is None:
             return self._defined
-        self._defined = value if callable(value) else _constant(bool(value))
+        self._defined = _accessor(value)
         return self
 
     def curve(self, value=None):
@@ -899,24 +934,38 @@ def areaRadial(*args) -> Area:
 
 # -- arc ---------------------------------------------------------
 
+def _field(name: str, default: Any = None) -> Callable[..., Any]:
+    """d3's default accessor: read ``name`` off the datum (dict or object)."""
+
+    def accessor(d: Any = None, *_a: Any) -> Any:
+        if d is None:
+            return default
+        if isinstance(d, dict):
+            return d.get(name, default)
+        return getattr(d, name, default)
+
+    return accessor
+
+
 class Arc:
     def __init__(self):
-        self._innerRadius: Callable = _constant(0)
-        self._outerRadius: Callable = _constant(100)
+        # like d3: the default accessors read the field off the datum, so a
+        # `pie()` wedge object feeds straight into `arc()`.
+        self._innerRadius: Callable = _field("innerRadius", 0.0)
+        self._outerRadius: Callable = _field("outerRadius", 0.0)
         self._cornerRadius: Callable = _constant(0)
         self._padRadius: Callable | None = None
-        self._startAngle: Callable = _constant(0)
-        self._endAngle: Callable = _constant(_TAU)
-        self._padAngle: Callable = _constant(0)
+        self._startAngle: Callable = _field("startAngle", 0.0)
+        self._endAngle: Callable = _field("endAngle", 0.0)
+        self._padAngle: Callable = _field("padAngle", 0.0)
         self._context = None
 
     def __call__(self, *args) -> Any:
-        d = args[0] if args else None
-        r0 = float(self._innerRadius(d))
-        r1 = float(self._outerRadius(d))
-        a0 = float(self._startAngle(d)) - _HALF_PI
-        a1 = float(self._endAngle(d)) - _HALF_PI
-        pad = float(self._padAngle(d))
+        r0 = float(self._innerRadius(*args) or 0)
+        r1 = float(self._outerRadius(*args) or 0)
+        a0 = float(self._startAngle(*args) or 0) - _HALF_PI
+        a1 = float(self._endAngle(*args) or 0) - _HALF_PI
+        pad = float(self._padAngle(*args) or 0)
         context = self._context or Path()
 
         if r1 < r0:
@@ -952,13 +1001,14 @@ class Arc:
         return None
 
     def centroid(self, *args) -> list[float]:
-        d = args[0] if args else None
-        r = (float(self._innerRadius(d)) + float(self._outerRadius(d))) / 2
-        a = (float(self._startAngle(d)) + float(self._endAngle(d))) / 2 - _HALF_PI
+        r = (float(self._innerRadius(*args) or 0) + float(self._outerRadius(*args) or 0)) / 2
+        a = (
+            float(self._startAngle(*args) or 0) + float(self._endAngle(*args) or 0)
+        ) / 2 - _HALF_PI
         return [math.cos(a) * r, math.sin(a) * r]
 
     def _acc(self, name, value):
-        setattr(self, name, value if callable(value) else _constant(value))
+        setattr(self, name, _accessor(value))
         return self
 
     def innerRadius(self, v=None):
@@ -1042,7 +1092,7 @@ def pie():
         nonlocal value
         if v is None:
             return value
-        value = v if callable(v) else _constant(v)
+        value = _accessor(v)
         return gen
 
     def sort_values_fn(v=None):
@@ -1065,21 +1115,21 @@ def pie():
         nonlocal start_angle
         if v is None:
             return start_angle
-        start_angle = v if callable(v) else _constant(v)
+        start_angle = _accessor(v)
         return gen
 
     def end_angle_fn(v=None):
         nonlocal end_angle
         if v is None:
             return end_angle
-        end_angle = v if callable(v) else _constant(v)
+        end_angle = _accessor(v)
         return gen
 
     def pad_angle_fn(v=None):
         nonlocal pad_angle
         if v is None:
             return pad_angle
-        pad_angle = v if callable(v) else _constant(v)
+        pad_angle = _accessor(v)
         return gen
 
     gen.value = value_fn
@@ -1207,7 +1257,7 @@ symbols = symbolsFill
 class Symbol:
     def __init__(self, type_=symbolCircle, size=64):
         self._type = type_ if callable(type_) or hasattr(type_, "draw") else _constant(type_)
-        self._size = size if callable(size) else _constant(size)
+        self._size = _accessor(size)
         self._context = None
 
     def __call__(self, *args) -> Any:
@@ -1222,13 +1272,13 @@ class Symbol:
     def type(self, v=None):
         if v is None:
             return self._type
-        self._type = v if callable(v) else _constant(v)
+        self._type = _accessor(v)
         return self
 
     def size(self, v=None):
         if v is None:
             return self._size
-        self._size = v if callable(v) else _constant(v)
+        self._size = _accessor(v)
         return self
 
     def context(self, v=None):
@@ -1271,13 +1321,13 @@ def link(curve):
     def _set(attr, v):
         nonlocal source, target, x, y
         if attr == "source":
-            source = v if callable(v) else _constant(v)
+            source = _accessor(v)
         elif attr == "target":
-            target = v if callable(v) else _constant(v)
+            target = _accessor(v)
         elif attr == "x":
-            x = v if callable(v) else _constant(v)
+            x = _accessor(v)
         elif attr == "y":
-            y = v if callable(v) else _constant(v)
+            y = _accessor(v)
         return gen
 
     gen.source = lambda v=None: source if v is None else _set("source", v)
@@ -1495,14 +1545,14 @@ def stack():
         nonlocal value
         if v is None:
             return value
-        value = v if callable(v) else _constant(v)
+        value = _accessor(v)
         return gen
 
     def order_fn(v=None):
         nonlocal order
         if v is None:
             return order
-        order = v if callable(v) else _constant(v)
+        order = _accessor(v)
         return gen
 
     def offset_fn(v=None):
