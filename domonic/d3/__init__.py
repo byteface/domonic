@@ -8,7 +8,7 @@ from domonic.d3.array import *
 # from domonic.d3.axis import *
 # from domonic.d3.brush import *
 # from domonic.d3.chord import *
-# from domonic.d3.color import *
+from domonic.d3.color import *
 # from domonic.d3.contour import *
 # from domonic.d3.delaunay import *
 from domonic.d3.dispatch import *
@@ -22,7 +22,7 @@ from domonic.d3.format import *
 # from domonic.d3.format import *
 # from domonic.d3.geo import *
 # from domonic.d3.heirarchy import *
-# from domonic.d3.interpolate import *
+from domonic.d3.interpolate import *
 from domonic.d3.path import *
 from domonic.d3.polygon import *
 from domonic.d3.queue import *

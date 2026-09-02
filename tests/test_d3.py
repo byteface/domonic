@@ -2334,5 +2334,76 @@ class ArrayTestCase(unittest.TestCase):
         self.assertEqual(bins[-1].x1, 13)
 
 
+class ColorTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.c = importlib.import_module("domonic.d3.color")
+
+    def test_parsing_and_formats(self):
+        c = self.c
+        self.assertEqual(c.color("steelblue").formatHex(), "#4682b4")
+        self.assertEqual(c.color("#f00").formatHex(), "#ff0000")
+        self.assertEqual(str(c.color("rgb(255, 0, 0)")), "rgb(255, 0, 0)")
+        self.assertEqual(c.color("rgba(100%, 0%, 0%, 0.5)").opacity, 0.5)
+        self.assertEqual(c.color("hsl(120, 50%, 50%)").rgb().formatHex(), "#40bf40")
+        self.assertIsNone(c.color("not-a-color"))
+
+    def test_colour_space_roundtrips(self):
+        c = self.c
+        for space in (c.hsl, c.lab, c.hcl, c.cubehelix):
+            self.assertEqual(space("steelblue").rgb().formatHex(), "#4682b4")
+
+    def test_brighter_darker(self):
+        c = self.c
+        self.assertEqual(c.rgb("steelblue").brighter().formatHex(), "#64baff")
+        self.assertTrue(c.rgb("black").darker().displayable())
+
+
+class InterpolateTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.i = importlib.import_module("domonic.d3.interpolate")
+
+    def test_primitives(self):
+        i = self.i
+        self.assertEqual(i.interpolateNumber(10, 20)(0.5), 15)
+        self.assertEqual(i.interpolateRound(0, 9)(0.55), 5)
+        self.assertEqual(i.interpolateString("10px 0", "20px 40")(0.5), "15px 20")
+        self.assertEqual(i.interpolateArray([0, 0], [10, 100])(0.5), [5, 50])
+        self.assertEqual(
+            i.interpolateObject({"x": 0}, {"x": 10})(0.5), {"x": 5}
+        )
+
+    def test_colour(self):
+        i = self.i
+        self.assertEqual(i.interpolateRgb("red", "blue")(0.5), "rgb(128, 0, 128)")
+        self.assertEqual(i.interpolate("red", "lime")(0.5), "rgb(128, 128, 0)")
+        for maker in (
+            i.interpolateHsl,
+            i.interpolateLab,
+            i.interpolateHcl,
+            i.interpolateCubehelix,
+        ):
+            self.assertTrue(maker("red", "blue")(0.5).startswith("rgb("))
+
+    def test_basis_piecewise_quantize(self):
+        i = self.i
+        b = i.interpolateBasis([0, 10, 0, 10])
+        self.assertEqual(b(0), 0)
+        self.assertEqual(b(1), 10)
+        pw = i.piecewise(i.interpolateNumber, [0, 10, 100])
+        self.assertEqual(pw(0.25), 5)
+        self.assertEqual(pw(0.75), 55)
+        self.assertEqual(i.quantize(i.interpolateRound(0, 100), 5), [0, 25, 50, 75, 100])
+
+    def test_zoom_endpoints(self):
+        i = self.i
+        z = i.interpolateZoom([0, 0, 1], [100, 100, 2])
+        self.assertEqual([round(v, 6) for v in z(0)], [0, 0, 1])
+        self.assertEqual([round(v, 6) for v in z(1)], [100, 100, 2])
+
+
 if __name__ == "__main__":
     unittest.main()
