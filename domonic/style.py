@@ -2017,14 +2017,25 @@ class Style:
             return
         property_name = _css_property_name(name)
         entries = _parse_css_declarations(self._parent_node.getAttribute("style") or "")
-        entries = _set_css_declaration(entries, property_name, value, priority)
+        # Assigning "" (or None) to a single property removes its declaration,
+        # matching ``el.style.color = ""`` in a browser -- rather than emitting a
+        # dangling ``color: ;``.
+        removing = value is None or str(value) == ""
+        if removing:
+            entries = [entry for entry in entries if entry[0] != property_name]
+        else:
+            entries = _set_css_declaration(entries, property_name, value, priority)
         css_text = _serialize_css_declarations(entries, compact=True)
         self._parent_node.setAttribute("style", css_text)
         if hasattr(self, "_css_text"):
             object.__setattr__(self, "_css_text", css_text)
         if hasattr(self, "_declared_properties") and not property_name.startswith("--"):
             declared_properties = set(getattr(self, "_declared_properties", set()))
-            declared_properties.add(_css_attribute_name(property_name))
+            attribute_name = _css_attribute_name(property_name)
+            if removing:
+                declared_properties.discard(attribute_name)
+            else:
+                declared_properties.add(attribute_name)
             object.__setattr__(self, "_declared_properties", declared_properties)
 
     @staticmethod

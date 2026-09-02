@@ -834,6 +834,19 @@ class TestCase(unittest.TestCase):
         self.assertEqual(node.style.getPropertyValue("border-top-width"), "2px")
         self.assertEqual(node.style.getPropertyValue("border-color"), "blue")
 
+    def test_setting_a_property_to_empty_string_removes_the_declaration(self):
+        node = div()
+        node.style.color = "red"
+        node.style.background = "blue"
+
+        node.style.color = ""  # camelCase attribute path
+        self.assertNotIn("color:", str(node))
+        self.assertEqual(str(node), '<div style="background:blue;"></div>')
+
+        node.style["background"] = ""  # subscript / setProperty path
+        self.assertEqual(str(node), '<div style=""></div>')
+        self.assertEqual(node.style.getPropertyValue("background"), "")
+
     def test_get_computed_style_cascade(self):
         page = document.createElement("html")
         page.innerHTML = (
