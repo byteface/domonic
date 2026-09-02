@@ -20,6 +20,7 @@ files = [
     "domonic/d3/format.py",
     "domonic/d3/interpolate.py",
     "domonic/d3/scale.py",
+    "domonic/d3/time.py",
     "domonic/d3/path.py",
     "domonic/d3/polygon.py",
     "domonic/d3/queue.py",

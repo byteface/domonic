@@ -2459,5 +2459,70 @@ class ScaleTestCase(unittest.TestCase):
         self.assertEqual([div(-5), div(0), div(5)], [0.25, 0.5, 0.75])
 
 
+class TimeTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+        from datetime import datetime
+
+        self.t = importlib.import_module("domonic.d3.time")
+        self.dt = datetime
+
+    def test_intervals(self):
+        t, dt = self.t, self.dt
+        d = dt(2023, 3, 15, 14, 37, 42)
+        self.assertEqual(t.timeDay.floor(d), dt(2023, 3, 15))
+        self.assertEqual(t.timeDay.ceil(d), dt(2023, 3, 16))
+        self.assertEqual(t.timeHour.round(d), dt(2023, 3, 15, 15))
+        self.assertEqual(t.timeMonth.floor(d), dt(2023, 3, 1))
+        self.assertEqual(t.timeMonth.offset(d, 2), dt(2023, 5, 15, 14, 37, 42))
+        self.assertEqual(t.timeYear.floor(d), dt(2023, 1, 1))
+        self.assertEqual(t.timeWeek.floor(d), dt(2023, 3, 12))
+        self.assertEqual(t.timeMonday.floor(d), dt(2023, 3, 13))
+
+    def test_range_and_count(self):
+        t, dt = self.t, self.dt
+        self.assertEqual(
+            t.timeDay.range(dt(2023, 1, 1), dt(2023, 1, 4)),
+            [dt(2023, 1, 1), dt(2023, 1, 2), dt(2023, 1, 3)],
+        )
+        self.assertEqual(t.timeDay.count(dt(2023, 1, 1), dt(2023, 3, 15)), 73)
+        self.assertEqual(
+            t.timeDay.every(2).range(dt(2023, 1, 1), dt(2023, 1, 6)),
+            [dt(2023, 1, 1), dt(2023, 1, 3), dt(2023, 1, 5)],
+        )
+
+    def test_ticks(self):
+        t, dt = self.t, self.dt
+        self.assertEqual(
+            t.timeTicks(dt(2020, 1, 1), dt(2023, 1, 1), 5),
+            [dt(y, 1, 1) for y in (2020, 2021, 2022, 2023)],
+        )
+        hours = t.timeTicks(dt(2023, 1, 1, 0), dt(2023, 1, 1, 12), 4)
+        self.assertEqual(hours[0], dt(2023, 1, 1, 0))
+        self.assertEqual(hours[-1], dt(2023, 1, 1, 12))
+
+
+class TimeScaleTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+        from datetime import datetime
+
+        self.s = importlib.import_module("domonic.d3.scale")
+        self.dt = datetime
+
+    def test_time_scale(self):
+        s, dt = self.s, self.dt
+        sc = s.scaleTime([dt(2023, 1, 1), dt(2023, 12, 31)], [0, 1000])
+        self.assertEqual(round(sc(dt(2023, 7, 2))), 500)
+        self.assertEqual(sc.invert(0), dt(2023, 1, 1))
+        self.assertEqual(
+            s.scaleTime().domain([dt(2023, 3, 15, 4, 20), dt(2023, 3, 15, 8, 50)])
+            .nice().domain(),
+            [dt(2023, 3, 15, 4), dt(2023, 3, 15, 9)],
+        )
+        fmt = sc.tickFormat()
+        self.assertTrue(all(isinstance(fmt(t), str) for t in sc.ticks(4)))
+
+
 if __name__ == "__main__":
     unittest.main()

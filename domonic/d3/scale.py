@@ -15,6 +15,7 @@ otherwise, matching d3.
 from __future__ import annotations
 
 import math
+from datetime import datetime
 from typing import Any, Callable, Sequence
 
 from domonic.d3.array import bisect, quantile, quantileSorted, ticks, tickIncrement
@@ -29,6 +30,7 @@ __all__ = [
     "scaleLog", "scaleSymlog", "scaleQuantize", "scaleQuantile",
     "scaleThreshold", "scaleOrdinal", "scaleBand", "scalePoint",
     "scaleSequential", "scaleDiverging", "scaleImplicit", "tickFormat",
+    "scaleTime", "scaleUtc",
 ]
 
 
@@ -1094,6 +1096,117 @@ def scaleDiverging(*args) -> DivergingScale:
     if domain is not None:
         scale.domain(domain)
     return scale
+
+
+# -- time ---------------------------------------------------------
+
+def _multiscale_time_format(date) -> str:
+    """A compact d3-style multi-scale date format via ``strftime``."""
+    from domonic.d3.time import (
+        timeSecond as _tS, timeMinute as _tMi, timeHour as _tH,
+        timeDay as _tD, timeWeek as _tW, timeMonth as _tMo, timeYear as _tY,
+    )
+
+    if _tS(date) < date:
+        return date.strftime(".%f")[:4]
+    if _tMi(date) < date:
+        return date.strftime(":%S")
+    if _tH(date) < date:
+        return date.strftime("%H:%M")
+    if _tD(date) < date:
+        return date.strftime("%H:%M")
+    if _tMo(date) < date:
+        if _tW(date) < date:
+            return date.strftime("%a %d")
+        return date.strftime("%b %d")
+    if _tY(date) < date:
+        return date.strftime("%B")
+    return date.strftime("%Y")
+
+
+class TimeScale(LinearishScale):
+    """Continuous scale with a temporal domain (``datetime`` endpoints)."""
+
+    _utc = False
+
+    def _to_number(self, x):
+        return x.timestamp() if isinstance(x, datetime) else float(x)
+
+    def _to_date(self, n):
+        return datetime.fromtimestamp(n)
+
+    def domain(self, values=None):
+        if values is None:
+            return [self._to_date(d) for d in self._domain]
+        self._domain = [self._to_number(v) for v in values]
+        return self._rescale()
+
+    def __call__(self, x):
+        return super().__call__(self._to_number(x))
+
+    def invert(self, y):
+        return self._to_date(super().invert(y))
+
+    def ticks(self, count: int | None = None):
+        from domonic.d3.time import timeTicks as _tt, utcTicks as _ut
+
+        d = self.domain()
+        fn = _ut if self._utc else _tt
+        return fn(d[0], d[-1], 10 if count is None else count)
+
+    def tickFormat(self, count=None, specifier=None):
+        if specifier is not None:
+            def strf(date):
+                return date.strftime(specifier)
+            return strf
+        return _multiscale_time_format
+
+    def nice(self, count: int | None = None):
+        from domonic.d3.time import (
+            timeTickInterval as _tti, utcTickInterval as _uti,
+        )
+
+        d = self.domain()
+        interval: Any = count
+        if not hasattr(interval, "range"):
+            interval = (_uti if self._utc else _tti)(
+                d[0], d[-1], 10 if count is None else count
+            )
+        if interval is not None:
+            self.domain([interval.floor(d[0]), interval.ceil(d[-1])])
+        return self
+
+    def copy(self):
+        clone = type(self)()
+        clone._domain = list(self._domain)
+        clone._range = list(self._range)
+        clone._interpolate = self._interpolate
+        clone._clamp = self._clamp
+        clone._unknown = self._unknown
+        return clone._rescale()
+
+
+class UtcScale(TimeScale):
+    _utc = True
+
+
+def scaleTime(*args) -> TimeScale:
+    scale = TimeScale()._rescale()
+    scale._domain = _DEFAULT_TIME_DOMAIN()
+    return _init_range_domain(scale, args)
+
+
+def scaleUtc(*args) -> UtcScale:
+    scale = UtcScale()._rescale()
+    scale._domain = _DEFAULT_TIME_DOMAIN()
+    return _init_range_domain(scale, args)
+
+
+def _DEFAULT_TIME_DOMAIN() -> list:
+    return [
+        datetime(2000, 1, 1).timestamp(),
+        datetime(2000, 1, 2).timestamp(),
+    ]
 
 
 # -- tick format ---------------------------------------------
