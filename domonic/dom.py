@@ -1960,7 +1960,9 @@ class Node(EventTarget):
                     continue
                 replace_args = list(self.args)
                 replace_args.pop(count)
-                self.args = tuple(replace_args)
+                # bypass Node.__setattr__ -> _update_parents(): removing one
+                # child never changes the parent link of the siblings that stay.
+                self.__dict__["args"] = tuple(replace_args)
                 _notify_slot_change(self)
                 return each
 
@@ -1972,7 +1974,7 @@ class Node(EventTarget):
                 n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.pop(count)
-                self.args = tuple(replace_args)
+                self.__dict__["args"] = tuple(replace_args)
                 _queue_mutation_record(
                     "childList",
                     self,
@@ -2021,7 +2023,9 @@ class Node(EventTarget):
         if isinstance(oldChild, Node):
             _disconnect_tree(oldChild)
         replace_args[count : count + 1] = list(items)
-        self.args = tuple(replace_args)
+        # _connect_inserted_node below re-parents the new items; the siblings
+        # that stay keep their parent link, so skip the recursive _update_parents.
+        self.__dict__["args"] = tuple(replace_args)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         if isinstance(oldChild, Node):
