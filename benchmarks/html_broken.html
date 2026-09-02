@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Broken Markup</title>
+</head>
+<body>
+
+<div id=main class=container>
+  <p>Paragraph without a close
+  <p>Another one <b>bold <i>and italic</b> still italic?</i>
+  <ul>
+    <li>one
+    <li>two <a href="/z">link
+    <li>three</a>
+  </ul>
+  <table>
+    <tr><td>a<td>b
+    <tr><td>c<td>d
+  </table>
+  <span data-json='{"k": "v>x", "n": 3}'>templated</span>
+  5 < 3 is false &amp; 3 > 1 is true
+  <img src="/pic.png" alt="pic without close"
+  <section>trailing section never closed
+
+</body>
+</html>

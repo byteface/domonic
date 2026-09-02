@@ -105,6 +105,48 @@ def _element_children(node: Any) -> Iterator[Element]:
             yield child
 
 
+def _sibling_view(
+    node: Any, cache: dict[int, tuple[list[Element], dict[int, int]]] | None
+) -> tuple[list[Element], int] | None:
+    """Return ``(element-siblings list, index of node)`` for ``node``'s parent.
+
+    The list + index map for a parent is built once and cached, so ``+`` / ``~``
+    over a wide sibling set stays linear instead of rebuilding the list per node.
+    """
+    parent = getattr(node, "parentNode", None)
+    if parent is None:
+        return None
+    if cache is None:
+        cache = {}
+    entry = cache.get(id(parent))
+    if entry is None:
+        kids = [c for c in _iter_child_nodes(parent) if isinstance(c, Element)]
+        entry = (kids, {id(k): i for i, k in enumerate(kids)})
+        cache[id(parent)] = entry
+    kids, index_map = entry
+    idx = index_map.get(id(node))
+    return None if idx is None else (kids, idx)
+
+
+def _following_element_siblings(
+    node: Any, cache: dict[int, Any] | None = None
+) -> Iterator[Element]:
+    view = _sibling_view(node, cache)
+    if view is not None:
+        kids, idx = view
+        yield from kids[idx + 1:]
+
+
+def _next_element_sibling(
+    node: Any, cache: dict[int, Any] | None = None
+) -> Element | None:
+    view = _sibling_view(node, cache)
+    if view is None:
+        return None
+    kids, idx = view
+    return kids[idx + 1] if idx + 1 < len(kids) else None
+
+
 def _find_element_by_id(
     node: Any,
     element_id: str,
@@ -294,7 +336,7 @@ def _attributes_match(node: Any, attrs: dict[str, Any] | None) -> bool:
 
 
 def _own_string(node: Any) -> str | None:
-    if isinstance(node, Text):
+    if isinstance(node, (Text, Comment)):
         return node.data
     if isinstance(node, str):
         return node
@@ -308,7 +350,7 @@ def _own_string(node: Any) -> str | None:
 
 
 def _string_value(node: Any) -> str | None:
-    if isinstance(node, Text):
+    if isinstance(node, (Text, Comment)):
         return node.data
     if isinstance(node, str):
         return node
@@ -332,7 +374,11 @@ def _matches(
     string: Any = None,
 ) -> bool:
     if name is None and not attrs and string is not None:
-        return isinstance(node, (str, Text)) and _string_matches(string, node)
+        # Beautiful Soup's ``string=`` filter matches any NavigableString,
+        # which includes comment text.
+        return isinstance(node, (str, Text, Comment)) and _string_matches(
+            string, node
+        )
     return (
         _name_matches(name, node)
         and _attributes_match(node, attrs)
@@ -555,13 +601,15 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
         if bracket_depth:
             token.append(char)
             continue
-        if char == ">":
+        # ``>`` is always a combinator; ``+`` / ``~`` only when whitespace-
+        # separated, so a literal class token such as ``.foo+bar`` is preserved.
+        if char == ">" or (char in ("+", "~") and pending_space):
             current = "".join(token).strip()
             if not current:
                 return None
             parts.append((combinator, current))
             token = []
-            combinator = ">"
+            combinator = char
             pending_space = False
             continue
         if char.isspace():
@@ -595,6 +643,22 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
     match = re.search(r":nth-child\((\d+)\)$", selector)
     if match:
         return selector[: match.start()], ("nth-child", int(match.group(1)))
+    # :not(<single compound selector>) - the common form; a selector list or a
+    # nested combinator inside :not() bails to the XPath engine.
+    match = re.search(r":not\(([^()]+)\)$", selector)
+    if match:
+        inner = match.group(1).strip()
+        if "," in inner or any(c in inner for c in " >+~"):
+            return None  # selector list / combinator inside :not() -> XPath
+        if inner.startswith(":"):
+            nested = _strip_simple_pseudo("x" + inner)
+            if nested is None or nested[1] is None:
+                return None
+            return selector[: match.start()], ("not-pseudo", nested[1])
+        inner_parsed = Element._parse_simple_selector(inner)
+        if inner_parsed is None:
+            return None
+        return selector[: match.start()], ("not", inner_parsed)
     return None
 
 
@@ -670,36 +734,86 @@ def _element_index(element: Element) -> int | None:
     return None
 
 
-def _match_simple_pseudo(element: Element, pseudo: tuple[str, Any] | None) -> bool:
+def _sibling_positions(parent: Any) -> dict[int, tuple[int, int]]:
+    """Map ``id(child element) -> (1-based index, total element count)`` for one
+    parent, computed in a single pass. Callers memoise this per ``select`` so
+    ``:first-child`` / ``:nth-child`` over a wide list stay linear, not O(n^2).
+    """
+    elements = [c for c in _iter_child_nodes(parent) if isinstance(c, Element)]
+    total = len(elements)
+    return {id(el): (i + 1, total) for i, el in enumerate(elements)}
+
+
+def _match_simple_pseudo(
+    element: Element,
+    pseudo: tuple[str, Any] | None,
+    position_cache: dict[int, dict[int, tuple[int, int]]] | None = None,
+) -> bool:
     if pseudo is None:
         return True
     name, value = pseudo
-    index = _element_index(element)
-    if index is None:
+    if name == "not":
+        return not _match_parsed_selector(element, value)
+    if name == "not-pseudo":
+        return not _match_simple_pseudo(element, value, position_cache)
+    parent = getattr(element, "parentNode", None)
+    if parent is None:
         return False
+    if position_cache is None:
+        position_cache = {}
+    positions = position_cache.get(id(parent))
+    if positions is None:
+        positions = _sibling_positions(parent)
+        position_cache[id(parent)] = positions
+    entry = positions.get(id(element))
+    if entry is None:
+        return False
+    index, total = entry
     if name == "first-child":
         return index == 1
     if name == "last-child":
-        parent = getattr(element, "parentNode", None)
-        if parent is None:
-            return False
-        last = None
-        for child in _iter_child_nodes(parent):
-            if isinstance(child, Element):
-                last = child
-        return last is element
+        return index == total
     if name == "nth-child":
         return index == value
     return False
+
+
+def _prune_nested_contexts(contexts: list[Any]) -> list[Any]:
+    """Drop contexts that are descendants of another context in the list: a
+    descendant search from the ancestor already covers them. Keeps a chain of
+    N nested matches from turning the next descendant step into O(N^2).
+    """
+    ids = {id(c) for c in contexts}
+    kept = []
+    for context in contexts:
+        node = getattr(context, "parentNode", None)
+        covered = False
+        while node is not None:
+            if id(node) in ids:
+                covered = True
+                break
+            node = getattr(node, "parentNode", None)
+        if not covered:
+            kept.append(context)
+    return kept
 
 
 def _selector_candidates(
     context: Any,
     parsed: dict[str, Any],
     combinator: str | None,
+    sibling_cache: dict[int, Any] | None = None,
 ) -> Iterator[Element]:
     if combinator == ">":
         yield from _element_children(context)
+        return
+    if combinator == "+":
+        sibling = _next_element_sibling(context, sibling_cache)
+        if sibling is not None:
+            yield sibling
+        return
+    if combinator == "~":
+        yield from _following_element_siblings(context, sibling_cache)
         return
     if parsed["id"] is not None:
         found = _find_element_by_id(context, parsed["id"])
@@ -739,8 +853,6 @@ def _select_fast(
             limit,
         )
     selector = groups[0]
-    if any(char in selector for char in ("+", "~")):
-        return None
     parts = _split_simple_selector_chain(selector)
     if not parts:
         return None
@@ -758,21 +870,44 @@ def _select_fast(
 
     contexts: list[Any] = [self]
     last_index = len(parsed_parts) - 1
+    position_cache: dict[int, dict[int, tuple[int, int]]] = {}
+    sibling_cache: dict[int, Any] = {}
     for index, (combinator, parsed, pseudo) in enumerate(parsed_parts):
+        if combinator in (None, " ") and len(contexts) > 1:
+            contexts = _prune_nested_contexts(contexts)
+        elif combinator == "~" and len(contexts) > 1:
+            # ``A ~ B``: the earliest A under a parent already yields every
+            # following sibling, so later A's under the same parent add nothing.
+            seen_parents: set[int] = set()
+            pruned = []
+            for context in contexts:
+                pid = id(getattr(context, "parentNode", None))
+                if pid not in seen_parents:
+                    seen_parents.add(pid)
+                    pruned.append(context)
+            contexts = pruned
         next_contexts = []
+        seen_candidates: set[int] = set()
         for context in contexts:
             if (
                 index == 0
                 and index < last_index
                 and isinstance(context, Element)
                 and _match_parsed_selector(context, parsed)
-                and _match_simple_pseudo(context, pseudo)
+                and _match_simple_pseudo(context, pseudo, position_cache)
             ):
                 next_contexts.append(context)
-            for candidate in _selector_candidates(context, parsed, combinator):
+                seen_candidates.add(id(context))
+            for candidate in _selector_candidates(
+                context, parsed, combinator, sibling_cache
+            ):
+                marker = id(candidate)
+                if marker in seen_candidates:
+                    continue
                 if _match_parsed_selector(candidate, parsed) and _match_simple_pseudo(
-                    candidate, pseudo
+                    candidate, pseudo, position_cache
                 ):
+                    seen_candidates.add(marker)
                     next_contexts.append(candidate)
                     if index == last_index and limit == 1:
                         return next_contexts
@@ -1336,6 +1471,18 @@ def _prettify(self: Node, formatter: Any = "minimal") -> str:
     return format(self)
 
 
+def _decode(self: Node, *args: Any, **kwargs: Any) -> str:
+    """Beautiful Soup's ``.decode()`` - the string form of the tree."""
+    return str(self)
+
+
+def _encode(
+    self: Node, encoding: str = "utf-8", *args: Any, **kwargs: Any
+) -> bytes:
+    """Beautiful Soup's ``.encode()`` - the byte form of the tree."""
+    return str(self).encode(encoding, "xmlcharrefreplace")
+
+
 def _install_node_api(cls: type) -> None:
     cls.find = _find
     cls.find_all = _find_all
@@ -1367,7 +1514,10 @@ def _install_node_api(cls: type) -> None:
     cls.find_previous_siblings = _find_previous_siblings
     cls.findPreviousSiblings = _find_previous_siblings
     cls.get_text = _get_text
+    cls.getText = _get_text
     cls.prettify = _prettify
+    cls.decode = _decode
+    cls.encode = _encode
     cls.append = _append
     cls.extend = _extend
     cls.insert = _insert

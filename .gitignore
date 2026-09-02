@@ -46,6 +46,12 @@ wheels/
 docs/_build/
 build/docs/
 
+# Large generated benchmark fixtures (rebuild with make_bench_fixtures.py) and
+# raw run output. benchmarks/REPORT.md is committed.
+benchmarks/html_wide_flat.html
+benchmarks/html_tables.html
+benchmarks/results.json
+
 # Coverage and test outputs
 .coverage
 .coverage.*
