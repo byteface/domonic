@@ -33,7 +33,7 @@ from domonic.d3.queue import *
 from domonic.d3.scale import *
 from domonic.d3.selection import *
 
-# from domonic.d3.shape import *
+from domonic.d3.shape import *
 from domonic.d3.tile import *
 
 # from domonic.d3.time-format import *

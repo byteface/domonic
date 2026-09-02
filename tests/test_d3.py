@@ -2596,5 +2596,69 @@ class HierarchyTestCase(unittest.TestCase):
         self.assertEqual(root.children[0].data["id"], "b")
 
 
+class ShapeTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.sh = importlib.import_module("domonic.d3.shape")
+
+    def test_line_and_curves(self):
+        sh = self.sh
+        pts = [[0, 0], [1, 1], [2, 0]]
+        self.assertEqual(sh.line()(pts), "M0,0L1,1L2,0")
+        self.assertEqual(
+            sh.line().curve(sh.curveStep)(pts), "M0,0L1.5,1L1.5,0L2,0"
+        )
+        for curve in (
+            sh.curveBasis, sh.curveCardinal, sh.curveCatmullRom,
+            sh.curveNatural, sh.curveMonotoneX, sh.curveMonotoneY,
+        ):
+            path = sh.line().curve(curve)([[0, 0], [1, 1], [2, 0], [3, 1]])
+            self.assertTrue(path.startswith("M0,0") and "C" in path)
+
+    def test_area(self):
+        sh = self.sh
+        gen = sh.area().x(lambda d, i, a: d[0]).y0(0).y1(lambda d, i, a: d[1])
+        self.assertEqual(gen([[0, 1], [1, 2], [2, 1]]), "M0,1L1,2L2,1L2,0L1,0L0,0Z")
+
+    def test_arc_and_pie(self):
+        sh = self.sh
+        a = sh.arc().innerRadius(40).outerRadius(100).startAngle(0).endAngle(math.pi / 2)
+        path = a()
+        self.assertTrue(path.startswith("M0,-100") and path.endswith("Z"))
+        cx, cy = a.centroid()
+        self.assertAlmostEqual(math.hypot(cx, cy), 70.0)
+
+        wedges = sh.pie()([1, 1, 2])
+        by_angle = sorted(wedges, key=lambda w: w["startAngle"])
+        self.assertAlmostEqual(by_angle[0]["startAngle"], 0)
+        self.assertAlmostEqual(by_angle[-1]["endAngle"], math.tau)
+        self.assertAlmostEqual(
+            sum(w["endAngle"] - w["startAngle"] for w in wedges), math.tau
+        )
+
+    def test_symbols(self):
+        sh = self.sh
+        for t in sh.symbolsFill:
+            path = sh.symbol(t, 64)()
+            self.assertTrue(path.startswith("M"))
+
+    def test_link_and_stack(self):
+        sh = self.sh
+        lh = sh.linkHorizontal().x(lambda p: p[0]).y(lambda p: p[1])
+        self.assertEqual(
+            lh({"source": [0, 0], "target": [100, 100]}), "M0,0C50,0,50,100,100,100"
+        )
+        series = sh.stack().keys(["a", "b", "c"])(
+            [{"a": 1, "b": 2, "c": 3}, {"a": 2, "b": 1, "c": 2}]
+        )
+        self.assertEqual([s.key for s in series], ["a", "b", "c"])
+        self.assertEqual([list(p) for p in series[1]], [[1.0, 3.0], [2.0, 3.0]])
+        expand = sh.stack().keys(["a", "b"]).offset(sh.stackOffsetExpand)(
+            [{"a": 1, "b": 3}, {"a": 1, "b": 1}]
+        )
+        self.assertEqual(list(expand[1][0]), [0.25, 1.0])
+
+
 if __name__ == "__main__":
     unittest.main()
