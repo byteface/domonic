@@ -261,6 +261,121 @@ def _render_attribute_value(value: Any, escape: bool | None = None) -> str:
     return f"{quote}{rendered_value}{quote}"
 
 
+# --- WHATWG HTML fragment serialization ------------------------------------
+# https://html.spec.whatwg.org/multipage/parsing.html#serialising-html-fragments
+#
+# This is what a browser emits for ``innerHTML`` / ``outerHTML`` / ``getHTML()``
+# and it differs from ``str(node)``, which keeps domonic's XHTML-flavoured
+# authoring output (``<br/>``, bare boolean attributes, ``<``/``>`` escaped in
+# attribute values). Ports whose fixtures diff against real browser output
+# (DOMPurify, sanitiser suites) need this byte-compatible form.
+
+_HTML_VOID_ELEMENTS = frozenset({
+    "area", "base", "basefont", "bgsound", "br", "col", "embed", "frame", "hr",
+    "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr",
+})
+_HTML_RAWTEXT_ELEMENTS = frozenset({
+    "style", "script", "xmp", "iframe", "noembed", "noframes", "noscript",
+    "plaintext",
+})
+
+# "escape a string" -- text mode replaces & \xa0 < > ; attribute mode replaces
+# & \xa0 and the (double) quote, but never < or >.
+_FRAGMENT_TEXT_ESCAPE = {
+    ord("&"): "&amp;", ord("\xa0"): "&nbsp;",
+    ord("<"): "&lt;", ord(">"): "&gt;",
+}
+_FRAGMENT_ATTR_ESCAPE = {
+    ord("&"): "&amp;", ord("\xa0"): "&nbsp;", ord('"'): "&quot;",
+}
+_FRAGMENT_ATTR_NAME_ALIASES = {
+    "accept_charset": "accept-charset",
+    "http_equiv": "http-equiv",
+    "is_": "is",
+}
+
+
+def _fragment_text_escape(data: str, raw: bool) -> str:
+    if raw or (
+        "&" not in data and "<" not in data
+        and ">" not in data and "\xa0" not in data
+    ):
+        return data
+    return data.translate(_FRAGMENT_TEXT_ESCAPE)
+
+
+def _serialize_html_fragment(node: "Node") -> str:
+    """Serialize ``node``'s children per the HTML fragment serialization algorithm."""
+    out: list[str] = []
+    _serialize_fragment_children(node, out)
+    return "".join(out)
+
+
+def _serialize_fragment_element(element: "Node", out: list) -> None:
+    tagname = element.name or ""
+    out.append("<")
+    out.append(tagname)
+    kwargs = getattr(element, "kwargs", None)
+    if kwargs:
+        for key, value in kwargs.items():
+            if value is False:
+                # a real DOM would not carry this attribute at all
+                continue
+            if value is True or value is None:
+                value = ""
+            out.append(" ")
+            out.append(
+                _FRAGMENT_ATTR_NAME_ALIASES.get(
+                    key[1:] if key[:1] == "_" else key,
+                    key[1:] if key[:1] == "_" else key,
+                )
+            )
+            out.append('="')
+            out.append(str(value).translate(_FRAGMENT_ATTR_ESCAPE))
+            out.append('"')
+    out.append(">")
+    lname = tagname.lower()
+    if lname in _HTML_VOID_ELEMENTS:
+        return
+    _serialize_fragment_children(
+        element, out, raw=lname in _HTML_RAWTEXT_ELEMENTS
+    )
+    out.append("</")
+    out.append(tagname)
+    out.append(">")
+
+
+def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> None:
+    for child in getattr(node, "args", None) or ():
+        if type(child) is str:
+            out.append(_fragment_text_escape(child, raw))
+        elif isinstance(child, Text):
+            out.append(
+                _fragment_text_escape(child.args[0] if child.args else "", raw)
+            )
+        elif isinstance(child, Comment):
+            out.append("<!--")
+            out.append(str(child.data))
+            out.append("-->")
+        elif isinstance(child, ProcessingInstruction):
+            out.append("<?")
+            out.append(str(child.target))
+            out.append(" ")
+            out.append(str(child.data))
+            out.append(">")
+        elif isinstance(child, DocumentType):
+            out.append("<!DOCTYPE ")
+            out.append(str(getattr(child, "name", "") or ""))
+            out.append(">")
+        elif isinstance(child, Element):
+            _serialize_fragment_element(child, out)
+        elif isinstance(child, Node):
+            # DocumentFragment or other container: serialize its children
+            _serialize_fragment_children(child, out)
+        else:
+            out.append(_fragment_text_escape(str(child), raw))
+
+
 def _get_custom_element_registry():
     try:
         from domonic.window import window as domonic_window
@@ -4144,8 +4259,14 @@ class Element(Node):
 
     @property
     def innerHTML(self):
-        """Sets or returns the content of an element"""
-        return self.content
+        """Return this element's content as an HTML-fragment-serialised string.
+
+        Matches a browser's ``innerHTML`` getter (WHATWG fragment serialisation:
+        ``<br>`` not ``<br/>``, ``checked=""`` not bare ``checked``, only
+        ``& " \\xa0`` escaped in attribute values). ``str(node)`` keeps
+        domonic's XHTML-style authoring output.
+        """
+        return _serialize_html_fragment(self)
 
     @innerHTML.setter
     def innerHTML(self, value):
@@ -4155,7 +4276,21 @@ class Element(Node):
 
     @property
     def outerHTML(self):
-        return str(self)
+        """Return this element serialised per the HTML fragment algorithm.
+
+        Browser-compatible counterpart to ``str(self)`` -- see ``innerHTML``.
+        """
+        out: list[str] = []
+        _serialize_fragment_element(self, out)
+        return "".join(out)
+
+    def getHTML(self, options: Any = None) -> str:
+        """DOM ``Element.getHTML()`` -- serialised inner HTML.
+
+        ``options`` is accepted for signature compatibility; shadow-root
+        serialisation is not implemented.
+        """
+        return _serialize_html_fragment(self)
 
     @outerHTML.setter
     def outerHTML(self, value):
