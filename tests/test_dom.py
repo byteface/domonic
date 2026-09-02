@@ -5605,7 +5605,10 @@ class TestDomTokenList(unittest.TestCase):
                 self.assertEqual(circle.namespaceURI, "http://www.w3.org/2000/svg")
 
             with self.subTest(parser=parser, tag="mi"):
-                page = domonic.parseString("<mi>x</mi>", parser=parser)
+                try:
+                    page = domonic.parseString("<mi>x</mi>", parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
                 mi_node = (
                     page
                     if getattr(page, "tagName", None) == "mi"
