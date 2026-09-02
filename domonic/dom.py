@@ -940,20 +940,27 @@ class Node(EventTarget):
     #              'prefix']
 
     def __init__(self, *args, **kwargs) -> None:
-        self.args = _coerce_insertion_nodes(*args)
-        self.kwargs = kwargs
+        # ``args`` -- skip the fragment/dedup coercion for the trivial cases
+        # (no children, or a single non-Node child), which is the vast majority
+        # of programmatic construction and every text-only element.
+        if not args:
+            self.__dict__["args"] = ()
+        elif len(args) == 1 and not isinstance(args[0], (Node, list, tuple)):
+            self.__dict__["args"] = args
+        else:
+            self.__dict__["args"] = _coerce_insertion_nodes(*args)
 
-        if getattr(self, "name", None) is None:
+        # ``kwargs`` -- attributes get a leading underscore; build the dict once
+        if kwargs:
+            self.kwargs = {
+                (k if k[:1] == "_" else "_" + k): v for k, v in kwargs.items()
+            }
+        else:
+            self.kwargs = {}
+
+        nm = getattr(self, "name", None)
+        if nm is None:
             self.name = ""
-
-        # if user doesn't put underscore (dont advertise this as still has issues.)
-        new_kwargs = {}
-        for k, v in kwargs.items():
-            if k[0] != "_":
-                new_kwargs[f"_{k}"] = v
-            else:
-                new_kwargs[k] = v
-        self.kwargs = new_kwargs
 
         self._baseURI: str = ""
         self.isConnected: bool = True
@@ -972,19 +979,14 @@ class Node(EventTarget):
         self._escape_attributes_on_render = True
         # self.baseURIObject = None  # ?
         # self.nodePrincipal = None
-        self._update_parents()
+        if self.__dict__["args"]:
+            self._update_parents()
 
-        # attempt to set init namespaceURI based on the tag name
-        try:
-            nm = self.rootNode.tagName
-        except AttributeError:
-            nm = None
-        if nm == "html":
-            self.namespaceURI = "http://www.w3.org/1999/xhtml"
-        elif nm == "svg":
+        # namespaceURI from the tag name -- ``parentNode`` is always None during
+        # __init__, so ``rootNode`` is ``self`` and ``rootNode.tagName`` is just
+        # this node's own name.
+        if nm == "svg":
             self.namespaceURI = "http://www.w3.org/2000/svg"
-        elif nm == "xhtml":
-            self.namespaceURI = "http://www.w3.org/1999/xhtml"
         elif nm == "xml":
             self.namespaceURI = "http://www.w3.org/XML/1998/namespace"
         elif nm == "xlink":
@@ -3661,22 +3663,11 @@ class Element(Node):
     # __slots__ = ('_id')
 
     def __init__(self, *args, **kwargs):
-        # self.content = None
-        # self.attributes = None
-        if self.hasAttribute("id"):
-            self.id = self.id  # ''#None
-
+        # Attribute-backed properties (id / title / class) are resolved lazily
+        # through __getattr__; ``self.kwargs`` is not populated until
+        # ``Node.__init__`` runs below, so there is nothing to reflect here.
         self.lang = None
         self.tabIndex = None
-
-        if self.hasAttribute("title"):
-            self.title = self.title
-
-        if self.hasAttribute("class"):
-            self.className = self.className
-            self.classList = self.classList
-
-        # self.tagName
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
         self.dir = None
