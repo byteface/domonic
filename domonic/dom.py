@@ -426,22 +426,29 @@ def _prepare_detached_clone(
 
 def _upgrade_custom_element_instance(element: "Element") -> "Element":
     registry = _get_custom_element_registry()
-    if registry is None:
+    # Nothing is ever registered in the common case -- skip the per-element work.
+    if registry is None or not getattr(registry, "store", None):
         return element
     return registry._upgrade_element(element)
 
 
 def _connect_tree(node: "Node") -> None:
+    # ``rootNode`` walks to the top of the tree; it is the same for every node in
+    # the subtree being connected, so resolve it once.
+    root = node.rootNode
+    is_connected = isinstance(root, Document)
+    owner = root if is_connected else getattr(node, "_ownerDocument", None)
+    registry = _get_custom_element_registry()
+    has_custom_elements = registry is not None and bool(
+        getattr(registry, "store", None)
+    )
     for current in _iter_dom_nodes(node):
-        current._ownerDocument = (
-            current.rootNode
-            if isinstance(current.rootNode, Document)
-            else getattr(current, "_ownerDocument", None)
-        )
-        current.isConnected = _node_is_connected(current)
+        current._ownerDocument = owner
+        current.isConnected = is_connected
         if isinstance(current, Element):
-            _upgrade_custom_element_instance(current)
-            if current.isConnected:
+            if has_custom_elements:
+                _upgrade_custom_element_instance(current)
+            if is_connected:
                 _run_connected_callback(current)
 
 

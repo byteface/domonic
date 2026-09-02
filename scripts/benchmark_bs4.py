@@ -324,6 +324,25 @@ def _time(fn: Callable[[], Any], iterations: int) -> tuple[float, Any]:
     return best * 1000.0, result
 
 
+def _time_fresh(
+    build: Callable[[], Any], op: Callable[[Any], Any], iterations: int
+) -> tuple[float, Any]:
+    """Time ``op`` on a single-use (mutated in place) subject.
+
+    The subjects are built *outside* the timed region -- otherwise the parse
+    cost swamps the mutation being measured.
+    """
+    subjects = [build() for _ in range(iterations)]
+    best = float("inf")
+    result = None
+    for subject in subjects:
+        gc.collect()
+        start = time.perf_counter()
+        result = op(subject)
+        best = min(best, time.perf_counter() - start)
+    return best * 1000.0, result
+
+
 def run_case(
     case: Case,
     html: str,
@@ -342,11 +361,11 @@ def run_case(
             res.bs4_sig = case.op(BeautifulSoup(html, bs4_parser))
             res.slop_sig = case.op(BeautifulSlop(html, slop_parser))
             if not check_only:
-                res.bs4_ms, _ = _time(
-                    lambda: case.op(BeautifulSoup(html, bs4_parser)), iterations
+                res.bs4_ms, _ = _time_fresh(
+                    lambda: BeautifulSoup(html, bs4_parser), case.op, iterations
                 )
-                res.slop_ms, _ = _time(
-                    lambda: case.op(BeautifulSlop(html, slop_parser)), iterations
+                res.slop_ms, _ = _time_fresh(
+                    lambda: BeautifulSlop(html, slop_parser), case.op, iterations
                 )
         else:
             bs4_soup = BeautifulSoup(html, bs4_parser)

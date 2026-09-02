@@ -868,12 +868,31 @@ def _select_fast(
     if not groups:
         return None
     if len(groups) > 1:
+        if limit == 1:
+            # ``select_one`` on a group: the first per group, then the
+            # earliest of those in document order -- walk only up to it.
+            firsts: list[Element] = []
+            for group in groups:
+                match = _select_fast(self, group, limit=1)
+                if match is None:
+                    return None
+                if match:
+                    firsts.append(match[0])
+            if len(firsts) <= 1:
+                return firsts
+            first_ids = {id(node) for node in firsts}
+            for candidate in _element_descendants(self):
+                if id(candidate) in first_ids:
+                    return [candidate]
+            return firsts[:1]
         matched_ids = set()
         for group in groups:
             matches = _select_fast(self, group)
             if matches is None:
                 return None
             matched_ids.update(id(match) for match in matches)
+        if not matched_ids:
+            return []
         return _limit(
             (
                 candidate
