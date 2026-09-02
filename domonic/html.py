@@ -237,6 +237,9 @@ html_tags = [
 
 _HTML_TAG_LOOKUP = set(html_tags)
 _TAG_ALIASES = {"del": "del_", "hx-partial": "hx_partial"}
+# tag name -> element class, populated lazily by ``create_element`` for names
+# that are already lower-case (the common ``createElement("div")`` path)
+_HTML_TAG_CLASSES: dict = {}
 
 html_attributes = [
     "accept",
@@ -846,6 +849,11 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
     tag name needs to be set due to custom tags with hyphens can't be classnames.
     i.e. hypenated tags <some-custom-tag></some-custom-tag>
     """
+    # fast path: an already-normalised, known tag name seen before
+    cached = _HTML_TAG_CLASSES.get(name)
+    if cached is not None:
+        return cached(*args, **kwargs)
+
     # checks if already exists
     normalized_name = str(name).strip().lower()
     if not normalized_name:
@@ -853,7 +861,10 @@ def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Eleme
         name = "custom_tag"
     if normalized_name in _HTML_TAG_LOOKUP:
         tag_name = _TAG_ALIASES.get(normalized_name, normalized_name)
-        return globals()[tag_name](*args, **kwargs)
+        tag_cls = globals()[tag_name]
+        if name == normalized_name:
+            _HTML_TAG_CLASSES[name] = tag_cls
+        return tag_cls(*args, **kwargs)
 
     try:
         from domonic.window import window as domonic_window
