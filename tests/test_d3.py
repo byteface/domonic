@@ -2405,5 +2405,59 @@ class InterpolateTestCase(unittest.TestCase):
         self.assertEqual([round(v, 6) for v in z(1)], [100, 100, 2])
 
 
+class ScaleTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.s = importlib.import_module("domonic.d3.scale")
+
+    def test_linear(self):
+        s = self.s
+        lin = s.scaleLinear([0, 100], [0, 1])
+        self.assertEqual(lin(50), 0.5)
+        self.assertEqual(lin.invert(0.25), 25)
+        self.assertEqual(lin.ticks(5), [0, 20, 40, 60, 80, 100])
+        self.assertEqual(s.scaleLinear().domain([0.1, 9.9]).nice().domain(), [0, 10])
+        self.assertEqual(s.scaleLinear([0, 10], [0, 100]).clamp(True)(20), 100)
+        self.assertEqual(s.scaleLinear([0, 1], ["red", "blue"])(0.5), "rgb(128, 0, 128)")
+
+    def test_pow_log_symlog(self):
+        s = self.s
+        self.assertEqual(s.scaleSqrt([0, 100], [0, 10])(25), 5)
+        self.assertAlmostEqual(s.scalePow([0, 100], [0, 10]).exponent(2)(50), 2.5)
+        lg = s.scaleLog([1, 1000], [0, 3])
+        self.assertEqual(lg(100), 2)
+        self.assertIn(100, lg.ticks())
+        self.assertEqual(s.scaleSymlog([-100, 100], [0, 1])(0), 0.5)
+
+    def test_discrete(self):
+        s = self.s
+        q = s.scaleQuantize([0, 100], ["a", "b", "c", "d"])
+        self.assertEqual([q(30), q(60), q(90)], ["b", "c", "d"])
+        self.assertEqual(q.invertExtent("b"), [25, 50])
+        qt = s.scaleQuantile(list(range(0, 101, 10)), ["low", "mid", "high"])
+        self.assertEqual([qt(25), qt(55), qt(85)], ["low", "mid", "high"])
+        th = s.scaleThreshold([0, 1], ["a", "b", "c"])
+        self.assertEqual([th(-1), th(0.5), th(2)], ["a", "b", "c"])
+        o = s.scaleOrdinal(["a", "b"], ["x", "y", "z"])
+        self.assertEqual([o("a"), o("b"), o("c")], ["x", "y", "z"])
+
+    def test_band_point(self):
+        s = self.s
+        band = s.scaleBand(["a", "b", "c"], [0, 120]).padding(0.2)
+        self.assertEqual(band("a"), 7.5)
+        self.assertEqual(band.bandwidth(), 30)
+        self.assertEqual(band.step(), 37.5)
+        pt = s.scalePoint(["a", "b", "c"], [0, 100])
+        self.assertEqual([pt("a"), pt("b"), pt("c")], [0, 50, 100])
+
+    def test_sequential_diverging(self):
+        s = self.s
+        seq = s.scaleSequential(lambda t: round(t, 3)).domain([0, 10])
+        self.assertEqual(seq(5), 0.5)
+        div = s.scaleDiverging(lambda t: round(t, 3), [-10, 0, 10])
+        self.assertEqual([div(-5), div(0), div(5)], [0.25, 0.5, 0.75])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -30,7 +30,7 @@ from domonic.d3.queue import *
 # from domonic.d3.quadtree import *
 # from domonic.d3.random import *
 # from domonic.d3.scale-chromatic import *
-# from domonic.d3.scale import *
+from domonic.d3.scale import *
 from domonic.d3.selection import *
 
 # from domonic.d3.shape import *
