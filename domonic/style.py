@@ -6108,14 +6108,24 @@ def _rule_bucket_key(selector: str) -> str:
     return token.lower()
 
 
+def _layer_sort_key(layer: int, important: bool) -> tuple[int, int]:
+    """Cascade-layer ordering term. Unlayered normal declarations beat layered
+    ones and later layers beat earlier; for ``!important`` both are reversed
+    (earlier layer wins, unlayered important is weakest)."""
+    if important:
+        return (0, 0) if layer == 0 else (1, -layer)
+    return (1, 0) if layer == 0 else (0, layer)
+
+
 def _build_rule_index(sheet_list, viewport):
-    """``{bucket_key: [(selector, specificity, order, entries)]}`` for fast
-    element-vs-rule matching in getComputedStyle."""
+    """``{bucket_key: [(selector, specificity, order, layer, entries)]}`` for
+    fast element-vs-rule matching in getComputedStyle."""
     index: dict[str, list] = {}
     order = 0
+    layers: dict[int, int] = {}  # id(CSSLayerBlockRule) -> layer number
     for sheet in sheet_list:
-        for rule in _iter_style_rules(
-            getattr(sheet, "cssRules", None), viewport=viewport
+        for rule, layer in _iter_style_rules(
+            getattr(sheet, "cssRules", None), viewport=viewport, layers=layers
         ):
             entries = tuple(rule.style._property_entries())
             if not entries:
@@ -6126,28 +6136,48 @@ def _build_rule_index(sheet_list, viewport):
                     continue
                 order += 1
                 index.setdefault(_rule_bucket_key(selector), []).append(
-                    (selector, _selector_specificity(selector), order, entries)
+                    (selector, _selector_specificity(selector), order, layer, entries)
                 )
     return index
 
 
-def _iter_style_rules(rules, *, viewport):
-    """Yield ``CSSStyleRule`` objects, descending into ``@media`` blocks whose
-    condition currently matches (unmatched or unknown conditions are skipped)."""
+def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
+    """Yield ``(CSSStyleRule, layer_number)`` pairs, descending into ``@media``
+    blocks whose condition currently matches and tracking ``@layer`` nesting
+    (layer 0 == unlayered; each ``@layer`` block gets the next number in
+    document order)."""
+    if layers is None:
+        layers = {}
     for rule in rules or ():
+        # `@layer a, b;` pre-declares layer order regardless of block order
+        if isinstance(rule, CSSLayerStatementRule):
+            for layer_name in rule.nameList:
+                layers.setdefault(layer_name.strip(), len(layers) + 1)
+            continue
         inner = getattr(rule, "cssRules", None)
         if isinstance(rule, CSSStyleRule):
-            yield rule
-        elif inner:
-            condition = getattr(rule, "conditionText", None) or getattr(
-                rule, "media", None
+            yield rule, layer
+            continue
+        if not inner:
+            continue
+        if isinstance(rule, CSSLayerBlockRule):
+            layer_name = (rule.name or "").strip() or f"\x00anon{id(rule)}"
+            child_layer = layers.setdefault(layer_name, len(layers) + 1)
+            yield from _iter_style_rules(
+                inner, viewport=viewport, layers=layers, layer=child_layer
             )
-            if condition is not None and hasattr(condition, "matches"):
-                matches = condition.matches
-            else:
-                matches = True
-            if matches:
-                yield from _iter_style_rules(inner, viewport=viewport)
+            continue
+        condition = getattr(rule, "conditionText", None) or getattr(
+            rule, "media", None
+        )
+        if condition is not None and hasattr(condition, "matches"):
+            matches = condition.matches
+        else:
+            matches = True
+        if matches:
+            yield from _iter_style_rules(
+                inner, viewport=viewport, layers=layers, layer=layer
+            )
 
 
 class ComputedStyleDeclaration(CSSStyleDeclaration):
@@ -6229,7 +6259,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
         cascade: dict[str, tuple[tuple, str, bool]] = {}
         for bucket in buckets:
-            for selector, spec, order, entries in index.get(bucket, ()):
+            for selector, spec, order, layer, entries in index.get(bucket, ()):
                 try:
                     ok = element._matchElement(element, selector) or (
                         element._matches_selector_chain(selector) is True
@@ -6240,7 +6270,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                     continue
                 for name, value, priority in entries:
                     important = priority == "important"
-                    key = (important, spec, order)
+                    key = (important, _layer_sort_key(layer, important), spec, order)
                     if name not in cascade or key > cascade[name][0]:
                         cascade[name] = (key, value, important)
         return {name: (value, important) for name, (_, value, important) in cascade.items()}

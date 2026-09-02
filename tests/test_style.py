@@ -926,6 +926,41 @@ class TestCase(unittest.TestCase):
         self.assertFalse(rule.inherits)
         self.assertEqual(rule.initialValue, "8px")
 
+    def test_cascade_layers_ordering(self):
+        from domonic.window import window
+
+        def color_of(css):
+            page = document.createElement("html")
+            page.innerHTML = f"<head><style>{css}</style></head><body><div id='x'></div></body>"
+            return window.getComputedStyle(page.querySelector("#x")).getPropertyValue("color")
+
+        # unlayered beats any layer
+        self.assertEqual(
+            color_of("@layer a { #x { color: red } } #x { color: blue }"), "blue"
+        )
+        # later layer wins for normal declarations
+        self.assertEqual(
+            color_of("@layer a { div { color: red } } @layer b { div { color: green } }"),
+            "green",
+        )
+        # a `@layer a, b;` statement pre-declares the order
+        self.assertEqual(
+            color_of(
+                "@layer base, theme;"
+                "@layer theme { div { color: green } }"
+                "@layer base { div { color: red } }"
+            ),
+            "green",
+        )
+        # for !important the earliest layer wins
+        self.assertEqual(
+            color_of(
+                "@layer a { div { color: red !important } }"
+                "@layer b { div { color: green !important } }"
+            ),
+            "red",
+        )
+
     def test_important_author_rule_beats_inline_style(self):
         from domonic.window import window
 
