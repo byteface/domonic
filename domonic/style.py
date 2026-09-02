@@ -6276,10 +6276,16 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         return _ResolvedView(resolved, parent_computed)
 
     # -- read-only CSSOM surface --------------------------------------
+    def _custom_property(self, name: str) -> str:
+        """Computed value of a custom property (they inherit by default)."""
+        return self._resolved.get(name) or ""
+
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
         value = self._resolved.get(target)
         if value:
+            if not target.startswith("--") and "var(" in value:
+                return _expand_var_references(value, self._custom_property).strip()
             return value
         if _cssom.is_shorthand(target):
             return _cssom.build_shorthand(target, self.getPropertyValue)
@@ -6313,6 +6319,51 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         raise Exception(
             "NoModificationAllowedError: getComputedStyle is read-only"
         )
+
+
+def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
+    """Substitute ``var(--name[, fallback])`` references in a computed value.
+
+    ``resolve(name)`` returns the computed value of custom property ``name``
+    (``""`` when unset). Follows the spec fallback rule and is paren-aware so
+    nested ``var()`` in the fallback works; bails out on deep recursion (a
+    custom-property cycle).
+    """
+    if _depth > 20 or "var(" not in value:
+        return value
+    out: list[str] = []
+    i = 0
+    length = len(value)
+    while i < length:
+        if value.startswith("var(", i):
+            depth = 0
+            j = i + 3
+            while j < length:
+                if value[j] == "(":
+                    depth += 1
+                elif value[j] == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                j += 1
+            inner = value[i + 4 : j]
+            comma = _find_next_top_level_char(inner, 0, ",")
+            if comma == -1:
+                name, fallback = inner.strip(), None
+            else:
+                name = inner[:comma].strip()
+                fallback = inner[comma + 1 :].strip()
+            substituted = resolve(name) if name.startswith("--") else ""
+            if substituted and substituted.strip():
+                out.append(_expand_var_references(substituted, resolve, _depth + 1))
+            elif fallback is not None:
+                out.append(_expand_var_references(fallback, resolve, _depth + 1))
+            # else: unresolved with no fallback -> contributes nothing
+            i = j + 1
+            continue
+        out.append(value[i])
+        i += 1
+    return "".join(out)
 
 
 class _ResolvedView:

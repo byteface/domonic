@@ -926,6 +926,30 @@ class TestCase(unittest.TestCase):
         self.assertFalse(rule.inherits)
         self.assertEqual(rule.initialValue, "8px")
 
+    def test_get_computed_style_substitutes_var_references(self):
+        from domonic.window import window
+
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            "div { --brand: #0a0; --pad: 6px; color: var(--brand); "
+            "padding: var(--missing, 4px); margin: var(--pad); "
+            "border-color: var(--x, var(--brand)); }"
+            "</style></head>"
+            "<body><div id='a'><span id='b'></span></div></body>"
+        )
+        div = page.querySelector("#a")
+        computed = window.getComputedStyle(div)
+        self.assertEqual(computed.getPropertyValue("color"), "#0a0")
+        self.assertEqual(computed.getPropertyValue("padding"), "4px")
+        self.assertEqual(computed.getPropertyValue("margin"), "6px")
+        self.assertEqual(computed.getPropertyValue("border-color"), "#0a0")
+        # custom property itself is returned raw
+        self.assertEqual(computed.getPropertyValue("--brand"), "#0a0")
+        # inherited through the parent's already-substituted computed value
+        child = window.getComputedStyle(page.querySelector("#b"))
+        self.assertEqual(child.getPropertyValue("color"), "#0a0")
+
     def test_element_matches_combinators(self):
         page = document.createElement("div")
         page.innerHTML = (
