@@ -4,7 +4,7 @@ domonic.d3
 
 """
 
-# from domonic.d3.array import *
+from domonic.d3.array import *
 # from domonic.d3.axis import *
 # from domonic.d3.brush import *
 # from domonic.d3.chord import *

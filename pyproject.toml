@@ -15,6 +15,7 @@ files = [
     "domonic/components.py",
     "domonic/JSON.py",
     "domonic/constants/keyboard.py",
+    "domonic/d3/array.py",
     "domonic/d3/format.py",
     "domonic/d3/path.py",
     "domonic/d3/polygon.py",

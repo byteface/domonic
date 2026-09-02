@@ -2251,5 +2251,88 @@ class TestCase(unittest.TestCase):
         self.assertEqual(round(polygonLength(triangle), 3), 16.129)
 
 
+class ArrayTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.a = importlib.import_module("domonic.d3.array")
+
+    def test_statistics(self):
+        a = self.a
+        self.assertEqual(a.min([3, 1, 2, None]), 1)
+        self.assertEqual(a.max([3, 1, 2]), 3)
+        self.assertEqual(a.extent([5, 1, 2, 3, 4]), [1, 5])
+        self.assertEqual(a.sum([1, 2, 3, "x", None]), 6)
+        self.assertEqual(a.mean([1, 2, 3, 4]), 2.5)
+        self.assertEqual(a.median([1, 2, 3, 4, 5]), 3)
+        self.assertEqual(a.quantile([1, 2, 3, 4], 0.25), 1.75)
+        self.assertAlmostEqual(a.deviation([2, 4, 4, 4, 5, 5, 7, 9]), 2.138089935)
+        self.assertEqual(a.cumsum([1, 2, 3, 4]), [1, 3, 6, 10])
+        self.assertEqual(a.mode([1, 2, 2, 3, 3, 3]), 3)
+        self.assertEqual(a.fsum([0.1, 0.1, 0.1]), 0.1 + 0.1 + 0.1)
+        self.assertEqual(a.count([1, 2, None, "x", 3]), 3)
+
+    def test_ticks_and_range(self):
+        a = self.a
+        self.assertEqual(a.range(0, 10, 2), [0, 2, 4, 6, 8])
+        self.assertEqual(a.range(5), [0, 1, 2, 3, 4])
+        self.assertEqual(a.ticks(0, 10, 5), [0, 2, 4, 6, 8, 10])
+        self.assertEqual(a.ticks(0, 1, 5), [0, 0.2, 0.4, 0.6, 0.8, 1])
+        self.assertEqual(a.tickStep(0, 10, 5), 2)
+        self.assertEqual(a.nice(0.2, 9.7, 10), [0, 10])
+
+    def test_search(self):
+        a = self.a
+        self.assertEqual(a.bisect([1, 2, 3, 4], 2.5), 2)
+        self.assertEqual(a.bisectLeft([1, 2, 2, 3], 2), 1)
+        self.assertEqual(a.bisectRight([1, 2, 2, 3], 2), 3)
+        self.assertEqual(a.leastIndex([3, 1, 2]), 1)
+        self.assertEqual(a.greatestIndex([3, 1, 5, 2]), 2)
+        self.assertEqual(a.quickselect([3, 1, 4, 1, 5, 9, 2, 6], 3)[3], 3)
+
+    def test_transform(self):
+        a = self.a
+        rows = [
+            {"g": "a", "v": 1},
+            {"g": "a", "v": 2},
+            {"g": "b", "v": 3},
+        ]
+        self.assertEqual(
+            a.groups(rows, lambda d: d["g"]),
+            [("a", [rows[0], rows[1]]), ("b", [rows[2]])],
+        )
+        self.assertEqual(
+            a.rollups(rows, lambda vs: sum(d["v"] for d in vs), lambda d: d["g"]),
+            [("a", 3), ("b", 3)],
+        )
+        self.assertEqual(a.index([{"k": 1}, {"k": 2}], lambda d: d["k"]), {1: {"k": 1}, 2: {"k": 2}})
+        self.assertEqual(a.cross([1, 2], ["a", "b"]), [[1, "a"], [1, "b"], [2, "a"], [2, "b"]])
+        self.assertEqual(a.pairs([1, 2, 3, 4]), [[1, 2], [2, 3], [3, 4]])
+        self.assertEqual(a.transpose([[1, 2], [3, 4], [5, 6]]), [[1, 3, 5], [2, 4, 6]])
+        self.assertEqual(a.zip([1, 2], [3, 4]), [[1, 3], [2, 4]])
+        self.assertEqual(a.permute(["a", "b", "c", "d"], [2, 0, 3]), ["c", "a", "d"])
+        self.assertEqual(a.rank([3, 1, 2, 1]), [3, 0, 2, 0])
+
+    def test_sets_and_iterables(self):
+        a = self.a
+        self.assertEqual(sorted(a.union([1, 2], [2, 3])), [1, 2, 3])
+        self.assertEqual(sorted(a.intersection([1, 2, 3], [2, 3, 4])), [2, 3])
+        self.assertEqual(sorted(a.difference([1, 2, 3], [2])), [1, 3])
+        self.assertTrue(a.disjoint([1, 2], [3, 4]))
+        self.assertTrue(a.subset([1, 2], [1, 2, 3]))
+        self.assertTrue(a.superset([1, 2, 3], [1, 2]))
+        self.assertTrue(a.every([2, 4, 6], lambda v, i, arr: v % 2 == 0))
+        self.assertTrue(a.some([1, 3, 4], lambda v, i, arr: v % 2 == 0))
+
+    def test_bin(self):
+        a = self.a
+        binner = a.bin().thresholds([5, 10])
+        bins = binner([1, 1, 2, 3, 5, 8, 13])
+        self.assertEqual([list(b) for b in bins], [[1, 1, 2, 3], [5, 8], [13]])
+        self.assertEqual(bins[0].x0, 1)
+        self.assertEqual(bins[0].x1, 5)
+        self.assertEqual(bins[-1].x1, 13)
+
+
 if __name__ == "__main__":
     unittest.main()
