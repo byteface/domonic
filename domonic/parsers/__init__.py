@@ -16,9 +16,12 @@ from domonic.html import *
 from domonic.xml.sitemap import *
 
 
-def create_element(name="custom_tag", *args, **kwargs):
+def create_element(name="custom_tag", *args, **kwargs):  # type: ignore[no-redef]
     """
     NOTE - USED BY THE HACKED EXPAT PARSER TO GET VALID DOCUMENT NODES FROM ANY KNOWN SET
+
+    Deliberately shadows the ``create_element`` pulled in by ``from
+    domonic.html import *`` -- this variant also knows the sitemap/XML tag sets.
     """
     from domonic.html import create_element as create_html_element
     from domonic.html import html_tags

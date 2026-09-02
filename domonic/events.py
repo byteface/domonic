@@ -719,7 +719,7 @@ class UIEvent(Event):
         """
         options = options or kwargs  # If options is None, use kwargs
         self.canBubble = options.get("canBubble", None)
-        self.cancelable = options.get("cancelable", None)
+        self.cancelable = options.get("cancelable", False)
         self.detail = options.get("detail", None)
         self.view = options.get("view", None)
         self.layerX = options.get("layerX", None)
@@ -770,7 +770,7 @@ class MouseEvent(UIEvent):
         """Create a mouse event from standard mouse initializer values."""
         options = options or kwargs
         self.canBubble = options.get("canBubble", None)
-        self.cancelable = options.get("cancelable", None)
+        self.cancelable = options.get("cancelable", False)
         self.screenX = options.get("screenX", 0)
         self.screenY = options.get("screenY", 0)
         self._clientX = options.get("clientX", 0)
@@ -799,7 +799,7 @@ class MouseEvent(UIEvent):
 
     def initMouseEvent(
         self,
-        _type: str = None,
+        _type: str | None = None,
         canBubble: bool = True,
         cancelable: bool = True,
         view=None,
@@ -987,7 +987,7 @@ class KeyboardEvent(UIEvent):
         """Create a keyboard event from standard keyboard initializer values."""
         options = options or kwargs  # if options is none use kwargs
         self.canBubble = options.get("canBubble", None)
-        self.cancelable = options.get("cancelable", None)
+        self.cancelable = options.get("cancelable", False)
         self._altKey: bool = options.get("altKey", False)
         self._ctrlKey: bool = options.get("ctrlKey", False)
         self._shiftKey: bool = options.get("shiftKey", False)
@@ -1330,7 +1330,7 @@ class PointerEvent(MouseEvent):
 class BeforeUnloadEvent(Event):
     """Before-unload event with browser-compatible return value handling."""
 
-    BEFOREUNLOAD: ClassVar[str] = Event.BEFOREUNLOAD  #:
+    BEFOREUNLOAD: str = Event.BEFOREUNLOAD  #:
 
     def __init__(
         self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs

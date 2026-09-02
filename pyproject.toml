@@ -41,6 +41,8 @@ files = [
     "domonic/decorators.py",
     "domonic/dQuery.py",
     "domonic/diffdom.py",
+    "domonic/i18n/__init__.py",
+    "domonic/parsers/__init__.py",
     "domonic/ext/__init__.py",
     "domonic/ext/_rawdom.py",
     "domonic/ext/html5_parser_/__init__.py",
