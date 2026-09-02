@@ -70,7 +70,7 @@ class URL:
     def __update__(self) -> None:
         try:
             self._ensure_url_state()
-            new = {
+            new: dict[str, Any] = {
                 "protocol": self.protocol,
                 "hostname": self.hostname,
                 "href": self.href,
@@ -438,7 +438,8 @@ class URLSearchParams:
     def get(self, key: str) -> str | None:
         """Returns the first value associated with the given search parameter."""
         try:
-            return self.params.get(key, None)[0]
+            values = self.params.get(key, None)
+            return values[0] if values else None
         except Exception:
             return None
 

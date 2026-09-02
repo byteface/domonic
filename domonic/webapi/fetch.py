@@ -321,7 +321,9 @@ class Response(_BodyMixin):
         redirected = init.pop("redirected", redirected)
 
         self.url = "" if url is None else str(url)
-        self.status = 200 if status is None else int(status)
+        # the Mapping form of ``status`` is unpacked into ``init`` above, so by
+        # here it is only ever an int-like or None
+        self.status = 200 if status is None else int(status)  # type: ignore[arg-type]
         self.statusText = "" if statusText is None else str(statusText)
         self.headers = Headers(headers)
         self.type = str(type)
@@ -411,6 +413,24 @@ class Response(_BodyMixin):
 
 class Request(_BodyMixin):
     """Fetch ``Request`` object."""
+
+    # Declared up front so reading ``original.<field>`` while the same field is
+    # still being assigned in __init__ does not leave mypy unable to infer it.
+    url: str
+    method: str
+    headers: "Headers"
+    mode: Any
+    credentials: Any
+    cache: Any
+    redirect: Any
+    referrer: Any
+    referrerPolicy: Any
+    integrity: Any
+    keepalive: bool
+    signal: Any
+    destination: Any
+    priority: Any
+    duplex: Any
 
     def __init__(
         self,
