@@ -376,6 +376,28 @@ def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> 
             out.append(_fragment_text_escape(str(child), raw))
 
 
+def _find_wrapper_div(parsed: "Node") -> "Node | None":
+    """Locate the synthetic ``<div>`` wrapper added by ``_parse_html_fragment``.
+
+    Different parser backends shape a fragment parse differently -- some return
+    the wrapper as the root node, some nest it in a full ``<html>`` skeleton --
+    so search the root itself and then descendants in document order for the
+    first ``div`` element.
+    """
+    if getattr(parsed, "name", None) == "div":
+        return parsed
+    stack = list(getattr(parsed, "args", None) or ())
+    stack.reverse()
+    while stack:
+        node = stack.pop()
+        if getattr(node, "name", None) == "div":
+            return node
+        kids = getattr(node, "args", None)
+        if kids:
+            stack.extend(reversed(kids))
+    return None
+
+
 def _get_custom_element_registry():
     try:
         from domonic.window import window as domonic_window
@@ -4321,7 +4343,9 @@ class Element(Node):
             from domonic import domonic as domonic_module
 
             parsed = domonic_module.parseString(f"<div>{value}</div>")
-            wrapper = parsed.querySelector("div") if parsed is not None else None
+            if parsed is None:
+                return [value]
+            wrapper = _find_wrapper_div(parsed)
             if wrapper is None:
                 return [value]
             return list(wrapper.args)

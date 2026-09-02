@@ -21,7 +21,7 @@ import sys
 import domonic.dom as dom
 
 # Logs which backend ``parseString(parser="auto")`` selects and which it skips
-# (a backend that is not installed is skipped silently otherwise). Quiet by
+# (an uninstalled or failing backend is skipped silently otherwise). Quiet by
 # default; enable with ``logging.getLogger("domonic.parser").setLevel("DEBUG")``.
 _PARSER_LOGGER = logging.getLogger("domonic.parser")
 
@@ -1412,10 +1412,11 @@ class domonic:
     def parseString(string, parser=None, debug: bool = False):
         """Parse a file into a DOM from a string.
 
-        With ``parser="auto"`` (the default) the backends are tried in order and
-        missing ones are skipped. Call :meth:`get_active_parser` afterwards, or
-        enable the ``"domonic.parser"`` logger at ``DEBUG``, to see which backend
-        was used.
+        With ``parser="auto"`` (the default) the fastest installed backend that
+        can parse the input is used, falling back through the pure-Python
+        parsers to the stdlib ones. Missing or failing backends are skipped.
+        Call :meth:`get_active_parser` afterwards, or enable the
+        ``"domonic.parser"`` logger at ``DEBUG``, to see which backend was used.
         """
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
@@ -1652,14 +1653,18 @@ class domonic:
         if parser != "auto":
             raise ValueError(f"Unknown parser: {parser}")
 
+        # Fastest first: ``auto`` uses the quickest backend that is installed and
+        # can parse the input, falling back through the pure-Python parsers and
+        # finally the stdlib ones. Order mirrors the speed table in the README.
         fallback_parsers = (
-            ("html5lib", _parse_with_html5lib, (ImportError,)),
-            ("lxml_html", _parse_with_lxml_html, (Exception,)),
-            ("html5_parser", _parse_with_html5_parser, (Exception,)),
-            ("justhtml", _parse_with_justhtml, (Exception,)),
-            ("markupever", _parse_with_markupever, (Exception,)),
             ("selectolax", _parse_with_selectolax, (Exception,)),
             ("turbohtml", _parse_with_turbohtml, (Exception,)),
+            ("lxml_html", _parse_with_lxml_html, (Exception,)),
+            ("html5_parser", _parse_with_html5_parser, (Exception,)),
+            ("markupever", _parse_with_markupever, (Exception,)),
+            ("html.parser", _parse_with_html_parser, (Exception,)),
+            ("justhtml", _parse_with_justhtml, (Exception,)),
+            ("html5lib", _parse_with_html5lib, (Exception,)),
         )
         for name, parse_with, handled_errors in fallback_parsers:
             try:

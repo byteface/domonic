@@ -439,6 +439,11 @@ page = domonic.parseString("<p>Hello</p>", parser="expat")
 page = domonic.parseString("<p>Hello</p>", parser="justhtml")
 ```
 
+The default is `parser="auto"`, which picks the fastest installed backend that
+can parse the input (trying `selectolax`, `turbohtml`, `lxml_html`,
+`html5_parser`, `markupever`, `html.parser`, `justhtml`, then `html5lib`). Call
+`domonic.get_active_parser()` afterwards to see which one ran.
+
 Set one for your application:
 
 ```python

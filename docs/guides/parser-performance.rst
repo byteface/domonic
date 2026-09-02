@@ -66,17 +66,20 @@ Set a Default
 Which Backend Ran
 -----------------
 
-With ``parser="auto"`` (the default) the backends are tried in order and any
-that are not installed are skipped silently, so on a machine with only
-``html5lib`` available you are always on ``html5lib`` with no signal. To see
-which backend actually handled a parse:
+With ``parser="auto"`` (the default) the fastest installed backend that can
+parse the input is used, in the order ``selectolax``, ``turbohtml``,
+``lxml_html``, ``html5_parser``, ``markupever``, ``html.parser``, ``justhtml``,
+``html5lib`` (then ``expat`` as a last resort for XML-like input). Backends
+that are not installed, or that raise on the input, are skipped silently -- so
+on a machine with only ``html5lib`` available you are always on ``html5lib``
+with no signal. To see which backend actually handled a parse:
 
 .. code-block:: python
 
    from domonic import domonic
 
    domonic.parseString("<p>Hello</p>")
-   domonic.get_active_parser()          # -> "html5lib"
+   domonic.get_active_parser()          # -> "selectolax" (or whatever ran)
 
 Or enable the logger for a running commentary of what was skipped:
 

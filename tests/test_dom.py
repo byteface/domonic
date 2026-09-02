@@ -1594,7 +1594,7 @@ class DOMTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             window.customElements.define("my-widget", MyLabel)
 
-        parsed = domonic_module.parseString("<my-widget></my-widget>")
+        parsed = domonic_module.parseString("<div><my-widget></my-widget></div>")
         parsed_widget = parsed.querySelector("my-widget")
         self.assertIsInstance(parsed_widget, MyWidget)
 
@@ -1707,7 +1707,7 @@ class DOMTest(unittest.TestCase):
         parsed = domonic_module.parseString(
             '<div><p is="word-count">hi</p><p>plain</p></div>'
         )
-        first, second = parsed.querySelector("div").childNodes
+        first, second = parsed.querySelectorAll("p")
         self.assertIsInstance(first, WordCountParagraph)
         self.assertNotIsInstance(second, WordCountParagraph)
         self.assertEqual(WordCountParagraph.connected, 1)
