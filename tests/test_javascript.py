@@ -1492,10 +1492,19 @@ class TestCase(unittest.TestCase):
         self.assertTrue(regex.hasIndices)
         self.assertTrue(regex.unicode)
         self.assertEqual(regex.source, r"(foo)(bar)")
-        self.assertEqual(regex.exec("xxfoobarxx"), ["foo", "bar"])
+        # exec returns [fullMatch, *groups] with .index / .input (JS semantics)
+        match = regex.exec("xxfoobarxx")
+        self.assertEqual(match, ["foobar", "foo", "bar"])
+        self.assertEqual(match.index, 2)
+        self.assertEqual(match.input, "xxfoobarxx")
         self.assertEqual(RegExp(r"foo").exec("xxfooxx"), ["foo"])
+        self.assertIsNone(RegExp(r"foo").exec("nope"))
+        # a global regex shares lastIndex between exec/test, like JS
+        regex.lastIndex = 0
         self.assertTrue(regex.test("foobar"))
+        regex.lastIndex = 0
         self.assertTrue(regex.test("xxFooBarxx"))
+        regex.lastIndex = 0
         self.assertFalse(regex.test("barfoo"))
         self.assertEqual(regex.toString(), r"(foo)(bar)")
         self.assertEqual(str(regex), r"(foo)(bar)")
@@ -1510,6 +1519,61 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(re.error):
             regex.compile("[")
         self.assertEqual(regex.source, r"^bye$")
+
+    def test_regexp_unicode_property_classes(self):
+        self.assertTrue(RegExp(r"^[\p{L}]+$", "u").test("café"))
+        self.assertFalse(RegExp(r"^[\p{L}]+$", "u").test("ab12"))
+        self.assertTrue(RegExp(r"[\p{P}\p{S}]").test("a + b"))
+        self.assertTrue(RegExp(r"[\p{P}\p{S}]").test("hi!"))
+        self.assertFalse(RegExp(r"[\p{P}\p{S}]").test("plain"))
+        # negated, standalone
+        self.assertEqual(RegExp(r"\P{L}", "").exec("ab-cd")[0], "-")
+
+    def test_regexp_named_groups_and_replace(self):
+        m = RegExp(r"(?<y>\d{4})-(?<m>\d{2})").exec("2024-06")
+        self.assertEqual(m[0], "2024-06")
+        self.assertEqual(m.groups, {"y": "2024", "m": "06"})
+        self.assertEqual(
+            String("2024-06").replace(
+                RegExp(r"(?<y>\d{4})-(?<m>\d{2})"), "$<m>/$<y>"
+            ),
+            "06/2024",
+        )
+        # RegExp.replace convenience (JS RegExp[Symbol.replace])
+        self.assertEqual(RegExp(r"o", "g").replace("foo boo", "0"), "f00 b00")
+        self.assertEqual(
+            RegExp(r"(\w+)\s(\w+)").replace("Some String", "$2 $1"), "String Some"
+        )
+
+    def test_regexp_sticky_flag_and_last_index(self):
+        r = RegExp(r"\d+", "y")
+        r.lastIndex = 0
+        self.assertEqual(r.exec("12,34")[0], "12")
+        self.assertEqual(r.lastIndex, 2)
+        self.assertIsNone(r.exec("12,34"))  # "," is not a digit at lastIndex 2
+        r.lastIndex = 3
+        self.assertEqual(r.exec("12,34")[0], "34")
+
+        g = RegExp(r"\w+", "g")
+        tokens = []
+        while (match := g.exec("foo bar baz")) is not None:
+            tokens.append(match[0])
+        self.assertEqual(tokens, ["foo", "bar", "baz"])
+
+    def test_string_replace_js_style_callback(self):
+        # JS replacer signature: (match, p1, ..., offset, string)
+        self.assertEqual(
+            String("a1b2").replace(
+                RegExp(r"([a-z])(\d)", "g"),
+                lambda whole, letter, digit, offset, source: f"{digit}{letter}",
+            ),
+            "1a2b",
+        )
+        # one-argument callbacks still receive the match object
+        self.assertEqual(
+            String("hello").replace(RegExp("l", "g"), lambda m: m.group(0).upper()),
+            "heLLo",
+        )
 
     def test_javascript_error_message(self):
         err = Error("boom")

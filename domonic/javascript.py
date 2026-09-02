@@ -3753,6 +3753,39 @@ class Number(float):
         return "".join(digits)
 
 
+def _js_replacer(fn: "Callable[..., Any]") -> "Callable[[Any], str]":
+    """Adapt a ``String.replace`` callback for :func:`re.sub`.
+
+    A one-argument callback keeps the domonic convention (it receives the
+    ``re.Match`` object). A callback that takes more positional arguments (or
+    ``*args``) is treated as a JavaScript replacer and receives
+    ``(match, p1, ..., pN, offset, string)``.
+    """
+    try:
+        params = list(inspect.signature(fn).parameters.values())
+    except (TypeError, ValueError):
+        return fn
+    positional = [
+        p
+        for p in params
+        if p.kind
+        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+    ]
+    has_varargs = any(
+        p.kind is inspect.Parameter.VAR_POSITIONAL for p in params
+    )
+    if not has_varargs and len(positional) <= 1:
+        return fn
+
+    def js_style(match: Any) -> str:
+        result = fn(
+            match.group(0), *match.groups(), match.start(), match.string
+        )
+        return "" if result is None else str(result)
+
+    return js_style
+
+
 def _js_replacement_template(replacement: str, group_count: int) -> str:
     """Translate a JavaScript ``String.prototype.replace`` replacement string
     into the substitution syntax :func:`re.sub` expects.
@@ -4015,17 +4048,13 @@ class String:
         """
         if isinstance(old, RegExp):
             count = 0 if old.global_ else 1
+            compiled = old._compiled()
             if callable(new):
-                return re.sub(
-                    old.expression, new, self.x, count=count, flags=old._re_flags()
-                )
-            group_count = re.compile(old.expression, old._re_flags()).groups
-            template = _js_replacement_template(str(new), group_count)
-            return re.sub(
-                old.expression, template, self.x, count=count, flags=old._re_flags()
-            )
+                return compiled.sub(_js_replacer(new), self.x, count=count)
+            template = _js_replacement_template(str(new), compiled.groups)
+            return compiled.sub(template, self.x, count=count)
         if callable(new):
-            return re.sub(str(old), new, self.x, count=1)
+            return re.sub(re.escape(str(old)), _js_replacer(new), self.x, count=1)
         return self.x.replace(str(old), str(new), 1)
 
     def replaceAll(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
@@ -4039,15 +4068,11 @@ class String:
             [str]: [new string with all occurrences of old replaced]
         """
         if isinstance(old, RegExp):
+            compiled = old._compiled()
             if callable(new):
-                return re.sub(
-                    old.expression, new, self.x, flags=old._re_flags()
-                )
-            group_count = re.compile(old.expression, old._re_flags()).groups
-            template = _js_replacement_template(str(new), group_count)
-            return re.sub(
-                old.expression, template, self.x, flags=old._re_flags()
-            )
+                return compiled.sub(_js_replacer(new), self.x)
+            template = _js_replacement_template(str(new), compiled.groups)
+            return compiled.sub(template, self.x)
         return self.x.replace(str(old), str(new))
 
     # def localeCompare():
@@ -4398,16 +4423,105 @@ class String:
         return Document.createElement(tag, self.x, **kwargs)
 
 
+import functools as _functools
+import sys as _sys
+import unicodedata as _unicodedata
+
+
+@_functools.lru_cache(maxsize=64)
+def _unicode_property_ranges(prop: str, negate: bool = False) -> str:
+    """Character-class body (no brackets) for a Unicode general-category
+    property such as ``P`` (any punctuation) or ``Lu`` (uppercase letter),
+    built from :mod:`unicodedata` -- ``re`` has no ``\\p{...}`` support. When
+    *negate* is set, the complement ranges are returned so the fragment stays
+    usable inside an existing ``[...]``."""
+    exact = len(prop) == 2
+    fragments: list[str] = []
+    run_start: int | None = None
+    prev = -2
+    for cp in range(_sys.maxunicode + 1):
+        cat = _unicodedata.category(chr(cp))
+        hit = (cat == prop) if exact else (cat[:1] == prop)
+        if hit != negate:
+            if run_start is None:
+                run_start = cp
+            prev = cp
+        elif run_start is not None:
+            fragments.append(_range_fragment(run_start, prev))
+            run_start = None
+    if run_start is not None:
+        fragments.append(_range_fragment(run_start, prev))
+    return "".join(fragments)
+
+
+def _range_fragment(lo: int, hi: int) -> str:
+    return "\\U%08X" % lo if lo == hi else "\\U%08X-\\U%08X" % (lo, hi)
+
+
+_JS_PROP_RE = re.compile(r"\\([pP])\{([A-Za-z]{1,2})\}")
+
+
+def _translate_js_regex(pattern: str) -> str:
+    """Best-effort JS -> Python regex source translation.
+
+    - ``\\p{P}`` / ``\\P{L}`` etc. -> character classes from ``unicodedata``
+    - ``(?<name>...)`` -> ``(?P<name>...)`` and ``\\k<name>`` -> ``(?P=name)``
+    """
+    if "(?<" in pattern:
+        pattern = re.sub(r"\(\?<([A-Za-z_]\w*)>", r"(?P<\1>", pattern)
+        pattern = re.sub(r"\\k<([A-Za-z_]\w*)>", r"(?P=\1)", pattern)
+
+    if "\\p{" not in pattern and "\\P{" not in pattern:
+        return pattern
+
+    out: list[str] = []
+    i = 0
+    in_class = False
+    n = len(pattern)
+    while i < n:
+        ch = pattern[i]
+        if ch == "\\" and i + 1 < n:
+            m = _JS_PROP_RE.match(pattern, i)
+            if m:
+                negate = m.group(1) == "P"
+                body = _unicode_property_ranges(m.group(2), negate and in_class)
+                if in_class:
+                    out.append(body)
+                elif negate:
+                    out.append("[^" + _unicode_property_ranges(m.group(2)) + "]")
+                else:
+                    out.append("[" + body + "]")
+                i = m.end()
+                continue
+            out.append(pattern[i:i + 2])
+            i += 2
+            continue
+        if ch == "[" and not in_class:
+            in_class = True
+        elif ch == "]" and in_class:
+            in_class = False
+        out.append(ch)
+        i += 1
+    return "".join(out)
+
+
+class _RegExpMatch(list):
+    """List of ``[fullMatch, *groups]`` with JS ``exec`` result attributes."""
+
+    index: int = 0
+    input: str = ""
+    groups: dict = {}
+
+
 class RegExp:
     def __init__(self, expression: str, flags: str = "") -> None:
         self.expression = expression
         self.flags = (
             flags.lower()
         )  #: A string that contains the flags of the RegExp object.
+        self.lastIndex = 0  #: Index at which ``exec`` / ``test`` resume when g / y.
         # self.multiline  # Whether or not to search in strings across multiple lines.
         # self.source  # The text of the pattern.
-        # self.sticky  # Whether or not the search is sticky
-        # self.lastIndex  # The index at which to start the next match.
 
     @property
     def dotAll(self) -> bool:
@@ -4451,6 +4565,27 @@ class RegExp:
             [str]: [The text of the pattern.]
         """
         return self.expression
+
+    @property
+    def sticky(self) -> bool:
+        """Whether the match is anchored at ``lastIndex`` (the ``y`` flag)."""
+        return "y" in self.flags
+
+    @sticky.setter
+    def sticky(self, value: bool) -> None:
+        if value and "y" not in self.flags:
+            self.flags += "y"
+
+    def _python_pattern(self) -> str:
+        """The Python-``re`` source for this regex (``\\p{...}`` translated)."""
+        cache = getattr(self, "_pattern_cache", None)
+        if cache is None or cache[0] != self.expression:
+            cache = (self.expression, _translate_js_regex(self.expression))
+            object.__setattr__(self, "_pattern_cache", cache)
+        return cache[1]
+
+    def _compiled(self):
+        return re.compile(self._python_pattern(), self._re_flags())
 
     @property
     def global_(self) -> bool:
@@ -4555,18 +4690,54 @@ class RegExp:
         old_expression, old_flags = self.expression, self.flags
         self.expression, self.flags = new_expression, new_flags
         try:
-            re.compile(self.expression, self._re_flags())
+            self._compiled()
         except Exception:
             self.expression, self.flags = old_expression, old_flags
             raise
+        self.lastIndex = 0
         return self
 
-    def exec(self, s: str) -> list[str] | None:
-        """Executes a search for a match in its string parameter."""
-        m = re.search(self.expression, s, self._re_flags())
-        if m:
-            groups = m.groups()
-            return [group for group in groups] if groups else [m.group(0)]
+    def exec(self, s: str):
+        """Search *s* for a match.
+
+        Returns ``None`` on no match. Otherwise a list whose ``[0]`` is the full
+        match and ``[1:]`` the capture groups, with ``.index`` / ``.input`` /
+        ``.groups`` attributes (JavaScript's ``RegExp.exec``). When the ``g`` or
+        ``y`` flag is set, the search resumes from ``lastIndex`` and advances it.
+        """
+        s = str(s)
+        pattern = self._compiled()
+        anchored = self.sticky
+        stateful = self.global_ or anchored
+        start = self.lastIndex if stateful else 0
+        if start > len(s):
+            if stateful:
+                self.lastIndex = 0
+            return None
+        m = pattern.match(s, start) if anchored else pattern.search(s, start)
+        if not m:
+            if stateful:
+                self.lastIndex = 0
+            return None
+        if stateful:
+            self.lastIndex = m.end() if m.end() > m.start() else m.end() + 1
+        result = _RegExpMatch([m.group(0), *m.groups()])
+        result.index = m.start()
+        result.input = s
+        result.groups = m.groupdict()
+        return result
+
+    def replace(self, string: str, replacement: "str | Callable[..., str]") -> str:
+        """``regexp.replace(str, repl)`` -- JavaScript's ``RegExp[Symbol.replace]``.
+
+        Equivalent to ``String(str).replace(self, repl)``: honours the ``g``
+        flag and expands ``$1`` / ``$&`` / ``$<name>`` in a string replacement.
+        """
+        return String(string).replace(self, replacement)
+
+    def split(self, string: str, limit: int | None = None) -> list[str]:
+        parts = self._compiled().split(str(string))
+        return parts if limit is None else parts[:limit]
 
     def test(self, s: str) -> bool:
         """[Tests for a match in its string parameter.]
@@ -4577,11 +4748,19 @@ class RegExp:
         Returns:
             [bool]: [True if match else False]
         """
-        m = re.search(self.expression, s, self._re_flags())
-        if m:
-            return True
-        else:
-            return False
+        pattern = self._compiled()
+        stateful = self.global_ or self.sticky
+        start = self.lastIndex if stateful else 0
+        m = (
+            pattern.match(str(s), start)
+            if self.sticky
+            else pattern.search(str(s), start)
+        )
+        if m and stateful:
+            self.lastIndex = m.end() if m.end() > m.start() else m.end() + 1
+        elif stateful:
+            self.lastIndex = 0
+        return m is not None
 
     def toString(self) -> str:
         """Returns a string representation of the RegExp object."""

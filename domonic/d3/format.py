@@ -181,16 +181,16 @@ def formatSpecifier(specifier):
 
     return FormatSpecifier(
         {
-            "fill": match[0],
-            "align": match[1],
-            "sign": match[2],
-            "symbol": match[3],
-            "zero": match[4],
-            "width": match[5],
-            "comma": match[6],
-            "precision": match[7] and String(match[7]).slice(1),
-            "trim": match[8],
-            "type": match[9],
+            "fill": match[1],
+            "align": match[2],
+            "sign": match[3],
+            "symbol": match[4],
+            "zero": match[5],
+            "width": match[6],
+            "comma": match[7],
+            "precision": match[8] and String(match[8]).slice(1),
+            "trim": match[9],
+            "type": match[10],
         }
     )
 
