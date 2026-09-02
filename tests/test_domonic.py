@@ -261,7 +261,7 @@ _id="one", _class="two",
         # Whatever the cascade landed on, it must be a real backend name.
         self.assertIn(
             domonic.get_active_parser(),
-            {"html5lib", "lxml_html", "html5_parser", "justhtml",
+            {"html5lib", "html.parser", "lxml_html", "html5_parser", "justhtml",
              "markupever", "selectolax", "turbohtml", "expat"},
         )
 
@@ -275,12 +275,16 @@ _id="one", _class="two",
 
     def test_parse_string_xml_and_lxml_parser_aliases(self):
         xml_page = domonic.parseString("<root><child /></root>", parser="xml")
-        lxml_page = domonic.parseString(
-            "<html><body><p>Hi</p></body></html>", parser="lxml"
-        )
-
         self.assertEqual(xml_page.querySelector("child").tagName, "child")
-        self.assertEqual(lxml_page.querySelector("p").textContent, "Hi")
+
+        try:
+            lxml_page = domonic.parseString(
+                "<html><body><p>Hi</p></body></html>", parser="lxml"
+            )
+        except ImportError:
+            pass
+        else:
+            self.assertEqual(lxml_page.querySelector("p").textContent, "Hi")
 
         previous = domonic.get_default_parser()
         try:
