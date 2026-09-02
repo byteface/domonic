@@ -487,7 +487,9 @@ def _candidate_nodes(
     return (
         candidate
         for candidate in _element_descendants(node)
-        if candidate.name.lower() == tag_name
+        # parsed tag names are usually already lower-case -- try the cheap
+        # comparison before allocating a lowered copy per node
+        if candidate.name == tag_name or candidate.name.lower() == tag_name
     )
 
 
@@ -1249,34 +1251,44 @@ def _find_all_previous(
     return _find_document_order(self, True, name, attrs, string, limit, **kwargs)
 
 
+_STRINGS_SKIP_TAGS = frozenset(
+    {"script", "style", "SCRIPT", "STYLE", "Script", "Style"}
+)
+
+
 def _strings(self: Node) -> Iterator[str]:
-    if type(self) is Text:
-        args = self.__dict__.get("args", ())
+    text_type = Text
+    comment_type = Comment
+    node_type = Node
+    if type(self) is text_type:
+        args = self.__dict__.get("args")
         if args:
             yield args[0]
         return
-    stack = list(reversed(self.__dict__.get("args", ()) or ()))
-    text_type = Text
-    comment_type = Comment
-    element_type = Element
-    node_type = Node
+    args = self.__dict__.get("args")
+    if not args:
+        return
+    stack = list(args)
+    stack.reverse()
+    skip = _STRINGS_SKIP_TAGS
     isinstance_ = isinstance
-    skipped_names = {"script", "style"}
     while stack:
         node = stack.pop()
         node_class = type(node)
         if node_class is text_type:
-            args = node.__dict__.get("args", ())
-            if args:
-                yield args[0]
+            a = node.__dict__.get("args")
+            if a:
+                yield a[0]
         elif node_class is str:
             yield node
-        elif isinstance_(node, element_type):
-            if node.name.lower() in skipped_names:
+        elif node_class is comment_type:
+            continue
+        elif isinstance_(node, node_type):
+            if getattr(node, "name", "") in skip:
                 continue
-            stack.extend(reversed(node.__dict__.get("args", ()) or ()))
-        elif isinstance_(node, node_type) and not isinstance_(node, comment_type):
-            stack.extend(reversed(node.__dict__.get("args", ()) or ()))
+            a = node.__dict__.get("args")
+            if a:
+                stack.extend(a[::-1])
 
 
 def _stripped_strings(self: Node) -> Iterator[str]:
