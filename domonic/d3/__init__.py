@@ -21,7 +21,7 @@ from domonic.d3.format import *
 # from domonic.d3.force import *
 # from domonic.d3.format import *
 # from domonic.d3.geo import *
-# from domonic.d3.heirarchy import *
+from domonic.d3.hierarchy import *
 from domonic.d3.interpolate import *
 from domonic.d3.path import *
 from domonic.d3.polygon import *

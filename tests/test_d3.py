@@ -2524,5 +2524,77 @@ class TimeScaleTestCase(unittest.TestCase):
         self.assertTrue(all(isinstance(fmt(t), str) for t in sc.ticks(4)))
 
 
+class HierarchyTestCase(unittest.TestCase):
+    def setUp(self):
+        import importlib
+
+        self.h = importlib.import_module("domonic.d3.hierarchy")
+        self.data = {
+            "name": "root",
+            "children": [
+                {"name": "a", "children": [
+                    {"name": "a1", "value": 2},
+                    {"name": "a2", "value": 3},
+                ]},
+                {"name": "b", "value": 4},
+                {"name": "c", "value": 6},
+            ],
+        }
+
+    def _root(self):
+        return self.h.hierarchy(self.data).sum(lambda d: d.get("value", 0))
+
+    def test_hierarchy_structure(self):
+        root = self._root()
+        self.assertEqual(root.height, 2)
+        self.assertEqual(root.value, 15)
+        self.assertEqual(root.children[0].value, 5)
+        self.assertEqual([n.data["name"] for n in root.leaves()], ["a1", "a2", "b", "c"])
+        self.assertEqual(
+            [n.data["name"] for n in root.children[0].children[0].ancestors()],
+            ["a1", "a", "root"],
+        )
+        self.assertEqual(len(root.links()), 5)
+        root.sort(lambda a, b: (b.value or 0) - (a.value or 0))
+        self.assertEqual([n.data["name"] for n in root.children], ["c", "a", "b"])
+
+    def test_partition_and_treemap(self):
+        h = self.h
+        p = h.partition().size([100, 100])(self._root())
+        self.assertEqual([round(p.x0), round(p.x1)], [0, 100])
+        self.assertEqual(round(p.children[0].x1), 33)  # a is 5/15 of the width
+
+        tm = h.treemap().size([600, 400])(self._root())
+        area = sum((n.x1 - n.x0) * (n.y1 - n.y0) for n in tm.leaves())
+        self.assertAlmostEqual(area, 600 * 400, places=3)
+        for tile in (h.treemapDice, h.treemapSlice, h.treemapBinary):
+            t = h.treemap().size([100, 100]).tile(tile)(self._root())
+            self.assertTrue(all(n.x1 >= n.x0 and n.y1 >= n.y0 for n in t.leaves()))
+
+    def test_tree_cluster_pack(self):
+        h = self.h
+        tr = h.tree().size([100, 100])(self._root())
+        xs = sorted(round(n.x, 3) for n in tr.leaves())
+        self.assertEqual(xs[0], 0)
+        self.assertEqual(xs[-1], 100)
+        cl = h.cluster().size([100, 100])(self._root())
+        self.assertEqual(sorted(round(n.x) for n in cl.leaves())[-1], 100)
+        pk = h.pack().size([200, 200])(self._root())
+        # leaf radii scale with sqrt(value)
+        by_name = {n.data["name"]: n.r for n in pk.leaves()}
+        self.assertAlmostEqual(by_name["c"] / by_name["b"], (6 / 4) ** 0.5, places=6)
+
+    def test_stratify(self):
+        h = self.h
+        root = h.stratify()([
+            {"id": "a"},
+            {"id": "b", "parentId": "a"},
+            {"id": "c", "parentId": "b"},
+        ])
+        self.assertEqual(root.data["id"], "a")
+        self.assertEqual(root.height, 2)
+        self.assertEqual(root.children[0].data["id"], "b")
+
+
 if __name__ == "__main__":
     unittest.main()
