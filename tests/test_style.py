@@ -866,6 +866,66 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             span_computed.setProperty("color", "orange")
 
+    def test_selector_specificity_functional_pseudo_classes(self):
+        from domonic.style import _selector_specificity as spec
+
+        self.assertEqual(spec(":where(#a#b#c)"), (0, 0, 0))
+        self.assertEqual(spec(":is(#a, .b)"), (1, 0, 0))
+        self.assertEqual(spec("a:not(.b, #c)"), (1, 0, 1))
+        self.assertEqual(spec("div:has(> img)"), (0, 0, 2))
+        self.assertEqual(spec("li:nth-child(2n+1)"), (0, 1, 1))
+        self.assertEqual(spec("ul li:nth-child(2n of .foo)"), (0, 2, 2))
+
+    def test_where_pseudo_class_loses_the_cascade(self):
+        from domonic.window import window
+
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            ":where(#a#a#a) { color: blue }"
+            ".card { color: green }"
+            "</style></head>"
+            "<body><div id='a' class='card'></div></body>"
+        )
+        div = page.querySelector("#a")
+        self.assertEqual(
+            window.getComputedStyle(div).getPropertyValue("color"), "green"
+        )
+
+    def test_css_register_property_and_at_property_rule(self):
+        from domonic.style import CSS, CSSStyleSheet
+        from domonic import _cssom
+
+        _cssom.REGISTERED_PROPERTIES.pop("--demo-gap", None)
+        _cssom.REGISTERED_PROPERTIES.pop("--demo-ink", None)
+
+        CSS.registerProperty(
+            {
+                "name": "--demo-ink",
+                "syntax": "<color>",
+                "inherits": True,
+                "initialValue": "rebeccapurple",
+            }
+        )
+        self.assertTrue(_cssom.inherits("--demo-ink"))
+        self.assertEqual(_cssom.initial_value("--demo-ink"), "rebeccapurple")
+        with self.assertRaises(Exception):
+            CSS.registerProperty({"name": "--demo-ink", "inherits": False})
+        with self.assertRaises(SyntaxError):
+            CSS.registerProperty({"name": "nodashes", "inherits": True})
+
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(
+            "@property --demo-gap { syntax: '<length>'; inherits: false; "
+            "initial-value: 8px; }"
+        )
+        self.assertFalse(_cssom.inherits("--demo-gap"))
+        self.assertEqual(_cssom.initial_value("--demo-gap"), "8px")
+        rule = sheet.cssRules[0]
+        self.assertEqual(rule.name, "--demo-gap")
+        self.assertFalse(rule.inherits)
+        self.assertEqual(rule.initialValue, "8px")
+
     def test_element_matches_combinators(self):
         page = document.createElement("div")
         page.innerHTML = (

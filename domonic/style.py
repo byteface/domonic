@@ -1022,13 +1022,44 @@ class CSSLayerStatementRule(CSSRule):
 
 
 class CSSPropertyRule(CSSRule):
-    """The CSSPropertyRule interface represents a Houdini @property rule."""
+    """The CSSPropertyRule interface represents a Houdini ``@property`` rule."""
 
     def __init__(self):
         super().__init__()
         self.name: str = ""
         self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.PROPERTY_RULE
+
+    def _descriptor(self, name: str, default: str = "") -> str:
+        if self.style is None:
+            return default
+        value = self.style.getPropertyValue(name)
+        return value if value else default
+
+    @property
+    def syntax(self) -> str:
+        return self._descriptor("syntax", '"*"')
+
+    @property
+    def inherits(self) -> bool:
+        return self._descriptor("inherits").strip().lower() == "true"
+
+    @property
+    def initialValue(self) -> str | None:
+        return self._descriptor("initial-value") or None
+
+    def _register(self) -> None:
+        """Feed this rule into the shared registered-property table so the
+        cascade honours its inheritance flag and initial value."""
+        if not self.name.startswith("--"):
+            return
+        syntax = self.syntax.strip().strip("\"'") or "*"
+        _cssom.register_property(
+            self.name,
+            syntax=syntax,
+            inherits=self.inherits,
+            initial_value=self.initialValue,
+        )
 
     @property
     def cssText(self):
@@ -5959,19 +5990,100 @@ class CSSStyleDeclaration(Style):
 
 
 _SPECIFICITY_ID = re.compile(r"#[-\w]+")
-_SPECIFICITY_CLASS = re.compile(r"(?<!:):[-\w]+(?:\([^)]*\))?|\.[-\w]+|\[[^\]]+\]")
-_SPECIFICITY_TYPE = re.compile(r"(?:^|[\s>+~])([-\w]+|\*)")
-_SPECIFICITY_PSEUDO_EL = re.compile(r"::[-\w]+")
+_SPECIFICITY_CLASS = re.compile(r"\.[-\w]+|\[[^\]]+\]|(?<!:):[-\w]+")
+_SPECIFICITY_TYPE = re.compile(r"(?:^|[\s>+~|])(-?[_a-zA-Z][-\w]*|\*)")
+_SPECIFICITY_PSEUDO_EL = re.compile(
+    r"::[-\w]+|:(?:before|after|first-line|first-letter)\b"
+)
+# Functional pseudo-classes whose specificity is that of their most specific
+# argument (:where() contributes nothing and is handled separately).
+_SPECIFICITY_MATCHES_ANY = ("is", "matches", "not", "has")
+
+
+def _split_functional_pseudo(selector: str):
+    """Yield ``(name, args, start, end)`` for each top-level ``:name(...)`` in
+    *selector*, where ``args`` is the raw content between the parentheses."""
+    i = 0
+    length = len(selector)
+    while i < length:
+        if selector[i] != ":":
+            i += 1
+            continue
+        match = re.match(r":{1,2}([-\w]+)\(", selector[i:])
+        if not match:
+            i += 1
+            continue
+        name = match.group(1).lower()
+        open_paren = i + match.end() - 1
+        depth = 0
+        j = open_paren
+        while j < length:
+            char = selector[j]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            j += 1
+        yield name, selector[open_paren + 1 : j], i, j + 1
+        i = j + 1
 
 
 def _selector_specificity(selector: str) -> tuple[int, int, int]:
-    """(#id, .class/[attr]/:pseudo-class, element/::pseudo-element) counts."""
+    """CSS Selectors 4 specificity as an ``(#id, .class, type)`` triple.
+
+    Handles the functional pseudo-classes: ``:where()`` adds nothing,
+    ``:is()`` / ``:not()`` / ``:has()`` take the specificity of their most
+    specific argument, and ``:nth-child(... of S)`` adds the specificity of
+    ``S`` on top of the pseudo-class itself.
+    """
     sel = selector.strip()
-    ids = len(_SPECIFICITY_ID.findall(sel))
-    classes = len(_SPECIFICITY_CLASS.findall(sel))
+    if not sel:
+        return (0, 0, 0)
+
+    ids = classes = types = 0
+    replacements: list[tuple[int, int]] = []
+
+    for name, args, start, end in _split_functional_pseudo(sel):
+        if name == "where":
+            replacements.append((start, end))
+            continue
+        if name in _SPECIFICITY_MATCHES_ANY:
+            best = (0, 0, 0)
+            for part in _split_top_level_commas(args):
+                part = part.strip()
+                if part:
+                    best = max(best, _selector_specificity(part))
+            ids += best[0]
+            classes += best[1]
+            types += best[2]
+            replacements.append((start, end))
+            continue
+        if name in ("nth-child", "nth-last-child") and " of " in f" {args} ":
+            _, _, sub = args.partition(" of ")
+            add = (0, 0, 0)
+            for part in _split_top_level_commas(sub):
+                part = part.strip()
+                if part:
+                    add = max(add, _selector_specificity(part))
+            ids += add[0]
+            classes += add[1]
+            types += add[2]
+            # leave the ":nth-child(" ... ")" in place so it still counts once
+            # as a pseudo-class below, but blank the argument list
+            replacements.append((start + len(name) + 2, end - 1))
+
+    for start, end in sorted(replacements, reverse=True):
+        sel = sel[:start] + sel[end:]
+
     pseudo_els = len(_SPECIFICITY_PSEUDO_EL.findall(sel))
-    types = len(
-        [t for t in _SPECIFICITY_TYPE.findall(sel) if t not in ("*",)]
+    # remove ::pseudo-elements before the class scan so their ':' is not counted
+    scan = _SPECIFICITY_PSEUDO_EL.sub(" ", sel)
+    ids += len(_SPECIFICITY_ID.findall(scan))
+    classes += len(_SPECIFICITY_CLASS.findall(scan))
+    types += len(
+        [t for t in _SPECIFICITY_TYPE.findall(scan) if t != "*"]
     )
     return ids, classes, types + pseudo_els
 
@@ -6361,6 +6473,44 @@ class CSS:
         if value is None:
             return _supports_condition(str(property))
         return _supports_property_value(str(property), str(value))
+
+    @staticmethod
+    def registerProperty(definition) -> None:
+        """Register a custom property (CSS Properties and Values API).
+
+        ``definition`` is a mapping with ``name`` (a ``--`` custom property),
+        ``syntax`` (default ``"*"``), ``inherits`` (bool, required by the spec),
+        and an optional ``initialValue``. Once registered, the property's
+        inheritance and initial value are honoured by
+        ``window.getComputedStyle``.
+        """
+        if not isinstance(definition, dict):
+            definition = {
+                key: getattr(definition, key)
+                for key in ("name", "syntax", "inherits", "initialValue")
+                if hasattr(definition, key)
+            }
+        name = str(definition.get("name", ""))
+        if not name.startswith("--") or len(name) < 3:
+            raise SyntaxError(f"registerProperty: invalid custom property name {name!r}")
+        if _cssom.registered_property(name) is not None:
+            raise Exception(
+                f"InvalidModificationError: {name} has already been registered"
+            )
+        syntax = str(definition.get("syntax", "*")).strip().strip("\"'") or "*"
+        initial_value = definition.get("initialValue")
+        if initial_value is not None:
+            initial_value = str(initial_value)
+        if syntax != "*" and initial_value is None:
+            raise SyntaxError(
+                "registerProperty: initialValue is required when syntax is not '*'"
+            )
+        _cssom.register_property(
+            name,
+            syntax=syntax,
+            inherits=bool(definition.get("inherits", False)),
+            initial_value=initial_value,
+        )
 
 
 def _normalize_declaration_text(css_text: str) -> str:
@@ -6831,6 +6981,7 @@ def _parse_block_rule(
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
         rule.style = _style_from_declarations(block, rule)
+        rule._register()
         return rule
     if lower.startswith("@counter-style"):
         rule = CSSCounterStyleRule()

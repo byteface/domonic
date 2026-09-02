@@ -294,11 +294,45 @@ def longhands_for(name: str) -> tuple[str, ...]:
     return SHORTHANDS.get(name, ())
 
 
+# CSS Properties and Values API (@property / CSS.registerProperty) registrations,
+# keyed by custom-property name. Each value is
+# {"syntax": str, "inherits": bool, "initialValue": str | None}.
+REGISTERED_PROPERTIES: dict[str, dict] = {}
+
+
+def register_property(
+    name: str,
+    *,
+    syntax: str = "*",
+    inherits: bool = False,
+    initial_value: str | None = None,
+) -> None:
+    """Record a registered custom property (last registration wins, matching
+    ``@property`` cascade order; ``CSS.registerProperty`` enforces uniqueness
+    itself)."""
+    REGISTERED_PROPERTIES[name] = {
+        "syntax": syntax,
+        "inherits": bool(inherits),
+        "initialValue": initial_value,
+    }
+
+
+def registered_property(name: str) -> dict | None:
+    return REGISTERED_PROPERTIES.get(name)
+
+
 def inherits(name: str) -> bool:
+    registration = REGISTERED_PROPERTIES.get(name)
+    if registration is not None:
+        return registration["inherits"]
+    # An unregistered custom property inherits by default.
     return name in INHERITED_PROPERTIES or name.startswith("--")
 
 
 def initial_value(name: str) -> str:
+    registration = REGISTERED_PROPERTIES.get(name)
+    if registration is not None and registration["initialValue"] is not None:
+        return registration["initialValue"]
     return INITIAL_VALUES.get(name, "")
 
 
