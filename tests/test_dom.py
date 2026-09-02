@@ -676,6 +676,23 @@ class DOMTest(unittest.TestCase):
         # print(site.contains(third_div))
         assert site.contains(another_div)
 
+    def test_in_operator_reports_event_handler_idl_properties(self):
+        el = document.createElement("button")
+        # browsers expose every on<type> handler for feature detection
+        for name in ("onclick", "onmouseover", "oninput", "onkeydown",
+                     "onsubmit", "onfocus", "onblur", "onpointerdown",
+                     "onwheel", "onscroll"):
+            self.assertIn(name, el)
+        # preact's `('on' + name).toLowerCase() in dom` probe
+        self.assertIn(("on" + "Click").lower(), el)
+        self.assertNotIn("onnotarealhandler", el)
+        # still answers for attributes actually set, and child membership
+        el.setAttribute("id", "x")
+        self.assertIn("id", el)
+        child = document.createElement("span")
+        el.appendChild(child)
+        self.assertIn(child, el)
+
     def test_getElementById(self):
         dom1 = html(
             div(

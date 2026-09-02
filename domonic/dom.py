@@ -34,7 +34,7 @@ def _escape_html(value: str, quote: bool = True) -> str:
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic import _fontmetrics
-from domonic.events import Event, EventTarget, MouseEvent
+from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
@@ -4636,6 +4636,21 @@ class Element(Node):
 
         self._iterate(self, anon)
         return elements
+
+    def __contains__(self, item: Any) -> bool:
+        """``x in element``.
+
+        Keeps the ``Node`` behaviour (child membership) but also answers ``True``
+        for the ``on<type>`` event-handler IDL property names, matching a
+        browser's ``'onclick' in element`` feature-detection probe, and for
+        attributes actually set on the element.
+        """
+        if isinstance(item, str):
+            if item.lower() in EVENT_HANDLER_NAMES:
+                return True
+            if item in self.kwargs or ("_" + item) in self.kwargs:
+                return True
+        return super().__contains__(item)
 
     def hasAttribute(self, attribute: str) -> bool:
         """Returns True if an element has the specified attribute, otherwise False

@@ -2199,3 +2199,15 @@ def _install_default_event_handlers(*classes: type[Any]) -> None:
 
 
 _install_default_event_handlers(GlobalEventHandler, WindowEventHandler)
+
+
+# The full set of ``on<type>`` event-handler IDL property names. Browsers expose
+# every one of these on their element / window objects for feature detection
+# (``'onclick' in element`` is ``true``), so domonic advertises the same set.
+EVENT_HANDLER_NAMES: frozenset[str] = frozenset(
+    GlobalEventHandler._handler_names + WindowEventHandler._handler_names
+) | frozenset({
+    "onbeforetoggle", "oncommand", "oncontextlost", "oncontextrestored",
+    "oncopy", "oncut", "onpaste", "onscrollend", "ontoggle",
+})
+
