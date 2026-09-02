@@ -5,6 +5,7 @@ domonic.d3.format
 """
 
 import re as pyre
+from typing import Any
 
 from domonic.javascript import Array, Global, Math, Number, RegExp, String
 
@@ -112,7 +113,7 @@ def formatRounded(x, p):
             return coefficient + "0".join(Array(exponent - len(coefficient) + 2))
 
 
-formatTypes = {
+formatTypes: dict[str, Any] = {
     "%": lambda x, p: Number(x * 100).toFixed(p),
     "b": lambda x, ignore=None: Number(Math.round(x)).toString(2),
     "c": lambda x, ignore=None: str(x),

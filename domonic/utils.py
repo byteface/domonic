@@ -455,7 +455,7 @@ class Utils:
         Returns:
             A dictionary mapping each value to its count.
         """
-        freq = {}
+        freq: dict[Any, int] = {}
         for elem in data:
             if elem in freq:
                 freq[elem] += 1
@@ -490,7 +490,7 @@ class Utils:
         Returns:
             A quoted filename-safe representation of the URL.
         """
-        import urllib
+        import urllib.parse
 
         url = "_".join(url.split("/"))
         url = "__".join(url.split(":"))
@@ -565,9 +565,9 @@ class Utils:
         """
         front = content[0:start]
         mid = content[start:end]
-        end = content[end : len(content)]
+        tail = content[end : len(content)]
         mid = mid.replace(match, replacement)
-        return front + mid + end
+        return front + mid + tail
 
     @staticmethod
     def truncate(text: str = "", length: int = 0) -> str:

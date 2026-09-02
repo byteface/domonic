@@ -6,6 +6,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
 
 from __future__ import annotations
 
+from typing import Any
 from urllib.parse import urljoin
 
 from domonic.events import Event, EventTarget, MessageEvent
@@ -96,7 +97,7 @@ class ServiceWorkerContainer(EventTarget):
 
     def __init__(self, baseURL: str = "https://eventual.technology/") -> None:
         super().__init__()
-        self.controller = None
+        self.controller: Any = None
         self.oncontrollerchange = None
         self.onmessage = None
         self.onmessageerror = None

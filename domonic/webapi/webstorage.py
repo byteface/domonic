@@ -12,6 +12,11 @@ import os
 class Storage:
     _reserved_attrs = {"storage", "filepath", "has_file"}
 
+    # Set via object.__setattr__ to bypass the Web Storage __setattr__ proxy.
+    storage: dict[str, str]
+    filepath: str
+    has_file: bool
+
     def __init__(self, filepath: str | None = None) -> None:
         """Create an in-memory or JSON-backed Web Storage object.
 
@@ -73,7 +78,7 @@ class Storage:
         """Returns an integer representing the number of data items stored in the Storage object."""
         return len(self)
 
-    def _save(self) -> None:
+    def _save(self) -> bool:
         if self.has_file:
             with open(self.filepath, "w") as f:
                 json.dump(self.storage, f)

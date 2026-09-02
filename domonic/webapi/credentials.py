@@ -62,7 +62,7 @@ class CredentialsContainer:
     def create(self, options: dict[str, Any] | None = None):
         """Return a Promise resolving with a new credential or ``None``."""
         options = options or {}
-        credential = None
+        credential: Credential | None = None
         if isinstance(options, Credential):
             credential = options
         elif "password" in options:

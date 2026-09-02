@@ -47,7 +47,7 @@ class EventSource(EventTarget):
         self._retry = eventSourceInitDict.get("retry", 3000)
         self._session = eventSourceInitDict.get("session", None)
         self._chunk_size = eventSourceInitDict.get("chunk_size", 1024)
-        self._client = None
+        self._client: Any = None
         self._thread: threading.Thread | None = None
         self._closed = False
         self._last_error: Exception | None = None

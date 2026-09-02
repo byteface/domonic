@@ -25,6 +25,16 @@ class URLPattern:
         "hash",
     )
 
+    # Component values are populated dynamically via setattr in __init__.
+    protocol: str
+    username: str
+    password: str
+    hostname: str
+    port: str
+    pathname: str
+    search: str
+    hash: str
+
     def __init__(self, pattern: str | dict[str, Any], baseURL: str | None = None):
         self.inputs = [pattern] if baseURL is None else [pattern, baseURL]
         self._regexes: dict[str, re.Pattern[str]] = {}

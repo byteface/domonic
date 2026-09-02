@@ -68,7 +68,7 @@ def stringify(data: Any, filepath: str | Path | None = None, **kwargs) -> str:
     return payload
 
 
-def _coerce_rows(value: RowsLike, name: str):
+def _coerce_rows(value: RowsLike, name: str) -> list[Mapping[str, Any]]:
     if isinstance(value, (str, bytes, bytearray)):
         value = parse(value)
     if isinstance(value, Mapping):
@@ -76,7 +76,7 @@ def _coerce_rows(value: RowsLike, name: str):
     if isinstance(value, Iterable):
         rows = list(value)
         if all(isinstance(row, Mapping) for row in rows):
-            return rows
+            return [row for row in rows if isinstance(row, Mapping)]
     raise ValueError(f"{name} expects a dict or list of dicts")
 
 

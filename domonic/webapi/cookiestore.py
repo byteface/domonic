@@ -66,7 +66,7 @@ class CookieStore(EventTarget):
     def set(self, name_or_options: str | dict[str, Any], value: str | None = None):
         """Set a cookie and return a resolved Promise."""
         item = self._coerce_item(name_or_options, value)
-        self._store[item.name] = dict(item)
+        self._store[item["name"]] = dict(item)
         self.dispatchEvent(CookieChangeEvent("change", {"changed": [item]}))
         return _create_promise().resolve(None)
 

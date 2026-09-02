@@ -7,6 +7,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/File_API
 from __future__ import annotations
 
 import base64
+import builtins
 import mimetypes
 import os
 import time
@@ -75,10 +76,10 @@ class Blob:
     def size(self) -> int:
         return len(self._buffer)
 
-    def arrayBuffer(self) -> bytes:
+    def arrayBuffer(self) -> builtins.bytes:
         return self._buffer
 
-    def bytes(self) -> bytes:
+    def bytes(self) -> builtins.bytes:
         return self._buffer
 
     def text(self, encoding: str = "utf-8", errors: str = "replace") -> str:
@@ -112,7 +113,7 @@ class Blob:
 
         return ReadableStream(lambda: self._buffer)
 
-    def __bytes__(self) -> bytes:
+    def __bytes__(self) -> builtins.bytes:
         return self._buffer
 
     def __len__(self) -> int:

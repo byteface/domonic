@@ -71,7 +71,7 @@ class PushSubscription:
 
     def toJSON(self) -> dict[str, Any]:
         """Return a JSON-serialisable subscription representation."""
-        payload = {
+        payload: dict[str, Any] = {
             "endpoint": self.endpoint,
             "expirationTime": self.expirationTime,
             "keys": {name: _base64url(value) for name, value in self._keys.items()},

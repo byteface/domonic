@@ -15,7 +15,7 @@ from domonic.javascript import Error
 class Geolocation:
     def __init__(self, coords: "GeolocationCoordinates | None" = None):
         self._coords = coords or GeolocationCoordinates()
-        self._watchers = {}
+        self._watchers: dict[int, tuple[Any, Any, Any]] = {}
         self._next_watch_id = 1
 
     def getCurrentPosition(self, successCallback, errorCallback=None, options=None):

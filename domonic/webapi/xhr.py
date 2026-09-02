@@ -42,8 +42,8 @@ class XMLHttpRequest:
         self.url = url or ""
         self.method = "GET"
         self.async_ = True
-        self.user = None
-        self.password = None
+        self.user: str | None = None
+        self.password: str | None = None
         self.responseType = responseType or ""
         self.withCredentials = withCredentials
         self.timeout = timeout
@@ -67,7 +67,7 @@ class XMLHttpRequest:
         self._response_headers = Headers()
         self._listeners: dict[str, list[Callable[[Any], Any]]] = {}
         self._aborted = False
-        self._override_mime_type = None
+        self._override_mime_type: str | None = None
 
     def addEventListener(self, event_type: str, callback: Callable[[Any], Any]) -> None:
         self._listeners.setdefault(str(event_type), []).append(callback)

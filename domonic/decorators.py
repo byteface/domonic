@@ -65,7 +65,7 @@ def el(element="div", string: bool = False):
 #     return decorator
 
 
-def called(before=None, error: Callable[[Exception], None] = None):
+def called(before=None, error: Callable[[Exception], None] | None = None):
     """Call a hook before a function runs, with light support for legacy callback sugar."""
 
     def decorator(f):
@@ -76,7 +76,7 @@ def called(before=None, error: Callable[[Exception], None] = None):
             try:
                 return f(*args, **kwargs)
             except Exception as e:
-                if error:
+                if error is not None:
                     error(e)
                 raise
 
@@ -93,7 +93,7 @@ def called(before=None, error: Callable[[Exception], None] = None):
                 else:
                     f()
             except Exception as e:
-                if error:
+                if error is not None:
                     error(e)
                 else:
                     raise

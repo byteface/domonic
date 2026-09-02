@@ -8,6 +8,8 @@ This dir is for extending domonic to be useable with other python libs.
 
 from __future__ import annotations
 
+from typing import Any
+
 
 def _hello_page_source(framework: str) -> str:
     return f"""\
@@ -643,7 +645,7 @@ if __name__ == "__main__":
 )
 
 
-SERVER_SCAFFOLDS: dict[str, dict[str, object]] = {
+SERVER_SCAFFOLDS: dict[str, dict[str, Any]] = {
     "none": {"packages": [], "template": None},
     "sanic": {"packages": ["sanic==25.12.1"], "template": HELLO_SANIC},
     "flask": {"packages": ["Flask==3.1.3"], "template": HELLO_FLASK},

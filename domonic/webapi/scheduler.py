@@ -169,7 +169,7 @@ class Scheduler:
 
     def run(self) -> list[Any]:
         """Drain currently queued tasks in priority and insertion order."""
-        results = []
+        results: list[Any] = []
         while True:
             with self._lock:
                 if not self._queue:
