@@ -54,7 +54,13 @@ class TestCase(unittest.TestCase):
         el.style.width = "120px"
         win.document.body = body(el)
 
-        self.assertIs(win.getComputedStyle(el), el.style)
+        computed = win.getComputedStyle(el)
+        # a distinct, read-only declaration that resolves through the cascade
+        self.assertIsNot(computed, el.style)
+        self.assertEqual(computed.getPropertyValue("width"), "120px")
+        self.assertEqual(computed.getPropertyValue("display"), "inline")
+        with self.assertRaises(Exception):
+            computed.setProperty("width", "10px")
         self.assertIs(win.getSelection(), win.document.getSelection())
 
     def test_match_media_and_position_helpers(self):

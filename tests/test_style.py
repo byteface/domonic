@@ -791,6 +791,96 @@ class TestCase(unittest.TestCase):
         self.assertIs(promise.data, sheet)
         self.assertEqual(sheet.cssRules[0].selectorText, "article")
 
+    def test_shorthand_expands_to_longhands(self):
+        s = CSSStyleDeclaration()
+        s.setProperty("border", "1px solid red")
+        self.assertEqual(s.getPropertyValue("border-width"), "1px")
+        self.assertEqual(s.getPropertyValue("border-style"), "solid")
+        self.assertEqual(s.getPropertyValue("border-color"), "red")
+        self.assertEqual(s.getPropertyValue("border-top-width"), "1px")
+        self.assertEqual(s.cssText, "border: 1px solid red;")
+
+        s2 = CSSStyleDeclaration()
+        s2.setProperty("margin", "10px")
+        self.assertEqual(s2.getPropertyValue("margin-top"), "10px")
+        self.assertEqual(s2.getPropertyValue("margin-left"), "10px")
+        self.assertEqual(s2.cssText, "margin: 10px;")
+
+        s3 = CSSStyleDeclaration()
+        s3.setProperty("font", "italic bold 16px/1.5 Arial, sans-serif")
+        self.assertEqual(s3.getPropertyValue("font-size"), "16px")
+        self.assertEqual(s3.getPropertyValue("font-weight"), "bold")
+        self.assertEqual(s3.getPropertyValue("font-style"), "italic")
+        self.assertEqual(s3.getPropertyValue("line-height"), "1.5")
+        self.assertEqual(s3.getPropertyValue("font-family"), "Arial, sans-serif")
+
+    def test_longhands_reconstruct_shorthand(self):
+        s = CSSStyleDeclaration()
+        for prop in ("padding-top", "padding-right", "padding-bottom", "padding-left"):
+            s.setProperty(prop, "1rem")
+        self.assertEqual(s.getPropertyValue("padding"), "1rem")
+        self.assertEqual(s.cssText, "padding: 1rem;")
+
+        # setting a longhand over a set shorthand collapses to the short form
+        s2 = CSSStyleDeclaration()
+        s2.setProperty("margin", "10px")
+        s2.setProperty("margin-left", "5px")
+        self.assertEqual(s2.getPropertyValue("margin"), "10px 10px 10px 5px")
+        self.assertEqual(s2.cssText, "margin: 10px 10px 10px 5px;")
+
+    def test_shorthand_via_css_text_and_inline_attr(self):
+        node = div(_style="border: 2px dotted blue")
+        self.assertEqual(node.style.getPropertyValue("border-style"), "dotted")
+        self.assertEqual(node.style.getPropertyValue("border-top-width"), "2px")
+        self.assertEqual(node.style.getPropertyValue("border-color"), "blue")
+
+    def test_get_computed_style_cascade(self):
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            ".box { color: red; padding: 8px; font-size: 13px }"
+            "div.box { color: green }"
+            "#hero { font-weight: bold }"
+            "</style></head>"
+            "<body><div id='hero' class='box' style='color: blue; margin: 4px'>"
+            "<span>child</span></div></body>"
+        )
+        from domonic.window import window
+
+        hero = page.querySelector("#hero")
+        computed = window.getComputedStyle(hero)
+        self.assertEqual(computed.getPropertyValue("color"), "blue")  # inline wins
+        self.assertEqual(computed.getPropertyValue("padding"), "8px")  # .box
+        self.assertEqual(computed.getPropertyValue("padding-top"), "8px")
+        self.assertEqual(computed.getPropertyValue("font-weight"), "bold")  # #hero
+        self.assertEqual(computed.getPropertyValue("font-size"), "13px")  # .box
+        self.assertEqual(computed.getPropertyValue("margin"), "4px")  # inline
+        self.assertEqual(computed.getPropertyValue("display"), "inline")  # initial
+
+        span = page.querySelector("span")
+        span_computed = window.getComputedStyle(span)
+        self.assertEqual(span_computed.getPropertyValue("color"), "blue")  # inherited
+        self.assertEqual(span_computed.getPropertyValue("font-size"), "13px")  # inherited
+        self.assertEqual(span_computed.getPropertyValue("margin"), "0px")  # not inherited
+
+        with self.assertRaises(Exception):
+            span_computed.setProperty("color", "orange")
+
+    def test_element_matches_combinators(self):
+        page = document.createElement("div")
+        page.innerHTML = (
+            "<div class='a'><section><p id='x'>hi</p></section>"
+            "<p class='b'>y</p></div>"
+        )
+        x = page.querySelector("#x")
+        y = page.querySelector(".b")
+        self.assertTrue(x.matches("div.a p"))
+        self.assertTrue(x.matches("section > p"))
+        self.assertFalse(x.matches("div.a > p"))
+        self.assertTrue(x.matches("div.a > section > p"))
+        self.assertTrue(y.matches("section + p"))
+        self.assertFalse(y.matches("p + p"))
+
     def test_css_namespace_utilities(self):
         self.assertEqual(CSS.escape("123 item"), "\\31 23\\ item")
         self.assertEqual(CSS.escape("-"), "\\-")

@@ -13,8 +13,9 @@ from __future__ import annotations
 
 import re
 from re import M, findall, finditer
-from typing import Any
+from typing import Any, Callable
 
+from . import _cssom
 from .utils import Utils
 
 COMMENT_REGEXP = r"/\*[\s\S]*?\*/"
@@ -501,22 +502,20 @@ class CSSRule:
 
     def __init__(self):
         # self._type = None
-        self.parentRule: "CSSRule" = None
-        self.parentStyleSheet: "CSSStyleSheet" = None
-        self.type: int = None
-        self.__cssText: str = None
+        self.parentRule: "CSSRule | None" = None
+        self.parentStyleSheet: "CSSStyleSheet | None" = None
+        self.type: int | None = None
+        self._cssText: str | None = None
 
     @property
     def cssText(self):
         """Represents the textual representation of the rule, e.g. "h1,h2 { font-size: 16pt }" or "@import 'url'".
-        To access or modify parts of the rule (e.g. the value of "font-size" in the example)
-        use the properties on the specialized interface for the rule's type.
-        """
-        return self.__cssText or ""
 
-    @cssText.setter
-    def cssText(self, value):
-        self.__cssText = "" if value is None else str(value)
+        Per the CSSOM spec this is read-only; the specialized rule interfaces
+        compute it from their own properties. The generic ``CSSRule`` fallback
+        reads the raw text captured in ``_cssText`` at parse time.
+        """
+        return self._cssText or ""
 
     def __str__(self):
         return self.cssText
@@ -541,11 +540,11 @@ class CSSImportRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.href: str = None
-        self.media: "MediaList" = None
+        self.href: str | None = None
+        self.media: "MediaList | None" = None
         self.layerName: str | None = None
         self.supportsText: str = ""
-        self.styleSheet: "CSSStyleSheet" = None
+        self.styleSheet: "CSSStyleSheet | None" = None
         self.type = CSSRule.IMPORT_RULE
 
     @property
@@ -580,8 +579,8 @@ class CSSStyleRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.selectorText: str = None
-        self.style: "CSSStyleDeclaration" = None
+        self.selectorText: str | None = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.STYLE_RULE
 
@@ -615,7 +614,7 @@ class CSSFontFaceRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.style: "CSSStyleDeclaration" = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.FONT_FACE_RULE
 
     @property
@@ -633,8 +632,8 @@ class CSSPageRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.selectorText: str = None
-        self.style: "CSSStyleDeclaration" = None
+        self.selectorText: str | None = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.PAGE_RULE
 
     @property
@@ -658,8 +657,8 @@ class CSSNamespaceRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.namespaceURI: str = None
-        self.prefix: str = None
+        self.namespaceURI: str | None = None
+        self.prefix: str | None = None
         self.type = CSSRule.NAMESPACE_RULE
 
     @property
@@ -684,7 +683,7 @@ class CSSKeyframesRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.cssRules: "CSSRuleList" = CSSRuleList()
-        self.name: str = None
+        self.name: str | None = None
         self.type = CSSRule.KEYFRAMES_RULE
 
     @property
@@ -708,8 +707,8 @@ class CSSKeyframeRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.cssRules: "CSSRuleList" = CSSRuleList()
-        self.keyText: str = None
-        self.style: "CSSStyleDeclaration" = None
+        self.keyText: str | None = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.KEYFRAME_RULE
 
     @property
@@ -739,9 +738,9 @@ class CSSCounterStyleRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.name: str = None
-        self.system: str = None
-        self.style: "CSSStyleDeclaration" = None
+        self.name: str | None = None
+        self.system: str | None = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.COUNTER_STYLE_RULE
 
     @property
@@ -782,8 +781,8 @@ class CSSColorProfileRule(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.colorProfile: str = None
-        self.style: "CSSStyleDeclaration" = None
+        self.colorProfile: str | None = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.COLOR_PROFILE_RULE
 
     @property
@@ -836,7 +835,7 @@ class CSSGroupingRule(CSSRule):
             raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         del self.cssRules[index]
 
-    def insertRule(self, rule: str, index: int = None):
+    def insertRule(self, rule: str, index: int | None = None):
         """Inserts a child rule into this grouping rule."""
         from domonic.dom import DOMException
 
@@ -865,7 +864,7 @@ class CSSConditionRule(CSSGroupingRule):
 
     def __init__(self):
         super().__init__()
-        self.conditionText: str = None
+        self.conditionText: str | None = None
         self.cssRules: "CSSRuleList" = CSSRuleList()
         # self.type = CSSRule.CONDITIONAL_RULE
 
@@ -885,7 +884,7 @@ class CSSSupportsRule(CSSConditionRule):
 
     def __init__(self):
         super().__init__()
-        self.conditionText: str = None
+        self.conditionText: str | None = None
         self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.SUPPORTS_RULE
 
@@ -1028,7 +1027,7 @@ class CSSPropertyRule(CSSRule):
     def __init__(self):
         super().__init__()
         self.name: str = ""
-        self.style: "CSSStyleDeclaration" = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.PROPERTY_RULE
 
     @property
@@ -1041,7 +1040,7 @@ class CSSNestedDeclarations(CSSRule):
 
     def __init__(self):
         super().__init__()
-        self.style: "CSSStyleDeclaration" = None
+        self.style: "CSSStyleDeclaration | None" = None
         self.type = CSSRule.NESTED_DECLARATIONS_RULE
 
     @property
@@ -1062,7 +1061,7 @@ class MediaList(list):
         """Returns a string containing the text of the media query."""
         return ",".join(self)
 
-    def item(self, index: int) -> str:
+    def item(self, index: int) -> str | None:
         """Returns the media at the given index in the MediaList."""
         try:
             return self[index]
@@ -1090,7 +1089,7 @@ class CSSRuleList(list):
         """Returns an integer representing the number of CSSRule objects in the collection."""
         return len(self)
 
-    def item(self, index: int) -> "CSSRule":
+    def item(self, index: int) -> "CSSRule | None":
         """Gets a single CSSRule."""
         try:
             return self[index]
@@ -1129,7 +1128,7 @@ class CSSStyleSheet(StyleSheet):
         del self.cssRules[index]
         self.rules = self.cssRules
 
-    def insertRule(self, rule: str, index: int = None):
+    def insertRule(self, rule: str, index: int | None = None):
         """Inserts a new rule at the specified position in the stylesheet,
         given the textual representation of the rule."""
         from domonic.dom import DOMException
@@ -1170,7 +1169,7 @@ class CSSStyleSheet(StyleSheet):
     #     raise NotImplementedError
 
     # Legacy methods
-    def addRule(self, selectorText: str, style: str, index: int = None):
+    def addRule(self, selectorText: str, style: str, index: int | None = None):
         """Adds a new rule to the stylesheet given the selector to which the style applies and the style block to apply
         to the matching elements.
         This differs from insertRule(), which takes the textual representation of the entire rule as a single string.
@@ -1997,7 +1996,8 @@ class Style:
             declared_properties.add(_css_attribute_name(property_name))
             object.__setattr__(self, "_declared_properties", declared_properties)
 
-    def style_set_decorator(func):
+    @staticmethod
+    def style_set_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         from functools import wraps
 
         @wraps(func)
@@ -2019,7 +2019,8 @@ class Style:
 
         return style_wrapper
 
-    def style_get_decorator(func):
+    @staticmethod
+    def style_get_decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         from functools import wraps
 
         @wraps(func)
@@ -4831,23 +4832,8 @@ class Style:
     def mixBlendMode(self, value=None, *args, **kwargs):
         self.__mixBlendMode = value
 
-    @property
-    def objectFit(self):
-        return self.__objectFit
-
-    @objectFit.setter
-    @style_set_decorator
-    def objectFit(self, value=None, *args, **kwargs):
-        self.__objectFit = value
-
-    @property
-    def objectPosition(self):
-        return self.__objectPosition
-
-    @objectPosition.setter
-    @style_set_decorator
-    def objectPosition(self, value=None, *args, **kwargs):
-        self.__objectPosition = value
+    # objectFit / objectPosition are defined once above with the standard
+    # get/set decorators; the duplicate definitions that lived here were removed.
 
     @property
     def offset(self):
@@ -5744,8 +5730,15 @@ class CSSStyleDeclaration(Style):
 
     @cssText.setter
     def cssText(self, value):
-        text = "" if value is None else str(value).strip()
-        entries = _parse_css_declarations(text)
+        raw = "" if value is None else str(value).strip()
+        parsed_entries = _parse_css_declarations(raw)
+        entries = self._collapse_box_shorthands(parsed_entries)
+        # Only re-serialise when the box-shorthand collapse actually changed the
+        # declaration set; otherwise keep the author's text verbatim.
+        if entries != parsed_entries:
+            text = _serialize_css_declarations(entries)
+        else:
+            text = raw
         next_declared_properties = {
             self._to_camel(name) for name, _, _ in entries if not name.startswith("--")
         }
@@ -5766,13 +5759,18 @@ class CSSStyleDeclaration(Style):
                 except Exception:
                     object.__setattr__(self, attribute_name, "")
             for name, property_value, _ in entries:
-                attribute_name = self._to_camel(name)
-                if attribute_name.startswith("--"):
+                if name.startswith("--"):
                     continue
-                try:
-                    setattr(self, attribute_name, property_value)
-                except Exception:
-                    object.__setattr__(self, attribute_name, property_value)
+                # keep both the shorthand and its longhand camelCase accessors current
+                pairs = [(name, property_value)]
+                if _cssom.is_shorthand(name):
+                    pairs += _cssom.expand_shorthand(name, property_value) or []
+                for pair_name, pair_value in pairs:
+                    attribute_name = self._to_camel(pair_name)
+                    try:
+                        setattr(self, attribute_name, pair_value)
+                    except Exception:
+                        object.__setattr__(self, attribute_name, pair_value)
             object.__setattr__(self, "_declared_properties", next_declared_properties)
         finally:
             object.__setattr__(self, "_suspend_style_sync", False)
@@ -5805,11 +5803,31 @@ class CSSStyleDeclaration(Style):
         return ""
 
     def getPropertyValue(self, propertyName: str) -> str:
-        """Returns the value of the property with the specified name."""
+        """Returns the value of the property with the specified name.
+
+        Shorthand / longhand are resolved against each other: asking for a
+        longhand pulls its value out of a set shorthand, and asking for a
+        shorthand reconstructs it from its longhands when possible.
+        """
         target = self._to_kebab(propertyName)
-        for name, value, _ in reversed(self._property_entries()):
+        entries = self._property_entries()
+        for name, value, _ in reversed(entries):
             if name == target:
                 return value
+
+        for shorthand in _cssom.LONGHAND_TO_SHORTHANDS.get(target, ()):
+            for name, value, _ in reversed(entries):
+                if name == shorthand:
+                    expanded = _cssom.expand_shorthand(shorthand, value)
+                    if expanded:
+                        for long_name, long_value in expanded:
+                            if long_name == target:
+                                return long_value
+        if _cssom.is_shorthand(target):
+            built = _cssom.build_shorthand(target, self.getPropertyValue)
+            if built:
+                return built
+
         attribute_name = self._to_camel(propertyName)
         if attribute_name not in getattr(self, "_declared_properties", set()):
             return ""
@@ -5867,23 +5885,342 @@ class CSSStyleDeclaration(Style):
         if _IMPORTANT_RE.search(value):
             value = _IMPORTANT_RE.sub("", value).strip()
             priority = "important"
-        entries = _set_css_declaration(
-            self._property_entries(), target, value, priority
-        )
+
+        if value == "":
+            self.removeProperty(target)
+            return
+
+        entries = self._property_entries()
+
+        if _cssom.is_shorthand(target):
+            covered = set(_cssom.longhands_for(target))
+            entries = [e for e in entries if e[0] not in covered and e[0] != target]
+            entries.append((target, value, priority))
+        else:
+            for shorthand in _cssom.LONGHAND_TO_SHORTHANDS.get(target, ()):
+                shorthand_entry = next(
+                    (e for e in entries if e[0] == shorthand), None
+                )
+                if shorthand_entry is None:
+                    continue
+                expanded = _cssom.expand_shorthand(shorthand, shorthand_entry[1])
+                if not expanded:
+                    continue
+                idx = entries.index(shorthand_entry)
+                prio = shorthand_entry[2]
+                entries = (
+                    entries[:idx]
+                    + [(ln, lv, prio) for ln, lv in expanded]
+                    + entries[idx + 1:]
+                )
+            entries = _set_css_declaration(entries, target, value, priority)
+
+        entries = self._collapse_box_shorthands(entries)
         self._sync_css_text(entries)
         if target.startswith("--"):
             return
         object.__setattr__(self, "_suspend_style_sync", True)
         try:
             setattr(self, self._to_camel(property), value)
+            if _cssom.is_shorthand(target):
+                for long_name, long_value in _cssom.expand_shorthand(target, value) or ():
+                    setattr(self, self._to_camel(long_name), long_value)
         finally:
             object.__setattr__(self, "_suspend_style_sync", False)
+
+    @staticmethod
+    def _collapse_box_shorthands(entries):
+        """Replace a full set of box-shorthand longhands with the shorthand,
+        the way a browser normalises ``cssText``."""
+        by_name = {}
+        for name, value, priority in entries:
+            by_name[name] = (value, priority)
+        for shorthand in _cssom.BOX_SHORTHANDS | _cssom.RADIUS_SHORTHANDS:
+            longs = _cssom.longhands_for(shorthand)
+            if not all(ln in by_name for ln in longs):
+                continue
+            priorities = {by_name[ln][1] for ln in longs}
+            if len(priorities) != 1:
+                continue
+            collapsed = _cssom.collapse_box_values(*(by_name[ln][0] for ln in longs))
+            if not collapsed:
+                continue
+            priority = priorities.pop()
+            first_idx = min(i for i, e in enumerate(entries) if e[0] in longs)
+            entries = [e for e in entries if e[0] not in longs]
+            entries.insert(first_idx, (shorthand, collapsed, priority))
+        return entries
 
     def getPropertyCSSValue(self, propertyName: str):
         """Only supported via getComputedStyle in Firefox. Returns the property value as a
         CSSPrimitiveValue or null for shorthand properties."""
         value = self.getPropertyValue(propertyName)
         return value if value != "" else None
+
+
+_SPECIFICITY_ID = re.compile(r"#[-\w]+")
+_SPECIFICITY_CLASS = re.compile(r"(?<!:):[-\w]+(?:\([^)]*\))?|\.[-\w]+|\[[^\]]+\]")
+_SPECIFICITY_TYPE = re.compile(r"(?:^|[\s>+~])([-\w]+|\*)")
+_SPECIFICITY_PSEUDO_EL = re.compile(r"::[-\w]+")
+
+
+def _selector_specificity(selector: str) -> tuple[int, int, int]:
+    """(#id, .class/[attr]/:pseudo-class, element/::pseudo-element) counts."""
+    sel = selector.strip()
+    ids = len(_SPECIFICITY_ID.findall(sel))
+    classes = len(_SPECIFICITY_CLASS.findall(sel))
+    pseudo_els = len(_SPECIFICITY_PSEUDO_EL.findall(sel))
+    types = len(
+        [t for t in _SPECIFICITY_TYPE.findall(sel) if t not in ("*",)]
+    )
+    return ids, classes, types + pseudo_els
+
+
+_RIGHTMOST_KEY = re.compile(r"([#.]?[-\w]+|\*)(?:\([^)]*\))?\s*$")
+
+
+def _rule_bucket_key(selector: str) -> str:
+    """The bucket a selector belongs in: ``#id``, ``.class``, ``tag`` from its
+    rightmost compound, or ``*`` when that cannot be determined cheaply."""
+    sel = selector.strip().rstrip()
+    # drop a trailing pseudo-element / pseudo-class for bucketing purposes
+    sel = re.sub(r"::?[-\w]+(?:\([^)]*\))?\s*$", "", sel).strip() or selector.strip()
+    match = _RIGHTMOST_KEY.search(sel)
+    if not match:
+        return "*"
+    token = match.group(1)
+    if token.startswith(("#", ".")):
+        return token
+    if token == "*":
+        return "*"
+    return token.lower()
+
+
+def _build_rule_index(sheet_list, viewport):
+    """``{bucket_key: [(selector, specificity, order, entries)]}`` for fast
+    element-vs-rule matching in getComputedStyle."""
+    index: dict[str, list] = {}
+    order = 0
+    for sheet in sheet_list:
+        for rule in _iter_style_rules(
+            getattr(sheet, "cssRules", None), viewport=viewport
+        ):
+            entries = tuple(rule.style._property_entries())
+            if not entries:
+                continue
+            for selector in str(rule.selectorText or "").split(","):
+                selector = selector.strip()
+                if not selector:
+                    continue
+                order += 1
+                index.setdefault(_rule_bucket_key(selector), []).append(
+                    (selector, _selector_specificity(selector), order, entries)
+                )
+    return index
+
+
+def _iter_style_rules(rules, *, viewport):
+    """Yield ``CSSStyleRule`` objects, descending into ``@media`` blocks whose
+    condition currently matches (unmatched or unknown conditions are skipped)."""
+    for rule in rules or ():
+        inner = getattr(rule, "cssRules", None)
+        if isinstance(rule, CSSStyleRule):
+            yield rule
+        elif inner:
+            condition = getattr(rule, "conditionText", None) or getattr(
+                rule, "media", None
+            )
+            if condition is not None and hasattr(condition, "matches"):
+                matches = condition.matches
+            else:
+                matches = True
+            if matches:
+                yield from _iter_style_rules(inner, viewport=viewport)
+
+
+class ComputedStyleDeclaration(CSSStyleDeclaration):
+    """Read-only ``CSSStyleDeclaration`` returned by ``window.getComputedStyle``.
+
+    It resolves each property through a light cascade: matching author rules
+    (by specificity, then source order, with ``!important`` on top), then the
+    inline ``style`` attribute, then inherited values from the parent, then the
+    property's initial value.
+    """
+
+    # populated in __init__ via self.__dict__ (Style.__init__ is skipped)
+    _resolved: Any
+    _element: Any
+    _pseudo: Any
+    _chain_cache: dict
+
+    def __init__(self, element, pseudo=None, _chain_cache=None):
+        # Deliberately skip ``Style.__init__`` (its ~380 attribute assignments):
+        # this class overrides the whole read surface, so all it needs is the
+        # handful of internal fields the CSSOM helpers look for.
+        state = self.__dict__
+        state["_css_text"] = ""
+        state["_declared_properties"] = set()
+        state["_members_checked"] = True
+        state["_parent_node"] = None
+        state["_suspend_style_sync"] = True
+        state["parentRule"] = None
+        state["_element"] = element
+        state["_pseudo"] = pseudo
+        # shared across a single ancestor walk so getComputedStyle on a deep
+        # tree stays linear rather than O(depth^2)
+        state["_chain_cache"] = {} if _chain_cache is None else _chain_cache
+        state["_resolved"] = self._resolve()
+
+    # -- cascade ---------------------------------------------------------
+    def _collect_author_declarations(self):
+        element = self._element
+        document = getattr(element, "ownerDocument", None) or getattr(
+            element, "rootNode", None
+        )
+        sheets = None
+        for attr in ("styleSheets", "stylesheets"):
+            sheets = getattr(document, attr, None) if document is not None else None
+            if sheets:
+                break
+        try:
+            sheet_list = list(sheets) if sheets is not None else []
+        except TypeError:
+            sheet_list = []
+        window = getattr(document, "defaultView", None) if document else None
+        viewport = (
+            getattr(window, "innerWidth", None),
+            getattr(window, "innerHeight", None),
+        )
+
+        cache = self._chain_cache
+        index = cache.get("__rule_index__")
+        if index is None and document is not None:
+            index = getattr(document, "_cssom_rule_index", None)
+        if index is None:
+            index = _build_rule_index(sheet_list, viewport)
+            if document is not None:
+                try:
+                    document._cssom_rule_index = index
+                except Exception:
+                    pass
+        cache["__rule_index__"] = index
+        if not index:
+            return {}
+
+        # only look at rules whose rightmost compound could match this element
+        buckets = ["*", (element.tagName or "").lower()]
+        el_id = element.getAttribute("id")
+        if el_id:
+            buckets.append(f"#{el_id}")
+        for cls in str(element.getAttribute("class") or "").split():
+            buckets.append(f".{cls}")
+
+        cascade: dict[str, tuple[tuple, str]] = {}
+        for bucket in buckets:
+            for selector, spec, order, entries in index.get(bucket, ()):
+                try:
+                    ok = element._matchElement(element, selector) or (
+                        element._matches_selector_chain(selector) is True
+                    )
+                except Exception:
+                    ok = False
+                if not ok:
+                    continue
+                for name, value, priority in entries:
+                    key = (priority == "important", spec, order)
+                    if name not in cascade or key > cascade[name][0]:
+                        cascade[name] = (key, value)
+        return {name: value for name, (_, value) in cascade.items()}
+
+    def _resolve(self):
+        element = self._element
+        resolved: dict[str, str] = {}
+
+        # 1 + 2: author rules then inline style (inline wins over non-important)
+        resolved.update(self._collect_author_declarations())
+        inline = getattr(element, "getAttribute", lambda *_: "")("style") or ""
+        for name, value, _ in _parse_css_declarations(inline):
+            resolved[name] = value
+
+        # expand shorthands so longhand lookups work
+        for name in list(resolved):
+            if _cssom.is_shorthand(name):
+                for long_name, long_value in (
+                    _cssom.expand_shorthand(name, resolved[name]) or []
+                ):
+                    resolved.setdefault(long_name, long_value)
+
+        # 3: inherited values from the parent's computed style
+        parent = getattr(element, "parentNode", None)
+        parent_computed = None
+        if parent is not None and getattr(parent, "nodeType", None) == 1:
+            cache = self._chain_cache
+            parent_computed = cache.get(id(parent))
+            if parent_computed is None:
+                parent_computed = ComputedStyleDeclaration(
+                    parent, None, _chain_cache=cache
+                )
+                cache[id(parent)] = parent_computed
+        return _ResolvedView(resolved, parent_computed)
+
+    # -- read-only CSSOM surface --------------------------------------
+    def getPropertyValue(self, propertyName: str) -> str:
+        target = self._to_kebab(propertyName)
+        value = self._resolved.get(target)
+        if value:
+            return value
+        if _cssom.is_shorthand(target):
+            return _cssom.build_shorthand(target, self.getPropertyValue)
+        return value
+
+    def _property_entries(self):
+        return [
+            (name, self._resolved.get(name), "")
+            for name in self._resolved.names()
+        ]
+
+    @property
+    def cssText(self):
+        if not getattr(self, "_resolved", None):
+            return getattr(self, "_css_text", "")
+        return _serialize_css_declarations(self._property_entries())
+
+    @cssText.setter
+    def cssText(self, value):
+        if getattr(self, "_resolved", None) is None:
+            object.__setattr__(self, "_css_text", "" if value is None else str(value))
+            return
+        raise Exception("NoModificationAllowedError: getComputedStyle is read-only")
+
+    def setProperty(self, *_a, **_k):
+        raise Exception(
+            "NoModificationAllowedError: getComputedStyle is read-only"
+        )
+
+    def removeProperty(self, *_a, **_k):
+        raise Exception(
+            "NoModificationAllowedError: getComputedStyle is read-only"
+        )
+
+
+class _ResolvedView:
+    """Lazy property resolver: explicit value -> inherited -> initial."""
+
+    def __init__(self, declared: dict[str, str], parent_computed):
+        self._declared = declared
+        self._parent = parent_computed
+
+    def names(self):
+        return list(self._declared)
+
+    def get(self, name: str) -> str:
+        if name in self._declared:
+            return self._declared[name]
+        if _cssom.inherits(name) and self._parent is not None:
+            inherited = self._parent.getPropertyValue(name)
+            if inherited:
+                return inherited
+        return _cssom.initial_value(name)
 
 
 def _known_css_property_names() -> set[str]:
@@ -6019,7 +6356,7 @@ class CSS:
         return "".join(result)
 
     @staticmethod
-    def supports(property: str, value: str = None) -> bool:
+    def supports(property: str, value: str | None = None) -> bool:
         """Best-effort syntax-level equivalent of ``CSS.supports()``."""
         if value is None:
             return _supports_condition(str(property))
@@ -6273,8 +6610,12 @@ def _parse_import_tail(text: str) -> tuple[str | None, str, str]:
 
 
 def _parse_statement_at_rule(
-    prelude: str, parentStyleSheet: CSSStyleSheet, parentRule: CSSRule | None
+    prelude: str,
+    parentStyleSheet: "CSSStyleSheet | None",
+    parentRule: CSSRule | None,
 ) -> CSSRule | None:
+    # rule is rebound to a different CSSRule subclass per branch.
+    rule: Any
     lower = prelude.lower()
     if (
         not lower.startswith("@")
@@ -6334,12 +6675,12 @@ def _parse_statement_at_rule(
     rule.type = (
         CSSRule.CHARSET_RULE if lower.startswith("@charset") else CSSRule.UNKNOWN_RULE
     )
-    rule.cssText = f"{prelude};"
+    rule._cssText = f"{prelude};"
     return rule
 
 
 def _parse_keyframe_rules(
-    parentStyleSheet: CSSStyleSheet, parentRule: CSSKeyframesRule, block: str
+    parentStyleSheet: "CSSStyleSheet | None", parentRule: CSSKeyframesRule, block: str
 ) -> CSSRuleList:
     rules = CSSRuleList()
     index = 0
@@ -6363,7 +6704,7 @@ def _parse_keyframe_rules(
 
 
 def _parse_style_rule(
-    parentStyleSheet: CSSStyleSheet,
+    parentStyleSheet: "CSSStyleSheet | None",
     parentRule: CSSRule | None,
     selectorText: str,
     block: str,
@@ -6392,11 +6733,13 @@ def _parse_style_rule(
 
 
 def _parse_block_rule(
-    parentStyleSheet: CSSStyleSheet,
+    parentStyleSheet: "CSSStyleSheet | None",
     parentRule: CSSRule | None,
     prelude: str,
     block: str,
 ) -> CSSRule:
+    # rule is rebound to a different CSSRule subclass per branch.
+    rule: Any
     lower = prelude.lower()
     if lower.startswith("@media"):
         rule = CSSMediaRule()
@@ -6514,7 +6857,9 @@ def _parse_block_rule(
 
 
 def _parse_rule_list(
-    parentStyleSheet: CSSStyleSheet, cssText: str, parentRule: CSSRule | None = None
+    parentStyleSheet: "CSSStyleSheet | None",
+    cssText: str,
+    parentRule: CSSRule | None = None,
 ) -> CSSRuleList:
     rules = CSSRuleList()
     css = cssText or ""
