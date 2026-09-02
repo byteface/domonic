@@ -59,6 +59,31 @@ virtual documents and elements.
 	page.addEventListener(MouseEvent.CLICK, on_page_clicked)
 	page.dispatchEvent(MouseEvent(MouseEvent.CLICK, {"x": 12, "y": 20}))
 
+Propagation
+-----------
+
+``dispatchEvent`` runs the full three-phase model over the node's ancestor
+chain: capture (root to target), the target itself, then bubble (target back to
+root) for events created with ``{"bubbles": True}``. Register a capture-phase
+listener by passing ``True`` (or ``{"capture": True}``) as the third argument.
+``event.stopPropagation()`` ends the walk after the current node;
+``stopImmediatePropagation()`` also skips the remaining listeners on that node.
+
+.. code-block :: python
+
+	from domonic.events import MouseEvent
+	from domonic.html import button, div
+
+	root = div(button("x"))
+	btn = root.args[0]
+
+	root.addEventListener("click", lambda e: print("root capture"), True)
+	root.addEventListener("click", lambda e: print("root bubble"))
+	btn.addEventListener("click", lambda e: print("target"))
+
+	btn.dispatchEvent(MouseEvent("click", {"bubbles": True}))
+	# root capture / target / root bubble
+
 Common Event Classes
 --------------------
 

@@ -89,6 +89,35 @@ browser JavaScript, tests, scraping scripts, and domonic server-side rendering.
 See the examples folder for other uses of the Python virtual DOM.
 
 
+Serialising: str() vs innerHTML / outerHTML
+-------------------------------------------
+
+``str(node)`` produces domonic's authoring-style markup: void elements are
+self-closed (``<br/>``), boolean attributes render bare (``checked``), and
+``<`` / ``>`` are escaped inside attribute values. This is stable and is what
+most server-side rendering wants.
+
+``innerHTML``, ``outerHTML`` and ``getHTML()`` instead follow the WHATWG HTML
+fragment serialisation algorithm, so their output is byte-compatible with a
+browser: ``<br>`` (no slash), ``checked=""``, and only ``&``, ``"`` and the
+non-breaking space escaped in attribute values. Reach for these when a port or
+a test diffs against real browser output.
+
+.. code-block :: python
+
+	from domonic.html import div, br, input as input_
+
+	el = div(input_(_type="checkbox", _checked=""), br(), _title="a<b>")
+
+	str(el)
+	# <div title="a&lt;b&gt;"><input type="checkbox" checked/><br/></div>
+
+	el.outerHTML
+	# <div title="a<b>"><input type="checkbox" checked=""><br></div>
+
+Rendering behaviour of ``str(node)`` is configurable through ``DOMConfig``
+(below); the fragment serialisation is not.
+
 
 DOMConfig
 ----------------

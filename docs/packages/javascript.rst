@@ -241,6 +241,32 @@ Call ``()`` on a string value to transform it into a node:
 Pass the tag name and attributes.
 
 
+Regular expressions
+-------------------
+
+``RegExp`` translates JavaScript regex syntax to Python's ``re`` so patterns
+copied from JS code keep working:
+
+.. code-block :: python
+
+	from domonic.javascript import RegExp, String
+
+	# \p{...} Unicode property escapes
+	String("a, b. c!").replace(RegExp(r"\p{P}+", "gu"), "")   # "a b c"
+
+	# named groups, JS spelling
+	RegExp(r"(?<year>\d{4})-(?<month>\d{2})").exec("2026-09").groups
+	# {'year': '2026', 'month': '09'}
+
+	# sticky (y) flag honours lastIndex
+	r = RegExp(r"\d+", "y"); r.lastIndex = 3
+	r.exec("abc123")                                          # ['123']
+
+	# RegExp.replace with $1..$n, or a JS-style callback
+	RegExp(r"(\w+)@(\w+)").replace("user@host", "$2:$1")      # "host:user"
+	String("a1b2").replace(RegExp(r"\d", "g"), lambda m, *a: f"[{m}]")
+
+
 Object methods
 ----------------
 

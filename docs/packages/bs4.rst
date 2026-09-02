@@ -47,10 +47,13 @@ Parse
 
    soup = BeautifulSlop(markup, "html.parser")
 
-``BeautifulSlop`` accepts domonic parser names:
+``BeautifulSlop`` accepts domonic parser names. The default is ``"auto"``,
+which picks the fastest installed backend (see :doc:`../guides/parser-performance`);
+pass a name to pin one:
 
 .. code-block:: python
 
+   BeautifulSlop(markup)                 # "auto" -- fastest available
    BeautifulSlop(markup, "html.parser")
    BeautifulSlop(markup, "html5lib")
    BeautifulSlop(markup, "lxml_html")

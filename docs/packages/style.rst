@@ -116,6 +116,52 @@ values from the parent, then each property's initial value.
 	print(computed.getPropertyValue("font-weight"))  # bold  (#hero)
 	print(computed.getPropertyValue("display"))      # inline (initial value)
 
+The cascade understands modern selector specificity: ``:where()`` contributes
+zero, ``:is()`` / ``:not()`` / ``:has()`` take the specificity of their most
+specific argument, and ``@layer`` order is respected (later layers win, and an
+unlayered rule beats any layer).
+
+.. code-block :: python
+
+	page = domonic.parseString(
+	    "<html><head><style>"
+	    "@layer base, theme;"
+	    "@layer theme { p { color: blue } }"
+	    "@layer base { p { color: red } }"
+	    "</style></head><body><p>hi</p></body>"
+	)
+	p = page.querySelector("p")
+	window.getComputedStyle(p).getPropertyValue("color")   # blue  (theme layer is later)
+
+CSS custom properties and ``var()``
+-----------------------------------
+
+``var()`` references are substituted when computing a value, using custom
+properties set on the **same element** (inline or via a matched rule).
+
+.. code-block :: python
+
+	from domonic.html import div
+
+	box = div("x", _style="--pad: 12px; padding: var(--pad)")
+	window.getComputedStyle(box).getPropertyValue("padding")   # 12px
+
+``CSS.registerProperty()`` registers a custom property with a syntax, an
+initial value, and inheritance behaviour, matching the CSS Properties and
+Values API.
+
+.. code-block :: python
+
+	from domonic.style import CSS
+
+	CSS.registerProperty({
+	    "name": "--brand",
+	    "syntax": "<color>",
+	    "inherits": True,
+	    "initialValue": "rebeccapurple",
+	})
+	# --brand now resolves to rebeccapurple on any element until overridden
+
 stylesheets
 -----------
 
