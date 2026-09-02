@@ -10,6 +10,7 @@ files = [
     "domonic/CDN.py",
     "domonic/__main__.py",
     "domonic/_cssom.py",
+    "domonic/_fontmetrics.py",
     "domonic/animation.py",
     "domonic/cmd.py",
     "domonic/components.py",

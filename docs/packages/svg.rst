@@ -84,6 +84,32 @@ Mix SVG and HTML
 
     print(save_button)
 
+Measuring Text and Geometry
+---------------------------
+
+``getBBox()`` works off the DOM. Leaf shapes read their attributes, ``<text>``
+and ``<tspan>`` are measured with a bundled Helvetica metrics table (keyed by
+the computed ``font-size`` / ``font-weight``), and containers such as ``<g>``
+return the union of their descendants with each child ``transform`` applied.
+
+.. code-block:: python
+
+    from domonic.svg import g, text
+
+    label = text("Alice", _x=0, _y=0)
+    label.getBBox().width          # ~34.7 at the 16px default
+    label.getComputedTextLength()  # advance width
+    label.getSubStringLength(0, 3) # width of "Ali"
+
+    box = g(label).getBBox()       # unions children
+
+    label.getScreenCTM()           # composes ancestor transform attributes
+
+Elements created via ``document.createElementNS(SVG_NAMESPACE, ...)`` or a
+``d3.selection`` ``.append()`` get the same geometry API as the
+``domonic.svg.*`` factories. The metrics are a sans-serif proxy, not a shaping
+engine -- good enough for layout, not pixel-exact.
+
 Related Examples
 ----------------
 

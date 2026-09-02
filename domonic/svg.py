@@ -72,49 +72,9 @@ class SVGElement(Element):
     def createSVGMatrix(self) -> DOMMatrix:
         return DOMMatrix()
 
-    def getCTM(self) -> DOMMatrix:
-        return DOMMatrix()
-
-    def getScreenCTM(self) -> DOMMatrix:
-        return DOMMatrix()
-
-    def getTransformToElement(self, element: "SVGElement") -> DOMMatrix:
-        return element.getScreenCTM().inverse().multiply(self.getScreenCTM())
-
-    def getBBox(self) -> DOMRect:
-        name = getattr(self, "name", "")
-        if name in {"svg", "rect", "image", "foreignObject", "use"}:
-            return DOMRect(
-                _svg_number(self.getAttribute("x")),
-                _svg_number(self.getAttribute("y")),
-                _svg_number(self.getAttribute("width")),
-                _svg_number(self.getAttribute("height")),
-            )
-        if name == "circle":
-            cx = _svg_number(self.getAttribute("cx"))
-            cy = _svg_number(self.getAttribute("cy"))
-            r = _svg_number(self.getAttribute("r"))
-            return DOMRect(cx - r, cy - r, r * 2, r * 2)
-        if name == "ellipse":
-            cx = _svg_number(self.getAttribute("cx"))
-            cy = _svg_number(self.getAttribute("cy"))
-            rx = _svg_number(self.getAttribute("rx"))
-            ry = _svg_number(self.getAttribute("ry"))
-            return DOMRect(cx - rx, cy - ry, rx * 2, ry * 2)
-        if name == "line":
-            x1 = _svg_number(self.getAttribute("x1"))
-            y1 = _svg_number(self.getAttribute("y1"))
-            x2 = _svg_number(self.getAttribute("x2"))
-            y2 = _svg_number(self.getAttribute("y2"))
-            return DOMRect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1))
-        if name in {"polygon", "polyline"}:
-            points = _svg_points(self.getAttribute("points"))
-            if not points:
-                return DOMRect()
-            xs = [point[0] for point in points]
-            ys = [point[1] for point in points]
-            return DOMRect(min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys))
-        return DOMRect()
+    # getBBox / getCTM / getScreenCTM / getComputedTextLength /
+    # getTransformToElement are inherited from ``domonic.dom.Element``, which
+    # carries the full SVG geometry + text-measurement implementation.
 
 
 _SVG_2_TAGS = [

@@ -14,6 +14,7 @@ web-platform concepts rather than a small HTML helper tree.
 from __future__ import annotations
 
 import copy
+import math
 import os
 import re
 import time
@@ -32,6 +33,7 @@ def _escape_html(value: str, quote: bool = True) -> str:
     return _stdlib_escape_html(value, quote)
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
+from domonic import _fontmetrics
 from domonic.events import Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
 from domonic.style import CSSStyleDeclaration as Style
@@ -4463,6 +4465,57 @@ class Element(Node):
         _process_observer_notifications(self, rect)
         return rect
 
+    # -- SVG geometry (SVGGraphicsElement / SVGTextContentElement) ---------
+    def getBBox(self) -> "DOMRect":
+        """The tight geometry box of this element in its own user space.
+
+        Works for any SVG-namespaced element or SVG-named tag: leaf shapes use
+        their attributes, ``<text>`` / ``<tspan>`` are measured with the bundled
+        font metrics (via the computed ``font-size`` / ``font-weight``), and
+        containers such as ``<g>`` return the union of their rendered
+        descendants with each child's ``transform`` applied.
+        """
+        if not _svg_is_geometry_element(self):
+            return DOMRect()
+        return _svg_bbox(self)
+
+    def getComputedTextLength(self) -> float:
+        """Advance width of this text element's content, in user units."""
+        text = _svg_text_content(self)
+        size, bold, _root = _svg_resolve_font(self)
+        return _fontmetrics.advance_width(text, size, bold)
+
+    def getSubStringLength(self, charnum: int = 0, nchars: int | None = None) -> float:
+        text = _svg_text_content(self)
+        end = len(text) if nchars is None else charnum + nchars
+        size, bold, _root = _svg_resolve_font(self)
+        return _fontmetrics.advance_width(text[charnum:end], size, bold)
+
+    def getNumberOfChars(self) -> int:
+        return len(_svg_text_content(self))
+
+    def getCTM(self) -> "DOMMatrix":
+        """Transform from this element's user space to its nearest viewport."""
+        return _svg_ctm(self, to_screen=False)
+
+    def getScreenCTM(self) -> "DOMMatrix":
+        """Transform from this element's user space to the document root."""
+        return _svg_ctm(self, to_screen=True)
+
+    def getTransformToElement(self, element: "Element") -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(element.getScreenCTM()).inverse().multiply(
+            self.getScreenCTM()
+        )
+
+    def createSVGPoint(self, x: float = 0.0, y: float = 0.0) -> "DOMPoint":
+        return DOMPoint(x, y)
+
+    def createSVGRect(self) -> "DOMRect":
+        return DOMRect()
+
+    def createSVGMatrix(self) -> "DOMMatrix":
+        return DOMMatrix()
+
     def getSelection(self):
         """Returns a Selection object for this element's root tree."""
         root = self.rootNode
@@ -6557,6 +6610,10 @@ class Document(Element):
         if namespaceURI == MATHML_NAMESPACE:
             element_type = type(local_name, (MathMLElement,), {"name": local_name})
             el = element_type()
+        elif namespaceURI == SVG_NAMESPACE:
+            from domonic.svg import create_element as create_svg_element
+
+            el = create_svg_element(local_name)
         else:
             el = create_element(qualifiedName)  # , *args, **kwargs)
             el.namespaceURI = namespaceURI
@@ -9045,6 +9102,292 @@ def _set_attributes(element: "Element", attributes: dict[str, Any]) -> None:
     for name, value in attributes.items():
         if value is not None:
             element.setAttribute(name, value)
+
+
+SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+
+# SVG elements whose geometry is intrinsic (a leaf shape or text run) rather
+# than the union of their children.
+_SVG_SHAPE_TAGS = frozenset(
+    {"rect", "circle", "ellipse", "line", "polygon", "polyline", "path",
+     "image", "use", "foreignObject"}
+)
+_SVG_TEXT_TAGS = frozenset({"text", "tspan", "textPath", "textpath"})
+# containers whose getBBox() is the union of rendered descendants
+_SVG_CONTAINER_TAGS = frozenset(
+    {"svg", "g", "a", "switch", "marker", "symbol", "clipPath", "clippath",
+     "pattern", "mask"}
+)
+_SVG_ALL_GEOMETRY_TAGS = (
+    _SVG_SHAPE_TAGS | _SVG_TEXT_TAGS | _SVG_CONTAINER_TAGS
+)
+
+_SVG_TRANSFORM_RE = re.compile(
+    r"(matrix|translate|scale|rotate|skewX|skewY)\s*\(([^)]*)\)"
+)
+
+
+def _svg_numbers(value: Any) -> list[float]:
+    return [
+        float(token)
+        for token in re.split(r"[\s,]+", str(value or "").strip())
+        if token and _SVG_NUMBER_RE.match(token)
+    ]
+
+
+_SVG_NUMBER_RE = re.compile(r"^[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?$")
+
+
+def _svg_length(value: Any, default: float = 0.0) -> float:
+    if value is None:
+        return default
+    match = re.search(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?", str(value))
+    return float(match.group(0)) if match else default
+
+
+def _parse_svg_transform(value: Any) -> "DOMMatrix":
+    """Parse an SVG ``transform`` attribute into a ``DOMMatrix`` such that a
+    local point ``p`` maps to the parent space as ``p.matrixTransform(M)``."""
+    matrix = DOMMatrix()
+    if not value:
+        return matrix
+    for name, raw in _SVG_TRANSFORM_RE.findall(str(value)):
+        args = _svg_numbers(raw)
+        if name == "matrix" and len(args) == 6:
+            token = DOMMatrix(*args)
+        elif name == "translate":
+            tx = args[0] if args else 0.0
+            ty = args[1] if len(args) > 1 else 0.0
+            token = DOMMatrix(1, 0, 0, 1, tx, ty)
+        elif name == "scale":
+            sx = args[0] if args else 1.0
+            sy = args[1] if len(args) > 1 else sx
+            token = DOMMatrix(sx, 0, 0, sy, 0, 0)
+        elif name == "rotate":
+            angle = math.radians(args[0]) if args else 0.0
+            cos_a, sin_a = math.cos(angle), math.sin(angle)
+            rot = DOMMatrix(cos_a, sin_a, -sin_a, cos_a, 0, 0)
+            if len(args) >= 3:
+                cx, cy = args[1], args[2]
+                token = (
+                    DOMMatrix(1, 0, 0, 1, -cx, -cy)
+                    .multiply(rot)
+                    .multiply(DOMMatrix(1, 0, 0, 1, cx, cy))
+                )
+            else:
+                token = rot
+        elif name == "skewX":
+            token = DOMMatrix(1, 0, math.tan(math.radians(args[0] if args else 0)), 1, 0, 0)
+        elif name == "skewY":
+            token = DOMMatrix(1, math.tan(math.radians(args[0] if args else 0)), 0, 1, 0, 0)
+        else:
+            continue
+        matrix = token.multiply(matrix)
+    return matrix
+
+
+def _svg_is_geometry_element(element: "Element") -> bool:
+    if getattr(element, "namespaceURI", None) == SVG_NAMESPACE:
+        return True
+    name = str(getattr(element, "nodeName", "") or getattr(element, "name", "")).lower()
+    return name in _SVG_ALL_GEOMETRY_TAGS
+
+
+def _svg_resolve_font(element: "Element") -> tuple[float, bool, float]:
+    """Return ``(font_size_px, bold, root_font_size)`` for a text element."""
+
+    def prop(name: str):
+        value = element.getAttribute(name)
+        if value:
+            return value
+        style = getattr(element, "style", None)
+        if style is not None:
+            got = style.getPropertyValue(name)
+            if got:
+                return got
+        try:
+            from domonic.window import window as _window
+
+            computed = _window.getComputedStyle(element)
+            got = computed.getPropertyValue(name)
+            if got and got not in ("normal", "medium"):
+                return got
+        except Exception:
+            pass
+        return None
+
+    size = _fontmetrics.parse_length(prop("font-size"), default=16.0)
+    weight = prop("font-weight")
+    return size, _fontmetrics.is_bold(weight), 16.0
+
+
+def _svg_text_content(element: "Element") -> str:
+    try:
+        return element.textContent or ""
+    except Exception:
+        return ""
+
+
+def _svg_own_bbox(element: "Element") -> "DOMRect | None":
+    name = str(
+        getattr(element, "nodeName", "") or getattr(element, "name", "")
+    ).lower()
+    g = lambda a: element.getAttribute(a)  # noqa: E731
+
+    if name in ("rect", "image", "use", "foreignobject"):
+        return DOMRect(_svg_length(g("x")), _svg_length(g("y")),
+                       _svg_length(g("width")), _svg_length(g("height")))
+    if name == "circle":
+        cx, cy, r = _svg_length(g("cx")), _svg_length(g("cy")), _svg_length(g("r"))
+        return DOMRect(cx - r, cy - r, r * 2, r * 2)
+    if name == "ellipse":
+        cx, cy = _svg_length(g("cx")), _svg_length(g("cy"))
+        rx, ry = _svg_length(g("rx")), _svg_length(g("ry"))
+        return DOMRect(cx - rx, cy - ry, rx * 2, ry * 2)
+    if name == "line":
+        x1, y1 = _svg_length(g("x1")), _svg_length(g("y1"))
+        x2, y2 = _svg_length(g("x2")), _svg_length(g("y2"))
+        return DOMRect(min(x1, x2), min(y1, y2), abs(x2 - x1), abs(y2 - y1))
+    if name in ("polygon", "polyline"):
+        nums = _svg_numbers(g("points"))
+        xs, ys = nums[0::2], nums[1::2]
+        if not xs:
+            return DOMRect()
+        return DOMRect(min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys))
+    if name == "path":
+        return _svg_path_bbox(g("d"))
+    if name in _SVG_TEXT_TAGS:
+        text = _svg_text_content(element)
+        size, bold, _root = _svg_resolve_font(element)
+        width, height, ascent, descent = _fontmetrics.text_extent(text, size, bold)
+        x = _svg_length(g("x")) + _svg_length(g("dx"))
+        y = _svg_length(g("y")) + _svg_length(g("dy"))
+        anchor = (g("text-anchor") or "").strip().lower()
+        if anchor == "middle":
+            x -= width / 2
+        elif anchor == "end":
+            x -= width
+        return DOMRect(x, y - ascent, width, ascent + descent)
+    return None
+
+
+_SVG_PATH_TOKEN_RE = re.compile(r"([MmLlHhVvCcSsQqTtAaZz])|(-?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)")
+
+
+def _svg_path_bbox(d: Any) -> "DOMRect":
+    if not d:
+        return DOMRect()
+    tokens = _SVG_PATH_TOKEN_RE.findall(str(d))
+    xs: list[float] = []
+    ys: list[float] = []
+    cx = cy = 0.0
+    start_x = start_y = 0.0
+    i = 0
+    cmd = ""
+    numbers: list[float] = []
+    for op, num in tokens:
+        if op:
+            cmd = op
+            numbers = []
+            if cmd in ("Z", "z"):
+                cx, cy = start_x, start_y
+            continue
+        numbers.append(float(num))
+        needed = {"H": 1, "h": 1, "V": 1, "v": 1, "M": 2, "m": 2, "L": 2, "l": 2,
+                  "T": 2, "t": 2, "Q": 4, "q": 4, "S": 4, "s": 4, "C": 6, "c": 6,
+                  "A": 7, "a": 7}.get(cmd, 2)
+        if len(numbers) < needed:
+            continue
+        rel = cmd.islower()
+        if cmd in ("H", "h"):
+            cx = (cx + numbers[0]) if rel else numbers[0]
+        elif cmd in ("V", "v"):
+            cy = (cy + numbers[0]) if rel else numbers[0]
+        elif cmd in ("A", "a"):
+            nx, ny = numbers[5], numbers[6]
+            cx, cy = (cx + nx, cy + ny) if rel else (nx, ny)
+        else:
+            nx, ny = numbers[-2], numbers[-1]
+            cx, cy = (cx + nx, cy + ny) if rel else (nx, ny)
+        if cmd in ("M", "m"):
+            start_x, start_y = cx, cy
+        xs.append(cx)
+        ys.append(cy)
+        numbers = []
+    if not xs:
+        return DOMRect()
+    return DOMRect(min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys))
+
+
+def _rect_union(a: "DOMRect | None", b: "DOMRect | None") -> "DOMRect | None":
+    if a is None:
+        return b
+    if b is None:
+        return a
+    x0 = min(a.x, b.x)
+    y0 = min(a.y, b.y)
+    x1 = max(a.x + a.width, b.x + b.width)
+    y1 = max(a.y + a.height, b.y + b.height)
+    return DOMRect(x0, y0, x1 - x0, y1 - y0)
+
+
+def _rect_transform(rect: "DOMRect", matrix: "DOMMatrix") -> "DOMRect":
+    corners = [
+        (rect.x, rect.y),
+        (rect.x + rect.width, rect.y),
+        (rect.x, rect.y + rect.height),
+        (rect.x + rect.width, rect.y + rect.height),
+    ]
+    pts = [matrix.transformPoint(DOMPoint(px, py)) for px, py in corners]
+    xs = [p.x for p in pts]
+    ys = [p.y for p in pts]
+    return DOMRect(min(xs), min(ys), max(xs) - min(xs), max(ys) - min(ys))
+
+
+def _svg_bbox(element: "Element", _include_own_transform: bool = False) -> "DOMRect":
+    own = _svg_own_bbox(element)
+    if own is not None:
+        result: "DOMRect | None" = own
+    else:
+        result = None
+        for child in getattr(element, "childNodes", []):
+            if not isinstance(child, Element) or not _svg_is_geometry_element(child):
+                continue
+            name = str(getattr(child, "nodeName", "")).lower()
+            if name in ("defs", "metadata", "title", "desc"):
+                continue
+            child_box = _svg_bbox(child)
+            if child_box is None:
+                continue
+            transform = _parse_svg_transform(child.getAttribute("transform"))
+            if not transform.isIdentity:
+                child_box = _rect_transform(child_box, transform)
+            result = _rect_union(result, child_box)
+    if result is None:
+        return DOMRect()
+    if _include_own_transform:
+        transform = _parse_svg_transform(element.getAttribute("transform"))
+        if not transform.isIdentity:
+            result = _rect_transform(result, transform)
+    return result
+
+
+def _svg_ctm(element: "Element", to_screen: bool) -> "DOMMatrix":
+    matrix = DOMMatrix()
+    node: "Any" = element
+    while isinstance(node, Element):
+        local = _parse_svg_transform(node.getAttribute("transform"))
+        matrix = matrix.multiply(local)
+        name = str(getattr(node, "nodeName", "")).lower()
+        if name == "svg":
+            x = _svg_length(node.getAttribute("x"))
+            y = _svg_length(node.getAttribute("y"))
+            if x or y:
+                matrix = matrix.multiply(DOMMatrix(1, 0, 0, 1, x, y))
+            if not to_screen:
+                break
+        node = getattr(node, "parentNode", None)
+    return matrix
 
 
 MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML"
