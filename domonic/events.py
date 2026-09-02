@@ -12,7 +12,7 @@ common event model.
 from __future__ import annotations
 
 import inspect
-import time
+import time as _time
 from typing import Any, Callable, ClassVar
 
 from domonic.constants.keyboard import (
@@ -539,6 +539,14 @@ class Event:
     AT_TARGET: int = 2
     BUBBLING_PHASE: int = 3
 
+    # Several call sites construct a plain ``Event`` and attach
+    # interface-specific fields before dispatch (an ``ErrorEvent``-style
+    # ``error``, a ``MediaQueryList`` ``matches`` / ``media``). Declaring them
+    # here keeps those assignments type-checkable.
+    error: Any
+    matches: Any
+    media: Any
+
     def __str__(self) -> str:
         return self.type + ":" + str(self.timeStamp)
 
@@ -568,7 +576,7 @@ class Event:
         self._returnValue: bool = not self.defaultPrevented
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
-        self.timeStamp: float = time.time_ns() / 1_000_000
+        self.timeStamp: float = _time.time_ns() / 1_000_000
         self._propagation_stopped: bool = False
         self._immediate_propagation_stopped: bool = False
         self._in_passive_listener: bool = False
@@ -1013,7 +1021,7 @@ class KeyboardEvent(UIEvent):
         self.key = normalize_key(raw_key)
         self.code = (
             normalize_code(raw_code)
-            or KeyCode.to_code(raw_key_code)
+            or (KeyCode.to_code(raw_key_code) if raw_key_code is not None else "")
             or _infer_code_from_key_and_location(self.key, self.location)
         )
         self.keyCode = (
