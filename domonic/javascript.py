@@ -3443,6 +3443,11 @@ class Set:
                 return True
         return False
 
+    def remove(self, value: Any) -> None:
+        """Remove a value using Python set semantics."""
+        if not self.delete(value):
+            raise KeyError(value)
+
     def has(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
         return any(_js_set_same_value_zero(item, value) for item in self.args)
@@ -3748,6 +3753,60 @@ class Number(float):
         return "".join(digits)
 
 
+def _js_replacement_template(replacement: str, group_count: int) -> str:
+    """Translate a JavaScript ``String.prototype.replace`` replacement string
+    into the substitution syntax :func:`re.sub` expects.
+
+    JavaScript uses ``$1``..``$99`` / ``$<name>`` for captured groups, ``$&``
+    for the whole match and ``$$`` for a literal ``$``; Python uses ``\\g<1>``,
+    ``\\g<0>`` and a plain ``$``. A group reference past ``group_count`` is left
+    literal, matching JavaScript. ``$``` and ``$'`` (text before/after the match)
+    have no ``re.sub`` equivalent and are left as written.
+    """
+    out: list[str] = []
+    i = 0
+    length = len(replacement)
+    while i < length:
+        char = replacement[i]
+        if char == "\\":
+            # Literal in JavaScript; must be escaped for re.sub.
+            out.append("\\\\")
+            i += 1
+            continue
+        if char != "$" or i + 1 >= length:
+            out.append(char)
+            i += 1
+            continue
+        nxt = replacement[i + 1]
+        if nxt == "$":
+            out.append("$")
+            i += 2
+        elif nxt == "&":
+            out.append(r"\g<0>")
+            i += 2
+        elif nxt == "<" and ">" in replacement[i + 2:]:
+            end = replacement.index(">", i + 2)
+            out.append(r"\g<%s>" % replacement[i + 2:end])
+            i = end + 1
+        elif nxt.isdigit():
+            digits = replacement[i + 1:i + 3]
+            if len(digits) == 2 and (
+                not digits.isdigit() or int(digits) > group_count
+            ):
+                digits = digits[0]
+            number = int(digits)
+            if number == 0 or number > group_count:
+                out.append("$")
+                i += 1
+            else:
+                out.append(r"\g<%d>" % number)
+                i += 1 + len(digits)
+        else:
+            out.append("$")
+            i += 1
+    return "".join(out)
+
+
 class String:
     """javascript String methods"""
 
@@ -3956,24 +4015,40 @@ class String:
         """
         if isinstance(old, RegExp):
             count = 0 if old.global_ else 1
+            if callable(new):
+                return re.sub(
+                    old.expression, new, self.x, count=count, flags=old._re_flags()
+                )
+            group_count = re.compile(old.expression, old._re_flags()).groups
+            template = _js_replacement_template(str(new), group_count)
             return re.sub(
-                old.expression, new, self.x, count=count, flags=old._re_flags()
+                old.expression, template, self.x, count=count, flags=old._re_flags()
             )
         if callable(new):
             return re.sub(str(old), new, self.x, count=1)
         return self.x.replace(str(old), str(new), 1)
 
-    def replaceAll(self, old: str, new: str) -> str:
+    def replaceAll(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
         """[returns a new string where the specified values are replaced. ES2021]
 
         Args:
-            old ([str]): [word to remove]
-            new ([str]): [word to replace it with]
+            old ([str | RegExp]): [word or global pattern to remove]
+            new ([str | Callable]): [replacement; ``$1`` etc. work with a RegExp]
 
         Returns:
-            [str]: [new string with all occurences of old word replaced]
+            [str]: [new string with all occurrences of old replaced]
         """
-        return self.x.replace(old, new)
+        if isinstance(old, RegExp):
+            if callable(new):
+                return re.sub(
+                    old.expression, new, self.x, flags=old._re_flags()
+                )
+            group_count = re.compile(old.expression, old._re_flags()).groups
+            template = _js_replacement_template(str(new), group_count)
+            return re.sub(
+                old.expression, template, self.x, flags=old._re_flags()
+            )
+        return self.x.replace(str(old), str(new))
 
     # def localeCompare():
     # """ Compares two strings in the current locale """

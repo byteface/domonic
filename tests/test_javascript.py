@@ -1046,7 +1046,12 @@ class TestCase(unittest.TestCase):
         assert mystr.replace("S", "X") != "Xome Xtring"
         assert mystr.replace(RegExp("s", "i"), "X") == "Xome String"
         assert mystr.replace(RegExp("s", "ig"), "X") == "Xome Xtring"
-        assert mystr.replace(RegExp(r"(\w+)\s+(\w+)"), r"\2 \1") == "String Some"
+        # JavaScript replacement patterns: $1/$2 for groups, $& for the match,
+        # $$ for a literal dollar.
+        assert mystr.replace(RegExp(r"(\w+)\s+(\w+)"), "$2 $1") == "String Some"
+        assert mystr.replace(RegExp(r"\w+"), "[$&]") == "[Some] String"
+        assert mystr.replace(RegExp(r"Some"), "$$") == "$ String"
+        assert mystr.replace(RegExp(r"(o)"), "$3") == "S$3me String"
 
         # localeCompare
         self.assertLess(String("apple").localeCompare("banana"), 0)
@@ -1420,6 +1425,9 @@ class TestCase(unittest.TestCase):
             text.replace(r"Hello", lambda match: match.group(0).upper()), "HELLO.World"
         )
         self.assertEqual(text.replaceAll(".", "-"), "Hello-World")
+        self.assertEqual(
+            text.replaceAll(RegExp(r"(\w)o"), "$1O"), "HellO.WOrld"
+        )
         self.assertEqual(text.indexOf("World"), 6)
         self.assertEqual(text.indexOf("missing"), -1)
         self.assertEqual(text.matchAll(r"[A-Z]"), "ello.orld")
@@ -1580,6 +1588,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(
             list(constructed.entries()), [["first", "first"], ["second", "second"]]
         )
+        constructed.remove("first")
+        self.assertEqual(list(constructed.values()), ["second"])
+        with self.assertRaises(KeyError):
+            constructed.remove("missing")
 
     def test_setTimeout(self):
         """Test the Global.setTimeout function calls the callback."""
