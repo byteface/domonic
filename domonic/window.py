@@ -147,7 +147,7 @@ class CustomElementRegistry:
 
     def __init__(self) -> None:
         self.store: dict[str, type[Element]] = {}
-        self._constructors: dict[type, str] = {}
+        self._constructors: dict[Any, str] = {}
         self._when_defined: dict[str, list[Promise]] = {}
 
     @staticmethod
@@ -182,7 +182,7 @@ class CustomElementRegistry:
             raise TypeError("constructor must be a class")
         if issubclass(constructor, Element):
             if getattr(constructor, "name", None) in (None, ""):
-                constructor.name = name
+                setattr(constructor, "name", name)
             return constructor
         attrs = {"name": name}
         if options is not None and "extends" in options:
@@ -206,9 +206,14 @@ class CustomElementRegistry:
             )
 
         element_class = self._coerce_constructor(normalized, constructor, options)
-        element_class.name = normalized
         if options is not None and "extends" in options:
             element_class.extends = options["extends"]
+            # A customized built-in keeps its host tag name (``<button is="...">``);
+            # only autonomous elements take the hyphenated name as their tag.
+            if getattr(element_class, "name", None) in (None, "", normalized):
+                element_class.name = options["extends"]
+        else:
+            element_class.name = normalized
         self.store[normalized] = element_class
         self._constructors[constructor] = normalized
         for promise in self._when_defined.pop(normalized, []):
@@ -229,6 +234,17 @@ class CustomElementRegistry:
             .lower()
         )
         constructor = self.store.get(name)
+        if constructor is None:
+            # Customized built-in: <button is="fancy-button"> upgrades to the
+            # class registered as "fancy-button" with options {"extends": "button"}.
+            getter = getattr(element, "getAttribute", None)
+            is_name = (getter("is") or "").strip().lower() if callable(getter) else ""
+            if is_name:
+                candidate = self.store.get(is_name)
+                if candidate is not None and str(
+                    getattr(candidate, "extends", "")
+                ).strip().lower() == name:
+                    constructor = candidate
         if constructor is None or isinstance(element, constructor):
             return element
         old_document = (
@@ -677,7 +693,16 @@ class Window(JavaScriptWindow, EventTarget):
         return None
 
     def getComputedStyle(self, el, pseudo=None):
-        return getattr(el, "style", None)
+        """Return a read-only ``CSSStyleDeclaration`` resolved through a light
+        cascade: matching author rules (by specificity / order / ``!important``),
+        then inline styles, then inherited values, then each property's initial
+        value."""
+        try:
+            from domonic.style import ComputedStyleDeclaration
+
+            return ComputedStyleDeclaration(el, pseudo)
+        except Exception:
+            return getattr(el, "style", None)
 
     def getSelection(self):
         return self.document.getSelection()

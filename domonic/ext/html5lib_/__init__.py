@@ -32,6 +32,7 @@ def getTreeBuilder(treeType, implementation='domonic', **kwargs):
 # from xml.dom import minidom, Node
 import weakref
 from collections.abc import MutableMapping
+from importlib import import_module
 
 from html5lib import constants
 from html5lib._utils import moduleFactoryFactory
@@ -39,6 +40,51 @@ from html5lib.constants import namespaces
 from html5lib.treebuilders import base
 
 from domonic.dom import DOMImplementation, Node
+from domonic.ext._rawdom import (
+    HTML_NAMESPACE as _HTML_NS,
+    _create_comment_raw,
+    _create_element_raw,
+    _create_text_raw,
+)
+
+
+def _raw_detach(child):
+    """Remove ``child`` from its current parent's ``args`` without firing any
+    of the DOM mutation machinery (observers, connected callbacks, adoption).
+    """
+    old_parent = child.__dict__.get("parentNode")
+    if old_parent is None:
+        return
+    args = old_parent.__dict__.get("args") or ()
+    old_parent.__dict__["args"] = tuple(node for node in args if node is not child)
+
+
+def _raw_append(parent, child):
+    _raw_detach(child)
+    parent.__dict__["args"] = (parent.__dict__.get("args") or ()) + (child,)
+    child.__dict__["parentNode"] = parent
+
+
+def _raw_insert_before(parent, child, ref):
+    _raw_detach(child)
+    args = parent.__dict__.get("args") or ()
+    index = next(
+        (i for i, node in enumerate(args) if node is ref), len(args)
+    )
+    parent.__dict__["args"] = args[:index] + (child,) + args[index:]
+    child.__dict__["parentNode"] = parent
+
+
+def _raw_remove(parent, child):
+    args = parent.__dict__.get("args") or ()
+    parent.__dict__["args"] = tuple(node for node in args if node is not child)
+    child.__dict__["parentNode"] = None
+
+HTML_TAGS = frozenset(import_module("domonic.html").html_tags)
+SVG_TAGS = frozenset(import_module("domonic.svg").svg_tags) - HTML_TAGS
+MATHML_TAGS = frozenset(import_module("domonic.xml.mathml").mathml_tags)
+SVG_TAG_NAMES = frozenset(tag.lower() for tag in SVG_TAGS)
+MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
 
 # from . import base
 # from .. import constants
@@ -101,57 +147,63 @@ def getDomBuilder(ignore: object):
             # base.Node.__init__(self, element.nodeName)
             base.Node.__init__(self, element.name)
             self.element = element
-
-        namespace = property(
-            lambda self: hasattr(self.element, "namespaceURI")
-            and self.element.namespaceURI
-            or None
-        )
+            # ``namespace`` / ``nameTuple`` are read hundreds of thousands of
+            # times per parse by html5lib's scope checks; resolve them once.
+            self.namespace = element.__dict__.get("namespaceURI") or None
+            self.nameTuple = (
+                self.namespace or namespaces["html"],
+                self.name,
+            )
 
         def appendChild(self, node):
             node.parent = self
-            self.element.appendChild(node.element)
+            _raw_append(self.element, node.element)
 
         def insertText(self, data, insertBefore=None):
-            # Dont create empty text nodes
-            if data.isspace():
-                return
-            text = self.element.ownerDocument.createTextNode(data)
-            if insertBefore:
-                self.element.insertBefore(text, insertBefore.element)
+            # Whitespace-only text nodes are kept: whitespace between inline
+            # elements (``<b>x</b> <i>y</i>``) is significant, and dropping it
+            # here loses information the HTML5 tree builder is meant to preserve.
+            text = _create_text_raw(data)
+            if insertBefore is not None:
+                _raw_insert_before(self.element, text, insertBefore.element)
             else:
-                self.element.appendChild(text)
+                _raw_append(self.element, text)
 
         def insertBefore(self, node, refNode):
-            self.element.insertBefore(node.element, refNode.element)
+            _raw_insert_before(self.element, node.element, refNode.element)
             node.parent = self
 
         def removeChild(self, node):
-            if node.element.parentNode == self.element:
-                self.element.removeChild(node.element)
+            if node.element.__dict__.get("parentNode") is self.element:
+                _raw_remove(self.element, node.element)
             node.parent = None
 
         def reparentChildren(self, newParent):
-            while self.element.hasChildNodes():
-                child = self.element.firstChild
-                self.element.removeChild(child)
-                newParent.element.appendChild(child)
+            target = newParent.element
+            moved = self.element.__dict__.get("args") or ()
+            self.element.__dict__["args"] = ()
+            existing = target.__dict__.get("args") or ()
+            target.__dict__["args"] = existing + tuple(moved)
+            for child in moved:
+                child.__dict__["parentNode"] = target
             self.childNodes = []
 
         def getAttributes(self):
             return AttrList(self.element)
 
         def setAttributes(self, attributes):
-            if attributes:
-                for name, value in list(attributes.items()):
-                    if isinstance(name, tuple):
-                        if name[0] is not None:
-                            qualifiedName = name[0] + ":" + name[1]
-                        else:
-                            qualifiedName = name[1]
-                        self.element.setAttributeNS(name[2], qualifiedName, value)
-                    else:
-                        self.element.setAttribute(name, value)
+            if not attributes:
+                return
+            kwargs = self.element.__dict__["kwargs"]
+            for name, value in attributes.items():
+                if isinstance(name, tuple):
+                    qualified = (
+                        name[1] if name[0] is None else name[0] + ":" + name[1]
+                    )
+                    self.element.setAttributeNS(name[2], qualified, value)
+                else:
+                    key = name if name[:1] == "_" else "_" + name
+                    kwargs[key] = "" if value is None else value
 
         attributes = property(getAttributes, setAttributes)
 
@@ -159,15 +211,7 @@ def getDomBuilder(ignore: object):
             return NodeBuilder(self.element.cloneNode(False))
 
         def hasContent(self):
-            return self.element.hasChildNodes()
-
-        def getNameTuple(self):
-            if self.namespace is None:
-                return namespaces["html"], self.name
-            else:
-                return self.namespace, self.name
-
-        nameTuple = property(getNameTuple)
+            return bool(self.element.__dict__.get("args"))
 
     class TreeBuilder(base.TreeBuilder):  # pylint:disable=unused-variable
         def documentClass(self):
@@ -188,15 +232,16 @@ def getDomBuilder(ignore: object):
             doctype.ownerDocument = self.dom
 
         def elementClass(self, name, namespace=None):
-            if namespace is None and self.defaultNamespace is None:
-                node = self.dom.createElement(name)
-            else:
-                node = self.dom.createElementNS(namespace, name)
-
+            normalized_name = str(name).lower()
+            if namespace == namespaces["html"] and normalized_name in SVG_TAG_NAMES:
+                namespace = namespaces["svg"]
+            if namespace == namespaces["html"] and normalized_name in MATHML_TAG_NAMES:
+                namespace = namespaces["mathml"]
+            node = _create_element_raw(name, namespace or _HTML_NS)
             return NodeBuilder(node)
 
         def commentClass(self, data):
-            return NodeBuilder(self.dom.createComment(data))
+            return NodeBuilder(_create_comment_raw(data))
 
         def fragmentClass(self):
             return NodeBuilder(self.dom.createDocumentFragment())
@@ -235,7 +280,9 @@ def getDomBuilder(ignore: object):
                     if Node.TEXT_NODE not in self.dom._child_node_types:
                         self.dom._child_node_types = list(self.dom._child_node_types)
                         self.dom._child_node_types.append(Node.TEXT_NODE)
-                self.dom.appendChild(self.dom.createTextNode(data))
+                text = self.dom.createTextNode(data)
+                text._escape_text_on_render = True
+                self.dom.appendChild(text)
 
         # DOM implementation adapter, not XML parsing.
         from xml.dom import minidom  # nosec B408

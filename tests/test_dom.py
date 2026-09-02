@@ -870,6 +870,29 @@ class DOMTest(unittest.TestCase):
         result = dom1.querySelectorAll(".fa-twitter")
         self.assertEqual(result, [])
 
+    def test_query_selector_combinators(self):
+        tree = div(
+            div(
+                p("one ", a("x", _href="/x"), _class="lead"),
+                p("two", _class="lead"),
+                _id="box",
+            ),
+            section(p("three", _class="lead"), a("y", _href="/y")),
+            _id="root",
+        )
+
+        # descendant selector must not fold the space into the id
+        self.assertEqual(len(tree.querySelectorAll("div#box p.lead")), 2)
+        self.assertEqual(
+            tree.querySelector("div#box a[href]").getAttribute("href"), "/x"
+        )
+        self.assertIsNotNone(tree.querySelector("#root section a[href]"))
+
+        # child combinator: only direct element children
+        self.assertEqual(len(tree.querySelectorAll("#box > p")), 2)
+        self.assertEqual(len(tree.querySelectorAll("#box > *")), 2)
+        self.assertEqual(len(tree.querySelectorAll("#root > *")), 2)
+
     def test_getElementsBySelector(self):
         dom1 = html(
             div(
@@ -1632,6 +1655,45 @@ class DOMTest(unittest.TestCase):
         self.assertIs(body_copy.assignedSlot, default_slot)
         self.assertIn("header", events)
         self.assertIn("default", events)
+
+    def test_customized_built_in_elements_upgrade_via_is(self):
+        from domonic import domonic as domonic_module
+        from domonic.window import window
+
+        class WordCountParagraph(HTMLElement):
+            connected = 0
+
+            def connectedCallback(self):
+                WordCountParagraph.connected += 1
+
+        if window.customElements.get("word-count") is None:
+            window.customElements.define(
+                "word-count", WordCountParagraph, {"extends": "p"}
+            )
+
+        # createElement(tag, options) plus the is_= / **{"is": ...} keywords
+        for element in (
+            document.createElement("p", {"is": "word-count"}),
+            document.createElement("p", is_="word-count"),
+            document.createElement("p", **{"is": "word-count"}),
+        ):
+            self.assertIsInstance(element, WordCountParagraph)
+            self.assertEqual(element.tagName, "p")
+            self.assertIn(' is="word-count"', element.__attributes__)
+
+        # a mismatched host tag must not upgrade
+        wrong = document.createElement("div", is_="word-count")
+        self.assertNotIsInstance(wrong, WordCountParagraph)
+
+        # and the parser upgrades <p is="word-count"> too
+        WordCountParagraph.connected = 0
+        parsed = domonic_module.parseString(
+            '<div><p is="word-count">hi</p><p>plain</p></div>'
+        )
+        first, second = parsed.querySelector("div").childNodes
+        self.assertIsInstance(first, WordCountParagraph)
+        self.assertNotIsInstance(second, WordCountParagraph)
+        self.assertEqual(WordCountParagraph.connected, 1)
 
     def test_mutation_observer_child_list_records(self):
         target = div()
@@ -2462,7 +2524,7 @@ class DOMTest(unittest.TestCase):
             self.assertIn(' data-hx-on--after-request="this.reset()"', htmx_rendered)
             self.assertIn(' data-hx-confirm:inherited="Are you sure?"', htmx_rendered)
             self.assertIn(
-                ' data-hx-headers:inherited="{"X-CSRF": "token"}"',
+                ' data-hx-headers:inherited="{&quot;X-CSRF&quot;: &quot;token&quot;}"',
                 htmx_rendered,
             )
             self.assertIn(' hx-get="/raw"', htmx_rendered)
@@ -2488,6 +2550,33 @@ class DOMTest(unittest.TestCase):
             DOMConfig.ATTRIBUTE_QUOTES = original_quotes
             DOMConfig.HTMX_ENABLED = original_htmx
             DOMConfig.GLOBAL_AUTOESCAPE = original_autoescape
+
+    def test_alpine_attribute_sugar(self):
+        from domonic.dom import DOMConfig
+        from domonic.html import div
+
+        original_alpine = DOMConfig.ALPINE_ENABLED
+        try:
+            DOMConfig.ALPINE_ENABLED = True
+            rendered = div(
+                "Click Me",
+                x_data="{ open: false }",
+                x_on__click="open = !open",
+                x_bind__class="{ 'active': open }",
+                x_show="open",
+            ).__attributes__
+            self.assertIn(' x-data="{ open: false }"', rendered)
+            self.assertIn(' x-on:click="open = !open"', rendered)
+            self.assertIn(" x-bind:class=\"{ 'active': open }\"", rendered)
+            self.assertIn(' x-show="open"', rendered)
+
+            # unknown x_* directives stay literal - conservative, non-breaking
+            self.assertIn(' x_widget="1"', div(x_widget="1").__attributes__)
+
+            DOMConfig.ALPINE_ENABLED = False
+            self.assertIn(' x_data="{}"', div(x_data="{}").__attributes__)
+        finally:
+            DOMConfig.ALPINE_ENABLED = original_alpine
 
     def test_node_autoescape_and_pyml_helpers(self):
         node = div(
@@ -4975,6 +5064,11 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(attrs.getNamedItem("class").value, "banner")
         self.assertIn("id", attrs)
         self.assertEqual(attrs.keys(), ["id", "class"])
+        self.assertEqual(
+            [(attr.name, attr.value) for attr in attrs],
+            [("id", "hero"), ("class", "banner")],
+        )
+        self.assertEqual(repr(next(iter(attrs))), "Attr(name='id', value='hero')")
 
         replaced = attrs.setNamedItem(Attr("title", "Hello"))
         self.assertIsNone(replaced)
@@ -5446,6 +5540,62 @@ class TestDomTokenList(unittest.TestCase):
                 )
                 self.assertEqual(
                     page.querySelector("mi").namespaceURI,
+                    "http://www.w3.org/1998/Math/MathML",
+                )
+
+    def test_annotation_xml_html_encoding_switches_children_to_html_namespace(self):
+        parsers = ["html.parser", "lxml_html", "selectolax", "turbohtml", "html5lib"]
+        markup = (
+            '<math><semantics><annotation-xml encoding="text/html">'
+            "<div><p>x</p></div>"
+            "</annotation-xml></semantics></math>"
+        )
+
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString(markup, parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                self.assertEqual(
+                    page.querySelector("annotation-xml").namespaceURI,
+                    "http://www.w3.org/1998/Math/MathML",
+                )
+                self.assertEqual(
+                    page.querySelector("div").namespaceURI,
+                    "http://www.w3.org/1999/xhtml",
+                )
+                self.assertEqual(
+                    page.querySelector("p").namespaceURI,
+                    "http://www.w3.org/1999/xhtml",
+                )
+
+    def test_standalone_svg_and_mathml_tags_keep_native_namespaces(self):
+        parsers = ["html.parser", "lxml_html", "selectolax", "turbohtml", "html5lib"]
+
+        for parser in parsers:
+            with self.subTest(parser=parser, tag="circle"):
+                try:
+                    page = domonic.parseString('<circle cx="1"></circle>', parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+                circle = (
+                    page
+                    if getattr(page, "tagName", None) == "circle"
+                    else page.querySelector("circle")
+                )
+                self.assertEqual(circle.namespaceURI, "http://www.w3.org/2000/svg")
+
+            with self.subTest(parser=parser, tag="mi"):
+                page = domonic.parseString("<mi>x</mi>", parser=parser)
+                mi_node = (
+                    page
+                    if getattr(page, "tagName", None) == "mi"
+                    else page.querySelector("mi")
+                )
+                self.assertEqual(
+                    mi_node.namespaceURI,
                     "http://www.w3.org/1998/Math/MathML",
                 )
 

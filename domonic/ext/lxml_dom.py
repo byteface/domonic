@@ -24,6 +24,16 @@ from domonic.dom import (
 
 HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
+HTML_INTEGRATION_ENCODINGS = {"application/xhtml+xml", "text/html"}
+HTML_TAGS = frozenset(importlib.import_module("domonic.html").html_tags)
+SVG_TAGS = (
+    frozenset(importlib.import_module("domonic.svg").svg_tags) - HTML_TAGS
+)
+MATHML_TAGS = frozenset(
+    importlib.import_module("domonic.xml.mathml").mathml_tags
+)
+SVG_TAG_NAMES = frozenset(tag.lower() for tag in SVG_TAGS)
+MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
 
 _ELEM_NAME_CACHE: dict[tuple[Any, Any], tuple[str | None, str]] = {}
 _MATHML_ELEMENT_CACHE: dict[str, type[MathMLElement]] = {}
@@ -96,6 +106,7 @@ def initialize_node_raw(node, args=(), namespace_uri=None):
     state = node.__dict__
     state["args"] = args
     state["kwargs"] = {}
+    state["name"] = getattr(node.__class__, "name", "") or ""
     state["listeners"] = {}
     state["_listener_options"] = {}
     state["_baseURI"] = ""
@@ -105,6 +116,8 @@ def initialize_node_raw(node, args=(), namespace_uri=None):
     state["_ownerDocument"] = None
     state["parentNode"] = None
     state["prefix"] = None
+    state["_escape_text_on_render"] = False
+    state["_escape_attributes_on_render"] = False
     return node
 
 
@@ -116,13 +129,16 @@ def initialize_element_raw(element, namespace_uri):
     state["_Element__style"] = None
     state["shadowRoot"] = None
     state["dir"] = None
+    state["_escape_attributes_on_render"] = True
     return element
 
 
 def create_text_raw(data):
-    return initialize_node_raw(
+    text = initialize_node_raw(
         object.__new__(Text), ("" if data is None else str(data),)
     )
+    text.__dict__["_escape_text_on_render"] = True
+    return text
 
 
 def create_comment_raw(data):
@@ -210,12 +226,27 @@ def svg_element_class(qualified_name):
     return element_class
 
 
-def _namespace_for_tag(qualified_name, parent_namespace=None, parent_tag=""):
+def _namespace_for_tag(
+    qualified_name, parent_namespace=None, parent_tag="", parent_encoding=""
+):
     normalized_name = str(qualified_name).split(":", 1)[-1].lower()
     if normalized_name == "svg":
         return SVG_NAMESPACE
     if normalized_name == "math":
         return MATHML_NAMESPACE
+    if parent_namespace == HTML_NAMESPACE and normalized_name in SVG_TAG_NAMES:
+        return SVG_NAMESPACE
+    if (
+        parent_namespace == HTML_NAMESPACE
+        and normalized_name in MATHML_TAG_NAMES
+    ):
+        return MATHML_NAMESPACE
+    if (
+        parent_namespace == MATHML_NAMESPACE
+        and str(parent_tag).lower() == "annotation-xml"
+        and str(parent_encoding).strip().lower() in HTML_INTEGRATION_ENCODINGS
+    ):
+        return HTML_NAMESPACE
     if parent_namespace == SVG_NAMESPACE:
         if str(parent_tag).lower() == "foreignobject":
             return HTML_NAMESPACE
@@ -223,6 +254,16 @@ def _namespace_for_tag(qualified_name, parent_namespace=None, parent_tag=""):
     if parent_namespace == MATHML_NAMESPACE:
         return MATHML_NAMESPACE
     return HTML_NAMESPACE
+
+
+def _is_mathml_html_integration_point(
+    parent_namespace, parent_tag="", parent_encoding=""
+):
+    return (
+        parent_namespace == MATHML_NAMESPACE
+        and str(parent_tag).lower() == "annotation-xml"
+        and str(parent_encoding).strip().lower() in HTML_INTEGRATION_ENCODINGS
+    )
 
 
 def create_element_ns_raw(namespace_uri, qualified_name):
@@ -257,10 +298,10 @@ def adapt(source_tree, return_root=True, **kw):
     uri = uri or _namespace_for_tag(qname)
     dest_tree = create_document_raw(uri, qname, source_tree.docinfo.doctype)
     dest_root = dest_tree.documentElement
-    stack = [(source_root, dest_root, uri, qname)]
+    stack = [(source_root, dest_root, uri, qname, "")]
 
     while stack:
-        src, dest, parent_namespace, parent_tag = stack.pop()
+        src, dest, parent_namespace, parent_tag, parent_encoding = stack.pop()
         children = []
         text = src.text
         if text:
@@ -269,6 +310,7 @@ def adapt(source_tree, return_root=True, **kw):
         for name, val in src.items():
             _, attr_name, attr_value = attr_name_parts(name, src, val)
             set_attribute_raw(dest, attr_name, attr_value)
+        current_encoding = getattr(dest, "getAttribute")("encoding") or ""
         for child in src.iterchildren():
             if isinstance(child, _Comment):
                 dchild = create_comment_raw(
@@ -276,11 +318,28 @@ def adapt(source_tree, return_root=True, **kw):
                 )
             else:
                 child_uri, child_name = elem_name_parts(child)
-                child_uri = child_uri or _namespace_for_tag(
-                    child_name, parent_namespace, parent_tag
-                )
+                if (
+                    child_uri is None
+                    and parent_namespace == HTML_NAMESPACE
+                    and child_name not in SVG_TAG_NAMES
+                    and child_name not in MATHML_TAG_NAMES
+                    and child_name != "svg"
+                    and child_name != "math"
+                ):
+                    # Fast path: HTML parent + ordinary HTML tag stays HTML.
+                    child_uri = HTML_NAMESPACE
+                else:
+                    inferred_uri = _namespace_for_tag(
+                        child_name, parent_namespace, parent_tag, current_encoding
+                    )
+                    if _is_mathml_html_integration_point(
+                        parent_namespace, parent_tag, current_encoding
+                    ):
+                        child_uri = inferred_uri
+                    else:
+                        child_uri = child_uri or inferred_uri
                 dchild = create_element_ns_raw(child_uri, child_name)
-                stack.append((child, dchild, child_uri, child_name))
+                stack.append((child, dchild, child_uri, child_name, ""))
             append_child_raw(dest, dchild, children)
             tail = child.tail
             if tail:

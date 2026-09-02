@@ -458,11 +458,11 @@ Fastest on the bundled large-page benchmark first:
 | `selectolax`   | Fast native HTML parsing with direct domonic DOM adaptation |
 | `turbohtml`    | Fast native WHATWG parsing with direct domonic DOM adaptation |
 | `lxml_html`    | Very fast lxml-backed parsing and direct lxml DOM adaptation |
-| `markupever`   | Fast Rust-powered HTML repair; uses the shared lxml DOM adapter |
 | `html5_parser` | Fast HTML5 parsing through the shared lxml DOM adapter |
+| `markupever`   | Fast Rust-powered HTML repair; uses the shared lxml DOM adapter |
 | `html.parser`  | Python standard library; no extra dependency |
+| `justhtml`     | Pure-Python alternative with a direct domonic DOM adapter |
 | `html5lib`     | Pure Python and bundled with domonic          |
-| `justhtml`     | Pure-Python alternative                       |
 | `expat`        | Built into Python; useful for XML-like input  |
 
 Optional parsers require their respective packages.

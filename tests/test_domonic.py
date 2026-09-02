@@ -229,6 +229,180 @@ _id="one", _class="two",
         with self.assertRaises(ValueError):
             domonic.parseString("<div></div>", parser="nope")
 
+    def test_parse_string_keeps_significant_whitespace_between_inline_elements(self):
+        # Whitespace between inline elements is significant (Markdown converters
+        # such as turndown rely on it). Every backend must keep it.
+        parsers = ["html5lib", "html.parser", "lxml", "selectolax", "turbohtml",
+                   "justhtml"]
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString(
+                        "<p><b>x</b> <i>y</i></p>", parser=parser
+                    )
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+                node = (
+                    page
+                    if getattr(page, "tagName", None) == "p"
+                    else page.querySelector("p")
+                )
+                self.assertEqual(node.textContent, "x y")
+                self.assertIn("</b> <i>", str(node))
+
+    def test_parse_string_reports_active_parser(self):
+        domonic.parseString("<p>x</p>", parser="html.parser")
+        self.assertEqual(domonic.get_active_parser(), "html.parser")
+
+        domonic.parseString("<p>x</p>", parser="xml")
+        self.assertEqual(domonic.get_active_parser(), "expat")
+
+        domonic.parseString("<p>x</p>", parser="auto")
+        # Whatever the cascade landed on, it must be a real backend name.
+        self.assertIn(
+            domonic.get_active_parser(),
+            {"html5lib", "lxml_html", "html5_parser", "justhtml",
+             "markupever", "selectolax", "turbohtml", "expat"},
+        )
+
+    def test_parse_string_auto_logs_skipped_backends(self):
+        with self.assertLogs("domonic.parser", level="DEBUG") as captured:
+            domonic.parseString("<p>x</p>", parser="auto")
+        self.assertTrue(
+            any("using" in line for line in captured.output),
+            captured.output,
+        )
+
+    def test_parse_string_xml_and_lxml_parser_aliases(self):
+        xml_page = domonic.parseString("<root><child /></root>", parser="xml")
+        lxml_page = domonic.parseString(
+            "<html><body><p>Hi</p></body></html>", parser="lxml"
+        )
+
+        self.assertEqual(xml_page.querySelector("child").tagName, "child")
+        self.assertEqual(lxml_page.querySelector("p").textContent, "Hi")
+
+        previous = domonic.get_default_parser()
+        try:
+            domonic.set_default_parser("xml")
+            self.assertEqual(domonic.get_default_parser(), "expat")
+            domonic.set_default_parser("lxml")
+            self.assertEqual(domonic.get_default_parser(), "lxml_html")
+        finally:
+            domonic.set_default_parser(previous)
+
+    def test_parse_string_serializes_parsed_entities_safely(self):
+        markup = '<p title="&quot;x&quot; &lt;img&gt;">&lt;img&gt;</p>'
+        parsers = ["html.parser", "lxml", "selectolax", "turbohtml", "html5lib"]
+
+        for parser in parsers:
+            with self.subTest(parser=parser):
+                try:
+                    page = domonic.parseString(markup, parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                node = (
+                    page
+                    if getattr(page, "tagName", None) == "p"
+                    else page.querySelector("p")
+                )
+                self.assertEqual(node.textContent, "<img>")
+                self.assertEqual(node.getAttribute("title"), '"x" <img>')
+                self.assertEqual(
+                    str(node),
+                    '<p title="&quot;x&quot; &lt;img&gt;">&lt;img&gt;</p>',
+                )
+
+    def test_parse_string_xml_serializes_parsed_entities_safely(self):
+        page = domonic.parseString(
+            '<root title="&quot;x&quot; &lt;img&gt;">&lt;img&gt;</root>',
+            parser="xml",
+        )
+        node = page.querySelector("root")
+
+        self.assertEqual(node.textContent, "<img>")
+        self.assertEqual(node.getAttribute("title"), '"x" <img>')
+        self.assertEqual(
+            str(node),
+            '<root title="&quot;x&quot; &lt;img&gt;">&lt;img&gt;</root>',
+        )
+
+    def test_set_attribute_on_parsed_node_serializes_literal_entities_safely(self):
+        page = domonic.parseString('<p title="ok">x</p>', parser="html.parser")
+        node = (
+            page
+            if getattr(page, "tagName", None) == "p"
+            else page.querySelector("p")
+        )
+
+        node.setAttribute("title", "&lt;img&gt;")
+
+        self.assertEqual(node.getAttribute("title"), "&lt;img&gt;")
+        self.assertEqual(str(node), '<p title="&amp;lt;img&amp;gt;">x</p>')
+
+    def test_built_element_attributes_serialize_safely(self):
+        from domonic.html import a
+
+        el = a(_href="/s?a=1&b=2", _title='He said "hi" & left')
+        self.assertEqual(
+            str(el),
+            '<a href="/s?a=1&amp;b=2" title="He said &quot;hi&quot; &amp; left"></a>',
+        )
+        roundtrip = (
+            domonic.parseString("<div>" + str(el) + "</div>")
+            .getElementsByTagName("a")[0]
+            .getAttribute("title")
+        )
+        self.assertEqual(roundtrip, 'He said "hi" & left')
+
+    def test_created_element_data_attribute_round_trips(self):
+        # Parsoid-style templated markup carries a JSON data-mw attribute whose
+        # value contains quotes and angle brackets; a raw serialization would
+        # spill the JSON into page text on the next parse.
+        doc = domonic.parseString("<html><body></body></html>", parser="html5lib")
+        span = doc.createElement("span")
+        data_mw = '{"parts":[{"template":{"target":{"wt":"Eq"}}}],"ref":{"wt":"<Eq.1>"}}'
+        span.setAttribute("data-mw", data_mw)
+
+        back = (
+            domonic.parseString(str(span), parser="html5lib")
+            .getElementsByTagName("span")[0]
+            .getAttribute("data-mw")
+        )
+        self.assertEqual(back, data_mw)
+
+    def test_built_element_single_quotes_stay_readable(self):
+        from domonic.html import button
+
+        self.assertEqual(
+            str(button("Go", _onclick="fn('x')")),
+            "<button onclick=\"fn('x')\">Go</button>",
+        )
+
+    def test_standalone_parsed_text_serializes_safely(self):
+        for parser in ["selectolax", "turbohtml"]:
+            with self.subTest(parser=parser):
+                try:
+                    node = domonic.parseString("&lt;img&gt;", parser=parser)
+                except ImportError:
+                    self.skipTest(f"{parser} is not installed")
+
+                self.assertEqual(node.textContent, "<img>")
+                self.assertEqual(str(node), "&lt;img&gt;")
+
+    def test_parse_string_detached_roots_have_owner_document(self):
+        element = domonic.parseString("<p>x</p>", parser="html.parser")
+        fragment = domonic.parseString("<p>one</p><p>two</p>", parser="html.parser")
+
+        self.assertIsInstance(element.ownerDocument, Node)
+        self.assertIsInstance(fragment.ownerDocument, Node)
+        self.assertIsNone(element.parentNode)
+        self.assertEqual(element.ownerDocument.nodeType, Node.DOCUMENT_NODE)
+        self.assertEqual(fragment.ownerDocument.nodeType, Node.DOCUMENT_NODE)
+        self.assertIs(element.firstChild.parentNode, element)
+        self.assertEqual(fragment.firstChild.ownerDocument, fragment.ownerDocument)
+
     def test_parse_string_with_stdlib_html_parser_basic_elements(self):
         page = domonic.parseString("<p>Hello</p>", parser="html.parser")
 
@@ -243,6 +417,27 @@ _id="one", _class="two",
 
         self.assertEqual(page.querySelector("strong").text, "there")
         self.assertEqual(page.text, "Hello there")
+
+    def test_stdlib_html_parser_implied_tag_closing(self):
+        # stdlib HTMLParser does no implied-tag construction; the adapter closes
+        # open <li>/<dt>/<dd>/<p> on the matching start tag, without crossing a
+        # nested list container.
+        cases = {
+            "<ul><li>a<li>b<ul><li>c</ul><li>d</ul>":
+                "<ul><li>a</li><li>b<ul><li>c</li></ul></li><li>d</li></ul>",
+            "<dl><dt>a<dd>b<dt>c<dd>d</dl>":
+                "<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>",
+            "<p>one<p>two<div>three</div>":
+                "<p>one</p><p>two</p><div>three</div>",
+        }
+        for markup, expected in cases.items():
+            with self.subTest(markup=markup):
+                page = domonic.parseString(markup, parser="html.parser")
+                self.assertEqual(str(page), expected)
+                self.assertEqual(
+                    str(domonic.parseString(markup, parser="html5lib")),
+                    expected,
+                )
 
     def test_parse_string_with_stdlib_html_parser_attributes(self):
         page = domonic.parseString(

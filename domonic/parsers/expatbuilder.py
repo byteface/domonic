@@ -327,6 +327,7 @@ class ExpatBuilder:
         else:
             node = Text()
             node.data = data
+            node._escape_text_on_render = True
             # node.ownerDocument = self.document
             node.parentNode = self.curNode
         # _append_child(self.curNode, node)
@@ -341,6 +342,7 @@ class ExpatBuilder:
             return
         node = Text()
         node.data = node.data + data
+        node._escape_text_on_render = True
         # node.ownerDocument = self.document
         node.parentNode = self.curNode
         # _append_child(self.curNode, node)
@@ -410,6 +412,7 @@ class ExpatBuilder:
     # @check
     def start_element_handler(self, name, attributes):
         node = self.document.createElement(name)
+        node._escape_attributes_on_render = True
         # _append_child(self.curNode, node)
         self.curNode.appendChild(node)
         if self.document.documentElement is None:
@@ -820,6 +823,7 @@ class Namespaces:
         node = create_element(qname)  # , uri, prefix, localname)
         node.namespaceURI = uri
         node.prefix = prefix
+        node._escape_attributes_on_render = True
         # node.ownerDocument = self.document
         node.parentNode = self.curNode  # self.document
         # _append_child(self.curNode, node)
@@ -1072,6 +1076,3 @@ def makeBuilder(options):
         return ExpatBuilderNS(options)
     else:
         return ExpatBuilder(options)
-
-
-s

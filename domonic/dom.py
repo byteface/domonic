@@ -20,7 +20,16 @@ import time
 import warnings
 from collections.abc import Iterable as IterableABC
 from email.utils import formatdate
-from html import escape as _escape_html
+from html import escape as _stdlib_escape_html
+
+
+def _escape_html(value: str, quote: bool = True) -> str:
+    """``html.escape`` with a fast path for text that contains nothing to
+    escape (the common case when serialising a parsed document)."""
+    if "&" not in value and "<" not in value and ">" not in value:
+        if not quote or ('"' not in value and "'" not in value):
+            return value
+    return _stdlib_escape_html(value, quote)
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic.events import Event, EventTarget, MouseEvent
@@ -56,6 +65,7 @@ class DOMConfig:
         False  # on emtpy nodes should there be a space before the closing slash?
     )
     HTMX_ENABLED: bool = False  # Default is false
+    ALPINE_ENABLED: bool = False  # Default is false - opt-in Alpine.js x_* sugar
     # NO_REPR: bool = True  # objects always render?
     ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
 
@@ -146,6 +156,54 @@ def _normalize_htmx_attribute(key: str) -> str | None:
     return None
 
 
+ALPINE_DIRECTIVES: frozenset[str] = frozenset(
+    {
+        "data",
+        "bind",
+        "on",
+        "text",
+        "html",
+        "model",
+        "modelable",
+        "show",
+        "transition",
+        "for",
+        "if",
+        "id",
+        "ref",
+        "cloak",
+        "effect",
+        "ignore",
+        "init",
+        "teleport",
+        "mask",
+        "intersect",
+        "collapse",
+        "trap",
+        "resize",
+        "sort",
+    }
+)
+"""Alpine.js directives recognised by ``DOMConfig.ALPINE_ENABLED``.
+
+With that flag on, keyword arguments beginning with ``x_`` whose first segment
+is one of these directives are rendered as ``x-`` attributes: a double
+underscore becomes ``:`` and remaining single underscores become ``-``. So
+``x_data`` renders ``x-data`` and ``x_on__click`` renders ``x-on:click``.
+Directive modifiers that need a ``.`` (``x-on:keyup.enter``) still require the
+``**{"x-on:keyup.enter": ...}`` form, as does the ``@``/``:`` shorthand.
+"""
+
+
+def _normalize_alpine_attribute(key: str) -> str | None:
+    if not key.startswith("x_"):
+        return None
+    body = key[2:]
+    if body.split("_", 1)[0] not in ALPINE_DIRECTIVES:
+        return None
+    return "x-" + body.replace("__", ":").replace("_", "-")
+
+
 def _attribute_quote_mark() -> str:
     if DOMConfig.ATTRIBUTE_QUOTES is False or DOMConfig.ATTRIBUTE_QUOTES == "":
         return ""
@@ -154,11 +212,48 @@ def _attribute_quote_mark() -> str:
     return str(DOMConfig.ATTRIBUTE_QUOTES)
 
 
-def _render_attribute_value(value: Any) -> str:
+_ATTR_ESCAPE_DQ = {ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;", ord('"'): "&quot;"}
+_ATTR_ESCAPE_SQ = {ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;", ord("'"): "&#x27;"}
+_ATTR_ESCAPE_NONE = {
+    ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;",
+    ord('"'): "&quot;", ord("'"): "&#x27;",
+}
+
+
+def _escape_attribute_value(value: str, quote: str) -> str:
+    """Escape a value for serialization inside an HTML attribute.
+
+    Follows the HTML serialization algorithm: ``&``, ``<`` and ``>`` are always
+    replaced, and whichever quote character delimits the value is replaced too.
+    The opposite quote is left untouched so JavaScript handlers such as
+    ``onclick="fn('x')"`` stay readable.
+    """
+    # Most attribute values (ids, classes, plain hrefs) need no escaping - one
+    # membership scan is far cheaper than four chained str.replace calls.
+    if "&" not in value and "<" not in value and ">" not in value:
+        if quote == '"':
+            if '"' not in value:
+                return value
+        elif quote == "'":
+            if "'" not in value:
+                return value
+        elif '"' not in value and "'" not in value:
+            return value
+    table = (
+        _ATTR_ESCAPE_DQ if quote == '"'
+        else _ATTR_ESCAPE_SQ if quote == "'"
+        else _ATTR_ESCAPE_NONE
+    )
+    return value.translate(table)
+
+
+def _render_attribute_value(value: Any, escape: bool | None = None) -> str:
     quote = _attribute_quote_mark()
     should_quote = DOMConfig.ATTRIBUTE_QUOTES is not None or type(value) == str
+    if escape is None:
+        escape = DOMConfig.GLOBAL_AUTOESCAPE
     rendered_value = (
-        _escape_html(str(value), quote=True) if DOMConfig.GLOBAL_AUTOESCAPE else value
+        _escape_attribute_value(str(value), quote) if escape else value
     )
     quote = quote if should_quote else ""
     return f"{quote}{rendered_value}{quote}"
@@ -858,6 +953,14 @@ class Node(EventTarget):
         self._ownerDocument = None
         self.parentNode = None
         self.prefix = None  # 🗑️
+        self._escape_text_on_render = False
+        # Attribute values are always escaped on serialization: emitting a raw
+        # ``"`` / ``&`` / ``<`` inside a quoted value produces malformed markup
+        # that corrupts on the next parse (e.g. Parsoid ``data-mw='{...}'`` JSON
+        # spilling into page text). Parser-built elements already force this on;
+        # programmatically built ones (constructors, ``createElement``) need the
+        # same default. Set to ``False`` on an individual node to opt out.
+        self._escape_attributes_on_render = True
         # self.baseURIObject = None  # ?
         # self.nodePrincipal = None
         self._update_parents()
@@ -937,6 +1040,9 @@ class Node(EventTarget):
     @property
     def __attributes__(self):
         def format_attr(key, value):
+            escape_attribute = bool(
+                self.__dict__.get("_escape_attributes_on_render", False)
+            )
             if value is True:
                 value = "true"
             if value is False:
@@ -945,12 +1051,30 @@ class Node(EventTarget):
             key = {
                 "accept_charset": "accept-charset",
                 "http_equiv": "http-equiv",
+                "is_": "is",
             }.get(key, key)
 
             if DOMConfig.HTMX_ENABLED:
                 htmx_attribute = _normalize_htmx_attribute(key)
                 if htmx_attribute is not None:
-                    return f""" {htmx_attribute}={_render_attribute_value(value)}"""
+                    return (
+                        f""" {htmx_attribute}="""
+                        f"""{_render_attribute_value(
+                            value,
+                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
+                        )}"""
+                    )
+
+            if DOMConfig.ALPINE_ENABLED:
+                alpine_attribute = _normalize_alpine_attribute(key)
+                if alpine_attribute is not None:
+                    return (
+                        f""" {alpine_attribute}="""
+                        f"""{_render_attribute_value(
+                            value,
+                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
+                        )}"""
+                    )
 
             # lets us have boolean attributes
             if key in [
@@ -1000,7 +1124,10 @@ class Node(EventTarget):
             ]:
                 if value == "" or value == key:
                     return f""" {key}"""
-            return f""" {key}={_render_attribute_value(value)}"""
+            return f""" {key}={_render_attribute_value(
+                value,
+                DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
+            )}"""
 
         try:
             return "".join(
@@ -1035,8 +1162,11 @@ class Node(EventTarget):
             value = value()
 
         if isinstance(value, Text):
-            value = str(value)
-            yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+            escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
+                getattr(value, "_escape_text_on_render", False)
+            )
+            value = str(value.textContent)
+            yield _escape_html(value) if escape_text else value
             return
 
         if isinstance(value, Node):
@@ -1095,8 +1225,11 @@ class Node(EventTarget):
                 value = value()
 
             if isinstance(value, Text):
-                value = str(value)
-                yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+                escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
+                    getattr(value, "_escape_text_on_render", False)
+                )
+                value = str(value.textContent)
+                yield _escape_html(value) if escape_text else value
                 continue
 
             if isinstance(value, Node):
@@ -1353,7 +1486,19 @@ class Node(EventTarget):
         render_args = self.args
         if DOMConfig.GLOBAL_AUTOESCAPE:
             render_args = tuple(
-                _escape_html(str(child)) if isinstance(child, (str, Text)) else child
+                _escape_html(str(child.textContent))
+                if isinstance(child, Text)
+                else _escape_html(str(child))
+                if isinstance(child, str)
+                else child
+                for child in self.args
+            )
+        else:
+            render_args = tuple(
+                _escape_html(str(child.textContent))
+                if isinstance(child, Text)
+                and bool(getattr(child, "_escape_text_on_render", False))
+                else child
                 for child in self.args
             )
 
@@ -2076,8 +2221,14 @@ class Node(EventTarget):
 
     @property
     def tail(self):
-        """Returns the text content of the current node"""
-        return self.textContent
+        """ElementTree compatibility: text that follows this element's end tag.
+
+        domonic models trailing text as a sibling text node rather than an
+        attribute of the preceding element, so there is nothing to return here.
+        (Returning the subtree text made every ``elementpath`` tree build walk
+        the whole subtree twice per node.)
+        """
+        return None
 
     @property
     def length(self) -> int:
@@ -2198,6 +2349,12 @@ class Attr(Node):
         self.name: str = name
         self.value = value
         # self.nodeType: int = Node.ATTRIBUTE_NODE
+
+    def __repr__(self) -> str:
+        return f'Attr(name={self.name!r}, value={self.value!r})'
+
+    def __str__(self) -> str:
+        return "" if self.value is None else str(self.value)
 
     @property
     def isId(self) -> bool:
@@ -3707,16 +3864,98 @@ class Element(Node):
         for selector in selectors:
             if self._matchElement(self, selector):
                 return True
-
-        root = self.ownerDocument if self.ownerDocument is not None else self.rootNode
-        if hasattr(root, "querySelectorAll"):
-            try:
-                for match in root.querySelectorAll(s):
-                    if match is self:
-                        return True
-            except Exception:
-                return False
+            # combinator selectors: match right-to-left up the ancestor / sibling
+            # chain without running a document-wide query.
+            result = self._matches_selector_chain(selector)
+            if result is True:
+                return True
+            if result is None:  # the fast matcher could not parse it
+                root = (
+                    self.ownerDocument
+                    if self.ownerDocument is not None
+                    else self.rootNode
+                )
+                if hasattr(root, "querySelectorAll"):
+                    try:
+                        if any(m is self for m in root.querySelectorAll(selector)):
+                            return True
+                    except Exception:
+                        return False
         return False
+
+    def _matches_selector_chain(self, selector: str):
+        """``True`` / ``False`` if a combinator selector matches this element,
+        or ``None`` if the selector is too complex for the fast matcher."""
+        try:
+            from domonic.bs4 import (
+                _split_simple_selector_chain,
+                _strip_simple_pseudo,
+                _match_parsed_selector,
+                _match_simple_pseudo,
+                _element_children,
+            )
+        except Exception:
+            return None
+        parts = _split_simple_selector_chain(selector)
+        if not parts or len(parts) == 1:
+            return None
+        parsed = []
+        for combinator, simple in parts:
+            stripped = _strip_simple_pseudo(simple)
+            if stripped is None:
+                return None
+            simple_sel, pseudo = stripped
+            compound = Element._parse_simple_selector(simple_sel)
+            if compound is None:
+                return None
+            parsed.append((combinator, compound, pseudo))
+
+        cache: dict = {}
+
+        def matches_compound(el, compound, pseudo):
+            return (
+                isinstance(el, Element)
+                and _match_parsed_selector(el, compound)
+                and _match_simple_pseudo(el, pseudo, cache)
+            )
+
+        _, compound, pseudo = parsed[-1]
+        if not matches_compound(self, compound, pseudo):
+            return False
+        current = [self]
+        # walking left: the combinator joining parsed[i-1] to parsed[i] is
+        # stored on parsed[i].
+        for i in range(len(parsed) - 1, 0, -1):
+            combinator = parsed[i][0]
+            _, compound, pseudo = parsed[i - 1]
+            next_current = []
+            for el in current:
+                if combinator == ">":
+                    candidates = [getattr(el, "parentNode", None)]
+                elif combinator == "+":
+                    prev = getattr(el, "previousElementSibling", None)
+                    candidates = [prev]
+                elif combinator == "~":
+                    candidates = []
+                    sib = getattr(el, "previousElementSibling", None)
+                    while sib is not None:
+                        candidates.append(sib)
+                        sib = getattr(sib, "previousElementSibling", None)
+                else:  # descendant
+                    candidates = []
+                    ancestor = getattr(el, "parentNode", None)
+                    while ancestor is not None and isinstance(ancestor, Element):
+                        candidates.append(ancestor)
+                        ancestor = getattr(ancestor, "parentNode", None)
+                for candidate in candidates:
+                    if candidate is not None and matches_compound(
+                        candidate, compound, pseudo
+                    ):
+                        next_current.append(candidate)
+            if not next_current:
+                return False
+            current = next_current
+        return True
 
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
     def closest(self, s: str):
@@ -3836,7 +4075,17 @@ class Element(Node):
             if parsed is None:
                 return []
             found = getElements(context, parsed["tag"])
-            context = [fnd for fnd in found if self._matchElement(fnd, element)]
+            # Contexts can overlap (e.g. nested ``<table>`` elements both in
+            # scope), so the same descendant can be collected more than once.
+            seen_ids: set[int] = set()
+            context = []
+            for fnd in found:
+                marker = id(fnd)
+                if marker in seen_ids:
+                    continue
+                seen_ids.add(marker)
+                if self._matchElement(fnd, element):
+                    context.append(fnd)
 
         selected.extend(context)
         return selected
@@ -3846,9 +4095,15 @@ class Element(Node):
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
-        self.args += items
+        # Assign via __dict__ to skip the ``args`` __setattr__ hook: it would
+        # re-parent the *entire* existing child list on every call (O(n) per
+        # append -> O(n^2) for a loop), and this method already links the new
+        # nodes below.
+        self.__dict__["args"] = self.args + items
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
+            if isinstance(item, Node):
+                item._update_parents()
         added_nodes = [item for item in items if isinstance(item, Node)]
         if added_nodes:
             _queue_mutation_record(
@@ -3858,7 +4113,6 @@ class Element(Node):
                 previous_sibling=previous_sibling,
             )
         _notify_slot_change(self)
-        self._update_parents()
         return self
 
     # elem.attachShadow({mode: open|closed})
@@ -4691,7 +4945,13 @@ class Element(Node):
 
         class_match = re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query)
         tag_match = re.match(r"^(\*|[A-Za-z][\w-]*)$", query)
-        simple_selector = Element._parse_simple_selector(query)
+        # Only a single compound selector (no descendant/child/sibling step) is
+        # safe for the in-line stack walk below; with a combinator present
+        # ``_parse_simple_selector`` mis-parses (e.g. it folds the space in
+        # ``div#x a`` into the id), so route those through querySelectorAll.
+        simple_selector = None
+        if not re.search(r"[\s>+~]", re.sub(r"\[[^\]]*\]", "", query)):
+            simple_selector = Element._parse_simple_selector(query)
         if class_match or tag_match or simple_selector is not None:
             required_classes = None
             wanted_tag = None
@@ -4748,6 +5008,20 @@ class Element(Node):
         if re.match(r"^(\*|[A-Za-z][\w-]*)$", query):
             return list(self.getElementsByTagName(query))
 
+        # The native CSS engine shared with BeautifulSlop resolves descendant /
+        # child combinators, classes, attribute selectors and simple pseudos
+        # several times faster than the cssselect -> XPath -> elementpath path.
+        # It returns ``None`` for selectors it does not support (``+``, ``~``,
+        # complex pseudo-classes), which then fall through to the XPath engine.
+        try:
+            from domonic.bs4 import _select_fast
+
+            fast_matches = _select_fast(self, query)
+        except Exception:
+            fast_matches = None
+        if fast_matches is not None:
+            return fast_matches
+
         def _fallback_selector_results():
             if query.startswith("."):
                 return list(self.getElementsByClassName(" ".join(query.split(".")[1:])))
@@ -4758,7 +5032,19 @@ class Element(Node):
             return results if isinstance(results, list) else []
 
         naked_query = query[1:]
-        if "." in naked_query or "[" in query or " " in naked_query:
+        # ``_select_fast`` already handled the common selectors above; anything
+        # with a class, attribute, combinator or pseudo-class that reached here
+        # needs the cssselect -> XPath engine, not the plain ``_matchElement``
+        # walk (which silently ignores pseudo-classes and returns nothing).
+        if (
+            "." in naked_query
+            or "[" in query
+            or " " in naked_query
+            or ":" in query
+            or ">" in query
+            or "+" in query
+            or "~" in query
+        ):
             try:
                 from cssselect import HTMLTranslator, SelectorError
 
@@ -6085,6 +6371,11 @@ class Document(Element):
         # self.__stylesheets.__init__(self)  # to set the parent??
 
     @property
+    def styleSheets(self):
+        """DOM-spec spelling of :attr:`stylesheets`."""
+        return self.stylesheets
+
+    @property
     def activeElement(self) -> Element | None:
         """Returns the currently focused element, or the body/document element fallback."""
         if self._activeElement is not None:
@@ -6234,8 +6525,20 @@ class Document(Element):
 
     @staticmethod
     def createElement(_type: str, *args: Any, **kwargs: Any) -> "Element":
-        """Creates an Element node"""
+        """Creates an Element node.
+
+        The DOM ``createElement(tagName, options)`` form is supported for
+        customized built-ins: pass ``{"is": "my-button"}`` as a trailing
+        positional dict, or ``is_=`` / ``**{"is": ...}`` as a keyword.
+        """
         from domonic.html import create_element
+
+        if args and isinstance(args[-1], dict) and "is" in args[-1]:
+            *args, options = args
+            kwargs.setdefault("is", options["is"])
+        is_value = kwargs.pop("is", None) or kwargs.pop("is_", None)
+        if is_value is not None:
+            kwargs["_is"] = is_value
 
         el = create_element(_type, *args, **kwargs)
         if isinstance(el, Element):
@@ -7257,13 +7560,21 @@ class Text(CharacterData):
     #     self.nodeValue = content
 
     def __str__(self) -> str:
-        return str(self.textContent)
+        value = str(self.textContent)
+        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
+            getattr(self, "_escape_text_on_render", False)
+        )
+        return _escape_html(value) if escape_text else value
 
     def __format__(self, format_spec):
-        return str(self.textContent)
+        return str(self)
 
     def stream(self) -> Iterator[str]:
-        yield str(self.textContent)
+        value = str(self.textContent)
+        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
+            getattr(self, "_escape_text_on_render", False)
+        )
+        yield _escape_html(value) if escape_text else value
 
     # def __repr__(self):
     # return str(self.textContent)

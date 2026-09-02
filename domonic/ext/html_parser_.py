@@ -7,20 +7,24 @@ Adapter for Python's standard-library ``html.parser`` module.
 
 from __future__ import annotations
 
-import importlib
 from html import unescape
 from html.parser import HTMLParser
-from typing import Any, cast
+from typing import Any
 
-from domonic import dom
-from domonic.dom import Comment, DocumentFragment, Element, Node, Text
-
-HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
-SVG_NAMESPACE = "http://www.w3.org/2000/svg"
-MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML"
-
-_HTML_ELEMENT_CLASS_CACHE: dict[str, type[Element]] = {}
-_UNKNOWN_ELEMENT_CLASS_CACHE: dict[str, type[Element]] = {}
+from domonic.dom import Element, Node
+from domonic.ext._rawdom import (
+    HTML_NAMESPACE,
+    _append_child_raw,
+    _create_comment_raw,
+    _create_element_raw,
+    _create_fragment_raw,
+    _create_text_raw,
+    _element_class,
+    _initialize_element_raw,
+    _initialize_node_raw,
+    _namespace_for_tag,
+    _set_attribute_raw,
+)
 
 
 VOID_ELEMENTS = {
@@ -40,151 +44,33 @@ VOID_ELEMENTS = {
     "wbr",
 }
 
-AUTOCLOSE_SAME_START = {"dd", "dt", "li", "p"}
+# stdlib ``HTMLParser`` does no implied-tag handling, so a start tag that should
+# close an open sibling is handled here. Each entry maps a start tag to the set
+# of open tags it closes, and ``AUTOCLOSE_BOUNDARY`` names the containers that
+# stop the search: ``<li>`` inside a ``<ul>`` inside a ``<li>`` starts a fresh
+# item in the inner list, it does not reopen the outer one; ``<dd>`` closes an
+# open ``<dt>`` or ``<dd>`` but not across a nested ``<dl>``.
+AUTOCLOSE_ON_START = {
+    "li": {"li"},
+    "dd": {"dd", "dt"},
+    "dt": {"dd", "dt"},
+    "p": {"p"},
+}
+AUTOCLOSE_SAME_START = set(AUTOCLOSE_ON_START)
+AUTOCLOSE_BOUNDARY = {
+    "li": {"ul", "ol", "menu"},
+    "dd": {"dl"},
+    "dt": {"dl"},
+}
 
-
-def _append_child_raw(parent: Node, child: Node, children: list[Node]) -> None:
-    children.append(child)
-    child.__dict__["parentNode"] = parent
-
-
-def _set_attribute_raw(element: Node, name: str, value: str) -> None:
-    if name and name[0] != "_":
-        name = "_" + name
-    element.__dict__["kwargs"][name] = value
-
-
-def _initialize_node_raw(node: Node, args: tuple[Any, ...] = ()) -> Node:
-    state = node.__dict__
-    state["args"] = args
-    state["kwargs"] = {}
-    state["listeners"] = {}
-    state["_listener_options"] = {}
-    state["_baseURI"] = ""
-    state["isConnected"] = True
-    state["namespaceURI"] = HTML_NAMESPACE
-    state["outerText"] = None
-    state["_ownerDocument"] = None
-    state["parentNode"] = None
-    state["prefix"] = None
-    return node
-
-
-def _initialize_element_raw(
-    element: Element, namespace_uri: str = HTML_NAMESPACE
-) -> Element:
-    _initialize_node_raw(element)
-    state = element.__dict__
-    state["namespaceURI"] = namespace_uri
-    state["lang"] = None
-    state["tabIndex"] = None
-    state["_Element__style"] = None
-    state["shadowRoot"] = None
-    state["dir"] = None
-    state["_namespaceURI"] = namespace_uri
-    return element
-
-
-def _element_class(name: str, namespace_uri: str) -> type[Element]:
-    normalized_name = str(name).strip().lower()
-    cache_key = f"{namespace_uri}:{normalized_name}"
-    cached = _HTML_ELEMENT_CLASS_CACHE.get(cache_key)
-    if cached is not None:
-        return cached
-
-    if namespace_uri == SVG_NAMESPACE:
-        svg_module = importlib.import_module("domonic.svg")
-        tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(
-            normalized_name, name
-        )
-        if tag_name in svg_module._SVG_TAG_LOOKUP:
-            element_class = getattr(
-                svg_module, svg_module._svg_class_name(tag_name)
-            )
-        else:
-            element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
-            if element_class is None:
-                element_class = type(
-                    "custom_tag", (dom.Element,), {"name": name}
-                )
-                _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
-        _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
-        return element_class
-
-    if namespace_uri == MATHML_NAMESPACE:
-        mathml = importlib.import_module("domonic.xml.mathml")
-        lookup_name = "math_" if normalized_name == "math" else normalized_name
-        if normalized_name in mathml.mathml_tags and hasattr(
-            mathml, lookup_name
-        ):
-            element_class = getattr(mathml, lookup_name)
-        else:
-            element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
-            if element_class is None:
-                element_class = type(
-                    "custom_tag", (dom.MathMLElement,), {"name": name}
-                )
-                _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
-        _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
-        return element_class
-
-    html = importlib.import_module("domonic.html")
-
-    if normalized_name in html._HTML_TAG_LOOKUP:
-        tag_name = html._TAG_ALIASES.get(normalized_name, normalized_name)
-        element_class = getattr(html, tag_name)
-    else:
-        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
-        if element_class is None:
-            element_class = type("custom_tag", (dom.Element,), {"name": name})
-            _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
-
-    _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
-    return element_class
-
-
-def _namespace_for_tag(
-    tag: str, parent_namespace: str = HTML_NAMESPACE, parent_tag: str = ""
-) -> str:
-    normalized_name = str(tag).strip().lower()
-    if normalized_name == "svg":
-        return SVG_NAMESPACE
-    if normalized_name == "math":
-        return MATHML_NAMESPACE
-    if parent_namespace == SVG_NAMESPACE:
-        if parent_tag.lower() == "foreignobject":
-            return HTML_NAMESPACE
-        return SVG_NAMESPACE
-    if parent_namespace == MATHML_NAMESPACE:
-        return MATHML_NAMESPACE
-    return HTML_NAMESPACE
-
-
-def _create_element_raw(
-    name: str, namespace_uri: str = HTML_NAMESPACE
-) -> Element:
-    element_class = _element_class(name, namespace_uri)
-    return cast(
-        Element,
-        _initialize_element_raw(object.__new__(element_class), namespace_uri),
-    )
-
-
-def _create_text_raw(data: str) -> Text:
-    return cast(Text, _initialize_node_raw(object.__new__(Text), (data,)))
-
-
-def _create_comment_raw(data: str) -> Comment:
-    comment = _initialize_node_raw(object.__new__(Comment))
-    comment.data = data
-    return cast(Comment, comment)
-
-
-def _create_fragment_raw() -> DocumentFragment:
-    return cast(
-        DocumentFragment,
-        _initialize_node_raw(object.__new__(DocumentFragment)),
-    )
+# A ``<p>`` cannot contain flow-content block elements; starting one of these
+# while a ``<p>`` is open closes the ``<p>`` first (HTML5 "close a p element").
+CLOSES_OPEN_P = {
+    "address", "article", "aside", "blockquote", "details", "div", "dl",
+    "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
+    "h4", "h5", "h6", "header", "hgroup", "hr", "main", "menu", "nav", "ol",
+    "p", "pre", "section", "table", "ul",
+}
 
 
 class DomonicHTMLParser(HTMLParser):
@@ -205,8 +91,14 @@ class DomonicHTMLParser(HTMLParser):
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         tag = tag.lower()
-        if tag in AUTOCLOSE_SAME_START:
-            self._close_open_element(tag)
+        if tag in AUTOCLOSE_ON_START:
+            self._close_open_element(
+                AUTOCLOSE_ON_START[tag], boundary=AUTOCLOSE_BOUNDARY.get(tag)
+            )
+        elif tag in CLOSES_OPEN_P and any(
+            getattr(node, "tagName", "").lower() == "p" for node in self.stack[1:]
+        ):
+            self._close_open_element("p")
         element = self._create_element(tag, attrs)
         _append_child_raw(self.current, element, self.child_stack[-1])
         if tag not in VOID_ELEMENTS:
@@ -217,10 +109,13 @@ class DomonicHTMLParser(HTMLParser):
     def handle_endtag(self, tag: str) -> None:
         self._close_open_element(tag.lower())
 
-    def _close_open_element(self, tag: str) -> None:
+    def _close_open_element(
+        self, tag: "str | set[str]", boundary: "set[str] | None" = None
+    ) -> None:
+        targets = {tag} if isinstance(tag, str) else tag
         for index in range(len(self.stack) - 1, 0, -1):
-            node = self.stack[index]
-            if getattr(node, "tagName", "").lower() == tag:
+            name = getattr(self.stack[index], "tagName", "").lower()
+            if name in targets:
                 for close_index in range(len(self.stack) - 1, index - 1, -1):
                     self.stack[close_index].__dict__["args"] = tuple(
                         self.child_stack[close_index]
@@ -228,6 +123,8 @@ class DomonicHTMLParser(HTMLParser):
                 del self.stack[index:]
                 del self.child_stack[index:]
                 del self.namespace_stack[index:]
+                return
+            if boundary and name in boundary:
                 return
 
     def handle_startendtag(
@@ -260,8 +157,11 @@ class DomonicHTMLParser(HTMLParser):
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> Node:
         parent_tag = getattr(self.current, "tagName", "")
+        parent_encoding = ""
+        if isinstance(self.current, Element):
+            parent_encoding = self.current.getAttribute("encoding") or ""
         namespace_uri = _namespace_for_tag(
-            tag, self.namespace_stack[-1], parent_tag
+            tag, self.namespace_stack[-1], parent_tag, parent_encoding
         )
         element = _create_element_raw(tag, namespace_uri)
         for name, value in attrs:

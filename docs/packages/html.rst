@@ -265,6 +265,64 @@ You can also use the DOM API:
 For more information about the DOM API, navigate to the DOM section.
 
 
+Custom Elements Registry
+--------------------------------
+
+``window.customElements`` implements the ``CustomElementRegistry`` API. Register
+a class, then ``createElement`` and the HTML parsers return upgraded instances
+and run the lifecycle callbacks (``connectedCallback``,
+``disconnectedCallback``, ``attributeChangedCallback`` for names listed in
+``observedAttributes``, and ``adoptedCallback``).
+
+.. code-block :: python
+
+    from domonic.dom import Document, HTMLElement
+    from domonic.window import window
+
+    class WordCount(HTMLElement):
+        observedAttributes = ("for",)
+
+        def connectedCallback(self):
+            self.textContent = "0 words"
+
+        def attributeChangedCallback(self, name, old, new):
+            ...
+
+    window.customElements.define("word-count", WordCount)
+
+    doc = Document()
+    el = doc.createElement("word-count")        # -> WordCount instance
+
+    from domonic import domonic
+    page = domonic.parseString("<word-count></word-count>")  # also upgrades
+
+``customElements.get()``, ``customElements.getName()`` and
+``customElements.whenDefined()`` (which returns a ``Promise``) are available,
+and ``customElements.upgrade(root)`` upgrades an already-built subtree.
+
+**Customized built-in elements** are supported through the ``is`` attribute.
+Pass ``{"extends": "<tag>"}`` when defining, then create the host element with
+``is_=``, ``**{"is": ...}``, or the ``createElement(tag, options)`` dict form:
+
+.. code-block :: python
+
+    class FancyButton(HTMLElement):
+        def connectedCallback(self):
+            self.classList.add("fancy")
+
+    window.customElements.define("fancy-button", FancyButton, {"extends": "button"})
+
+    doc.createElement("button", is_="fancy-button")        # -> FancyButton
+    doc.createElement("button", {"is": "fancy-button"})    # DOM options form
+    # <button is="fancy-button"> in parsed HTML upgrades too
+
+**Shadow DOM.** ``element.attachShadow({"mode": "open"})`` returns a
+``ShadowRoot``; ``<slot>`` elements expose ``assignedNodes()`` /
+``assignedElements()`` and fire ``slotchange``. For server-side rendering, emit
+Declarative Shadow DOM with a ``<template shadowrootmode="open">`` child (see the
+``profile-card`` example above).
+
+
 Decorators
 --------------------------------
 

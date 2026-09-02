@@ -14,10 +14,16 @@ VERSION = __version__
 
 
 import ast
+import logging
 import re
 import sys
 
 import domonic.dom as dom
+
+# Logs which backend ``parseString(parser="auto")`` selects and which it skips
+# (a backend that is not installed is skipped silently otherwise). Quiet by
+# default; enable with ``logging.getLogger("domonic.parser").setLevel("DEBUG")``.
+_PARSER_LOGGER = logging.getLogger("domonic.parser")
 
 # from domonic.components import Input
 try:
@@ -71,8 +77,10 @@ class domonic:
             "html5_parser",
             "html5-parser",
             "html5lib",
+            "lxml",
             "lxml_html",
             "lxml-html",
+            "xml",
             "expat",
             "selectolax",
             "markupever",
@@ -85,8 +93,12 @@ class domonic:
             parser_name = "html5_parser"
         if parser_name == "html-parser":
             parser_name = "html_parser"
+        if parser_name == "lxml":
+            parser_name = "lxml_html"
         if parser_name == "lxml-html":
             parser_name = "lxml_html"
+        if parser_name == "xml":
+            parser_name = "expat"
         domonic.DEFAULT_PARSER = parser_name
 
     @staticmethod
@@ -1383,10 +1395,28 @@ class domonic:
         return page
 
     parseString_prev_error = None
+    parseString_active_parser = None
+
+    @staticmethod
+    def get_active_parser():
+        """Return the backend the most recent ``parseString`` call actually used.
+
+        With ``parser="auto"`` the cascade silently skips backends that are not
+        installed, so this is the way to confirm which one handled the parse
+        (e.g. ``"html5lib"``, ``"lxml_html"``, ``"expat"``). ``None`` before the
+        first call.
+        """
+        return domonic.parseString_active_parser
 
     @staticmethod
     def parseString(string, parser=None, debug: bool = False):
-        """Parse a file into a DOM from a string."""
+        """Parse a file into a DOM from a string.
+
+        With ``parser="auto"`` (the default) the backends are tried in order and
+        missing ones are skipped. Call :meth:`get_active_parser` afterwards, or
+        enable the ``"domonic.parser"`` logger at ``DEBUG``, to see which backend
+        was used.
+        """
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
         def _upgrade_custom_elements(page):
@@ -1446,6 +1476,16 @@ class domonic:
                     return child
             return None
 
+        def _ensure_owner_document(page):
+            if not isinstance(page, dom.Node) or isinstance(page, dom.Document):
+                return page
+            if isinstance(page.ownerDocument, dom.Document):
+                return page
+            owner_document = dom.HTMLDocument()
+            for current in dom._iter_dom_nodes(page):
+                current._ownerDocument = owner_document
+            return page
+
         def _normalize_parsed_page(page, source: str):
             is_full_document = _looks_like_full_html_document(source)
             doctype = (
@@ -1471,7 +1511,9 @@ class domonic:
             if html_root is None:
                 if is_full_document and doctype is not None:
                     return _html_document_from_doctype(source)
-                return page
+                if isinstance(page, dom.Element):
+                    page.parentNode = None
+                return _ensure_owner_document(page)
 
             if is_full_document:
                 if doctype is not None:
@@ -1507,10 +1549,15 @@ class domonic:
             container = body if body is not None else html_root
             children = list(getattr(container, "childNodes", []) or [])
             if len(children) == 1:
-                return children[0]
+                child = children[0]
+                if isinstance(child, dom.Node):
+                    child.parentNode = None
+                return _ensure_owner_document(child)
             if len(children) > 1:
-                return dom.Document.createDocumentFragment(*children)
-            return dom.Document.createDocumentFragment()
+                return _ensure_owner_document(
+                    dom.Document.createDocumentFragment(*children)
+                )
+            return _ensure_owner_document(dom.Document.createDocumentFragment())
 
         def _parse_with_html5lib():
             import html5lib  # noqa: F401
@@ -1567,55 +1614,68 @@ class domonic:
             page = justhtml_parse(string, return_root=False)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
 
-        if _is_doctype_only(string):
-            return _upgrade_custom_elements(_html_document_from_doctype(string))
+        def _record_active(name: str) -> None:
+            domonic.parseString_active_parser = name
+            _PARSER_LOGGER.debug("parseString: using %s", name)
 
-        if parser == "html5lib":
-            return _parse_with_html5lib()
-        if parser in ("html.parser", "html_parser", "html-parser"):
-            return _parse_with_html_parser()
-        if parser in ("lxml_html", "lxml-html"):
-            return _parse_with_lxml_html()
-        if parser in ("html5_parser", "html5-parser"):
-            return _parse_with_html5_parser()
-        if parser == "markupever":
-            return _parse_with_markupever()
-        if parser == "selectolax":
-            return _parse_with_selectolax()
-        if parser == "turbohtml":
-            return _parse_with_turbohtml()
-        if parser == "justhtml":
-            return _parse_with_justhtml()
-        if parser == "expat":
+        def _parse_with_expat():
             from domonic.parsers import expatbuilder
 
             page = expatbuilder.parseString(string)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+
+        explicit_parsers = {
+            "html5lib": ("html5lib", _parse_with_html5lib),
+            "html.parser": ("html.parser", _parse_with_html_parser),
+            "html_parser": ("html.parser", _parse_with_html_parser),
+            "html-parser": ("html.parser", _parse_with_html_parser),
+            "lxml": ("lxml_html", _parse_with_lxml_html),
+            "lxml_html": ("lxml_html", _parse_with_lxml_html),
+            "lxml-html": ("lxml_html", _parse_with_lxml_html),
+            "html5_parser": ("html5_parser", _parse_with_html5_parser),
+            "html5-parser": ("html5_parser", _parse_with_html5_parser),
+            "markupever": ("markupever", _parse_with_markupever),
+            "selectolax": ("selectolax", _parse_with_selectolax),
+            "turbohtml": ("turbohtml", _parse_with_turbohtml),
+            "justhtml": ("justhtml", _parse_with_justhtml),
+            "xml": ("expat", _parse_with_expat),
+            "expat": ("expat", _parse_with_expat),
+        }
+
+        if _is_doctype_only(string):
+            return _upgrade_custom_elements(_html_document_from_doctype(string))
+
+        if parser in explicit_parsers:
+            name, parse_with = explicit_parsers[parser]
+            _record_active(name)
+            return parse_with()
         if parser != "auto":
             raise ValueError(f"Unknown parser: {parser}")
 
         fallback_parsers = (
-            (_parse_with_html5lib, (ImportError,)),
-            (_parse_with_lxml_html, (Exception,)),
-            (_parse_with_html5_parser, (Exception,)),
-            (_parse_with_justhtml, (Exception,)),
-            (_parse_with_markupever, (Exception,)),
-            (_parse_with_selectolax, (Exception,)),
-            (_parse_with_turbohtml, (Exception,)),
+            ("html5lib", _parse_with_html5lib, (ImportError,)),
+            ("lxml_html", _parse_with_lxml_html, (Exception,)),
+            ("html5_parser", _parse_with_html5_parser, (Exception,)),
+            ("justhtml", _parse_with_justhtml, (Exception,)),
+            ("markupever", _parse_with_markupever, (Exception,)),
+            ("selectolax", _parse_with_selectolax, (Exception,)),
+            ("turbohtml", _parse_with_turbohtml, (Exception,)),
         )
-        for parse_with, handled_errors in fallback_parsers:
+        for name, parse_with, handled_errors in fallback_parsers:
             try:
-                return parse_with()
+                result = parse_with()
             except handled_errors as exc:
+                message = f"parseString: auto skipped {name} ({exc})"
+                _PARSER_LOGGER.debug(message)
                 if debug:
-                    print(f"{parse_with.__name__} failed: {exc}")
+                    print(message)
                 continue
+            _record_active(name)
+            return result
 
         try:
-            from domonic.parsers import expatbuilder
-
-            page = expatbuilder.parseString(string)
-            return _upgrade_custom_elements(_normalize_parsed_page(page, string))
+            _record_active("expat")
+            return _parse_with_expat()
         except Exception as e:
             # Last-resort recovery removes the character reported by expat and retries once.
             dodgycharIndex = int(Utils.digits(str(e).split(",")[1]))

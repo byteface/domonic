@@ -83,6 +83,34 @@ Enable htmx shortcut attributes when you want to generate ``data-hx-*`` markup.
 
    print(fragment)
 
+Alpine.js Attributes
+--------------------
+
+Set ``DOMConfig.ALPINE_ENABLED = True`` to write Alpine directives as keyword
+arguments. A ``x_`` prefix becomes ``x-``, a double underscore becomes ``:``,
+and remaining single underscores become ``-``.
+
+.. code-block:: python
+
+   from domonic.dom import DOMConfig
+   from domonic.html import div
+
+   DOMConfig.ALPINE_ENABLED = True
+
+   print(
+       div(
+           "Toggle",
+           x_data="{ open: false }",
+           x_on__click="open = !open",
+           x_show="open",
+       )
+   )
+   # <div x-data="{ open: false }" x-on:click="open = !open" x-show="open">Toggle</div>
+
+Only recognised Alpine directives are rewritten; any other ``x_*`` keyword is
+left untouched. Directive modifiers (``x-on:keyup.enter``) and the ``@``/``:``
+shorthand still need the ``**{"x-on:keyup.enter": ...}`` form.
+
 Escape User Content
 -------------------
 
