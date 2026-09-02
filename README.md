@@ -32,16 +32,10 @@ Then render it, serve it, scrape it, transform it, or do something strange with 
 
 It gives you one document model for **creating, parsing, querying, traversing, manipulating and rendering markup**.
 
-If you are a Python developer learning the web platform, domonic lets you write
-HTML tags, DOM methods, CSS selectors and JavaScript-shaped helpers directly in
-Python. The code you practise here maps back to browser concepts such as
-`querySelectorAll()`, `appendChild()`, `textContent`, `Array.map()`, `Promise`
-and `fetch`.
-
-If you are a JavaScript developer who needs to use Python, the same idea works
-in reverse. domonic gives you familiar browser names and patterns in a Python
-package, so Python scripts can still feel like DOM, HTML, CSS selectors, Web
-APIs and JavaScript utilities rather than a completely different world.
+Whether you are coming from Python and learning the web platform or coming from
+JavaScript and working in Python, domonic keeps the browser's names and
+patterns — `querySelectorAll()`, `appendChild()`, `textContent`, `Array.map()`,
+`Promise`, `fetch` — so the concepts carry across in both directions.
 
 ```python
 from domonic.html import *

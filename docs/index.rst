@@ -14,16 +14,12 @@ A Python DOM that goes way beyond minidom
 
 Domonic is a Python library for generating, parsing, traversing, and manipulating real document trees with the broader web platform in mind.
 
-It is also a practical way for Python developers to learn real HTML, DOM and
-JavaScript-style APIs. The method names and mental model deliberately match the
-browser platform: write ``div()``, query with ``querySelectorAll()``, move nodes
-with ``appendChild()``, read ``textContent``, and use JavaScript-like helpers
-such as ``Array``, ``Date``, ``Promise`` and ``URL`` from Python.
-
-It works the other way too. If you are a JavaScript developer moving into
-Python, domonic keeps familiar browser concepts close at hand: nodes,
-selectors, events, URL parsing, JSON helpers, timers, promises, fetch-style
-APIs, and DOM mutation all have Python equivalents with recognisable names.
+The method names and mental model deliberately match the browser platform:
+write ``div()``, query with ``querySelectorAll()``, move nodes with
+``appendChild()``, read ``textContent``, and use JavaScript-like helpers such as
+``Array``, ``Date``, ``Promise`` and ``URL`` from Python. The concepts carry
+across in both directions — for Python developers learning the web platform and
+for JavaScript developers working in Python.
 
 - HTML, SVG, DOM, events, CSSOM, geometry, observers, animation, and web APIs
 - A JavaScript-like runtime surface for practical porting and scripting
