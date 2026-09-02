@@ -1067,15 +1067,69 @@ def _all_elements(root: Any) -> list[Any]:
     ]
 
 
+_NAVIGABLE = (Element, str, Text)
+
+
+def _subtree_forward(node: Any, skip_self: bool = False) -> Iterator[Any]:
+    """Nodes of ``node``'s subtree in document (pre-)order."""
+    if not skip_self and isinstance(node, _NAVIGABLE):
+        yield node
+    stack = list(getattr(node, "args", None) or ())
+    stack.reverse()
+    while stack:
+        cur = stack.pop()
+        if isinstance(cur, _NAVIGABLE):
+            yield cur
+        kids = getattr(cur, "args", None) or ()
+        if kids:
+            stack.extend(reversed(kids))
+
+
+def _subtree_backward(node: Any) -> Iterator[Any]:
+    """Nodes of ``node``'s subtree in reverse document order (``node`` last)."""
+    stack: list[tuple[Any, bool]] = [(node, False)]
+    while stack:
+        cur, expanded = stack.pop()
+        if expanded:
+            if isinstance(cur, _NAVIGABLE):
+                yield cur
+        else:
+            stack.append((cur, True))
+            for child in getattr(cur, "args", None) or ():
+                stack.append((child, False))
+
+
 def _document_neighbors(self: Node, previous: bool = False) -> Iterator[Any]:
-    root = getattr(self, "rootNode", self)
-    nodes = _all_elements(root)
-    try:
-        index = nodes.index(self)
-    except ValueError:
-        return
-    items = reversed(nodes[:index]) if previous else iter(nodes[index + 1 :])
-    yield from items
+    """Nodes before / after ``self`` in document order, walked lazily.
+
+    Unlike the old "materialise the whole document then slice" approach this is
+    O(distance to the results) -- ``find_previous`` on a nearby heading no
+    longer costs a full-document scan.
+    """
+    if not previous:
+        yield from _subtree_forward(self, skip_self=True)
+    node: Any = self
+    while node is not None:
+        parent = getattr(node, "parentNode", None)
+        if parent is None:
+            return
+        kids = getattr(parent, "args", None) or ()
+        index = None
+        for i, child in enumerate(kids):
+            if child is node:
+                index = i
+                break
+        if index is None:
+            return
+        if previous:
+            for j in range(index - 1, -1, -1):
+                yield from _subtree_backward(kids[j])
+            if isinstance(parent, _NAVIGABLE):
+                yield parent
+        else:
+            for j in range(index + 1, len(kids)):
+                yield from _subtree_forward(kids[j])
+        node = parent
 
 
 def _find_document_order(
@@ -1467,8 +1521,96 @@ def _new_string(self: Node, value: Any = "") -> Text:
     return Text(str(value))
 
 
-def _prettify(self: Node, formatter: Any = "minimal") -> str:
-    return format(self)
+_PRETTIFY_RAW_TAGS = frozenset({"script", "style", "textarea", "pre"})
+
+
+def _prettify(self: Node, formatter: Any = "minimal", indent: str = " ") -> str:
+    """Beautiful Soup's ``prettify()`` -- one node per line, ``indent`` per level.
+
+    Linear in the document size (the old implementation went through
+    ``Node.__format__``, which recomputed each node's depth by walking its
+    parent chain -- O(n * depth)).
+    """
+    from domonic.dom import _escape_html
+    from domonic.html import closed_tag
+
+    out: list[str] = []
+    append = out.append
+    escape = _escape_html
+    element_type = Element
+    text_type = Text
+    comment_type = Comment
+    document_type = Document
+
+    doctype = getattr(self, "doctype", None)
+    if doctype:
+        append(str(doctype))
+        append("\n")
+
+    # stack entries: (node, depth) to open, or (None, "</name>\n text") sentinel
+    stack: list[Any] = [(self, 0)]
+    while stack:
+        item = stack.pop()
+        if type(item) is str:  # a pre-rendered closing line
+            append(item)
+            continue
+        node, depth = item
+        node_class = type(node)
+        pad = indent * depth
+
+        if node_class is str:
+            text = node.strip()
+            if text:
+                append(pad)
+                append(escape(text))
+                append("\n")
+            continue
+        if node_class is text_type:
+            text = str(node.textContent).strip()
+            if text:
+                append(pad)
+                append(
+                    escape(text)
+                    if getattr(node, "_escape_text_on_render", False)
+                    else text
+                )
+                append("\n")
+            continue
+        if node_class is comment_type:
+            append(pad)
+            append("<!--")
+            append(str(getattr(node, "data", "")))
+            append("-->\n")
+            continue
+        if not isinstance(node, element_type) and not isinstance(node, document_type):
+            continue
+
+        name = node.name
+        attrs = node.__attributes__
+        if isinstance(node, closed_tag):
+            append(f"{pad}<{name}{attrs}/>\n")
+            continue
+
+        children = getattr(node, "args", ()) or ()
+        if not children:
+            append(f"{pad}<{name}{attrs}>\n{pad}</{name}>\n" if name else "")
+            continue
+
+        if name in _PRETTIFY_RAW_TAGS:
+            body = "".join(
+                str(c.textContent) if isinstance(c, text_type) else str(c)
+                for c in children
+            )
+            append(f"{pad}<{name}{attrs}>{body}</{name}>\n")
+            continue
+
+        if name:
+            append(f"{pad}<{name}{attrs}>\n")
+            stack.append(f"{pad}</{name}>\n")
+        for child in reversed(children):
+            stack.append((child, depth + 1 if name else depth))
+
+    return "".join(out)
 
 
 def _decode(self: Node, *args: Any, **kwargs: Any) -> str:

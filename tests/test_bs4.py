@@ -265,7 +265,9 @@ class BeautifulSlopTest(unittest.TestCase):
         soup.find("p").smooth()
         self.assertEqual(soup.find("p").contents, ["onetwo"])
         self.assertIn("<section>", str(soup))
-        self.assertIn("<p>onetwo</p>", soup.prettify())
+        pretty = soup.prettify()
+        # bs4 prettify: one node per line, single-space indent
+        self.assertIn("<section>\n <p>\n  onetwo\n </p>\n</section>", pretty)
         soup.find("p").clear()
         self.assertEqual(soup.find("p").contents, [])
 
