@@ -1111,7 +1111,7 @@ class Node(EventTarget):
         self._baseURI: str = ""
         self.isConnected: bool = True
         self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
-        self.outerText: str = None
+        self.outerText = None
         self._ownerDocument = None
         self.parentNode = None
         self.prefix = None  # 🗑️
@@ -7464,7 +7464,7 @@ class Document(Element):
 
 
 class Location:
-    def __init__(self, url: str = None, *args, **kwargs) -> None:
+    def __init__(self, url: str | None = None, *args, **kwargs) -> None:
         self.href = url
 
     def __str__(self) -> str:
@@ -9891,7 +9891,7 @@ class HTMLAudioElement(HTMLElement):
     def __init__(
         self,
         *args,
-        autoplay: bool = None,
+        autoplay: bool | None = None,
         controls=None,
         crossorigin=None,
         loading=None,
@@ -10033,9 +10033,9 @@ class HTMLButtonElement(HTMLElement):
         *args,
         command=None,
         commandfor=None,
-        disabled: bool = None,
+        disabled: bool | None = None,
         form=None,
-        formaction: str = None,
+        formaction: str | None = None,
         formenctype=None,
         formmethod=None,
         formnovalidate=None,
@@ -10145,7 +10145,7 @@ class HTMLButtonElement(HTMLElement):
 class HTMLCanvasElement(HTMLElement):
     name = "canvas"
 
-    def __init__(self, *args, width: int = None, height: int = None, **kwargs):
+    def __init__(self, *args, width: int | None = None, height: int | None = None, **kwargs):
         """HTMLCanvasElement
 
         Args:
@@ -10404,14 +10404,14 @@ class HTMLFormElement(HTMLElement):
     def __init__(
         self,
         *args,
-        action: str = None,
-        accept_charset: str = None,
+        action: str | None = None,
+        accept_charset: str | None = None,
         autocomplete=None,
-        enctype: str = None,
-        method: str = None,
-        name: str = None,
-        novalidate: bool = None,
-        rel: str = None,
+        enctype: str | None = None,
+        method: str | None = None,
+        name: str | None = None,
+        novalidate: bool | None = None,
+        rel: str | None = None,
         target=None,
         **kwargs,
     ):
@@ -11461,12 +11461,12 @@ class HTMLSelectElement(HTMLElement):
     def __init__(
         self,
         *args,
-        autofocus: bool = None,
-        disabled: bool = None,
-        multiple: bool = None,
-        name: str = None,
-        required: bool = None,
-        size: int = None,
+        autofocus: bool | None = None,
+        disabled: bool | None = None,
+        multiple: bool | None = None,
+        name: str | None = None,
+        required: bool | None = None,
+        size: int | None = None,
         **kwargs,
     ):
         """HTMLSelectElement
@@ -11650,7 +11650,7 @@ class HTMLTableElement(HTMLElement):
     def __init__(
         self,
         *args,
-        align: str = None,
+        align: str | None = None,
         bgcolor=None,
         border=None,
         cellpadding=None,
@@ -11712,7 +11712,7 @@ class HTMLTableSectionElement(HTMLElement):
 class HTMLDetailsElement(HTMLElement):
     name = "details"
 
-    def __init__(self, *args, open: bool = None, **kwargs):
+    def __init__(self, *args, open: bool | None = None, **kwargs):
         super().__init__(*args, **kwargs)
         if open is not None:
             self.open = open
