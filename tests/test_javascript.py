@@ -781,12 +781,12 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Array.from_(10), [])  # JS: non-iterable -> empty
 
         arr = Array(3)
-        self.assertEqual(arr, ["", "", ""])
+        self.assertEqual(arr, [None, None, None])  # JS: 3 empty slots
         arr[1] = "x"
         self.assertEqual(arr[1], "x")
         self.assertEqual(arr.toString(), ",x,")
-        self.assertEqual(arr.toSource(), ["", "x", ""])
-        self.assertEqual(repr(arr), "['', 'x', '']")
+        self.assertEqual(arr.toSource(), [None, "x", None])
+        self.assertEqual(repr(arr), "[None, 'x', None]")
         self.assertNotEqual(arr, "not-an-array")
 
         self.assertEqual(Array([1, 2]) + [3, 4], [1, 2, 3, 4])

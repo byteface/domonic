@@ -3277,7 +3277,7 @@ class Array:
             elif isinstance(args[0], int):
                 # self.args = [None] * args[0]
                 # self.args = [null()] * args[0]
-                self.args = [""] * args[0]
+                self.args = [None] * args[0]  # JS: empty slots read as undefined
                 return
         self.args = list(args)
         self.prototype = self
@@ -6599,8 +6599,12 @@ class JSON:
     @staticmethod
     def parse(text: Any, reviver: Any = None) -> Any:
         import importlib
+        import json as _stdjson
 
-        return importlib.import_module("domonic.JSON").parse(text)
+        try:
+            return importlib.import_module("domonic.JSON").parse(text)
+        except _stdjson.JSONDecodeError as exc:
+            raise SyntaxError(str(exc)) from exc
 
     @staticmethod
     def stringify(value: Any, replacer: Any = None, space: Any = None) -> str:

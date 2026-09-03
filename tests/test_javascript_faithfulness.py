@@ -523,6 +523,17 @@ class JSONFaithfulness(unittest.TestCase):
         self.assertEqual(JSON.stringify({"a": 1, "b": [1, 2]}), '{"a":1,"b":[1,2]}')
         self.assertEqual(JSON.stringify({"a": 1}, None, 2), '{\n  "a": 1\n}')
 
+    def test_parse_of_invalid_json_raises_syntaxerror(self):
+        # JS: JSON.parse("{") throws a SyntaxError, not a language-specific
+        # decode error.
+        from domonic.javascript import JSON, SyntaxError as JSSyntaxError
+
+        with self.assertRaises(JSSyntaxError):
+            JSON.parse("{")
+        # domonic's SyntaxError is also a builtins.SyntaxError
+        with self.assertRaises(SyntaxError):
+            JSON.parse("not json")
+
 
 if __name__ == "__main__":
     unittest.main()

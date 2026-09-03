@@ -75,7 +75,7 @@ def formatPrefixAuto(x, p):
         return coefficient
     else:
         if i > n:
-            return coefficient + "0".join(Array(i - n + 1))
+            return coefficient + Array(i - n + 1).join("0")
         else:
             if i > 0:
                 return (
@@ -84,7 +84,7 @@ def formatPrefixAuto(x, p):
             else:
                 return (
                     "0."
-                    + str("0".join(Array(1 - i)))
+                    + str(Array(1 - i).join("0"))
                     + formatDecimalParts(x, Math.max(0, p + i - 1))[0]
                 )
 
@@ -110,7 +110,7 @@ def formatRounded(x, p):
                 + String(coefficient).slice(exponent + 1)
             )
         else:
-            return coefficient + "0".join(Array(exponent - len(coefficient) + 2))
+            return coefficient + Array(exponent - len(coefficient) + 2).join("0")
 
 
 formatTypes: dict[str, Any] = {
@@ -159,7 +159,7 @@ def formatGroup(grouping, thousands):
             j = (j + 1) % len(grouping)
             g = grouping[j]
 
-        return thousands.join(Array(t).reverse())
+        return str(thousands).join(reversed(t))
 
     return func
 
@@ -503,7 +503,7 @@ class formatLocale:
                 width = 0
             width = int(width)
             padding = (
-                fill.join(Array(width - length + 1)) if length < int(width) else ""
+                Array(width - length + 1).join(fill) if length < int(width) else ""
             )
 
             # If the fill character is "0", grouping is applied after padding.
