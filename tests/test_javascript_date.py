@@ -113,7 +113,7 @@ class TestCase(unittest.TestCase):
         _debug_print(d.toLocaleTimeString())
         _debug_print(d.toTimeString())
         _debug_print(d.toUTCString())
-        _debug_print(d.UTC())
+        _debug_print(Date.UTC(2026, 0, 1))
 
         _debug_print(Date(1415988000))
         # print(Date(9999))
@@ -258,7 +258,8 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(event.toLocaleTimeString(), str)
         self.assertIsInstance(event.toTimeString(), str)
         self.assertIn(":", event.toUTCString())
-        self.assertIsNotNone(event.UTC())
+        self.assertEqual(Date.UTC(1970, 0, 1), 0)
+        self.assertIsInstance(Date.UTC(2026, 5, 15), int)
 
     def test_date_setters_with_rollover(self):
         event = Date("January 31, 2020 23:30:00")

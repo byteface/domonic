@@ -290,6 +290,18 @@ class ArrayFaithfulness(unittest.TestCase):
         self.assertEqual(list(A.from_("abc")), ["a", "b", "c"])
         self.assertEqual(list(A.of(1, 2, 3)), [1, 2, 3])
 
+    def test_callbacks_receive_index_and_array(self):
+        a = A("a", "b", "c")
+        self.assertEqual(a.map(lambda el, i: f"{i}{el}"), ["0a", "1b", "2c"])
+        self.assertEqual(a.map(lambda el, i, arr: len(arr)), [3, 3, 3])
+        self.assertEqual(a.filter(lambda el, i: i != 1), ["a", "c"])
+        self.assertEqual(a.findIndex(lambda el, i: i == 2), 2)
+        self.assertTrue(A(1, 2, 3).some(lambda x, i: i == 2))
+        self.assertTrue(A(1, 2, 3).every(lambda x, i: i < 3))
+        self.assertEqual(a.find(lambda el, i: i == 1), "b")
+        # a 1-arg callback still works
+        self.assertEqual(a.map(lambda el: el.upper()), ["A", "B", "C"])
+
 
 class NumberMathFaithfulness(unittest.TestCase):
     def test_tofixed(self):
@@ -418,6 +430,13 @@ class DateFaithfulness(unittest.TestCase):
         self.assertEqual(d.getFullYear(), 2026)
         self.assertEqual(d.getMonth(), 0)
         self.assertEqual(d.getDate(), 15)
+
+    def test_utc_is_static_and_returns_ms(self):
+        from domonic.javascript import Date
+
+        self.assertEqual(Date.UTC(1970, 0, 1), 0)
+        self.assertEqual(Date.UTC(2026, 0, 1), 1767225600000)
+        self.assertIsInstance(Date.UTC(2026, 5, 15, 12), int)
 
     def test_component_constructor_overflows(self):
         from domonic.javascript import Date

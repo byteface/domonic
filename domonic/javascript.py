@@ -205,6 +205,37 @@ def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     return callback(*args[: len(positional)])
 
 
+def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
+    """Wrap a JS array callback so it can always be called ``(value, index,
+    array)`` -- resolving the declared arity once, up front, instead of
+    inspecting the signature on every element."""
+    try:
+        params = list(inspect.signature(fn).parameters.values())
+    except (TypeError, ValueError):
+        return lambda v, i, a: fn(v, i, a)
+    if any(p.kind == inspect.Parameter.VAR_POSITIONAL for p in params):
+        return lambda v, i, a: fn(v, i, a)
+    n = min(
+        3,
+        sum(
+            1
+            for p in params
+            if p.kind
+            in (
+                inspect.Parameter.POSITIONAL_ONLY,
+                inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            )
+        ),
+    )
+    if n >= 3:
+        return lambda v, i, a: fn(v, i, a)
+    if n == 2:
+        return lambda v, i, a: fn(v, i)
+    if n == 1:
+        return lambda v, i, a: fn(v)
+    return lambda v, i, a: fn()
+
+
 def _js_strictish_equal(left: Any, right: Any) -> bool:
     if _is_nan(left) or _is_nan(right):
         return False
@@ -2523,9 +2554,34 @@ class Date(Object):
         """Converts the time portion of a Date object to a string"""
         return self.date.strftime("%X")
 
-    def UTC(self) -> datetime.datetime:
-        """Returns the number of milliseconds in a date since midnight of January 1, 1970, according to UTC time"""
-        return datetime.datetime.now(timezone.utc)
+    @staticmethod
+    def UTC(
+        year: int,
+        month: int = 0,
+        day: int = 1,
+        hours: int = 0,
+        minutes: int = 0,
+        seconds: int = 0,
+        ms: int = 0,
+    ) -> int:
+        """``Date.UTC(year, monthIndex, ...)`` -- milliseconds since the epoch
+        for the given UTC date. ``monthIndex`` is 0-based and fields overflow,
+        as in JavaScript."""
+        year = int(year)
+        if year < 100:
+            year += 1900
+        month = int(month)
+        year += month // 12
+        month %= 12
+        base = datetime.datetime(year, month + 1, 1, tzinfo=timezone.utc)
+        moment = base + datetime.timedelta(
+            days=int(day) - 1,
+            hours=int(hours),
+            minutes=int(minutes),
+            seconds=int(seconds),
+            milliseconds=int(ms),
+        )
+        return int(moment.timestamp() * 1000)
 
     def valueOf(self) -> int:
         """Returns the primitive numeric value of the date."""
@@ -3117,9 +3173,10 @@ class Array:
 
         return _flatten(self.args, depth)
 
-    def flatMap(self, fn: Callable[[Any], Any]) -> Array:
+    def flatMap(self, fn: Callable[..., Any]) -> Array:
         """[Maps a function over an array and flattens the result]"""
-        mapped = [fn(i) for i in self.args]
+        it = _js_iteratee(fn)
+        mapped = [it(v, i, self.args) for i, v in enumerate(self.args)]
         return Array(*Array(mapped).flat(1))
 
     def fill(
@@ -3163,17 +3220,19 @@ class Array:
     #             groups[key] = [self.args[i]]
     #     return Map(groups)
 
-    def findLast(self, callback: Callable[[Any, int, list[Any]], bool]) -> Any:
+    def findLast(self, callback: Callable[..., bool]) -> Any:
         """[Returns the last element in an array that passes a test]"""
+        it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
-            if callback(self.args[i], i, self.args):
+            if it(self.args[i], i, self.args):
                 return self.args[i]
         return None
 
-    def findLastIndex(self, callback: Callable[[Any, int, list[Any]], bool]) -> int:
+    def findLastIndex(self, callback: Callable[..., bool]) -> int:
         """[Returns the last index of an element in an array that passes a test]"""
+        it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
-            if callback(self.args[i], i, self.args):
+            if it(self.args[i], i, self.args):
                 return i
         return -1
 
@@ -3315,12 +3374,13 @@ class Array:
         Returns:
             [list]: [a new array]
         """
-        return [func(value) for value in self.args]
-        # return map(self.args, func)
+        it = _js_iteratee(func)
+        return [it(value, i, self.args) for i, value in enumerate(self.args)]
 
-    def some(self, func: Callable[[Any], bool]) -> bool:
+    def some(self, func: Callable[..., bool]) -> bool:
         """Checks if any of the elements in an array pass a test"""
-        return any(func(value) for value in self.args)
+        it = _js_iteratee(func)
+        return any(it(value, i, self.args) for i, value in enumerate(self.args))
 
     def sort(self, func: Callable[..., Any] | None = None) -> list[Any]:
         """Sorts the elements of an array"""
@@ -3435,22 +3495,28 @@ class Array:
         #     if func(value):
         #         filtered.append(value)
         # return filtered
-        return list(filter(func, self.args))
+        it = _js_iteratee(func)
+        return [v for i, v in enumerate(self.args) if it(v, i, self.args)]
 
-    def find(self, func: Callable[[Any], bool]) -> Any:
+    def find(self, func: Callable[..., bool]) -> Any:
         """Returns the value of the first element in an array that pass a test"""
-        for each in self.args:
-            if func(each):
+        it = _js_iteratee(func)
+        for i, each in enumerate(self.args):
+            if it(each, i, self.args):
                 return each
 
-    def findIndex(self, value: Any) -> int:
-        """Returns the index of the first element in an array that pass a test"""
-        for i, current in enumerate(self.args):
-            if callable(value):
-                if value(current):
+    def findIndex(self, predicate: Any) -> int:
+        """Index of the first element for which ``predicate`` is truthy (a bare
+        value is also accepted, as a domonic convenience), or -1."""
+        if callable(predicate):
+            it = _js_iteratee(predicate)
+            for i, current in enumerate(self.args):
+                if it(current, i, self.args):
                     return i
-            elif _js_strictish_equal(current, value):
-                return i
+        else:
+            for i, current in enumerate(self.args):
+                if _js_strictish_equal(current, predicate):
+                    return i
         return -1
 
     def forEach(self, func: Callable[[Any], Any]) -> None:
@@ -3495,16 +3561,10 @@ class Array:
         for i, value in enumerate(self.args):
             yield [i, value]
 
-    def every(self, func: Callable[[Any], bool]) -> bool:
-        """[Checks if every element in an array pass a test]
-
-        Args:
-            func ([type]): [test function]
-
-        Returns:
-            [bool]: [if every array elemnt passed the test]
-        """
-        return all(func(value) for value in self.args)
+    def every(self, func: Callable[..., bool]) -> bool:
+        """[Checks if every element in an array pass a test]"""
+        it = _js_iteratee(func)
+        return all(it(value, i, self.args) for i, value in enumerate(self.args))
 
     def at(self, index: int) -> Any:
         """[takes an integer value and returns the item at that index,
