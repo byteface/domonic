@@ -44,7 +44,7 @@ try:
     from dateutil.parser import parse, parserinfo
 except ImportError:  # pragma: no cover - optional dependency
 
-    class parserinfo:
+    class parserinfo:  # type: ignore[no-redef]
         def convertyear(self, year: int, *args: Any, **kwargs: Any) -> int:
             return year
 
@@ -1081,7 +1081,7 @@ class Math(Object):
 
     @staticmethod
     @_force_number
-    def log(x: float, base: float = None) -> float:
+    def log(x: float, base: float | None = None) -> float:
         """Returns the natural logarithm (base E) of a number."""
         if base is None:
             return math.log(x)
@@ -1257,11 +1257,6 @@ class Global:
         if value == "NaN":
             return True
         return math.isnan(float(value))
-
-    def NaN(self) -> str:
-        """ "Not-a-Number" value"""
-        # return self.NaN
-        return "NaN"
 
     @staticmethod
     def Number(x: Any) -> int | float | str:
@@ -3978,7 +3973,7 @@ class String:
             raise ValueError("repeat count must be non-negative")
         return self.x * count
 
-    def startsWith(self, x: str, start: int = None, end: int = None) -> bool:
+    def startsWith(self, x: str, start: int | None = None, end: int | None = None) -> bool:
         """Checks whether a string begins with specified characters"""
         if start is None:
             start = 0
@@ -3987,7 +3982,7 @@ class String:
             end = len(self.x)
         return self.x.startswith(x, start, end)
 
-    def substring(self, start: int, end: int = None) -> str:
+    def substring(self, start: int, end: int | None = None) -> str:
         """Extracts the characters from a string, between two specified indices"""
         length = len(self.x)
         start = min(max(int(start), 0), length)
@@ -3999,7 +3994,7 @@ class String:
             start, end = end, start
         return self.x[start:end]
 
-    def endsWith(self, x: str, start: int = None, end: int = None) -> bool:
+    def endsWith(self, x: str, start: int | None = None, end: int | None = None) -> bool:
         """Checks whether a string ends with specified string/characters"""
         if start is None:
             start = 0
@@ -4015,7 +4010,7 @@ class String:
         """Converts a string to uppercase letters"""
         return self.x.upper()
 
-    def slice(self, start: int = 0, end: int = None) -> str:
+    def slice(self, start: int = 0, end: int | None = None) -> str:
         """Selects a part of an string, and returns the new string"""
         if end is None:
             end = len(self.x)
@@ -4172,7 +4167,7 @@ class String:
         padding = (padChar * ((needed // len(padChar)) + 1))[:needed]
         return padding + self.x
 
-    def localeCompare(self, comparisonString: str, locale: str = None, *args) -> int:
+    def localeCompare(self, comparisonString: str, locale: str | None = None, *args) -> int:
         """method returns a number indicating whether a reference string comes before,
         or after, or is the same as the given string in sort order"""
         if locale:
@@ -4792,6 +4787,10 @@ def ToUint32(v: int) -> int:
 
 
 class ArrayBuffer:
+    # backing store is an ``array.array`` here, but subclasses (DataView,
+    # typed arrays) put other buffer-likes here, so keep it untyped
+    buffer: Any
+
     def __init__(self, length: int) -> None:
         # self.length = length
         self.buffer = array.array("B", [0] * length)
@@ -4963,7 +4962,14 @@ class DataView(ArrayBuffer):
 
 class TypedArray:
 
-    BYTES_PER_ELEMENT = 1
+    BYTES_PER_ELEMENT: int = 1
+    buffer: Any
+    length: int
+    byteLength: int
+    byteOffset: int
+    # injected per subclass via the type() call below
+    _pack: Callable[..., list[int]]
+    _unpack: Callable[..., int]
 
     def __init__(self, *args: Any) -> None:
         """[ creates a new Int8Array
@@ -5030,7 +5036,7 @@ class TypedArray:
                         "length of buffer minus byteOffset not a multiple of the element size"
                     )
 
-                self.length = self.byteLength / self.BYTES_PER_ELEMENT
+                self.length = self.byteLength // self.BYTES_PER_ELEMENT
             else:
                 self.length = ToUint32(args[2])
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
@@ -5156,9 +5162,9 @@ class TypedArray:
         if index is None and value is None:
             raise SyntaxError("Not enough arguments")
 
-        index = ToUint32(index)
+        index = ToUint32(index if index is not None else 0)
         if index >= self.length:
-            return undefined
+            return
 
         packed_value = value.x if isinstance(value, Number) else value
         b = self._pack(packed_value)
@@ -5337,99 +5343,99 @@ Int8Array = type(
     (TypedArray,),
     {
         "name": "Int8Array",
+        "BYTES_PER_ELEMENT": 1,
         "_pack": __byteutils__.packI8,
         "_unpack": __byteutils__.unpackI8,
     },
 )
-Int8Array.BYTES_PER_ELEMENT = 1
 
 Uint8Array = type(
     "Uint8Array",
     (TypedArray,),
     {
         "name": "Uint8Array",
+        "BYTES_PER_ELEMENT": 1,
         "_pack": __byteutils__.packU8,
         "_unpack": __byteutils__.unpackU8,
     },
 )
-Uint8Array.BYTES_PER_ELEMENT = 1
 
 Uint8ClampedArray = type(
     "Uint8ClampedArray",
     (TypedArray,),
     {
         "name": "Uint8ClampedArray",
+        "BYTES_PER_ELEMENT": 1,
         "_pack": __byteutils__.packU8Clamped,
         "_unpack": __byteutils__.unpackU8,
     },
 )
-Uint8ClampedArray.BYTES_PER_ELEMENT = 1
 
 Int16Array = type(
     "Int16Array",
     (TypedArray,),
     {
         "name": "Int16Array",
+        "BYTES_PER_ELEMENT": 2,
         "_pack": __byteutils__.packI16,
         "_unpack": __byteutils__.unpackI16,
     },
 )
-Int16Array.BYTES_PER_ELEMENT = 2
 
 Uint16Array = type(
     "Uint16Array",
     (TypedArray,),
     {
         "name": "Uint16Array",
+        "BYTES_PER_ELEMENT": 2,
         "_pack": __byteutils__.packU16,
         "_unpack": __byteutils__.unpackU16,
     },
 )
-Uint16Array.BYTES_PER_ELEMENT = 2
 
 Int32Array = type(
     "Int32Array",
     (TypedArray,),
     {
         "name": "Int32Array",
+        "BYTES_PER_ELEMENT": 4,
         "_pack": __byteutils__.packI32,
         "_unpack": __byteutils__.unpackI32,
     },
 )
-Int32Array.BYTES_PER_ELEMENT = 4
 
 Uint32Array = type(
     "Uint32Array",
     (TypedArray,),
     {
         "name": "Uint32Array",
+        "BYTES_PER_ELEMENT": 4,
         "_pack": __byteutils__.packU32,
         "_unpack": __byteutils__.unpackU32,
     },
 )
-Uint32Array.BYTES_PER_ELEMENT = 4
 
 Float32Array = type(
     "Float32Array",
     (TypedArray,),
     {
         "name": "Float32Array",
+        "BYTES_PER_ELEMENT": 4,
         "_pack": __byteutils__.packF32,
         "_unpack": __byteutils__.unpackF32,
     },
 )
-Float32Array.BYTES_PER_ELEMENT = 4
 
 Float64Array = type(
     "Float64Array",
     (TypedArray,),
     {
         "name": "Float64Array",
+        "BYTES_PER_ELEMENT": 8,
         "_pack": __byteutils__.packF64,
         "_unpack": __byteutils__.unpackF64,
     },
 )
-Float64Array.BYTES_PER_ELEMENT = 8
 
 # BigInt64Array = type('BigInt64Array',
 # (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})
