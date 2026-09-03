@@ -645,7 +645,7 @@ def _iter_ancestors_inclusive(node: "Node | None") -> Iterator["Node"]:
 
 
 def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, Any]:
-    normalized = {
+    normalized: dict[str, Any] = {
         "subtree": bool(options.get("subtree", False)),
         "childList": bool(options.get("childList", False)),
         "attributes": bool(options.get("attributes", False)),
@@ -758,8 +758,8 @@ def _process_observer_notifications(
             intersection_observers = list(IntersectionObserver._all_observers)
         except NameError:
             intersection_observers = []
-        for observer in intersection_observers:
-            observer._process(target, target_rect)
+        for io_observer in intersection_observers:
+            io_observer._process(target, target_rect)
     finally:
         _observer_processing = False
 
@@ -2417,7 +2417,10 @@ class ParentNode:
     @property
     def children(self) -> "NodeList":
         """Return list of child nodes."""
-        return _LiveNodeList(self, lambda child: isinstance(child, Element))
+        return _LiveNodeList(
+            self,  # type: ignore[arg-type]
+            lambda child: isinstance(child, Element),
+        )
 
     @property
     def firstElementChild(self):
@@ -3237,7 +3240,7 @@ class DOMTokenList(list):
         self._reload()
         return list(list.__iter__(self)) == other
 
-    def __iadd__(self, token):
+    def __iadd__(self, token):  # type: ignore[misc]
         self.add(token)
         return self
 
@@ -4134,7 +4137,7 @@ class Element(Node):
 
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
     def closest(self, s: str):
-        el = self
+        el: Any = self
         while el is not None and getattr(el, "nodeType", None) == Node.ELEMENT_NODE:
             if Element.matches(el, s):
                 return el
@@ -4640,7 +4643,7 @@ class Element(Node):
                 attribute = "_" + attribute
             return self.kwargs[attribute]
         except KeyError:
-            return None
+            return None  # type: ignore[return-value]
 
     def getAttributeNode(self, attribute: str) -> "Attr | None":
         """Returns the specified attribute node"""
@@ -6072,7 +6075,7 @@ class Range(AbastractRange):
                 bounded = max(0, min(offset, len(children)))
                 return bounded
 
-            current = node
+            current: Any = node
             while (
                 current is not None
                 and getattr(current, "parentNode", None) is not ancestor
@@ -6199,7 +6202,7 @@ class Range(AbastractRange):
         }
         if how not in comparisons:
             raise ValueError("Invalid Range comparison type")
-        return self._compare_points(*comparisons[how])
+        return self._compare_points(*comparisons[how])  # type: ignore[arg-type]
 
     def deleteContents(self) -> None:
         self.extractContents()
@@ -6212,7 +6215,7 @@ class Range(AbastractRange):
             and self.startContainer == self.endContainer
         ):
             text = self.startContainer.textContent
-            extracted = text[self.startOffset : self.endOffset]
+            extracted: Any = text[self.startOffset : self.endOffset]
             self.startContainer.textContent = (
                 text[: self.startOffset] + text[self.endOffset :]
             )
@@ -6801,7 +6804,8 @@ class Document(Element):
         from domonic.html import create_element
 
         if args and isinstance(args[-1], dict) and "is" in args[-1]:
-            *args, options = args
+            *_args, options = args
+            args = tuple(_args)
             kwargs.setdefault("is", options["is"])
         is_value = kwargs.pop("is", None) or kwargs.pop("is_", None)
         if is_value is not None:
@@ -7090,7 +7094,7 @@ class Document(Element):
     def evaluate(
         self,
         xpathExpression: str,
-        contextNode: "Node" = None,
+        contextNode: "Node | None" = None,
         namespaceResolver=None,
         resultType=XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,
         result=None,
@@ -7213,7 +7217,7 @@ class Document(Element):
     @property
     def head(self) -> "HTMLHeadElement | None":
         """Returns the <head> element of the document"""
-        return self.querySelector("head")
+        return self.querySelector("head")  # type: ignore[return-value]
 
     @head.setter
     def head(self, el: "HTMLHeadElement") -> None:
@@ -8814,14 +8818,10 @@ class DOMQuad:
     @staticmethod
     def fromQuad(quad: Any) -> "DOMQuad":
         return DOMQuad(
-            quad.p1.x,
-            quad.p1.y,
-            quad.p2.x,
-            quad.p2.y,
-            quad.p3.x,
-            quad.p3.y,
-            quad.p4.x,
-            quad.p4.y,
+            DOMPointReadOnly(quad.p1.x, quad.p1.y),
+            DOMPointReadOnly(quad.p2.x, quad.p2.y),
+            DOMPointReadOnly(quad.p3.x, quad.p3.y),
+            DOMPointReadOnly(quad.p4.x, quad.p4.y),
         )
 
     @staticmethod
@@ -9054,7 +9054,7 @@ def traverseSiblings(tw: TreeWalker, type: str) -> Node | None:
             sibling = getattr(node, mapChild[type])
             if result == NodeFilter.FILTER_REJECT:
                 sibling = getattr(node, mapSibling[type])
-        node = node.parentNode
+        node = node.parentNode  # type: ignore[assignment]
         if node == None or node == tw.root:
             return None
         if nodeFilter(tw, node) == NodeFilter.FILTER_ACCEPT:
@@ -9093,7 +9093,7 @@ class TreeWalker:
             for child in el:
                 if isinstance(child, str):
                     newchild = Text(child)
-                    el.replaceChild(newchild, child)
+                    el.replaceChild(newchild, child)  # type: ignore[arg-type]
                     newchild.parentNode = el
 
         self._root._iterate(self._root, upgrade)
@@ -9161,7 +9161,7 @@ class TreeWalker:
         # return self.currentNode.parentNode
         node = self.currentNode
         while node != None and node != self.root:
-            node = node.parentNode
+            node = node.parentNode  # type: ignore[assignment]
             if node != None and nodeFilter(self, node) == NodeFilter.FILTER_ACCEPT:
                 self.currentNode = node
                 return node
