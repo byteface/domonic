@@ -301,7 +301,8 @@ class Object:
                 self.__dict__ = {}
                 self.__dict__.update(obj.__dict__)
                 self.__dict__.update(kwargs)
-                self.__dict__.update(args)
+                for _a in args:
+                    self.__dict__.update(_a)
                 # self.__dict__['__class__'] = obj.__class__.__name__
                 # self.__dict__['__module__'] = obj.__module__
                 # self.__dict__['__doc__'] = obj.__doc__
@@ -573,7 +574,7 @@ class Object:
         """Returns a string representation of the object."""
         return "[" + self.__class__.__name__ + ": " + str(self.__dict__) + "]"
 
-    def valueOf(self) -> Object:
+    def valueOf(self) -> Any:
         """Returns the value of the object."""
         return self
 
@@ -741,7 +742,7 @@ class Function(Object):
             except TypeError:
                 return self.func()
         try:
-            return self.func(*args)
+            return self.func(*(args or ()))
         except TypeError:
             return self.func()
 
@@ -935,6 +936,7 @@ class Math(Object):
     SQRT1_2: float = 0.7071067811865476
     SQRT2: float = 1.4142135623730951
 
+    @staticmethod
     def _force_number(func: Callable[..., Any]) -> Callable[..., Any]:
         """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]"""
 
@@ -1208,6 +1210,14 @@ class Global:
 
     NaN = "NaN"
     Infinity = float("inf")
+
+    # populated at module load once Performance / Window exist
+    performance: Any
+    globalThis: Any
+    self: Any
+    window: Any
+    setInterval: Callable[..., Any]
+    clearInterval: Callable[..., Any]
 
     __timers: dict[int, threading.Timer] = {}
 
@@ -2687,7 +2697,7 @@ class Window:
         return interval_ID.job
 
     @staticmethod
-    def _do_request(url: str, f: FetchedSet | None = None, **kwargs: Any) -> Any:
+    def _do_request(url: str, f: Any = None, **kwargs: Any) -> Any:
         # private - don't use directly. use one of the fetch methods
         try:
             # r = requests.get(url, timeout=3)
@@ -2807,9 +2817,8 @@ class Window:
             kwargs["error_handler"] = obj["e"]
             window._do_request(url, f, **kwargs)
 
-        jobs = []
         p = Pool()
-        urls = [
+        jobs = [
             {
                 "url": url,
                 "f": f,
@@ -2819,7 +2828,7 @@ class Window:
             }
             for url in urls
         ]
-        results = p.map(_do_request_wrapper, urls)
+        p.map(_do_request_wrapper, jobs)
         p.close()
         p.join()
         return f
@@ -3039,7 +3048,7 @@ class Array:
         Returns:
             [dict]: [a dictionary of arrays]
         """
-        groups = {}
+        groups: dict[Any, Any] = {}
         for i in range(len(self.args)):
             key = callback(self.args[i], i, self.args)
             if key in groups:
@@ -3223,7 +3232,10 @@ class Array:
         """Sorts the elements of an array"""
 
         if func is not None:
-            return self.args.sort(key=func(*self.args))
+            from functools import cmp_to_key
+
+            self.args.sort(key=cmp_to_key(func))
+            return self.args
 
         def comp(o: Any) -> str:
             return str(o)
@@ -3376,13 +3388,13 @@ class Array:
         return self.args[index]
 
 
-Array.prototype = Array
+Array.prototype = Array  # type: ignore[assignment]
 
 
 class Set:
     def __init__(self, *args: Any) -> None:
         """Store unique values of any type in insertion order."""
-        self.args = []
+        self.args: list[Any] = []
         values = args
         if (
             len(args) == 1
@@ -3945,9 +3957,9 @@ class String:
         Returns:
             [type]: [A new string containing the combined text of the strings provided.]
         """
-        args = list(args)
-        args.insert(0, self.x)
-        return seperator.join(args)
+        parts = list(args)
+        parts.insert(0, self.x)
+        return seperator.join(parts)
 
     # @staticmethod
     def charCodeAt(self, index: int) -> int:
