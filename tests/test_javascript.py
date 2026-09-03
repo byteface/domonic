@@ -1008,7 +1008,7 @@ class TestCase(unittest.TestCase):
         assert mystr.startsWith("S")
         assert mystr.startsWith("String", 5)
         assert mystr.endsWith("String")
-        assert mystr.endsWith("Some", 0, 4)
+        assert mystr.endsWith("Some", 4)
 
         # print(">>", mystr.substr(1))
         assert mystr.substr(1) == "ome String"

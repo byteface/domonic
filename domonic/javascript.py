@@ -497,6 +497,36 @@ class Object:
         return bool(getattr(obj, "__isFrozen", False))
 
     @staticmethod
+    def is_(value1: Any, value2: Any) -> bool:
+        """``Object.is`` -- SameValue: like ``===`` but ``NaN`` equals ``NaN``
+        and ``+0`` differs from ``-0``. (``is`` is a Python keyword.)"""
+        if isinstance(value1, float) and isinstance(value2, float):
+            if math.isnan(value1) and math.isnan(value2):
+                return True
+            if value1 == 0 and value2 == 0:
+                return math.copysign(1, value1) == math.copysign(1, value2)
+        return type(value1) is type(value2) and value1 == value2
+
+    @staticmethod
+    def hasOwn(obj: Any, key: str) -> bool:
+        """``Object.hasOwn(obj, key)`` -- a direct (own) property check."""
+        if isinstance(obj, dict):
+            return key in obj
+        if isinstance(obj, Object):
+            return key in obj.__dict__
+        return key in getattr(obj, "__dict__", {})
+
+    @staticmethod
+    def groupBy(items: Iterable[Any], callback: Callable[..., Any]) -> dict:
+        """``Object.groupBy`` -- group ``items`` into a dict keyed by
+        ``callback(item, index)``."""
+        out: dict[Any, list[Any]] = {}
+        for index, item in enumerate(items):
+            key = callback(item, index)
+            out.setdefault(key, []).append(item)
+        return out
+
+    @staticmethod
     def freeze(obj: Any) -> Any:
         """Freezes an object. Other code cannot delete or change its properties."""
         if isinstance(obj, Object):
@@ -3270,6 +3300,35 @@ class Array:
                     self.args[i], self.args[j] = self.args[j], self.args[i]
         return self.args
 
+    def toReversed(self) -> "Array":
+        """A reversed copy (the original array is left unchanged) -- ES2023."""
+        return Array(*reversed(self.args))
+
+    def toSorted(self, func: Callable[..., Any] | None = None) -> "Array":
+        """A sorted copy (the original array is left unchanged) -- ES2023."""
+        if func is not None:
+            from functools import cmp_to_key
+
+            return Array(*sorted(self.args, key=cmp_to_key(func)))
+        return Array(*sorted(self.args, key=str))
+
+    def toSpliced(
+        self, start: int, deleteCount: int | None = None, *items: Any
+    ) -> "Array":
+        """A copy with a splice applied (the original is unchanged) -- ES2023."""
+        copy = list(self.args)
+        if deleteCount is None:
+            deleteCount = len(copy) - start
+        copy[start : start + deleteCount] = items
+        return Array(*copy)
+
+    def with_(self, index: int, value: Any) -> "Array":
+        """A copy with ``index`` replaced by ``value`` -- ES2023 ``Array#with``
+        (``with`` is a Python keyword)."""
+        copy = list(self.args)
+        copy[index] = value
+        return Array(*copy)
+
     def reduce(self, callback: Callable[..., Any], initialValue: Any = None) -> Any:
         """Reduces the array to a single value (going left-to-right)
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
@@ -3364,13 +3423,27 @@ class Array:
             yield i
 
     def copyWithin(
-        self, target: Sequence[Any], start: int = 0, end: int | None = None
-    ) -> None:
-        """Copies array elements within the array, from start to end"""
-        if end is None:
-            end = len(target)
-        for i in range(start, end):
-            self.args[i] = target[i]
+        self, target: int, start: int = 0, end: int | None = None
+    ) -> list[Any]:
+        """Shallow-copy the ``[start, end)`` slice to ``target`` within the same
+        array (indices may be negative), and return the array."""
+        length = len(self.args)
+
+        def _clamp(value: int | None, default: int) -> int:
+            if value is None:
+                return default
+            value = int(value)
+            return max(length + value, 0) if value < 0 else min(value, length)
+
+        dest = _clamp(target, 0)
+        src = _clamp(start, 0)
+        stop = _clamp(end, length)
+        chunk = self.args[src:stop]
+        for offset, item in enumerate(chunk):
+            if dest + offset >= length:
+                break
+            self.args[dest + offset] = item
+        return self.args
 
     def entries(self) -> Iterator[list[Any]]:
         """[Returns a key/value pair Array Iteration Object]
@@ -3790,43 +3863,29 @@ class Number(float):
 
         return sign + mantissa
 
-    def toString(self, base: int | None) -> str:
-        """[returns a string representing the specified Number object.]
-
-        Args:
-            base (int): [An integer in the range 2 through 36
-                specifying the base to use for representing numeric values.]
-
-        Returns:
-            [str]: [a string representing the specified Number object]
-        """
-        if base is None:
-            return str(self.x)
+    def toString(self, base: int | None = None) -> str:
+        """A string for the number in the given radix (2-36; default 10)."""
+        value = self.x
+        if base is None or int(base) == 10:
+            return str(value)
+        base = int(base)
+        if not 2 <= base <= 36:
+            raise ValueError("toString() radix must be between 2 and 36")
+        if not isinstance(value, (int, float)) or value != value:
+            return "NaN"
 
         import string
 
-        digs = string.digits + string.ascii_letters
-
-        if self.x < 0:
-            sign = -1
-        elif self.x == 0:
-            return digs[0]
-        else:
-            sign = 1
-
-        self.x *= sign
-        digits = []
-
-        while self.x:
-            digits.append(digs[int(self.x % base)])
-            self.x = int(self.x / base)
-
-        if sign < 0:
-            digits.append("-")
-
-        digits.reverse()
-
-        return "".join(digits)
+        digs = string.digits + string.ascii_lowercase
+        sign = "-" if value < 0 else ""
+        n = int(abs(value))
+        if n == 0:
+            return "0"
+        out = []
+        while n:
+            out.append(digs[n % base])
+            n //= base
+        return sign + "".join(reversed(out))
 
 
 def _js_replacer(fn: "Callable[..., Any]") -> "Callable[[Any], str]":
@@ -4054,14 +4113,10 @@ class String:
             raise ValueError("repeat count must be non-negative")
         return self.x * count
 
-    def startsWith(self, x: str, start: int | None = None, end: int | None = None) -> bool:
-        """Checks whether a string begins with specified characters"""
-        if start is None:
-            start = 0
-        start = max(int(start), 0)
-        if end is None:
-            end = len(self.x)
-        return self.x.startswith(x, start, end)
+    def startsWith(self, x: str, position: int | None = None) -> bool:
+        """``String.prototype.startsWith(searchString, position=0)``."""
+        pos = max(int(position), 0) if position is not None else 0
+        return self.x.startswith(x, pos)
 
     def substring(self, start: int, end: int | None = None) -> str:
         """Extracts the characters from a string, between two specified indices"""
@@ -4075,13 +4130,11 @@ class String:
             start, end = end, start
         return self.x[start:end]
 
-    def endsWith(self, x: str, start: int | None = None, end: int | None = None) -> bool:
-        """Checks whether a string ends with specified string/characters"""
-        if start is None:
-            start = 0
-        if end is None:
-            end = len(self.x)
-        return self.x.endswith(x, start, end)
+    def endsWith(self, x: str, endPosition: int | None = None) -> bool:
+        """``String.prototype.endsWith(searchString, endPosition=length)`` --
+        treats the string as if it ended at ``endPosition``."""
+        end = len(self.x) if endPosition is None else int(endPosition)
+        return self.x[:end].endswith(x)
 
     def toLowerCase(self) -> str:
         """Converts a string to lowercase letters"""
@@ -4100,6 +4153,20 @@ class String:
     def trim(self) -> str:
         """Removes whitespace from both ends of a string"""
         return self.x.strip()
+
+    def at(self, index: int) -> Any:
+        """The character at ``index`` (negative counts from the end), or
+        ``undefined`` when out of range."""
+        i = int(index)
+        if i < 0:
+            i += len(self.x)
+        return self.x[i] if 0 <= i < len(self.x) else undefined
+
+    def normalize(self, form: str = "NFC") -> str:
+        """Unicode normalisation (``NFC`` / ``NFD`` / ``NFKC`` / ``NFKD``)."""
+        import unicodedata
+
+        return unicodedata.normalize(form, self.x)  # type: ignore[arg-type]
 
     def charAt(self, index: int) -> str:
         """[Returns the character at the specified index (position)]
@@ -5821,6 +5888,36 @@ class Symbol:
 #     @staticmethod
 #     def _from(self, temporal):
 #         pass
+
+
+class JSON:
+    """``JSON.parse`` / ``JSON.stringify`` -- JavaScript's global JSON object.
+
+    Thin wrapper over :mod:`domonic.JSON` so ports can ``from
+    domonic.javascript import JSON`` and call it the browser way.
+    """
+
+    @staticmethod
+    def parse(text: Any, reviver: Any = None) -> Any:
+        import importlib
+
+        return importlib.import_module("domonic.JSON").parse(text)
+
+    @staticmethod
+    def stringify(value: Any, replacer: Any = None, space: Any = None) -> str:
+        import importlib
+
+        kwargs: dict[str, Any] = {}
+        if space is not None:
+            kwargs["indent"] = space
+        return importlib.import_module("domonic.JSON").stringify(value, **kwargs)
+
+
+# ``Object.is`` / ``Array#with`` -- the JS names are Python keywords, so expose
+# both the underscore form (callable from Python source) and the real name
+# (reachable via getattr, and present for feature detection).
+setattr(Object, "is", Object.is_)
+setattr(Array, "with", Array.with_)
 
 
 '''
