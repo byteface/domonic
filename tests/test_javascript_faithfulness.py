@@ -267,6 +267,11 @@ class ArrayFaithfulness(unittest.TestCase):
         self.assertTrue(A(1, 2, 3).some(lambda x, *a: x > 2))
         self.assertTrue(A(2, 4).every(lambda x, *a: x % 2 == 0))
 
+    def test_keys_values_entries_are_iterators(self):
+        self.assertEqual(list(A(1, 2, 3).values()), [1, 2, 3])
+        self.assertEqual(list(A("a", "b").keys()), [0, 1])
+        self.assertEqual(list(A("a", "b").entries()), [[0, "a"], [1, "b"]])
+
     def test_flat_and_fill(self):
         self.assertEqual(A(1, [2, [3]]).flat(), [1, 2, [3]])
         self.assertEqual(A(1, [2, [3]]).flat(2), [1, 2, 3])
@@ -370,6 +375,13 @@ class NumberMathFaithfulness(unittest.TestCase):
     def test_toprecision_toexponential(self):
         self.assertEqual(N(123.456).toPrecision(4), "123.5")
         self.assertEqual(N(12345).toExponential(2), "1.23e+4")
+        # exponent is un-padded and mantissa keeps `precision` sig digits
+        self.assertEqual(N(1234.5).toPrecision(3), "1.23e+3")
+        self.assertEqual(N(123).toPrecision(5), "123.00")
+        self.assertEqual(N(0.00001).toPrecision(3), "0.0000100")
+        self.assertEqual(N(0.0000123).toPrecision(3), "0.0000123")
+        self.assertEqual(N(100).toPrecision(1), "1e+2")
+        self.assertEqual(N(0).toPrecision(3), "0.00")
 
     def test_tostring_radix(self):
         self.assertEqual(N(255).toString(16), "ff")

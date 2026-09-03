@@ -3743,6 +3743,10 @@ class Array:
         for i in range(len(self.args)):
             yield i
 
+    def values(self) -> Iterator[Any]:
+        """Returns a new array iterator object that yields each element's value."""
+        yield from list(self.args)
+
     def copyWithin(
         self, target: int, start: int = 0, end: int | None = None
     ) -> list[Any]:
@@ -4172,26 +4176,20 @@ class Number(float):
         if math.isnan(self.x) or math.isinf(self.x):
             return str(self.x)
 
-        formatted = format(self.x, f".{precision}g")
-        if "e" in formatted or "E" in formatted:
-            return formatted.replace("E", "e")
+        if self.x == 0:
+            return "0" if precision == 1 else "0." + "0" * (precision - 1)
 
-        sign = ""
-        mantissa = formatted
-        if mantissa.startswith(("-", "+")):
-            sign = mantissa[0]
-            mantissa = mantissa[1:]
+        # Normalise to `precision` significant digits and read the decimal
+        # exponent (ECMAScript's `e`) off the scientific form.
+        mant, _, exp_str = format(self.x, f".{precision - 1}e").partition("e")
+        exp = int(exp_str)
 
-        digits_only = mantissa.replace(".", "")
-        significant = digits_only.lstrip("0")
-        significant_count = len(significant) if significant else 1
+        if exp < -6 or exp >= precision:
+            # exponential form, un-padded exponent ("1.23e+3", not "1.23e+03")
+            return f"{mant}e{exp:+d}"
 
-        if significant_count < precision:
-            if "." not in mantissa:
-                mantissa += "."
-            mantissa += "0" * (precision - significant_count)
-
-        return sign + mantissa
+        # fixed form with (precision - 1 - exp) digits after the point
+        return format(self.x, f".{max(precision - 1 - exp, 0)}f")
 
     def toString(self, base: int | None = None) -> str:
         """A string for the number in the given radix (2-36; default 10)."""
