@@ -4079,6 +4079,48 @@ def _js_sub(
     return compiled.sub(template, text, count=count)
 
 
+# --- UTF-16 code units -----------------------------------------------------
+# JavaScript strings are sequences of UTF-16 code units; ``.length``, indexing,
+# ``charCodeAt``, ``charAt`` and ``slice`` are all code-unit based. A Python str
+# is code points, so an astral-plane character (emoji, rare CJK, ...) is one
+# Python char but two JS code units. These helpers bridge the two.
+
+
+def _utf16_units(s: str) -> "list[int]":
+    units: list[int] = []
+    for ch in s:
+        cp = ord(ch)
+        if cp > 0xFFFF:
+            cp -= 0x10000
+            units.append(0xD800 + (cp >> 10))
+            units.append(0xDC00 + (cp & 0x3FF))
+        else:
+            units.append(cp)
+    return units
+
+
+def _units_to_str(units: "list[int]") -> str:
+    import struct
+
+    raw = b"".join(struct.pack("<H", u & 0xFFFF) for u in units)
+    return raw.decode("utf-16-le", errors="surrogatepass")
+
+
+def _cp_index_to_unit(s: str, cp_index: int) -> int:
+    """A code-point offset into ``s`` -> the equivalent code-unit offset."""
+    return cp_index + sum(1 for ch in s[:cp_index] if ord(ch) > 0xFFFF)
+
+
+def _unit_index_to_cp(s: str, unit_index: int) -> int:
+    """A code-unit offset into ``s`` -> the equivalent code-point offset."""
+    seen = 0
+    for cp, ch in enumerate(s):
+        if seen >= unit_index:
+            return cp
+        seen += 2 if ord(ch) > 0xFFFF else 1
+    return len(s)
+
+
 class String:
     """javascript String methods"""
 
@@ -4111,6 +4153,15 @@ class String:
         # self.args = args
         # self.kwargs = kwargs
         self.x = str(x)
+
+    @property
+    def _u16(self) -> "list[int]":
+        """The UTF-16 code units of ``self.x`` (cached, keyed on the value)."""
+        cache = self.__dict__.get("_u16_cache")
+        if cache is None or cache[0] != self.x:
+            cache = (self.x, _utf16_units(self.x))
+            self.__dict__["_u16_cache"] = cache
+        return cache[1]
 
     def __str__(self) -> str:
         return self.x
@@ -4193,16 +4244,13 @@ class String:
 
     # @staticmethod
     def charCodeAt(self, index: int) -> Any:
-        """The code unit at ``index``; ``NaN`` (the *number*) when out of range,
-        so ``s.charCodeAt(past_end) <= 0xffff`` is simply ``False`` like JS.
-
-        Note: indexing is by Unicode scalar, not UTF-16 code unit -- see the
-        docs on astral-plane fidelity.
-        """
+        """The UTF-16 code unit at ``index``; ``NaN`` (the *number*) when out of
+        range, so ``s.charCodeAt(past_end) <= 0xffff`` is simply ``False``."""
         index = int(index)
-        if index < 0 or index >= len(self.x):
+        units = self._u16
+        if index < 0 or index >= len(units):
             return float("nan")
-        return ord(self.x[index])
+        return units[index]
 
     @staticmethod
     def fromCharCode(*codes: int) -> str:
@@ -4219,7 +4267,8 @@ class String:
 
     @property
     def length(self) -> int:
-        return len(self.x)
+        """The number of UTF-16 code units (astral characters count as two)."""
+        return len(self._u16)
 
     def repeat(self, count: int) -> str:
         """Returns a new string with a specified number of copies of an existing string"""
@@ -4234,16 +4283,15 @@ class String:
         return self.x.startswith(x, pos)
 
     def substring(self, start: int, end: int | None = None) -> str:
-        """Extracts the characters from a string, between two specified indices"""
-        length = len(self.x)
+        """The code units between two indices (negatives clamp to 0, args swap
+        if out of order) -- code-unit based, like JavaScript."""
+        units = self._u16
+        length = len(units)
         start = min(max(int(start), 0), length)
-        if end is None:
-            end = length
-        else:
-            end = min(max(int(end), 0), length)
+        end = length if end is None else min(max(int(end), 0), length)
         if start > end:
             start, end = end, start
-        return self.x[start:end]
+        return _units_to_str(units[start:end])
 
     def endsWith(self, x: str, endPosition: int | None = None) -> bool:
         """``String.prototype.endsWith(searchString, endPosition=length)`` --
@@ -4260,22 +4308,31 @@ class String:
         return self.x.upper()
 
     def slice(self, start: int = 0, end: int | None = None) -> str:
-        """Selects a part of an string, and returns the new string"""
+        """A slice of the string in code-unit space (negative indices count
+        from the end), like JavaScript."""
+        units = self._u16
+        length = len(units)
+        s = int(start)
+        s = max(length + s, 0) if s < 0 else min(s, length)
         if end is None:
-            end = len(self.x)
-        return self.x[start:end]
+            e = length
+        else:
+            e = int(end)
+            e = max(length + e, 0) if e < 0 else min(e, length)
+        return _units_to_str(units[s:e]) if s < e else ""
 
     def trim(self) -> str:
         """Removes whitespace from both ends of a string"""
         return self.x.strip()
 
     def at(self, index: int) -> Any:
-        """The character at ``index`` (negative counts from the end), or
-        ``undefined`` when out of range."""
+        """The code unit at ``index`` as a string (negative counts from the
+        end), or ``undefined`` when out of range."""
+        units = self._u16
         i = int(index)
         if i < 0:
-            i += len(self.x)
-        return self.x[i] if 0 <= i < len(self.x) else undefined
+            i += len(units)
+        return _units_to_str([units[i]]) if 0 <= i < len(units) else undefined
 
     def normalize(self, form: str = "NFC") -> str:
         """Unicode normalisation (``NFC`` / ``NFD`` / ``NFKC`` / ``NFKD``)."""
@@ -4284,19 +4341,14 @@ class String:
         return unicodedata.normalize(form, self.x)  # type: ignore[arg-type]
 
     def charAt(self, index: int) -> str:
-        """[Returns the character at the specified index (position)]
-
-        Args:
-            index (int): [index position]
-
-        Returns:
-            [str]: [the character at the specified index.
-            if the index is out of range, an empty string is returned.]
-        """
+        """The UTF-16 code unit at ``index`` as a one-'character' string (a lone
+        surrogate for one half of an astral character); ``""`` when out of
+        range."""
         index = int(index)
-        if index < 0 or index >= len(self.x):
+        units = self._u16
+        if index < 0 or index >= len(units):
             return ""
-        return self.x[index]
+        return _units_to_str([units[index]])
 
     def replace(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
         """
@@ -4335,19 +4387,18 @@ class String:
     # """ Compares two strings in the current locale """
     # pass
 
-    def substr(self, start: int = 0, end: int | None = None) -> str:
-        """Extracts the characters from a string, beginning at a specified start position,
-        and through the specified number of character"""
-        length = len(self.x)
+    def substr(self, start: int = 0, length: int | None = None) -> str:
+        """``length`` code units starting at ``start`` (negative ``start``
+        counts from the end) -- code-unit based, like JavaScript."""
+        units = self._u16
+        total = len(units)
         start = int(start)
         if start < 0:
-            start = max(length + start, 0)
-        if end is None:
-            end = length - start
-        end = int(end)
-        if end <= 0:
+            start = max(total + start, 0)
+        count = (total - start) if length is None else int(length)
+        if count <= 0:
             return ""
-        return self.x[start : start + end]
+        return _units_to_str(units[start : start + count])
 
     def toLocaleLowerCase(self) -> str:
         """Converts a string to lowercase letters, according to the host's locale"""
@@ -4372,10 +4423,11 @@ class String:
 
         """
         searchValue = str(searchValue)
-        fromIndex = max(int(fromIndex), 0)
-        if fromIndex > len(self.x):
-            return len(self.x) if searchValue == "" else -1
-        return self.x.find(searchValue, fromIndex)
+        cp_from = _unit_index_to_cp(self.x, max(int(fromIndex), 0))
+        if cp_from > len(self.x):
+            return self.length if searchValue == "" else -1
+        pos = self.x.find(searchValue, cp_from)
+        return -1 if pos < 0 else _cp_index_to_unit(self.x, pos)
 
     def codePointAt(self, index: int) -> Any:
         """[Returns the Unicode code point at the specified index (position)]
@@ -4387,9 +4439,15 @@ class String:
             [type]: [the Unicode code point at the specified index (position)]
         """
         index = int(index)
-        if index < 0 or index >= len(self.x):
+        units = self._u16
+        if index < 0 or index >= len(units):
             return None  # JS: undefined
-        return ord(self.x[index])
+        unit = units[index]
+        if 0xD800 <= unit <= 0xDBFF and index + 1 < len(units):
+            nxt = units[index + 1]
+            if 0xDC00 <= nxt <= 0xDFFF:
+                return 0x10000 + ((unit - 0xD800) << 10) + (nxt - 0xDC00)
+        return unit
 
     def padEnd(self, length: int, padChar: str = " ") -> str:
         """[Pads the end of a string with a specified character
@@ -4530,12 +4588,15 @@ class String:
         """
         searchValue = str(searchValue)
         if fromIndex is None:
-            fromIndex = len(self.x)
+            cp_from = len(self.x)
         else:
-            fromIndex = min(max(int(fromIndex), 0), len(self.x))
+            cp_from = _unit_index_to_cp(
+                self.x, min(max(int(fromIndex), 0), self.length)
+            )
         if searchValue == "":
-            return fromIndex
-        return self.x.rfind(searchValue, 0, fromIndex + len(searchValue))
+            return _cp_index_to_unit(self.x, cp_from)
+        pos = self.x.rfind(searchValue, 0, cp_from + len(searchValue))
+        return -1 if pos < 0 else _cp_index_to_unit(self.x, pos)
 
     # def test(self, pattern: str):? was this on string?
 

@@ -70,6 +70,51 @@ class StringFaithfulness(unittest.TestCase):
         self.assertEqual(S("a1b2c").split(RegExp(r"(\d)")), ["a", "1", "b", "2", "c"])
 
 
+class StringUtf16Faithfulness(unittest.TestCase):
+    """JS strings are UTF-16 code units; an astral char is two units."""
+
+    def setUp(self):
+        self.s = S("a\U0001F600b")  # "a" + emoji + "b"
+
+    def test_length(self):
+        self.assertEqual(self.s.length, 4)
+        self.assertEqual(S("hello").length, 5)
+
+    def test_charCodeAt(self):
+        self.assertEqual(self.s.charCodeAt(0), 97)
+        self.assertEqual(self.s.charCodeAt(1), 0xD83D)  # lead surrogate
+        self.assertEqual(self.s.charCodeAt(2), 0xDE00)  # trail surrogate
+        self.assertEqual(self.s.charCodeAt(3), 98)
+
+    def test_codePointAt(self):
+        self.assertEqual(self.s.codePointAt(1), 128512)  # combined
+        self.assertEqual(self.s.codePointAt(2), 0xDE00)  # lone trail
+        self.assertEqual(self.s.codePointAt(3), 98)
+
+    def test_charAt_and_at(self):
+        self.assertEqual(self.s.charAt(0), "a")
+        self.assertEqual(self.s.charAt(3), "b")
+        self.assertEqual(self.s.at(-1), "b")
+
+    def test_slice_substring_substr(self):
+        self.assertEqual(self.s.slice(0, 1), "a")
+        self.assertEqual(self.s.slice(1, 3), "\U0001F600")
+        self.assertEqual(self.s.slice(3), "b")
+        self.assertEqual(self.s.slice(-1), "b")
+        self.assertEqual(self.s.substring(1, 3), "\U0001F600")
+        self.assertEqual(self.s.substr(3, 1), "b")
+
+    def test_indexOf(self):
+        self.assertEqual(self.s.indexOf("b"), 3)
+        self.assertEqual(self.s.indexOf("z"), -1)
+        self.assertEqual(self.s.lastIndexOf("b"), 3)
+
+    def test_fromCharCode_static_and_surrogate_pairs(self):
+        self.assertEqual(String.fromCharCode(65), "A")
+        self.assertEqual(String.fromCharCode(65, 66), "AB")
+        self.assertEqual(String.fromCharCode(0xD83D, 0xDE00), "\U0001F600")
+
+
 class StringRegexFaithfulness(unittest.TestCase):
     def test_replace_specials(self):
         self.assertEqual(S("aaa").replace("a", "b"), "baa")
@@ -127,6 +172,13 @@ class StringRegexFaithfulness(unittest.TestCase):
         )
         self.assertTrue(RegExp(r"\p{Greek}", "u").test("α"))
         self.assertTrue(RegExp(r"\p{Script=Han}", "u").test("汉"))
+
+    def test_empty_negated_class(self):
+        # [^] = any char including newlines (JS idiom); re syntax error otherwise
+        self.assertTrue(RegExp("a[^]b").test("a\nb"))
+        self.assertEqual(
+            S("a/* c */b").replace(RegExp(r"/\*[^]*?\*/", "g"), ""), "ab"
+        )
 
 
 class RegExpFaithfulness(unittest.TestCase):
