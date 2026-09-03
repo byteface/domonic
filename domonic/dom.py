@@ -1067,6 +1067,13 @@ class Node(EventTarget):
         None  # private. tags will append to last item in context on creation.
     )
 
+    # populated in __init__; declared here so mypy does not infer them as
+    # permanently ``None`` from the initial assignment
+    parentNode: "Node | None"
+    prefix: str | None
+    outerText: Any
+    _ownerDocument: "Document | None"
+
     # __slots__ = ['____attributes__',
     #              '__content',
     #              'name',
@@ -2519,6 +2526,8 @@ class Attr(Node):
 
     def getNamedItem(self, name: str):
         """Returns a specified attribute node from a NamedNodeMap"""
+        if self.parentNode is None:
+            return None
         for item in self.parentNode.attributes:
             if item.name == name:
                 return item
@@ -2532,14 +2541,19 @@ class Attr(Node):
 
     def removeNamedItem(self, name: str) -> bool:
         """Removes a specified attribute node"""
-        for item in self.parentNode.attributes:
+        parent = self.parentNode
+        if parent is None:
+            return False
+        for item in parent.attributes:
             if item.name == name:
-                self.parentNode.removeAttribute(item)
+                parent.removeAttribute(item)
                 return True
         return False
 
     def setNamedItem(self, name: str, value) -> bool:
         """Sets the specified attribute node (by name)"""
+        if self.parentNode is None:
+            return False
         for item in self.parentNode.attributes:
             if item.name == name:
                 item.value = value
@@ -2949,7 +2963,9 @@ class CaretPosition:
         self.offset = offset
 
     def getClientRect(self) -> DOMRect:
-        if hasattr(self.offsetNode, "getBoundingClientRect"):
+        if self.offsetNode is not None and hasattr(
+            self.offsetNode, "getBoundingClientRect"
+        ):
             return self.offsetNode.getBoundingClientRect()
         return DOMRect(0, 0, 0, 0)
 
@@ -5744,6 +5760,14 @@ class CDATASection(Node):
     #     return str(self)
 
 
+def _range_parent(node: "Node") -> "Node":
+    """The parent of a range boundary reference node, or raise if detached."""
+    parent = node.parentNode
+    if parent is None:
+        raise ValueError("the reference node has no parent")
+    return parent
+
+
 class AbastractRange:
     def __init__(self) -> None:
         """Constructor for Range objects"""
@@ -5848,14 +5872,12 @@ class AbastractRange:
         self._update_state()
 
     def setEndAfter(self, refNode: "Node") -> None:
-        self.setEnd(
-            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1
-        )
+        parent = _range_parent(refNode)
+        self.setEnd(parent, list(parent.childNodes).index(refNode) + 1)
 
     def setEndBefore(self, refNode: "Node") -> None:
-        self.setEnd(
-            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode)
-        )
+        parent = _range_parent(refNode)
+        self.setEnd(parent, list(parent.childNodes).index(refNode))
 
     def setStart(self, refNode: "Node", offset: int) -> None:
         self.startContainer = refNode
@@ -5866,14 +5888,12 @@ class AbastractRange:
         self._update_state()
 
     def setStartAfter(self, refNode: "Node") -> None:
-        self.setStart(
-            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode) + 1
-        )
+        parent = _range_parent(refNode)
+        self.setStart(parent, list(parent.childNodes).index(refNode) + 1)
 
     def setStartBefore(self, refNode: "Node") -> None:
-        self.setStart(
-            refNode.parentNode, list(refNode.parentNode.childNodes).index(refNode)
-        )
+        parent = _range_parent(refNode)
+        self.setStart(parent, list(parent.childNodes).index(refNode))
 
     def surroundContents(self, newParent: "Node") -> None:
         self.cloneRange().surroundContents(newParent)
@@ -6122,16 +6142,20 @@ class Range(AbastractRange):
         self._update_state()
 
     def setStartBefore(self, node: Node) -> None:
-        self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node))
+        parent = _range_parent(node)
+        self.setStart(parent, list(parent.childNodes).index(node))
 
     def setStartAfter(self, node: Node) -> None:
-        self.setStart(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
+        parent = _range_parent(node)
+        self.setStart(parent, list(parent.childNodes).index(node) + 1)
 
     def setEndBefore(self, node: Node) -> None:
-        self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node))
+        parent = _range_parent(node)
+        self.setEnd(parent, list(parent.childNodes).index(node))
 
     def setEndAfter(self, node: Node) -> None:
-        self.setEnd(node.parentNode, list(node.parentNode.childNodes).index(node) + 1)
+        parent = _range_parent(node)
+        self.setEnd(parent, list(parent.childNodes).index(node) + 1)
 
     def collapse(self, toStart: bool = False) -> None:
         if toStart:
@@ -6281,7 +6305,7 @@ class Range(AbastractRange):
             parent = getattr(self.startContainer, "parentNode", None)
             return (
                 DOMRectList([parent.getBoundingClientRect()])
-                if hasattr(parent, "getBoundingClientRect")
+                if parent is not None and hasattr(parent, "getBoundingClientRect")
                 else DOMRectList()
             )
         if self.startContainer == self.endContainer:
@@ -7385,8 +7409,9 @@ class Document(Element):
         Returns:
             [str]: The title of the document
         """
-        if self.querySelector("title"):
-            return self.querySelector("title").textContent
+        title_el = self.querySelector("title")
+        if title_el is not None:
+            return title_el.textContent
         return ""
 
     @title.setter
@@ -7396,8 +7421,9 @@ class Document(Element):
         Args:
             value ([str]): [the new title of the document]
         """
-        if self.querySelector("title"):
-            self.querySelector("title").textContent = value
+        title_el = self.querySelector("title")
+        if title_el is not None:
+            title_el.textContent = value
         else:
             if not self.head:
                 self.head = HTMLHeadElement()
