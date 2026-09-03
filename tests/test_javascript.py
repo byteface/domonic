@@ -778,7 +778,7 @@ class TestCase(unittest.TestCase):
     def test_javascript_array_extended_surface(self):
         self.assertEqual(Array.from_((1, 2)), [1, 2])
         self.assertEqual(Array.from_(x for x in [3, 4]), [3, 4])
-        self.assertEqual(Array.from_(10), [""] * 10)
+        self.assertEqual(Array.from_(10), [])  # JS: non-iterable -> empty
 
         arr = Array(3)
         self.assertEqual(arr, ["", "", ""])

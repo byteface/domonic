@@ -65,6 +65,7 @@ class StringFaithfulness(unittest.TestCase):
 
     def test_split(self):
         self.assertEqual(S("a,b,c,d").split(","), ["a", "b", "c", "d"])
+        self.assertEqual(S("a,b,c,d").split(",", 2), ["a", "b"])  # limit
         self.assertEqual(S("abc").split(""), ["a", "b", "c"])
         self.assertEqual(S("a1b2c").split(RegExp(r"\d")), ["a", "b", "c"])
         self.assertEqual(S("a1b2c").split(RegExp(r"(\d)")), ["a", "1", "b", "2", "c"])
@@ -289,6 +290,18 @@ class ArrayFaithfulness(unittest.TestCase):
         self.assertFalse(A.isArray("x"))
         self.assertEqual(list(A.from_("abc")), ["a", "b", "c"])
         self.assertEqual(list(A.of(1, 2, 3)), [1, 2, 3])
+        self.assertEqual(list(A.of(7)), [7])  # not a length-7 array
+        self.assertEqual(list(A.from_(5)), [])  # non-iterable -> empty
+
+    def test_concat(self):
+        a = A(1, 2)
+        self.assertEqual(list(a.concat([3, 4], 5, [6])), [1, 2, 3, 4, 5, 6])
+        self.assertEqual(list(a), [1, 2])  # not mutated
+        self.assertEqual(list(A.of(1).concat("ab")), [1, "ab"])  # string not spread
+
+    def test_indexof_includes_nan(self):
+        self.assertEqual(A(float("nan")).indexOf(float("nan")), -1)
+        self.assertTrue(A(float("nan")).includes(float("nan")))
 
     def test_callbacks_receive_index_and_array(self):
         a = A("a", "b", "c")
@@ -460,7 +473,12 @@ class JSONFaithfulness(unittest.TestCase):
         from domonic.javascript import JSON
 
         self.assertEqual(JSON.parse('{"a": 1}'), {"a": 1})
-        self.assertIn('"a"', JSON.stringify({"a": 1}))
+
+    def test_stringify_is_compact_by_default(self):
+        from domonic.javascript import JSON
+
+        self.assertEqual(JSON.stringify({"a": 1, "b": [1, 2]}), '{"a":1,"b":[1,2]}')
+        self.assertEqual(JSON.stringify({"a": 1}, None, 2), '{\n  "a": 1\n}')
 
 
 if __name__ == "__main__":

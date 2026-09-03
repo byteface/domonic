@@ -3034,23 +3034,33 @@ class Array:
         """Creates a new Array instance from an array-like or iterable object."""
         if isinstance(obj, Array):
             return Array(*obj.args)
-        if isinstance(obj, list):
-            return Array(*obj)
-        if isinstance(obj, tuple):
-            return Array(*obj)
+        if isinstance(obj, (list, tuple)):
+            return Array._new(obj)
         if isinstance(obj, dict):
-            return Array(*obj.items())
+            return Array._new(obj.items())
         if isinstance(obj, str):
-            return Array(*list(obj))
+            return Array._new(obj)
         if hasattr(obj, "__iter__"):
-            return Array(*list(obj))
-        return Array(obj)
+            return Array._new(obj)
+        length = getattr(obj, "length", None)
+        if isinstance(length, int):
+            return Array._new([None] * length)
+        return Array._new([])
+
+    @classmethod
+    def _new(cls, items: Any) -> "Array":
+        """A literal array from ``items`` -- bypasses the ``Array(n)`` /
+        ``Array([...])`` casting special cases in ``__init__``."""
+        arr = cls.__new__(cls)
+        arr.args = list(items)
+        arr.prototype = arr
+        return arr
 
     @staticmethod
     def of(*args: Any) -> Array:
-        """Creates a new Array instance with a variable number of arguments,
-        regardless of number or type of the arguments."""
-        return Array(*args)
+        """A new array with exactly the given elements -- unlike ``Array(n)``,
+        ``Array.of(7)`` is ``[7]``, not a length-7 array."""
+        return Array._new(args)
 
     def __init__(self, *args: Any) -> None:
         """[An Array that behaves like a js array]"""
@@ -3145,15 +3155,19 @@ class Array:
         """Sets or returns the number of elements in an array"""
         return len(self.args)
 
-    def concat(self, *args: list[Any]) -> list[Any]:
-        """[Joins two or more arrays, and returns a copy of the joined arrays]
-
-        Returns:
-            [list]: [returns a copy of the joined arrays]
-        """
-        for a in args:
-            self.args += a
-        return self.args
+    def concat(self, *args: Any) -> "Array":
+        """A new array = this array plus each argument, with array arguments
+        spread one level deep and everything else appended (JavaScript). The
+        original array is not modified."""
+        result = list(self.args)
+        for arg in args:
+            if isinstance(arg, Array):
+                result.extend(arg.args)
+            elif isinstance(arg, list):
+                result.extend(arg)
+            else:
+                result.append(arg)
+        return Array._new(result)
 
     def flat(self, depth: int = 1) -> list[Any]:
         """[Flattens an array into a single-dimensional array or a depth of arrays]"""
@@ -3403,15 +3417,15 @@ class Array:
 
     def toReversed(self) -> "Array":
         """A reversed copy (the original array is left unchanged) -- ES2023."""
-        return Array(*reversed(self.args))
+        return Array._new(reversed(self.args))
 
     def toSorted(self, func: Callable[..., Any] | None = None) -> "Array":
         """A sorted copy (the original array is left unchanged) -- ES2023."""
         if func is not None:
             from functools import cmp_to_key
 
-            return Array(*sorted(self.args, key=cmp_to_key(func)))
-        return Array(*sorted(self.args, key=str))
+            return Array._new(sorted(self.args, key=cmp_to_key(func)))
+        return Array._new(sorted(self.args, key=str))
 
     def toSpliced(
         self, start: int, deleteCount: int | None = None, *items: Any
@@ -3421,14 +3435,14 @@ class Array:
         if deleteCount is None:
             deleteCount = len(copy) - start
         copy[start : start + deleteCount] = items
-        return Array(*copy)
+        return Array._new(copy)
 
     def with_(self, index: int, value: Any) -> "Array":
         """A copy with ``index`` replaced by ``value`` -- ES2023 ``Array#with``
         (``with`` is a Python keyword)."""
         copy = list(self.args)
         copy[index] = value
-        return Array(*copy)
+        return Array._new(copy)
 
     def reduce(self, callback: Callable[..., Any], initialValue: Any = None) -> Any:
         """Reduces the array to a single value (going left-to-right)
@@ -4283,28 +4297,31 @@ class String:
     def __imul__(self, other: int) -> str:
         return self.x * int(other)
 
-    def split(self, expr: str | RegExp) -> list[str]:
-        """[can split a string based on a regex]
+    def split(
+        self, expr: "str | RegExp | None" = None, limit: int | None = None
+    ) -> list[str]:
+        """``String.prototype.split(separator, limit)``.
 
-        Args:
-            expr ([str]): [valid regex or string to split on]
-
-        Returns:
-            [list]: [list of str]
+        A ``RegExp`` separator with capture groups keeps the captures in the
+        result (like JS); ``""`` splits into individual characters; ``limit``
+        truncates the result.
         """
-
-        if isinstance(expr, RegExp):
-            return re.split(expr.expression, self.x)
-
-        expr = str(expr)
-        if expr == "":
-            return list(self.x)
-        if _looks_like_regex_separator(expr):
-            try:
-                return re.split(expr, self.x)
-            except re.error:
-                return self.x.split(expr)
-        return self.x.split(expr)
+        if expr is None:
+            parts = [self.x]
+        elif isinstance(expr, RegExp):
+            parts = expr._compiled().split(self.x)
+        else:
+            sep = str(expr)
+            if sep == "":
+                parts = list(self.x)
+            elif _looks_like_regex_separator(sep):
+                try:
+                    parts = re.split(sep, self.x)
+                except re.error:
+                    parts = self.x.split(sep)
+            else:
+                parts = self.x.split(sep)
+        return parts if limit is None else parts[: int(limit)]
 
     def concat(self, *args, seperator: str = "") -> str:
         """[concatenates the string arguments to the calling string and returns a new string.]
@@ -6281,6 +6298,9 @@ class JSON:
         kwargs: dict[str, Any] = {}
         if space is not None:
             kwargs["indent"] = space
+        else:
+            # JS emits no spaces after ':' / ',' when there is no space arg
+            kwargs["separators"] = (",", ":")
         return importlib.import_module("domonic.JSON").stringify(value, **kwargs)
 
 
