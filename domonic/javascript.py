@@ -4267,8 +4267,13 @@ class String:
     # def __repr__(self):
     #     return self.x
 
-    def __getitem__(self, item: int | slice) -> str:
-        return self.x[item]
+    def __getitem__(self, item: "int | slice") -> Any:
+        if isinstance(item, slice):
+            return self.x[item]
+        # JS bracket indexing: the UTF-16 code unit at a valid position, or
+        # ``undefined`` for anything out of range (negatives included).
+        units = self._u16
+        return _units_to_str([units[item]]) if 0 <= item < len(units) else undefined
 
     def __add__(self, other: str) -> str:
         return self.x + str(other)

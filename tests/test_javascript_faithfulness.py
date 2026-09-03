@@ -97,6 +97,14 @@ class StringUtf16Faithfulness(unittest.TestCase):
         self.assertEqual(self.s.charAt(3), "b")
         self.assertEqual(self.s.at(-1), "b")
 
+    def test_bracket_index_past_end_is_undefined(self):
+        s = S("abc")
+        self.assertEqual(s[1], "b")
+        self.assertIsNone(s[3])       # JS: undefined, not IndexError
+        self.assertIsNone(s[-1])      # JS bracket indexing has no negatives
+        self.assertEqual(s[1:3], "bc")  # slicing still works
+        self.assertFalse(s[3] == ";")   # the pattern acorn relies on
+
     def test_slice_substring_substr(self):
         self.assertEqual(self.s.slice(0, 1), "a")
         self.assertEqual(self.s.slice(1, 3), "\U0001F600")
