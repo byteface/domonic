@@ -3975,6 +3975,69 @@ def _js_replacement_template(replacement: str, group_count: int) -> str:
     return "".join(out)
 
 
+def _expand_js_replacement(replacement: str, m: "re.Match[str]") -> str:
+    """Expand a JavaScript ``String.replace`` replacement string against one
+    match, including ``$``` (text before) and ``$'`` (text after) which have no
+    ``re.sub`` template equivalent."""
+    out: list[str] = []
+    groups = m.groups()
+    i = 0
+    n = len(replacement)
+    while i < n:
+        ch = replacement[i]
+        if ch != "$" or i + 1 >= n:
+            out.append(ch)
+            i += 1
+            continue
+        nxt = replacement[i + 1]
+        if nxt == "$":
+            out.append("$")
+            i += 2
+        elif nxt == "&":
+            out.append(m.group(0))
+            i += 2
+        elif nxt == "`":
+            out.append(m.string[: m.start()])
+            i += 2
+        elif nxt == "'":
+            out.append(m.string[m.end():])
+            i += 2
+        elif nxt == "<" and ">" in replacement[i + 2:]:
+            end = replacement.index(">", i + 2)
+            try:
+                out.append(m.group(replacement[i + 2:end]) or "")
+            except (IndexError, re.error):
+                pass
+            i = end + 1
+        elif nxt.isdigit():
+            two = replacement[i + 1:i + 3]
+            if len(two) == 2 and two.isdigit() and 0 < int(two) <= len(groups):
+                out.append(groups[int(two) - 1] or "")
+                i += 3
+            elif 0 < int(nxt) <= len(groups):
+                out.append(groups[int(nxt) - 1] or "")
+                i += 2
+            else:
+                out.append("$")
+                i += 1
+        else:
+            out.append("$")
+            i += 1
+    return "".join(out)
+
+
+def _js_sub(
+    compiled: "re.Pattern[str]", replacement: str, text: str, count: int
+) -> str:
+    """``re.sub`` with JavaScript ``$``-pattern semantics."""
+    if "$`" in replacement or "$'" in replacement:
+        return compiled.sub(
+            lambda m: _expand_js_replacement(replacement, m), text, count=count
+        )
+    template = _js_replacement_template(replacement, compiled.groups)
+    return compiled.sub(template, text, count=count)
+
+
 class String:
     """javascript String methods"""
 
@@ -4194,8 +4257,7 @@ class String:
             compiled = old._compiled()
             if callable(new):
                 return compiled.sub(_js_replacer(new), self.x, count=count)
-            template = _js_replacement_template(str(new), compiled.groups)
-            return compiled.sub(template, self.x, count=count)
+            return _js_sub(compiled, str(new), self.x, count)
         if callable(new):
             return re.sub(re.escape(str(old)), _js_replacer(new), self.x, count=1)
         return self.x.replace(str(old), str(new), 1)
@@ -4214,8 +4276,7 @@ class String:
             compiled = old._compiled()
             if callable(new):
                 return compiled.sub(_js_replacer(new), self.x)
-            template = _js_replacement_template(str(new), compiled.groups)
-            return compiled.sub(template, self.x)
+            return _js_sub(compiled, str(new), self.x, 0)
         return self.x.replace(str(old), str(new))
 
     # def localeCompare():
@@ -4589,13 +4650,94 @@ import sys as _sys
 import unicodedata as _unicodedata
 
 
+# long Unicode-property names -> the general-category code re can be built from
+_UNICODE_PROPERTY_ALIASES = {
+    "letter": "L", "l": "L",
+    "uppercase_letter": "Lu", "lu": "Lu",
+    "lowercase_letter": "Ll", "ll": "Ll",
+    "titlecase_letter": "Lt", "lt": "Lt",
+    "modifier_letter": "Lm", "lm": "Lm",
+    "other_letter": "Lo", "lo": "Lo",
+    "mark": "M", "m": "M", "combining_mark": "M",
+    "nonspacing_mark": "Mn", "mn": "Mn",
+    "spacing_combining_mark": "Mc", "mc": "Mc",
+    "enclosing_mark": "Me", "me": "Me",
+    "number": "N", "n": "N",
+    "decimal_number": "Nd", "nd": "Nd", "digit": "Nd",
+    "letter_number": "Nl", "nl": "Nl",
+    "other_number": "No", "no": "No",
+    "punctuation": "P", "p": "P", "punct": "P",
+    "dash_punctuation": "Pd", "pd": "Pd",
+    "open_punctuation": "Ps", "ps": "Ps",
+    "close_punctuation": "Pe", "pe": "Pe",
+    "initial_punctuation": "Pi", "pi": "Pi",
+    "final_punctuation": "Pf", "pf": "Pf",
+    "connector_punctuation": "Pc", "pc": "Pc",
+    "other_punctuation": "Po", "po": "Po",
+    "symbol": "S", "s": "S",
+    "math_symbol": "Sm", "sm": "Sm",
+    "currency_symbol": "Sc", "sc_symbol": "Sc",
+    "modifier_symbol": "Sk", "sk": "Sk",
+    "other_symbol": "So", "so": "So",
+    "separator": "Z", "z": "Z",
+    "space_separator": "Zs", "zs": "Zs",
+    "line_separator": "Zl", "zl": "Zl",
+    "paragraph_separator": "Zp", "zp": "Zp",
+    "other": "C", "c": "C",
+    "control": "Cc", "cc": "Cc", "cntrl": "Cc",
+    "format": "Cf", "cf": "Cf",
+    "surrogate": "Cs", "cs": "Cs",
+    "private_use": "Co", "co": "Co",
+    "unassigned": "Cn", "cn": "Cn",
+}
+
+# a small set of common scripts, approximated by their principal Unicode blocks
+# (unicodedata has no script property). Values are (lo, hi) code-point ranges.
+_UNICODE_SCRIPT_RANGES: dict[str, tuple[tuple[int, int], ...]] = {
+    "latin": ((0x41, 0x5A), (0x61, 0x7A), (0xC0, 0x24F), (0x1E00, 0x1EFF)),
+    "greek": ((0x370, 0x3FF), (0x1F00, 0x1FFF)),
+    "cyrillic": ((0x400, 0x4FF), (0x500, 0x52F)),
+    "armenian": ((0x530, 0x58F),),
+    "hebrew": ((0x590, 0x5FF),),
+    "arabic": ((0x600, 0x6FF), (0x750, 0x77F), (0x8A0, 0x8FF)),
+    "devanagari": ((0x900, 0x97F),),
+    "thai": ((0xE00, 0xE7F),),
+    "hiragana": ((0x3040, 0x309F),),
+    "katakana": ((0x30A0, 0x30FF), (0x31F0, 0x31FF)),
+    "han": ((0x4E00, 0x9FFF), (0x3400, 0x4DBF), (0xF900, 0xFAFF)),
+    "hangul": ((0xAC00, 0xD7AF), (0x1100, 0x11FF), (0x3130, 0x318F)),
+}
+
+
 @_functools.lru_cache(maxsize=64)
 def _unicode_property_ranges(prop: str, negate: bool = False) -> str:
-    """Character-class body (no brackets) for a Unicode general-category
-    property such as ``P`` (any punctuation) or ``Lu`` (uppercase letter),
-    built from :mod:`unicodedata` -- ``re`` has no ``\\p{...}`` support. When
-    *negate* is set, the complement ranges are returned so the fragment stays
-    usable inside an existing ``[...]``."""
+    """Character-class body (no brackets) for a Unicode ``\\p{...}`` property
+    -- ``re`` has no native support. General categories (``P``, ``Lu``, their
+    long names such as ``Uppercase_Letter``), ``Script=<name>`` / ``sc=<name>``
+    for a common set of scripts, and ``Any`` are understood. When *negate* is
+    set, the complement ranges are returned so the fragment stays usable inside
+    an existing ``[...]``."""
+    key = prop.strip()
+    if "=" in key:
+        left, _, right = key.partition("=")
+        if left.strip().lower() in ("script", "sc", "script_extensions", "scx"):
+            key = right.strip()
+    low = key.lower()
+
+    script = _UNICODE_SCRIPT_RANGES.get(low)
+    if script is not None:
+        ranges = sorted(script)
+        if negate:
+            ranges = _complement_ranges(ranges)
+        return "".join(_range_fragment(lo, hi) for lo, hi in ranges)
+
+    if low in ("any", "assigned"):
+        return "" if negate else "\\U00000000-\\U0010FFFF"
+
+    prop = _UNICODE_PROPERTY_ALIASES.get(low, prop)
+    if not (1 <= len(prop) <= 2 and prop[:1].isupper()):
+        raise ValueError(f"Unsupported Unicode property escape: \\p{{{prop}}}")
+
     exact = len(prop) == 2
     fragments: list[str] = []
     run_start: int | None = None
@@ -4619,7 +4761,22 @@ def _range_fragment(lo: int, hi: int) -> str:
     return "\\U%08X" % lo if lo == hi else "\\U%08X-\\U%08X" % (lo, hi)
 
 
-_JS_PROP_RE = re.compile(r"\\([pP])\{([A-Za-z]{1,2})\}")
+def _complement_ranges(
+    ranges: "list[tuple[int, int]]",
+) -> "list[tuple[int, int]]":
+    """The code-point ranges *not* covered by ``ranges`` (0..0x10FFFF)."""
+    out: list[tuple[int, int]] = []
+    cursor = 0
+    for lo, hi in ranges:
+        if lo > cursor:
+            out.append((cursor, lo - 1))
+        cursor = max(cursor, hi + 1)
+    if cursor <= 0x10FFFF:
+        out.append((cursor, 0x10FFFF))
+    return out
+
+
+_JS_PROP_RE = re.compile(r"\\([pP])\{([A-Za-z_]+(?:=[A-Za-z_]+)?)\}")
 
 
 def _translate_js_regex(pattern: str) -> str:
@@ -4677,12 +4834,17 @@ class _RegExpMatch(list):
 class RegExp:
     def __init__(self, expression: str, flags: str = "") -> None:
         self.expression = expression
-        self.flags = (
-            flags.lower()
-        )  #: A string that contains the flags of the RegExp object.
-        self.lastIndex = 0  #: Index at which ``exec`` / ``test`` resume when g / y.
-        # self.multiline  # Whether or not to search in strings across multiple lines.
-        # self.source  # The text of the pattern.
+        self._flags = (flags or "").lower()
+        self.lastIndex = 0  #: Index at which exec/test resume when the g/y flag is set.
+
+    @property
+    def flags(self) -> str:
+        """The active flags in canonical order (``d g i m s u v y``)."""
+        return "".join(f for f in "dgimsuvy" if f in self._flags)
+
+    @flags.setter
+    def flags(self, value: str) -> None:
+        self._flags = (value or "").lower()
 
     @property
     def dotAll(self) -> bool:
@@ -4691,7 +4853,7 @@ class RegExp:
         Returns:
             [bool]: [True if dot matches newlines, False otherwise]
         """
-        return "s" in self.flags
+        return "s" in self._flags
 
     @dotAll.setter
     def dotAll(self, value: bool):
@@ -4699,8 +4861,8 @@ class RegExp:
         Args:
             value (bool): [True if dot matches newlines, False otherwise]
         """
-        if "s" not in self.flags:
-            self.flags += "s" if value else ""
+        if "s" not in self._flags:
+            self._flags += "s" if value else ""
 
     @property
     def multiline(self) -> bool:
@@ -4708,7 +4870,7 @@ class RegExp:
         Returns:
             [bool]: [True if dot matches newlines, False otherwise]
         """
-        return "m" in self.flags
+        return "m" in self._flags
 
     @multiline.setter
     def multiline(self, value: bool):
@@ -4716,8 +4878,8 @@ class RegExp:
         Args:
             value (bool): [True if dot matches newlines, False otherwise]
         """
-        if "m" not in self.flags:
-            self.flags += "m" if value else ""
+        if "m" not in self._flags:
+            self._flags += "m" if value else ""
 
     @property
     def source(self) -> str:
@@ -4730,12 +4892,12 @@ class RegExp:
     @property
     def sticky(self) -> bool:
         """Whether the match is anchored at ``lastIndex`` (the ``y`` flag)."""
-        return "y" in self.flags
+        return "y" in self._flags
 
     @sticky.setter
     def sticky(self, value: bool) -> None:
-        if value and "y" not in self.flags:
-            self.flags += "y"
+        if value and "y" not in self._flags:
+            self._flags += "y"
 
     def _python_pattern(self) -> str:
         """The Python-``re`` source for this regex (``\\p{...}`` translated)."""
@@ -4756,7 +4918,7 @@ class RegExp:
         Returns:
             [bool]: [True if global, False otherwise]
         """
-        return "g" in self.flags
+        return "g" in self._flags
 
     @global_.setter
     def global_(self, value: bool):
@@ -4765,8 +4927,8 @@ class RegExp:
         Args:
             value (bool): [True if global, False otherwise]
         """
-        if "g" not in self.flags:
-            self.flags += "g" if value else ""
+        if "g" not in self._flags:
+            self._flags += "g" if value else ""
 
     @property
     def hasIndices(self) -> bool:
@@ -4775,7 +4937,7 @@ class RegExp:
         Returns:
             [bool]: [True if hasIndices, False otherwise]
         """
-        return "d" in self.flags
+        return "d" in self._flags
 
     @hasIndices.setter
     def hasIndices(self, value: bool):
@@ -4783,8 +4945,8 @@ class RegExp:
         Args:
             value (bool): [True if hasIndices, False otherwise]
         """
-        if "d" not in self.flags:
-            self.flags += "d" if value else ""
+        if "d" not in self._flags:
+            self._flags += "d" if value else ""
 
     @property
     def ignoreCase(self) -> bool:
@@ -4793,7 +4955,7 @@ class RegExp:
         Returns:
             [bool]: [True if ignoreCase, False otherwise]
         """
-        return "i" in self.flags
+        return "i" in self._flags
 
     @ignoreCase.setter
     def ignoreCase(self, value: bool):
@@ -4801,8 +4963,8 @@ class RegExp:
         Args:
             value (bool): [True if ignoreCase, False otherwise]
         """
-        if "i" not in self.flags:
-            self.flags += "i" if value else ""
+        if "i" not in self._flags:
+            self._flags += "i" if value else ""
 
     @property
     def unicode(self) -> bool:
@@ -4811,7 +4973,7 @@ class RegExp:
         Returns:
             [bool]: [True if unicode, False otherwise]
         """
-        return "u" in self.flags
+        return "u" in self._flags
 
     @unicode.setter
     def unicode(self, value: bool):
@@ -4819,8 +4981,8 @@ class RegExp:
         Args:
             value (bool): [True if unicode, False otherwise]
         """
-        if "u" not in self.flags:
-            self.flags += "u" if value else ""
+        if "u" not in self._flags:
+            self._flags += "u" if value else ""
 
     def _re_flags(self) -> int:
         flags = 0
@@ -4837,10 +4999,10 @@ class RegExp:
     ) -> "RegExp":
         """(Re-)compiles a regular expression during execution of a script."""
         new_expression = self.expression
-        new_flags = self.flags
+        new_flags = self._flags
         if isinstance(expression, RegExp):
             new_expression = expression.expression
-            new_flags = expression.flags if flags is None else str(flags).lower()
+            new_flags = expression._flags if flags is None else str(flags).lower()
         elif expression is not None:
             new_expression = str(expression)
             if flags is not None:
@@ -4848,12 +5010,12 @@ class RegExp:
         elif flags is not None:
             new_flags = str(flags).lower()
 
-        old_expression, old_flags = self.expression, self.flags
-        self.expression, self.flags = new_expression, new_flags
+        old_expression, old_flags = self.expression, self._flags
+        self.expression, self._flags = new_expression, new_flags
         try:
             self._compiled()
         except Exception:
-            self.expression, self.flags = old_expression, old_flags
+            self.expression, self._flags = old_expression, old_flags
             raise
         self.lastIndex = 0
         return self
@@ -4926,7 +5088,7 @@ class RegExp:
     def toString(self) -> str:
         """``/source/flags`` -- like JavaScript's ``RegExp.prototype.toString``."""
         order = "dgimsuvy"
-        flags = "".join(f for f in order if f in self.flags)
+        flags = "".join(f for f in order if f in self._flags)
         source = self.expression or "(?:)"
         return f"/{source}/{flags}"
 
