@@ -2430,7 +2430,7 @@ class ParentNode:
     @property
     def lastElementChild(self):
         """Last Element child node."""
-        for child in reversed(self.childNodes):  # type: ignore
+        for child in reversed(self.childNodes):
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
         return None
@@ -3433,7 +3433,7 @@ class DocumentType(Node):
         self.systemId: str = (
             systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
         )
-        self._internalSubset = None
+        self._internalSubset: str | None = None
         self._entities = NamedNodeMap()
         self._notations = NamedNodeMap()
         super().__init__()
@@ -3695,7 +3695,7 @@ class _LiveNodeList(NodeList):
         for item in items:
             self.append(item)
 
-    def insert(self, index: int, item: Any) -> None:
+    def insert(self, index: int, item: Any) -> None:  # type: ignore[override]
         nodes = self._nodes()
         if index < 0:
             index = max(0, len(nodes) + index)
@@ -3723,7 +3723,7 @@ class _LiveNodeList(NodeList):
             raise ValueError("node is not in list")
         self._remove_direct_child(item)
 
-    def pop(self, index: int = -1) -> Any:
+    def pop(self, index: int = -1) -> Any:  # type: ignore[override]
         node = self._nodes()[index]
         return self._remove_direct_child(node)
 
@@ -3788,7 +3788,7 @@ class RadioNodeList(NodeList):
     def __iter__(self) -> Iterator[Node]:
         return iter(self._nodes())
 
-    def __getitem__(self, index: int) -> Node:
+    def __getitem__(self, index: int) -> Node:  # type: ignore[override]
         return self._nodes()[index]
 
     def __len__(self) -> int:
@@ -3918,7 +3918,7 @@ class Element(Node):
         if not selector:
             return None
 
-        parsed = {"tag": "*", "id": None, "classes": [], "attributes": []}
+        parsed: dict[str, Any] = {"tag": "*", "id": None, "classes": [], "attributes": []}
         position = 0
         tag_match = re.match(r"^(\*|[A-Za-z_][\w:-]*)", selector)
         if tag_match:
@@ -4642,7 +4642,7 @@ class Element(Node):
         except KeyError:
             return None
 
-    def getAttributeNode(self, attribute: str) -> str:
+    def getAttributeNode(self, attribute: str) -> "Attr | None":
         """Returns the specified attribute node"""
         value = self.getAttribute(attribute)
         if value is None:
@@ -4823,7 +4823,7 @@ class Element(Node):
             self._iterate(self, anon)
             return elements
 
-        def anon(el):
+        def _collect(el):
             if el is self:
                 return
             if self._matchElement(el, tagName):
@@ -5041,10 +5041,6 @@ class Element(Node):
             if isinstance(child, Element):
                 return child
         return None
-
-    def namespaceURI(self) -> str:
-        """Returns the namespace URI of an element"""
-        return getattr(self, "_namespaceURI", "http://www.w3.org/1999/xhtml")
 
     @property
     def nextSibling(self) -> Node | None:
@@ -7215,7 +7211,7 @@ class Document(Element):
     # return
 
     @property
-    def head(self) -> "HTMLHeadElement":
+    def head(self) -> "HTMLHeadElement | None":
         """Returns the <head> element of the document"""
         return self.querySelector("head")
 
@@ -7425,9 +7421,11 @@ class Document(Element):
         if title_el is not None:
             title_el.textContent = value
         else:
-            if not self.head:
-                self.head = HTMLHeadElement()
-            self.head.appendChild(HTMLTitleElement(value))
+            head_el = self.head
+            if head_el is None:
+                head_el = HTMLHeadElement()
+                self.head = head_el
+            head_el.appendChild(HTMLTitleElement(value))
 
     @property
     def visibilityState(self):
@@ -7447,7 +7445,7 @@ class Document(Element):
             with open(current_open_filename, "a") as f:
                 f.write(html)
         content = DocumentFragment(html)
-        self.__init__(content)
+        self.__init__(content)  # type: ignore[misc]
         self._open_filename = current_open_filename
 
     def writeln(self, html: str = ""):
@@ -7468,7 +7466,7 @@ class Location:
         self.href = url
 
     def __str__(self) -> str:
-        return self.href
+        return self.href or ""
 
     # def __repr__(self):
     #     return self.uri
@@ -7729,7 +7727,7 @@ class Entity(Node):
     @staticmethod
     def fromChar(char: str) -> str:
         """Returns the character corresponding to the given entity name."""
-        return ord(char)
+        return chr(ord(char))
 
 
 class Notation(Node):
@@ -7902,7 +7900,7 @@ class HTMLCollection(list):
                 return item
         return None
 
-    def __getitem__(self, index: int | str):
+    def __getitem__(self, index: int | str):  # type: ignore[override]
         if isinstance(index, str):
             direct = self.namedItem(index)
             if direct is not None:
@@ -8363,7 +8361,7 @@ class DOMException(Exception):
 
     def __init__(self, code, message: str | None = None) -> None:
         self.code = code
-        self.message: str = message
+        self.message: str = message or ""
         self.name = "DOMException"
 
     def __str__(self) -> str:
@@ -8627,7 +8625,7 @@ for _row in range(1, 5):
         setattr(
             DOMMatrixReadOnly,
             f"m{_row}{_col}",
-            property(lambda self, r=_row, c=_col: self._get(r, c)),
+            property(lambda self, r=_row, c=_col: self._get(r, c)),  # type: ignore[misc]
         )
 
 
@@ -9127,7 +9125,7 @@ class TreeWalker:
             return result
 
         if self._filter is not None:
-            NodeFilter.acceptNode = acceptNode
+            NodeFilter.acceptNode = acceptNode  # type: ignore[attr-defined]
 
         self.last = None
         self.parent = None
@@ -9145,12 +9143,6 @@ class TreeWalker:
     def root(self) -> Node:
         """Returns a Node representing the root node as specified when the TreeWalker was created."""
         return self._root
-
-    def whatToShow(self, options: int) -> int:
-        """Returns an unsigned long being a bitmask made of constants describing the types of Node that must be presented.
-        Non-matching nodes are skipped, but their children may be included, if relevant. The possible values are:
-        """
-        return options
 
     # def filter(self, options):
     #     """ Returns a NodeFilter object that can be used to filter the nodes that the TreeWalker visits. """
@@ -10373,7 +10365,7 @@ class HTMLFormControlsCollection(HTMLCollection):
     def __iter__(self):
         return iter(self._controls())
 
-    def __getitem__(self, index: int | str):
+    def __getitem__(self, index: int | str):  # type: ignore[override]
         controls = self._controls()
         if isinstance(index, str):
             return self.namedItem(index)
@@ -10383,7 +10375,9 @@ class HTMLFormControlsCollection(HTMLCollection):
         controls = self._controls()
         return controls[index] if 0 <= index < len(controls) else None
 
-    def namedItem(self, name: str) -> HTMLElement | RadioNodeList | None:
+    def namedItem(  # type: ignore[override]
+        self, name: str
+    ) -> HTMLElement | RadioNodeList | None:
         matches = [
             control
             for control in self._controls()
@@ -11311,7 +11305,7 @@ class HTMLOptionsCollection(HTMLCollection):
     def __iter__(self):
         return iter(self._options())
 
-    def __getitem__(self, index: int | str):
+    def __getitem__(self, index: int | str):  # type: ignore[override]
         options = self._options()
         if isinstance(index, str):
             return self.namedItem(index)
