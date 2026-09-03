@@ -1061,8 +1061,8 @@ class TestCase(unittest.TestCase):
 
         # search
         mystr = String("Some String")
-        assert mystr.search("a") == False
-        assert mystr.search("o") == True
+        assert mystr.search("a") == -1
+        assert mystr.search("o") == 1
 
         # substr
         assert mystr.substr(1, 2) == "om"
@@ -1100,10 +1100,7 @@ class TestCase(unittest.TestCase):
 
         assert mystr.includes("a") == False
         assert mystr.includes("Some") == True
-        with self.assertRaises(TypeError):
-            mystr.matchAll(["a", "b"])
-        with self.assertRaises(TypeError):
-            mystr.match(["a", "b"])
+        self.assertEqual(String("aba").search("b"), 1)
         assert String("  Some").trimStart() == "Some"
         assert String("String  ").trimEnd() == "String"
 
@@ -1430,8 +1427,13 @@ class TestCase(unittest.TestCase):
         )
         self.assertEqual(text.indexOf("World"), 6)
         self.assertEqual(text.indexOf("missing"), -1)
-        self.assertEqual(text.matchAll(r"[A-Z]"), "ello.orld")
-        self.assertIsNotNone(text.match(r"Hello"))
+        self.assertEqual(
+            [m[0] for m in text.matchAll(r"[A-Z]")], ["H", "W"]
+        )
+        self.assertEqual(text.match(r"l+")[0], "ll")
+        self.assertIsNone(text.match(r"z"))
+        self.assertEqual(text.match(RegExp(r"[A-Z]", "g")), ["H", "W"])
+        self.assertEqual(text.search(r"\."), 5)
         self.assertEqual(text.compile(r"World").pattern, "World")
         self.assertEqual(text.anchor("greeting"), '<a name="greeting">Hello.World</a>')
         self.assertEqual(text.big(), "<big>Hello.World</big>")
@@ -1506,7 +1508,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue(regex.test("xxFooBarxx"))
         regex.lastIndex = 0
         self.assertFalse(regex.test("barfoo"))
-        self.assertEqual(regex.toString(), r"(foo)(bar)")
+        self.assertEqual(regex.toString(), "/(foo)(bar)/dgimsu")
         self.assertEqual(str(regex), r"(foo)(bar)")
         self.assertIs(regex.compile(r"hello", "i"), regex)
         self.assertEqual(regex.source, "hello")

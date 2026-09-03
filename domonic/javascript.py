@@ -4218,33 +4218,51 @@ class String:
         position = min(max(int(position), 0), len(self.x))
         return searchValue in self.x[position:]
 
-    def search(self, searchValue: str, position: int = 0) -> bool:
-        """[returns true if the specified string is found within the calling String object,]
-        starting at the specified position.
-        Args:
-            searchValue (str): [The string value to search for.]
-            position (int, optional): [the position to search from]. Defaults to 0.
-        Returns:
-            [type]: [a boolean value indicating whether the search value was found.]
-        """
-        position = min(max(int(position), 0), len(self.x))
-        return searchValue in self.x[position:]
+    def search(self, value: "str | RegExp") -> int:
+        """``String.prototype.search`` -- the index of the first match, or -1.
 
-    def matchAll(self, pattern: str) -> str:
+        A non-``RegExp`` ``value`` is converted with ``new RegExp(value)`` (it
+        is *not* escaped), matching JavaScript.
         """
-        Searches a string for a specified value, or a regular expression,
-        and returns a new string where the specified values are replaced.
-        only replaces first one.
-        """
-        return re.sub(pattern, "", self.x)
+        rx = value if isinstance(value, RegExp) else RegExp(str(value))
+        m = rx._compiled().search(self.x)
+        return m.start() if m is not None else -1
 
-    def match(self, pattern: str) -> re.Match[str] | None:
+    def matchAll(self, pattern: "str | RegExp") -> Iterator["_RegExpMatch"]:
+        """``String.prototype.matchAll`` -- an iterator of match arrays.
+
+        Each item is ``[fullMatch, *groups]`` with ``.index`` / ``.input`` /
+        ``.groups`` (named groups), like ``RegExp.exec``.
         """
-        Searches a string for a specified value, or a regular expression,
-        and returns a new string where the specified values are replaced.
-        only replaces first one.
+        rx = pattern if isinstance(pattern, RegExp) else RegExp(str(pattern), "g")
+        compiled = rx._compiled()
+        for m in compiled.finditer(self.x):
+            result = _RegExpMatch([m.group(0), *m.groups()])
+            result.index = m.start()
+            result.input = self.x
+            result.groups = m.groupdict()
+            yield result
+
+    def match(self, pattern: "str | RegExp") -> "_RegExpMatch | list[str] | None":
+        """``String.prototype.match``.
+
+        Without the ``g`` flag: ``[fullMatch, *groups]`` with ``.index`` /
+        ``.input`` / ``.groups``, or ``None``. With the ``g`` flag: a plain
+        list of every full match, or ``None`` when there is no match.
         """
-        return re.match(pattern, self.x)
+        rx = pattern if isinstance(pattern, RegExp) else RegExp(str(pattern))
+        compiled = rx._compiled()
+        if rx.global_:
+            matches = [m.group(0) for m in compiled.finditer(self.x)]
+            return matches or None
+        m = compiled.search(self.x)
+        if m is None:
+            return None
+        result = _RegExpMatch([m.group(0), *m.groups()])
+        result.index = m.start()
+        result.input = self.x
+        result.groups = m.groupdict()
+        return result
 
     def compile(self, pattern: str) -> re.Pattern[str]:
         """
@@ -4768,12 +4786,14 @@ class RegExp:
         return m is not None
 
     def toString(self) -> str:
-        """Returns a string representation of the RegExp object."""
-        return self.__str__()
+        """``/source/flags`` -- like JavaScript's ``RegExp.prototype.toString``."""
+        order = "dgimsuvy"
+        flags = "".join(f for f in order if f in self.flags)
+        source = self.expression or "(?:)"
+        return f"/{source}/{flags}"
 
     def __str__(self) -> str:
-        """ " Returns a string representing the specified object.
-        Overrides the Object.prototype.toString() method."""
+        """The pattern source (not the ``/source/flags`` form; use ``toString``)."""
         return self.expression
 
     # def [@@match]()
