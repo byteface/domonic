@@ -1451,7 +1451,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(String.fromCodePoint(65), "A")
         self.assertEqual(String.toCodePoint("A"), 65)
         self.assertEqual(String.toCharCode("A"), 65)
-        self.assertEqual(String.raw(r"a\b"), r"a\\b")
+        self.assertEqual(String.raw(r"a\b"), r"a\b")  # raw = as-is (JS)
         rendered = text("div", _id="greeting")
         self.assertEqual(rendered.tagName, "div")
         self.assertEqual(rendered.getAttribute("id"), "greeting")

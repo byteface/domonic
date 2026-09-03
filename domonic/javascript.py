@@ -1435,7 +1435,25 @@ class Global:
 
     @staticmethod
     def String(x: Any) -> str:
-        """Converts an object's value to a string"""
+        """Converts a value to a string the way JavaScript's ``String(x)`` does."""
+        if x is None or x is undefined:
+            return "undefined" if x is undefined and undefined is not None else "null"
+        if isinstance(x, bool):
+            return "true" if x else "false"
+        if isinstance(x, float):
+            if x != x:
+                return "NaN"
+            if x == float("inf"):
+                return "Infinity"
+            if x == float("-inf"):
+                return "-Infinity"
+            return repr(x) if not x.is_integer() else str(int(x))
+        if isinstance(x, (list, tuple)):
+            return ",".join(
+                "" if item is None else Global.String(item) for item in x
+            )
+        if isinstance(x, dict):
+            return "[object Object]"
         return str(x)
 
     def undefined(self) -> None:
@@ -2060,20 +2078,43 @@ class Date(Object):
             date (_type_, optional): _description_. Defaults to None.
             formatter (str, optional): _description_. Defaults to 'python'.
         """
-        # join all the args on the date string
-        if len(args) > 0:
-            # parses dates passed in like: Date(1994, 12, 10)
-            if date is None:
-                date = ""
-            else:
-                date = str(date)
-            for arg in args:
-                date += " " + str(arg)
-            date = date.strip()
-            if date == "":
-                date = None
-
         self.formatter = formatter
+
+        # new Date(year, monthIndex, day?, hours?, minutes?, seconds?, ms?)
+        # -- monthIndex is 0-based, and each field overflows into the next
+        if args and isinstance(date, (int, float)) and all(
+            isinstance(a, (int, float)) for a in args
+        ):
+            parts = [int(date)] + [int(a) for a in args]
+            year = parts[0]
+            if year < 100:  # JS maps 0..99 to 1900..1999
+                year += 1900
+            month0 = parts[1] if len(parts) > 1 else 0
+            year += month0 // 12
+            month0 %= 12
+            if month0 < 0:
+                year -= 1
+                month0 += 12
+            day = parts[2] if len(parts) > 2 else 1
+            hour = parts[3] if len(parts) > 3 else 0
+            minute = parts[4] if len(parts) > 4 else 0
+            second = parts[5] if len(parts) > 5 else 0
+            millis = parts[6] if len(parts) > 6 else 0
+            base = datetime.datetime(year, month0 + 1, 1)
+            self.date = base + datetime.timedelta(
+                days=day - 1,
+                hours=hour,
+                minutes=minute,
+                seconds=second,
+                milliseconds=millis,
+            )
+            return
+
+        # anything else -- fall back to string parsing
+        if args:
+            date = " ".join(
+                str(p) for p in ([date] if date is not None else []) + list(args)
+            ).strip() or None
         if isinstance(date, int):
             self.date = datetime.datetime.fromtimestamp(date)
             return
@@ -4053,10 +4094,8 @@ class String:
 
     @staticmethod
     def raw(string: str) -> str:
-        """Returns the string as-is"""
-        import re
-
-        return re.escape(string)
+        """Returns the string as-is (no interpretation of backslash escapes)."""
+        return string
 
     # @staticmethod
     # def fromCharCode(code: int):

@@ -307,6 +307,59 @@ class ObjectFaithfulness(unittest.TestCase):
         self.assertEqual(grouped, {"odd": [1, 3], "even": [2, 4]})
 
 
+class CoercionFaithfulness(unittest.TestCase):
+    def test_string_coercion(self):
+        self.assertEqual(Global.String(None), "null")
+        self.assertEqual(Global.String(True), "true")
+        self.assertEqual(Global.String(False), "false")
+        self.assertEqual(Global.String([1, 2, 3]), "1,2,3")
+        self.assertEqual(Global.String([1, None, 3]), "1,,3")
+        self.assertEqual(Global.String({"a": 1}), "[object Object]")
+        self.assertEqual(Global.String(3.0), "3")
+        self.assertEqual(Global.String(float("nan")), "NaN")
+        self.assertEqual(Global.String(float("inf")), "Infinity")
+
+    def test_number_coercion(self):
+        self.assertEqual(Global.Number(""), 0)
+        self.assertEqual(Global.Number("  12  "), 12)
+        self.assertEqual(Global.Number("0x1F"), 31)
+        self.assertEqual(Global.Number(True), 1)
+        self.assertEqual(Global.Number([5]), 5)
+        self.assertEqual(Global.Number([]), 0)
+        self.assertEqual(str(Global.Number(None)), "NaN")
+
+    def test_parseint_edges(self):
+        self.assertEqual(Global.parseInt("  42  "), 42)
+        self.assertEqual(Global.parseInt("3.9"), 3)
+        self.assertEqual(Global.parseInt("-0x10"), -16)
+        self.assertEqual(Global.parseInt("z", 36), 35)
+        self.assertEqual(Global.parseInt("12abc"), 12)
+        self.assertEqual(str(Global.parseInt("abc")), "NaN")
+
+    def test_parsefloat_edges(self):
+        self.assertEqual(Global.parseFloat("3.14.15"), 3.14)
+        self.assertEqual(Global.parseFloat("  .5"), 0.5)
+        self.assertEqual(Global.parseFloat("1e3"), 1000.0)
+        self.assertEqual(Global.parseFloat("Infinity"), float("inf"))
+
+
+class DateFaithfulness(unittest.TestCase):
+    def test_component_constructor_is_zero_indexed_month(self):
+        from domonic.javascript import Date
+
+        d = Date(2026, 0, 15)
+        self.assertEqual(d.getFullYear(), 2026)
+        self.assertEqual(d.getMonth(), 0)
+        self.assertEqual(d.getDate(), 15)
+
+    def test_component_constructor_overflows(self):
+        from domonic.javascript import Date
+
+        d = Date(2026, 13, 1)  # month 13 -> Feb 2027
+        self.assertEqual(d.getFullYear(), 2027)
+        self.assertEqual(d.getMonth(), 1)
+
+
 class BooleanFaithfulness(unittest.TestCase):
     def test_truthiness(self):
         self.assertFalse(Global.Boolean(""))
