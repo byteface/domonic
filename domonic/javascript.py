@@ -205,18 +205,17 @@ def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     return callback(*args[: len(positional)])
 
 
-def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
-    """Wrap a JS array callback so it can always be called ``(value, index,
-    array)`` -- resolving the declared arity once, up front, instead of
-    inspecting the signature on every element."""
+def _positional_arity(fn: "Callable[..., Any]", cap: int) -> "int | None":
+    """Number of positional params ``fn`` declares (capped at ``cap``), or
+    ``None`` if it takes ``*args`` / its signature can't be read."""
     try:
         params = list(inspect.signature(fn).parameters.values())
     except (TypeError, ValueError):
-        return lambda v, i, a: fn(v, i, a)
+        return None
     if any(p.kind == inspect.Parameter.VAR_POSITIONAL for p in params):
-        return lambda v, i, a: fn(v, i, a)
-    n = min(
-        3,
+        return None
+    return min(
+        cap,
         sum(
             1
             for p in params
@@ -227,13 +226,33 @@ def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
             )
         ),
     )
-    if n >= 3:
-        return lambda v, i, a: fn(v, i, a)
+
+
+def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
+    """Wrap a JS array callback so it can always be called ``(value, index,
+    array)`` -- resolving the declared arity once, up front, instead of
+    inspecting the signature on every element."""
+    n = _positional_arity(fn, 3)
+    if n is None or n >= 3:
+        return fn  # already accepts (value, index, array) / *args
     if n == 2:
         return lambda v, i, a: fn(v, i)
     if n == 1:
         return lambda v, i, a: fn(v)
     return lambda v, i, a: fn()
+
+
+def _js_reducer(fn: "Callable[..., Any]") -> "Callable[[Any, Any, int, Any], Any]":
+    """Like :func:`_js_iteratee` but for reduce callbacks
+    ``(accumulator, value, index, array)`` -- arity resolved once."""
+    n = _positional_arity(fn, 4)
+    if n is None or n >= 4:
+        return fn
+    if n == 3:
+        return lambda acc, v, i, a: fn(acc, v, i)
+    if n == 2:
+        return lambda acc, v, i, a: fn(acc, v)
+    return lambda acc, v, i, a: fn(acc)
 
 
 def _js_strictish_equal(left: Any, right: Any) -> bool:
@@ -3469,26 +3488,28 @@ class Array:
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
+        offset = 0
         if initialValue is None:
+            if not arguments:
+                raise TypeError("Reduce of empty array with no initial value")
             initialValue = arguments[0]
-            arguments = arguments[1:]
+            offset = 1
 
-        for i, value in enumerate(arguments):
-            import inspect
-
-            if len(inspect.signature(callback).parameters) == 4:
-                initialValue = callback(initialValue, value, i, arguments)
-            elif len(inspect.signature(callback).parameters) == 3:
-                initialValue = callback(initialValue, value, i)
-            elif len(inspect.signature(callback).parameters) == 2:
-                initialValue = callback(initialValue, value)
-            elif len(inspect.signature(callback).parameters) == 1:
-                initialValue = callback(initialValue)
-            else:
-                raise Exception(
-                    "Callback does not have the correct number of parameters"
-                )
-        return initialValue
+        acc = initialValue
+        n = _positional_arity(callback, 4)
+        if n == 2:  # the common `(acc, value) => ...`
+            for i in range(offset, len(arguments)):
+                acc = callback(acc, arguments[i])
+        elif n is None or n >= 4:
+            for i in range(offset, len(arguments)):
+                acc = callback(acc, arguments[i], i, self.args)
+        elif n == 3:
+            for i in range(offset, len(arguments)):
+                acc = callback(acc, arguments[i], i)
+        else:
+            for i in range(offset, len(arguments)):
+                acc = callback(acc)
+        return acc
 
     def reduceRight(
         self, callback: Callable[..., Any], initialValue: Any = None
@@ -3497,25 +3518,16 @@ class Array:
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
         arguments = self.args
+        last = len(arguments) - 1
         if initialValue is None:
-            initialValue = arguments[-1]
-            arguments = arguments[:-1]
+            if not arguments:
+                raise TypeError("Reduce of empty array with no initial value")
+            initialValue = arguments[last]
+            last -= 1
 
-        for i, value in enumerate(reversed(arguments)):
-            import inspect
-
-            if len(inspect.signature(callback).parameters) == 4:
-                initialValue = callback(initialValue, value, i, arguments)
-            elif len(inspect.signature(callback).parameters) == 3:
-                initialValue = callback(initialValue, value, i)
-            elif len(inspect.signature(callback).parameters) == 2:
-                initialValue = callback(initialValue, value)
-            elif len(inspect.signature(callback).parameters) == 1:
-                initialValue = callback(initialValue)
-            else:
-                raise Exception(
-                    "Callback does not have the correct number of parameters"
-                )
+        step = _js_reducer(callback)
+        for i in range(last, -1, -1):
+            initialValue = step(initialValue, arguments[i], i, self.args)
         return initialValue
 
     def filter(self, func: Callable[[Any], bool]) -> list[Any]:
@@ -3553,10 +3565,11 @@ class Array:
                     return i
         return -1
 
-    def forEach(self, func: Callable[[Any], Any]) -> None:
+    def forEach(self, func: Callable[..., Any]) -> None:
         """Calls a function for each array element"""
+        it = _js_iteratee(func)
         for index, value in enumerate(list(self.args)):
-            _invoke_js_callback(func, value, index, self.args)
+            it(value, index, self.args)
 
     def keys(self) -> Iterator[Any]:
         """Returns a Array Iteration Object, containing the keys of the original array"""
@@ -4261,18 +4274,35 @@ class String:
         return ord(char)
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
-        # self.args = args
-        # self.kwargs = kwargs
         self.x = str(x)
+        self._u16_cache: "list[int] | None" = None
+        self._astral: "bool | None" = None
+
+    @property
+    def _has_astral(self) -> bool:
+        """Whether ``self.x`` contains any character outside the BMP -- i.e.
+        whether code-unit and code-point positions can differ. Cheap: ASCII
+        strings (the common case) short-circuit immediately."""
+        if self._astral is None:
+            s = self.x
+            self._astral = (not s.isascii()) and any(ord(c) > 0xFFFF for c in s)
+        return self._astral
 
     @property
     def _u16(self) -> "list[int]":
-        """The UTF-16 code units of ``self.x`` (cached, keyed on the value)."""
-        cache = self.__dict__.get("_u16_cache")
-        if cache is None or cache[0] != self.x:
-            cache = (self.x, _utf16_units(self.x))
-            self.__dict__["_u16_cache"] = cache
-        return cache[1]
+        """The UTF-16 code units of ``self.x`` (``x`` is set once at
+        construction, so this is computed lazily and never invalidated).
+        Only touched by the position methods when the string actually has an
+        astral character."""
+        cache = self._u16_cache
+        if cache is None:
+            cache = (
+                _utf16_units(self.x)
+                if self._has_astral
+                else [ord(ch) for ch in self.x]
+            )
+            self._u16_cache = cache
+        return cache
 
     def __str__(self) -> str:
         return self.x
@@ -4290,8 +4320,10 @@ class String:
     def __getitem__(self, item: "int | slice") -> Any:
         if isinstance(item, slice):
             return self.x[item]
-        # JS bracket indexing: the UTF-16 code unit at a valid position, or
-        # ``undefined`` for anything out of range (negatives included).
+        # JS bracket indexing: the char at a valid position, else ``undefined``
+        # (a negative index is not a valid array index in JS -- use ``at()``).
+        if not self._has_astral:
+            return self.x[item] if 0 <= item < len(self.x) else undefined
         units = self._u16
         return _units_to_str([units[item]]) if 0 <= item < len(units) else undefined
 
@@ -4366,6 +4398,9 @@ class String:
         """The UTF-16 code unit at ``index``; ``NaN`` (the *number*) when out of
         range, so ``s.charCodeAt(past_end) <= 0xffff`` is simply ``False``."""
         index = int(index)
+        if not self._has_astral:
+            s = self.x
+            return ord(s[index]) if 0 <= index < len(s) else float("nan")
         units = self._u16
         if index < 0 or index >= len(units):
             return float("nan")
@@ -4387,7 +4422,7 @@ class String:
     @property
     def length(self) -> int:
         """The number of UTF-16 code units (astral characters count as two)."""
-        return len(self._u16)
+        return len(self._u16) if self._has_astral else len(self.x)
 
     def repeat(self, count: int) -> str:
         """Returns a new string with a specified number of copies of an existing string"""
@@ -4404,13 +4439,14 @@ class String:
     def substring(self, start: int, end: int | None = None) -> str:
         """The code units between two indices (negatives clamp to 0, args swap
         if out of order) -- code-unit based, like JavaScript."""
-        units = self._u16
-        length = len(units)
+        seq: Any = self.x if not self._has_astral else self._u16
+        length = len(seq)
         start = min(max(int(start), 0), length)
         end = length if end is None else min(max(int(end), 0), length)
         if start > end:
             start, end = end, start
-        return _units_to_str(units[start:end])
+        part = seq[start:end]
+        return part if isinstance(part, str) else _units_to_str(part)
 
     def endsWith(self, x: str, endPosition: int | None = None) -> bool:
         """``String.prototype.endsWith(searchString, endPosition=length)`` --
@@ -4429,8 +4465,8 @@ class String:
     def slice(self, start: int = 0, end: int | None = None) -> str:
         """A slice of the string in code-unit space (negative indices count
         from the end), like JavaScript."""
-        units = self._u16
-        length = len(units)
+        seq: Any = self.x if not self._has_astral else self._u16
+        length = len(seq)
         s = int(start)
         s = max(length + s, 0) if s < 0 else min(s, length)
         if end is None:
@@ -4438,7 +4474,10 @@ class String:
         else:
             e = int(end)
             e = max(length + e, 0) if e < 0 else min(e, length)
-        return _units_to_str(units[s:e]) if s < e else ""
+        if s >= e:
+            return ""
+        part = seq[s:e]
+        return part if isinstance(part, str) else _units_to_str(part)
 
     def trim(self) -> str:
         """Removes whitespace from both ends of a string"""
@@ -4447,8 +4486,13 @@ class String:
     def at(self, index: int) -> Any:
         """The code unit at ``index`` as a string (negative counts from the
         end), or ``undefined`` when out of range."""
-        units = self._u16
         i = int(index)
+        if not self._has_astral:
+            s = self.x
+            if i < 0:
+                i += len(s)
+            return s[i] if 0 <= i < len(s) else undefined
+        units = self._u16
         if i < 0:
             i += len(units)
         return _units_to_str([units[i]]) if 0 <= i < len(units) else undefined
@@ -4464,6 +4508,9 @@ class String:
         surrogate for one half of an astral character); ``""`` when out of
         range."""
         index = int(index)
+        if not self._has_astral:
+            s = self.x
+            return s[index] if 0 <= index < len(s) else ""
         units = self._u16
         if index < 0 or index >= len(units):
             return ""
@@ -4509,15 +4556,16 @@ class String:
     def substr(self, start: int = 0, length: int | None = None) -> str:
         """``length`` code units starting at ``start`` (negative ``start``
         counts from the end) -- code-unit based, like JavaScript."""
-        units = self._u16
-        total = len(units)
+        seq = self.x if not self._has_astral else self._u16
+        total = len(seq)
         start = int(start)
         if start < 0:
             start = max(total + start, 0)
         count = (total - start) if length is None else int(length)
         if count <= 0:
             return ""
-        return _units_to_str(units[start : start + count])
+        part = seq[start : start + count]
+        return part if isinstance(part, str) else _units_to_str(part)
 
     def toLocaleLowerCase(self) -> str:
         """Converts a string to lowercase letters, according to the host's locale"""
@@ -4542,6 +4590,11 @@ class String:
 
         """
         searchValue = str(searchValue)
+        if not self._has_astral:
+            frm = max(int(fromIndex), 0)
+            if frm > len(self.x):
+                return len(self.x) if searchValue == "" else -1
+            return self.x.find(searchValue, frm)
         cp_from = _unit_index_to_cp(self.x, max(int(fromIndex), 0))
         if cp_from > len(self.x):
             return self.length if searchValue == "" else -1
@@ -4558,6 +4611,9 @@ class String:
             [type]: [the Unicode code point at the specified index (position)]
         """
         index = int(index)
+        if not self._has_astral:
+            s = self.x
+            return ord(s[index]) if 0 <= index < len(s) else None
         units = self._u16
         if index < 0 or index >= len(units):
             return None  # JS: undefined
@@ -4706,6 +4762,13 @@ class String:
         starting the search at fromIndex
         """
         searchValue = str(searchValue)
+        if not self._has_astral:
+            frm = len(self.x) if fromIndex is None else min(
+                max(int(fromIndex), 0), len(self.x)
+            )
+            if searchValue == "":
+                return frm
+            return self.x.rfind(searchValue, 0, frm + len(searchValue))
         if fromIndex is None:
             cp_from = len(self.x)
         else:
