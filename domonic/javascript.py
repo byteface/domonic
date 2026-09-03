@@ -860,27 +860,41 @@ class Function(Object):
 class Map:
     """Map holds key-value pairs and remembers the original insertion order of the keys."""
 
-    def __init__(self, collection: list[Any] | dict[str, Any]) -> None:
-        """[Pass a list or collection to make a Map object]
-
-        Args:
-            collection ([type]): [a list or dict]
-
-        """
-        # parses the passed collectionn
-        if isinstance(collection, list):
-            self.collection = dict(zip(collection, collection))
+    def __init__(
+        self, collection: "list[Any] | dict[str, Any] | None" = None
+    ) -> None:
+        """Create a Map. ``collection`` may be omitted (``new Map()``), a dict,
+        an iterable of ``[key, value]`` pairs (``new Map([["a", 1]])``), or --
+        as a domonic convenience -- a flat list, in which each value is its own
+        key."""
+        entries: list[tuple[Any, Any]] = []
+        if collection is None:
+            pass
         elif isinstance(collection, dict):
-            self.collection = collection
+            entries = list(collection.items())
+        elif isinstance(collection, Map):
+            entries = list(zip(collection._order, collection.values()))
+        elif hasattr(collection, "__iter__"):
+            for item in collection:
+                if (
+                    isinstance(item, (list, tuple))
+                    and not isinstance(item, str)
+                    and len(item) == 2
+                ):
+                    entries.append((item[0], item[1]))
+                else:
+                    entries.append((item, item))
         else:
-            raise TypeError("Map requires a list or dict.")
+            raise TypeError("Map requires an iterable of pairs or a dict.")
 
+        self.collection = dict(entries)
         self._data: dict[str, Any] = {}
         self._order: list[str] = []
         self._dict = self._data
-        for key, value in self.collection.items():
+        for key, value in entries:
             normalized_key = str(key)
-            self._order.append(normalized_key)
+            if normalized_key not in self._dict:
+                self._order.append(normalized_key)
             self._dict[normalized_key] = value
 
     def __contains__(self, key: str) -> bool:
@@ -899,6 +913,14 @@ class Map:
         key = str(key)
         self._order.remove(key)
         del self._dict[key]
+
+    def __len__(self) -> int:
+        return len(self._order)
+
+    @property
+    def size(self) -> int:
+        """The number of entries (``map.size`` -- a property, like JS)."""
+        return len(self._order)
 
     def clear(self) -> None:
         """Removes all key-value pairs from the Map object."""
@@ -3077,8 +3099,12 @@ class Array:
         self.args = list(args)
         self.prototype = self
 
-    def __getitem__(self, index: int) -> Any:
-        return self.args[index]
+    def __getitem__(self, index: "int | slice") -> Any:
+        if isinstance(index, slice):
+            return self.args[index]
+        # JS bracket access: the element at a valid position, else ``undefined``
+        # (a negative index is not a valid array index in JS -- use ``.at()``).
+        return self.args[index] if 0 <= index < len(self.args) else undefined
 
     def __getattribute__(self, name: str) -> Any:
         try:
@@ -3310,10 +3336,8 @@ class Array:
         return -1
 
     def pop(self) -> Any:
-        """Removes the last element of an array, and returns that element"""
-        # item = self.args[len(self.args)-1]
-        # del self.args[len(self.args)-1]
-        return self.args.pop()
+        """Removes and returns the last element, or ``undefined`` when empty."""
+        return self.args.pop() if self.args else undefined
 
     def push(self, value: Any) -> int:
         """Adds new elements to the end of an array, and returns the new length"""
@@ -3370,14 +3394,10 @@ class Array:
         return len(self.args)
 
     def shift(self) -> Any:
-        """[removes the first element from an array and returns that removed element]
-
-        Returns:
-            [type]: [the removed array element]
-        """
-        item = self.args[0]
-        del self.args[0]
-        return item
+        """Removes and returns the first element, or ``undefined`` when empty."""
+        if not self.args:
+            return undefined
+        return self.args.pop(0)
 
     def map(self, func: Callable[[Any], Any]) -> list[Any]:
         """[Creates a new array with the result of calling a function for each array element]

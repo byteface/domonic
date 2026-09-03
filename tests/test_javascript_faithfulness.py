@@ -311,6 +311,41 @@ class ArrayFaithfulness(unittest.TestCase):
         self.assertEqual(A(float("nan")).indexOf(float("nan")), -1)
         self.assertTrue(A(float("nan")).includes(float("nan")))
 
+    def test_out_of_range_and_empty_are_undefined(self):
+        self.assertIsNone(A(1, 2, 3)[10])   # JS: undefined, not IndexError
+        self.assertIsNone(A(1, 2, 3)[-1])   # bracket access has no negatives
+        self.assertIsNone(A().pop())
+        self.assertIsNone(A().shift())
+        self.assertEqual(list(A(1, 2, 3)[1:3]), [2, 3])  # slices still work
+
+
+class MapSetFaithfulness(unittest.TestCase):
+    def test_map_constructor_forms(self):
+        from domonic.javascript import Map
+
+        self.assertEqual(Map().size, 0)  # new Map()
+        m = Map([["a", 1], ["b", 2]])    # iterable of pairs
+        self.assertEqual(m.get("b"), 2)
+        self.assertEqual(m.size, 2)
+        self.assertIsNone(Map().get("missing"))
+
+    def test_map_size_is_a_property(self):
+        from domonic.javascript import Map
+
+        m = Map({"a": 1})
+        self.assertEqual(m.size, 1)
+        m.set("b", 2)
+        self.assertEqual(m.size, 2)
+        m.delete("a")
+        self.assertEqual(m.size, 1)
+
+    def test_set_size_and_dedup(self):
+        from domonic.javascript import Set
+
+        s = Set([1, 2, 2, 3])
+        self.assertEqual(s.size, 3)
+        self.assertEqual(list(s.values()), [1, 2, 3])
+
     def test_callbacks_receive_index_and_array(self):
         a = A("a", "b", "c")
         self.assertEqual(a.map(lambda el, i: f"{i}{el}"), ["0a", "1b", "2c"])
