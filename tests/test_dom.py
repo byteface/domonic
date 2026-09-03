@@ -2399,6 +2399,22 @@ class DOMTest(unittest.TestCase):
         self.assertTrue(dataset.delete("themeName"))
         self.assertIsNone(node.getAttribute("data-theme-name"))
 
+    def test_dataset_attribute_style_access(self):
+        # JS: el.dataset.fooBar is the idiomatic form, not just el.dataset["fooBar"]
+        node = div()
+        node.dataset.userId = "42"
+        self.assertEqual(node.getAttribute("data-user-id"), "42")
+        self.assertEqual(node.dataset.userId, "42")
+
+        node.setAttribute("data-theme-name", "night")
+        self.assertEqual(node.dataset.themeName, "night")
+
+        # missing keys read as undefined (None in domonic), not AttributeError
+        self.assertIsNone(node.dataset.missing)
+
+        del node.dataset.userId
+        self.assertIsNone(node.getAttribute("data-user-id"))
+
     def test_node_operator_helpers(self):
         node = div(span("a"), _id="root")
         sibling = div("b")

@@ -35,6 +35,7 @@ from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic import _fontmetrics
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
+from domonic.javascript import undefined
 from domonic.geom.vec3 import vec3
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
@@ -2763,6 +2764,28 @@ class DOMStringMap:
             self._element.removeAttribute(self._attribute_name(name))
             return
         del self._store[name]
+
+    def __getattr__(self, name: str) -> Any:
+        # only reached when normal attribute lookup fails; internal names
+        # ("_element", "_store") are set via __dict__ so never land here.
+        if name.startswith("_"):
+            raise AttributeError(name)
+        try:
+            return self._data()[name]
+        except KeyError:
+            return undefined
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        if name.startswith("_"):
+            object.__setattr__(self, name, value)
+            return
+        self[name] = value
+
+    def __delattr__(self, name: str) -> None:
+        if name.startswith("_"):
+            object.__delattr__(self, name)
+            return
+        del self[name]
 
     def __contains__(self, name: str) -> bool:
         return name in self._data()
