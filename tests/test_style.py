@@ -139,7 +139,7 @@ class TestCase(unittest.TestCase):
         # print(cssStyleSheet.cssRules[0].style.cssText)
         assert cssStyleSheet.cssRules.length == 3
         assert cssStyleSheet.cssRules[0].selectorText == "div"
-        assert cssStyleSheet.cssRules[0].style.cssText == "background-color: green"
+        assert cssStyleSheet.cssRules[0].style.cssText == "background-color: green;"
 
         # cssStyleSheet.insertRule('background-color: green');
         # DOMException('Invalid CSS rule.', DOMExceptionNameEnum.hierarchyRequestError)
@@ -854,6 +854,48 @@ class TestCase(unittest.TestCase):
         self.assertEqual(n.getAttribute("style"), "color:red;font-size:12px")
         n.style.color = "blue"
         self.assertEqual(n.getAttribute("style"), "color: blue; font-size: 12px;")
+
+    def test_shorthand_via_idl_expands_to_longhands(self):
+        s = div().style
+        s.margin = "1px 2px 3px 4px"
+        self.assertEqual(s.marginTop, "1px")
+        self.assertEqual(s.marginRight, "2px")
+        self.assertEqual(s.marginBottom, "3px")
+        self.assertEqual(s.marginLeft, "4px")
+        self.assertEqual(s.getPropertyValue("margin-left"), "4px")
+
+        s2 = div().style
+        s2.border = "1px solid red"
+        self.assertEqual(s2.getPropertyValue("border-top-width"), "1px")
+        self.assertEqual(s2.getPropertyValue("border-style"), "solid")
+
+    def test_csstext_setter_always_returns_serialised_form(self):
+        s = div().style
+        s.cssText = "color: red; margin-top: 5px"  # no trailing ;
+        self.assertEqual(s.cssText, "color: red; margin-top: 5px;")
+
+    def test_style_idl_is_backed_by_the_content_attribute(self):
+        e = div()
+        e.style.color = "red"
+        e.setAttribute("style", "")  # clearing the attribute clears the block
+        self.assertEqual(e.style.color, "")
+
+        e.style.color = "red"
+        e.removeAttribute("style")
+        self.assertEqual(e.style.color, "")
+
+        e.setAttribute("style", "color: green; padding: 1px")
+        self.assertEqual(e.style.color, "green")
+        self.assertEqual(e.style.padding, "1px")
+
+    def test_get_attribute_names_and_case_insensitivity(self):
+        e = div()
+        e.setAttribute("Title", "T")
+        e.setAttribute("data-X", "1")
+        self.assertEqual(sorted(e.getAttributeNames()), ["data-x", "title"])
+        self.assertEqual(e.getAttribute("title"), "T")   # lower-cased on HTML
+        self.assertEqual(e.getAttribute("DATA-x"), "1")
+        self.assertTrue(e.hasAttribute("TITLE"))
 
     def test_setting_a_property_to_empty_string_removes_the_declaration(self):
         node = div()

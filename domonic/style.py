@@ -2028,7 +2028,11 @@ class Style:
         # Normalised "prop: value; " form, the same as ``setProperty`` and a
         # browser's -- assigning through ``el.style`` rewrites the attribute.
         css_text = _serialize_css_declarations(entries)
-        self._parent_node.setAttribute("style", css_text)
+        object.__setattr__(self._parent_node, "_syncing_style_attr", True)
+        try:
+            self._parent_node.setAttribute("style", css_text)
+        finally:
+            object.__setattr__(self._parent_node, "_syncing_style_attr", False)
         if hasattr(self, "_css_text"):
             object.__setattr__(self, "_css_text", css_text)
         if hasattr(self, "_declared_properties") and not property_name.startswith("--"):
@@ -2057,6 +2061,18 @@ class Style:
                 return
 
             if getattr(self, "_suspend_style_sync", False):
+                return
+
+            # A shorthand assigned through the IDL (``el.style.margin = ...``)
+            # must expand to its longhands, exactly like ``setProperty`` -- so
+            # route it there when available (CSSStyleDeclaration).
+            kebab = _css_property_name(func.__name__)
+            if (
+                _cssom.is_shorthand(kebab)
+                and hasattr(self, "setProperty")
+                and str(value) not in ("", "none")
+            ):
+                self.setProperty(kebab, value)
                 return
 
             self._set_parent_style_property(func.__name__, value)
@@ -5765,7 +5781,11 @@ class CSSStyleDeclaration(Style):
         css_text = _serialize_css_declarations(entries)
         self.cssText = css_text
         if self._parent_node is not None:
-            self._parent_node.setAttribute("style", css_text)
+            object.__setattr__(self._parent_node, "_syncing_style_attr", True)
+            try:
+                self._parent_node.setAttribute("style", css_text)
+            finally:
+                object.__setattr__(self._parent_node, "_syncing_style_attr", False)
 
     @property
     def cssText(self):
@@ -5777,19 +5797,18 @@ class CSSStyleDeclaration(Style):
         raw = "" if value is None else str(value).strip()
         parsed_entries = _parse_css_declarations(raw)
         entries = self._collapse_box_shorthands(parsed_entries)
-        # Only re-serialise when the box-shorthand collapse actually changed the
-        # declaration set; otherwise keep the author's text verbatim.
-        if entries != parsed_entries:
-            text = _serialize_css_declarations(entries)
-        else:
-            text = raw
+        # CSSOM: the getter always returns the *serialised* declaration block,
+        # regardless of the input text -- so normalise here.
+        text = _serialize_css_declarations(entries)
         next_declared_properties = {
             self._to_camel(name) for name, _, _ in entries if not name.startswith("--")
         }
         previous_declared_properties = set(getattr(self, "_declared_properties", set()))
         object.__setattr__(self, "_css_text", text)
-        if getattr(self, "_parent_node", None) is not None and getattr(
-            self, "_members_checked", False
+        if (
+            getattr(self, "_parent_node", None) is not None
+            and getattr(self, "_members_checked", False)
+            and not getattr(self._parent_node, "_syncing_style_attr", False)
         ):
             self._parent_node.setAttribute("style", text)
 

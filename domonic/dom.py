@@ -4636,12 +4636,26 @@ class Element(Node):
         #     raise AttributeError
         return self
 
+    def _attr_key(self, attribute: str) -> str:
+        """The internal ``kwargs`` key for ``attribute``.
+
+        Attribute names on elements in an HTML document are ASCII-lower-cased,
+        so ``getAttribute`` / ``setAttribute`` are case-insensitive there;
+        SVG / MathML keep their case (``viewBox`` etc.).
+        """
+        name = attribute[1:] if attribute[:1] == "_" else attribute
+        if getattr(self, "namespaceURI", "") == "http://www.w3.org/1999/xhtml":
+            name = name.lower()
+        return "_" + name
+
+    def getAttributeNames(self) -> list[str]:
+        """The qualified names of this element's attributes, in order."""
+        return [k[1:] if k[:1] == "_" else k for k in self.kwargs]
+
     def getAttribute(self, attribute: str) -> str:
         """Returns the specified attribute value of an element node"""
         try:
-            if attribute[0:1] != "_":
-                attribute = "_" + attribute
-            return self.kwargs[attribute]
+            return self.kwargs[self._attr_key(attribute)]
         except KeyError:
             return None  # type: ignore[return-value]
 
@@ -4860,9 +4874,7 @@ class Element(Node):
             bool: [True if an element has the specified attribute, otherwise False]
         """
         try:
-            if attribute[0:1] != "_":
-                attribute = "_" + attribute
-            return attribute in self.kwargs.keys()
+            return self._attr_key(attribute) in self.kwargs
         except AttributeError:
             return False
 
@@ -5349,13 +5361,14 @@ class Element(Node):
 
     def removeAttribute(self, attribute: str):
         """Removes a specified attribute from an element"""
-        if attribute[0:1] != "_":
-            attribute = "_" + attribute
+        attribute = self._attr_key(attribute)
         if attribute not in self.kwargs:
             return None
         old_value = self.kwargs.get(attribute)
         del self.kwargs[attribute]
         _notify_attribute_changed(self, attribute, old_value, None)
+        if attribute == "_style":
+            self._sync_style_declaration("")
         _queue_mutation_record(
             "attributes",
             self,
@@ -5422,8 +5435,7 @@ class Element(Node):
 
     def setAttribute(self, attribute, value):
         """Sets or changes the specified attribute, to the specified value"""
-        if attribute[0:1] != "_":
-            attribute = "_" + attribute
+        attribute = self._attr_key(attribute)
         try:
             kwargs = object.__getattribute__(self, "kwargs")
         except AttributeError:
@@ -5431,12 +5443,27 @@ class Element(Node):
         old_value = kwargs.get(attribute)
         kwargs[attribute] = value
         _notify_attribute_changed(self, attribute, old_value, value)
+        if attribute == "_style":
+            self._sync_style_declaration("" if value is None else str(value))
         _queue_mutation_record(
             "attributes",
             self,
             attribute_name=(attribute[1:] if attribute.startswith("_") else attribute),
             old_value=str(old_value) if old_value is not None else None,
         )
+
+    def _sync_style_declaration(self, css_text: str) -> None:
+        """Push a ``style`` content-attribute change into the live
+        ``CSSStyleDeclaration`` (so clearing / replacing the attribute clears
+        the declaration, per the DOM)."""
+        existing = getattr(self, "_Element__style", None)
+        if existing is None or getattr(self, "_syncing_style_attr", False):
+            return
+        object.__setattr__(self, "_syncing_style_attr", True)
+        try:
+            existing.cssText = css_text
+        finally:
+            object.__setattr__(self, "_syncing_style_attr", False)
 
     def toggleAttribute(self, attribute: str, force: bool | None = None) -> bool:
         """Adds or removes an attribute and returns whether it is present afterwards."""
