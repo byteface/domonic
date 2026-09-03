@@ -4193,16 +4193,29 @@ class String:
 
     # @staticmethod
     def charCodeAt(self, index: int) -> Any:
-        """Returns the Unicode of the character at the specified index"""
+        """The code unit at ``index``; ``NaN`` (the *number*) when out of range,
+        so ``s.charCodeAt(past_end) <= 0xffff`` is simply ``False`` like JS.
+
+        Note: indexing is by Unicode scalar, not UTF-16 code unit -- see the
+        docs on astral-plane fidelity.
+        """
         index = int(index)
         if index < 0 or index >= len(self.x):
-            return "NaN"
+            return float("nan")
         return ord(self.x[index])
 
-    # @staticmethod
-    def fromCharCode(self, *codes: int) -> str:
-        """returns a string created from the specified sequence of UTF-16 code units"""
-        return "".join([str(chr(x)) for x in codes])
+    @staticmethod
+    def fromCharCode(*codes: int) -> str:
+        """A string built from a sequence of UTF-16 code units.
+
+        Static, like ``String.fromCharCode(...)`` in JavaScript. Adjacent
+        surrogate code units are combined (``fromCharCode(0xD83D, 0xDE00)`` ->
+        ``"😀"``); a lone surrogate is kept as-is.
+        """
+        import struct
+
+        raw = b"".join(struct.pack("<H", int(code) & 0xFFFF) for code in codes)
+        return raw.decode("utf-16-le", errors="surrogatepass")
 
     @property
     def length(self) -> int:
@@ -4375,7 +4388,7 @@ class String:
         """
         index = int(index)
         if index < 0 or index >= len(self.x):
-            return undefined
+            return None  # JS: undefined
         return ord(self.x[index])
 
     def padEnd(self, length: int, padChar: str = " ") -> str:
@@ -4827,6 +4840,11 @@ def _translate_js_regex(pattern: str) -> str:
     if "(?<" in pattern:
         pattern = re.sub(r"\(\?<([A-Za-z_]\w*)>", r"(?P<\1>", pattern)
         pattern = re.sub(r"\\k<([A-Za-z_]\w*)>", r"(?P=\1)", pattern)
+
+    # JS ``[^]`` (empty negated class = "any char, newlines included") is a
+    # syntax error in Python's re -- rewrite it. ``[^]]`` (not "]") is left be.
+    if "[^]" in pattern:
+        pattern = re.sub(r"(?<!\\)\[\^\](?!\])", r"[\\s\\S]", pattern)
 
     if "\\p{" not in pattern and "\\P{" not in pattern:
         return pattern

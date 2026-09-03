@@ -6,6 +6,7 @@ REPL would for the common String / Array / Number / Math / RegExp surface.
 Every expected value here is what real JavaScript returns.
 """
 
+import math
 import unittest
 
 from domonic.javascript import (
@@ -36,7 +37,7 @@ class StringFaithfulness(unittest.TestCase):
     def test_char_access(self):
         self.assertEqual(S("abc").charAt(10), "")
         self.assertEqual(S("ABC").charCodeAt(0), 65)
-        self.assertEqual(S("abc").charCodeAt(99), "NaN")
+        self.assertTrue(math.isnan(S("abc").charCodeAt(99)))
         self.assertEqual(S("\U0001F600").codePointAt(0), 128512)
 
     def test_pad_repeat_trim(self):

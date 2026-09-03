@@ -5,6 +5,7 @@ unit tests for domonic.javascript
 """
 
 import math
+import math
 import re
 import time
 import unittest
@@ -1470,8 +1471,8 @@ class TestCase(unittest.TestCase):
         self.assertTrue(String("abc").includes("a", -1))
         self.assertTrue(String("abc").includes("", 99))
         self.assertEqual(String("abc").charAt(-1), "")
-        self.assertEqual(String("abc").charCodeAt(99), "NaN")
-        self.assertIs(String("abc").codePointAt(99), undefined)
+        self.assertTrue(math.isnan(String("abc").charCodeAt(99)))
+        self.assertIsNone(String("abc").codePointAt(99))
         self.assertEqual(String("abc").substring(2, 1), "b")
         self.assertEqual(String("abc").substr(1, -1), "")
         self.assertEqual(String("abc").padStart(6, "01"), "010abc")
