@@ -1643,8 +1643,38 @@ encodeURI = Global.encodeURI
 encodeURIComponent = Global.encodeURIComponent
 parseFloat = Global.parseFloat
 parseInt = Global.parseInt
+isNaN = Global.isNaN
+isFinite = Global.isFinite
 setTimeout = Global.setTimeout
 clearTimeout = Global.clearTimeout
+
+
+def structuredClone(value: Any, options: Any = None) -> Any:
+    """A deep clone of ``value`` (the structured-clone algorithm, approximated
+    with :func:`copy.deepcopy`)."""
+    import copy
+
+    return copy.deepcopy(value)
+
+
+def queueMicrotask(callback: Callable[[], Any]) -> None:
+    """Queue a microtask. domonic has no event loop, so it runs synchronously
+    on the next tick-equivalent -- immediately."""
+    callback()
+
+
+def btoa(data: str) -> str:
+    """Base64-encode a binary (Latin-1) string."""
+    import base64
+
+    return base64.b64encode(str(data).encode("latin-1")).decode("ascii")
+
+
+def atob(data: str) -> str:
+    """Decode a base64 string to a binary (Latin-1) string."""
+    import base64
+
+    return base64.b64decode(str(data)).decode("latin-1")
 
 
 class Performance:
@@ -2795,6 +2825,26 @@ class SetInterval:
     #     self.job.stop()
 
 
+class _PromiseSettle:
+    """Descriptor: ``Promise.resolve``/``reject`` is static (returns a new
+    settled promise), ``p.resolve``/``reject`` settles ``p`` in place."""
+
+    def __init__(self, kind: str) -> None:
+        self._kind = kind
+
+    def __get__(self, obj: Any, objtype: Any = None) -> Any:
+        if obj is None:
+            kind = self._kind
+
+            def _static(value: Any = None) -> "Promise":
+                if isinstance(value, Promise):
+                    return value
+                return getattr(Promise(), f"_settle_{kind}")(value)
+
+            return _static
+        return getattr(obj, f"_settle_{self._kind}")
+
+
 class Promise:
     # undocumented - warning. use at own risk
     def __init__(
@@ -2806,13 +2856,15 @@ class Promise:
         **kwargs: Any,
     ) -> None:
         self.data: Any = None
-        self.state = "pending"  # fullfilled, rejected
+        self.state = "pending"  # fulfilled, rejected
         self._then_callbacks: list[Callable[[Any], Any]] = []
         self._catch_callbacks: list[Callable[[Any], Any]] = []
         if func is not None:
-            func(self.resolve, self.reject)
+            func(self._settle_fulfilled, self._settle_rejected)
 
-    def then(self, func: Callable[[Any], Any] | None) -> Promise:
+    def then(self, func: Callable[[Any], Any] | None, onrejected: Any = None) -> Promise:
+        if onrejected is not None:
+            self.catch(onrejected)
         if func is None:
             return self
         if self.state == "fulfilled":
@@ -2830,7 +2882,21 @@ class Promise:
             self._catch_callbacks.append(error)
         return self
 
-    def resolve(self, data: Any) -> Promise:
+    def finally_(self, onfinally: Callable[[], Any]) -> Promise:
+        """``promise.finally(fn)`` -- run ``fn`` once the promise settles,
+        whichever way. (``finally`` is a Python keyword.)"""
+        if callable(onfinally):
+            if self.state != "pending":
+                onfinally()
+            else:
+                self._then_callbacks.append(lambda v: (onfinally(), v)[1])
+                self._catch_callbacks.append(lambda v: (onfinally(), v)[1])
+        return self
+
+    def _settle_fulfilled(self, data: Any = None) -> Promise:
+        if isinstance(data, Promise):
+            data.then(self._settle_fulfilled).catch(self._settle_rejected)
+            return self
         if self.state != "pending":
             return self
         self.data = data
@@ -2842,7 +2908,7 @@ class Promise:
         self._then_callbacks.clear()
         return self
 
-    def reject(self, data: Any) -> Promise:
+    def _settle_rejected(self, data: Any = None) -> Promise:
         if self.state not in ("pending", "fulfilled"):
             return self
         self.data = data
@@ -2852,20 +2918,77 @@ class Promise:
         self._catch_callbacks.clear()
         return self
 
+    # ``resolve`` / ``reject`` are dual: ``Promise.resolve(v)`` returns a new
+    # settled promise (JavaScript), ``p.resolve(v)`` settles ``p`` (domonic's
+    # long-standing internal API, used by fetch / window / ...).
+    resolve = _PromiseSettle("fulfilled")
+    reject = _PromiseSettle("rejected")
+
+    @staticmethod
+    def all(iterable: Any) -> Promise:
+        """Fulfils with the list of results once every input settles;
+        rejects with the first rejection."""
+        results = []
+        p = Promise()
+        for item in iterable:
+            item = item if isinstance(item, Promise) else Promise.resolve(item)
+            if item.state == "rejected":
+                return p._settle_rejected(item.data)
+            results.append(item.data)
+        return p._settle_fulfilled(results)
+
+    @staticmethod
+    def allSettled(iterable: Any) -> Promise:
+        """Fulfils with a list of ``{status, value|reason}`` records."""
+        out = []
+        for item in iterable:
+            item = item if isinstance(item, Promise) else Promise.resolve(item)
+            if item.state == "rejected":
+                out.append({"status": "rejected", "reason": item.data})
+            else:
+                out.append({"status": "fulfilled", "value": item.data})
+        return Promise()._settle_fulfilled(out)
+
+    @staticmethod
+    def race(iterable: Any) -> Promise:
+        """Settles as soon as any input settles."""
+        p = Promise()
+        for item in iterable:
+            item = item if isinstance(item, Promise) else Promise.resolve(item)
+            if item.state != "pending":
+                return (
+                    p._settle_rejected(item.data)
+                    if item.state == "rejected"
+                    else p._settle_fulfilled(item.data)
+                )
+        return p
+
+    @staticmethod
+    def any(iterable: Any) -> Promise:
+        """Fulfils with the first fulfilment; rejects with an ``AggregateError``
+        if every input rejects."""
+        errors = []
+        for item in iterable:
+            item = item if isinstance(item, Promise) else Promise.resolve(item)
+            if item.state == "fulfilled":
+                return Promise()._settle_fulfilled(item.data)
+            if item.state == "rejected":
+                errors.append(item.data)
+        return Promise()._settle_rejected(
+            AggregateError(errors, "All promises were rejected")
+        )
+
     def _run_then(self, func: Callable[[Any], Any]) -> None:
         try:
             self.data = func(self.data)
         except Exception as exc:
-            self.reject(exc)
+            self._settle_rejected(exc)
 
     def _run_catch(self, func: Callable[[Any], Any]) -> None:
         self.data = func(self.data)
 
-    # def __str__(self):
-    #     try:
-    #         return self.data.text
-    #     except Exception as e:
-    #     return str(self)
+
+setattr(Promise, "finally", Promise.finally_)
 
 
 class FetchedSet:  # not a promise
