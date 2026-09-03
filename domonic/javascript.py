@@ -1112,8 +1112,33 @@ class Math(Object):
     @staticmethod
     @_force_number
     def round(x: float) -> float:
-        """Returns the value of a number rounded to its nearest integer."""
-        return round(x)
+        """Nearest integer; ties round toward +Infinity (JavaScript)."""
+        if math.isnan(x) or math.isinf(x):
+            return x
+        return math.floor(x + 0.5)
+
+    @staticmethod
+    @_force_number
+    def sign(x: float) -> float:
+        """-1, 0 or 1 according to the sign of x (NaN stays NaN)."""
+        if math.isnan(x):
+            return x
+        if x > 0:
+            return 1
+        if x < 0:
+            return -1
+        return x  # preserves 0 / -0.0
+
+    @staticmethod
+    @_force_number
+    def expm1(x: float) -> float:
+        """exp(x) - 1, accurate for small x."""
+        return math.expm1(x)
+
+    @staticmethod
+    def imul(a: Any, b: Any) -> int:
+        """C-like 32-bit integer multiplication."""
+        return ToInt32((ToInt32(int(a)) * ToInt32(int(b))) & 0xFFFFFFFF)
 
     @staticmethod
     @_force_number
@@ -3501,6 +3526,34 @@ class Number(float):
     POSITIVE_INFINITY = float(
         "inf"
     )  #: Represents infinity (returned on overflow)  Number
+    MAX_SAFE_INTEGER: int = 2**53 - 1
+    MIN_SAFE_INTEGER: int = -(2**53 - 1)
+    EPSILON: float = 2.0**-52
+    NaN = float("nan")
+
+    @staticmethod
+    def isFinite(value: Any) -> bool:
+        """``Number.isFinite`` -- true only for a real finite number (no coercion)."""
+        if isinstance(value, Number):
+            value = value.x
+        return isinstance(value, (int, float)) and math.isfinite(value)
+
+    @staticmethod
+    def isNaN(value: Any) -> bool:
+        """``Number.isNaN`` -- true only for an actual NaN number (no coercion)."""
+        if isinstance(value, Number):
+            value = value.x
+        return isinstance(value, float) and math.isnan(value)
+
+    @staticmethod
+    def parseFloat(value: Any) -> Any:
+        """Alias of the global ``parseFloat``."""
+        return Global.parseFloat(value)
+
+    @staticmethod
+    def parseInt(value: Any, radix: int = 0) -> Any:
+        """Alias of the global ``parseInt``."""
+        return Global.parseInt(value, radix)
 
     # prototype Allows you to add properties and methods to an object   Number
 
@@ -3624,23 +3677,31 @@ class Number(float):
     def __rmod__(self, other):
         return other % self.x
 
-    def isInteger(self) -> bool:
-        """Checks whether a value is an integer"""
-        return type(self.x) == int
-
-    def isSafeInteger(self) -> bool:
-        """Checks whether a value is a safe integer"""
-        value = self.x
-        if isinstance(value, bool) or value == "NaN":
+    @staticmethod
+    def isInteger(value: Any) -> bool:
+        """``Number.isInteger`` -- true only for a finite whole-number value."""
+        if isinstance(value, bool):
             return False
-        try:
-            numeric = float(value)
-        except (TypeError, ValueError):
+        if isinstance(value, Number):
+            value = value.x
+        if not isinstance(value, (int, float)):
+            return False
+        return math.isfinite(value) and float(value).is_integer()
+
+    @staticmethod
+    def isSafeInteger(value: Any) -> bool:
+        """``Number.isSafeInteger`` -- an integer value within +/-(2**53 - 1).
+
+        Like JavaScript, a non-number (including a numeric string) is ``False``.
+        """
+        if isinstance(value, Number):
+            value = value.x
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
             return False
         return (
-            math.isfinite(numeric)
-            and numeric.is_integer()
-            and -(2**53 - 1) <= numeric <= 2**53 - 1
+            math.isfinite(value)
+            and float(value).is_integer()
+            and -(2**53 - 1) <= value <= 2**53 - 1
         )
 
     def toExponential(self, num: int | None = None) -> str:
@@ -3675,11 +3736,21 @@ class Number(float):
         Returns:
             [str]: [A string representing the given number using fixed-point notation.]
         """
-        if digits < 0:
-            digits = 0
+        digits = max(int(digits), 0)
+        value = self.x
+        if not isinstance(value, (int, float)) or value != value:
+            return "NaN"
+        if value in (float("inf"), float("-inf")):
+            return str(value)
+        from decimal import Decimal, ROUND_FLOOR
 
-        fstring = "{:." + str(digits) + "f}"
-        return fstring.format(round(self.x, digits))
+        # ECMAScript toFixed: pick the representable value closest to the actual
+        # stored double, ties going to the larger value (toward +Infinity) -- so
+        # (1.005).toFixed(2) is "1.00" and (-2.5).toFixed(0) is "-2".
+        quantum = Decimal(1).scaleb(-digits)
+        scaled = Decimal(value) / quantum + Decimal("0.5")
+        rounded = scaled.to_integral_value(rounding=ROUND_FLOOR) * quantum
+        return f"{rounded:.{digits}f}"
 
     def toPrecision(self, precision: int) -> str:
         """[returns a string representing the Number object to the specified precision.]
