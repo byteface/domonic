@@ -1430,11 +1430,11 @@ class Global:
         Returns:
             [str]: [an identifier for the timer]
         """
-        if isinstance(callback, str):
-            # setTimeout string callback compatibility.
-            callback = eval(callback)  # nosec B307
+        fn: Callable[..., Any] = (
+            eval(callback) if isinstance(callback, str) else callback  # nosec B307
+        )
 
-        timer = threading.Timer(t / 1000, callback, args=args, kwargs=kwargs)
+        timer = threading.Timer(t / 1000, fn, args=args, kwargs=kwargs)
         timer_id = id(timer)
         Global.__timers[timer_id] = timer
         timer.start()
@@ -2959,13 +2959,11 @@ class Array:
             yield i
         # self.args.__iter__()
 
-    def __sub__(self, value: Array | list[Any]) -> list[Any]:
+    def __sub__(self, value: "Array | list[Any]") -> list[Any]:
         if isinstance(value, int):
             raise ValueError("int not supported")
-        if isinstance(value, Array):
-            self.args = self.args - value.args
-        if isinstance(value, list):
-            self.args = self.args - value
+        other = value.args if isinstance(value, Array) else list(value)
+        self.args = [item for item in self.args if item not in other]
         return self.args
 
     @staticmethod
@@ -3507,7 +3505,7 @@ class Number(float):
     # prototype Allows you to add properties and methods to an object   Number
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
-        self.x = Global.Number(x)
+        self.x: Any = Global.Number(x)
 
     def __add__(self, other):
         return self.x + other
@@ -3908,13 +3906,13 @@ class String:
         return self.x + str(other)
 
     def __sub__(self, other: str) -> Any:
-        return self.x - other
+        return self.x - other  # type: ignore[operator]
 
     def __rsub__(self, other: str) -> Any:
-        return other - self.x
+        return other - self.x  # type: ignore[operator]
 
     def __isub__(self, other: str) -> Any:
-        return self.x - other
+        return self.x - other  # type: ignore[operator]
 
     def __mul__(self, other: int) -> str:
         return self.x * int(other)
@@ -3962,7 +3960,7 @@ class String:
         return seperator.join(parts)
 
     # @staticmethod
-    def charCodeAt(self, index: int) -> int:
+    def charCodeAt(self, index: int) -> Any:
         """Returns the Unicode of the character at the specified index"""
         index = int(index)
         if index < 0 or index >= len(self.x):
@@ -4128,7 +4126,7 @@ class String:
             return len(self.x) if searchValue == "" else -1
         return self.x.find(searchValue, fromIndex)
 
-    def codePointAt(self, index: int) -> int:
+    def codePointAt(self, index: int) -> Any:
         """[Returns the Unicode code point at the specified index (position)]
 
         Args:
@@ -4515,7 +4513,7 @@ def _translate_js_regex(pattern: str) -> str:
 class _RegExpMatch(list):
     """List of ``[fullMatch, *groups]`` with JS ``exec`` result attributes."""
 
-    index: int = 0
+    index: int = 0  # type: ignore[assignment]  # JS match.index, not list.index()
     input: str = ""
     groups: dict = {}
 
@@ -5188,7 +5186,7 @@ class TypedArray:
 
     # // void set(TypedArray array, optional unsigned long offset);
     # // void set(sequence<type> array, optional unsigned long offset);
-    def set(self, index: Any, value: Any) -> None:
+    def set(self, index: Any, value: Any = None) -> None:
         if index is None:
             raise SyntaxError("Not enough arguments")
         offset = ToUint32(0 if value is None else value)
