@@ -1582,7 +1582,7 @@ class TestCase(unittest.TestCase):
         err = Error("boom")
 
         self.assertEqual(err.message, "boom")
-        self.assertEqual(str(err), "boom")
+        self.assertEqual(str(err), "Error: boom")  # JS: "<name>: <message>"
 
     def test_set(self):
 

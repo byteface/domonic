@@ -12,6 +12,11 @@ import array
 import builtins
 import calendar
 
+# JS ``Error`` subclasses below shadow the Python built-ins of the same name at
+# module scope, so keep a handle on the real ones for ``except`` clauses that
+# are catching genuine Python failures.
+_PyTypeError = builtins.TypeError
+
 # import chunk
 import datetime
 import gc
@@ -59,7 +64,7 @@ except ImportError:  # pragma: no cover - optional dependency
 
         try:
             parsed = parsedate_to_datetime(value)
-        except (TypeError, ValueError, IndexError):
+        except (_PyTypeError, ValueError, IndexError):
             parsed = None
         if parsed is not None:
             return parsed
@@ -189,7 +194,7 @@ def _js_set_same_value_zero(left: Any, right: Any) -> bool:
 def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     try:
         signature = inspect.signature(callback)
-    except (TypeError, ValueError):
+    except (_PyTypeError, ValueError):
         return callback(*args)
 
     parameters = list(signature.parameters.values())
@@ -205,12 +210,12 @@ def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     return callback(*args[: len(positional)])
 
 
-def _positional_arity(fn: "Callable[..., Any]", cap: int) -> "int | None":
+def _positional_arity(fn: Any, cap: int) -> "int | None":
     """Number of positional params ``fn`` declares (capped at ``cap``), or
     ``None`` if it takes ``*args`` / its signature can't be read."""
     try:
         params = list(inspect.signature(fn).parameters.values())
-    except (TypeError, ValueError):
+    except (_PyTypeError, ValueError):
         return None
     if any(p.kind == inspect.Parameter.VAR_POSITIONAL for p in params):
         return None
@@ -228,10 +233,18 @@ def _positional_arity(fn: "Callable[..., Any]", cap: int) -> "int | None":
     )
 
 
-def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
+def _require_callback(fn: Any, label: str = "callback") -> None:
+    """Raise a JS-style ``TypeError`` when an array iteration method is handed a
+    non-function (``[].map()`` / ``[].filter(5)``)."""
+    if not callable(fn):
+        raise TypeError(f"{fn!r} is not a function")
+
+
+def _js_iteratee(fn: Any) -> "Callable[[Any, int, Any], Any]":
     """Wrap a JS array callback so it can always be called ``(value, index,
     array)`` -- resolving the declared arity once, up front, instead of
     inspecting the signature on every element."""
+    _require_callback(fn)
     n = _positional_arity(fn, 3)
     if n is None or n >= 3:
         return fn  # already accepts (value, index, array) / *args
@@ -242,7 +255,7 @@ def _js_iteratee(fn: "Callable[..., Any]") -> "Callable[[Any, int, Any], Any]":
     return lambda v, i, a: fn()
 
 
-def _js_reducer(fn: "Callable[..., Any]") -> "Callable[[Any, Any, int, Any], Any]":
+def _js_reducer(fn: Any) -> "Callable[[Any, Any, int, Any], Any]":
     """Like :func:`_js_iteratee` but for reduce callbacks
     ``(accumulator, value, index, array)`` -- arity resolved once."""
     n = _positional_arity(fn, 4)
@@ -819,11 +832,11 @@ class Function(Object):
         if thisArg is not None:
             try:
                 return self.func(args)  # kwargs?
-            except TypeError:
+            except _PyTypeError:
                 return self.func()
         try:
             return self.func(*(args or ()))
-        except TypeError:
+        except _PyTypeError:
             return self.func()
 
     def bind(self, thisArg: Any, *args: Any, **kwargs: Any) -> Callable[..., Any]:
@@ -857,20 +870,20 @@ class Function(Object):
         if thisArg is not None:
             try:
                 return self.func(thisArg)  # kwargs?
-            except TypeError as e:
+            except _PyTypeError as e:
                 print(e)
                 return self.func()
 
         try:
             return self.func(*args)
-        except TypeError:
+        except _PyTypeError:
             return self.func()
 
     def toString(self) -> str:
         """[Returns a string representing the source code of the function. Overrides the]"""
         try:
             return inspect.getsource(self.func).strip()
-        except (OSError, TypeError):
+        except (OSError, _PyTypeError):
             name = getattr(self.func, "__name__", "")
             name = "" if name == "<lambda>" else f" {name}"
             return f"function{name}() {{ [native code] }}"
@@ -3232,7 +3245,7 @@ class Array:
 
         return _flatten(self.args, depth)
 
-    def flatMap(self, fn: Callable[..., Any]) -> Array:
+    def flatMap(self, fn: Callable[..., Any] | None = None) -> Array:
         """[Maps a function over an array and flattens the result]"""
         it = _js_iteratee(fn)
         mapped = [it(v, i, self.args) for i, v in enumerate(self.args)]
@@ -3279,7 +3292,7 @@ class Array:
     #             groups[key] = [self.args[i]]
     #     return Map(groups)
 
-    def findLast(self, callback: Callable[..., bool]) -> Any:
+    def findLast(self, callback: Callable[..., bool] | None = None) -> Any:
         """[Returns the last element in an array that passes a test]"""
         it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
@@ -3287,7 +3300,7 @@ class Array:
                 return self.args[i]
         return None
 
-    def findLastIndex(self, callback: Callable[..., bool]) -> int:
+    def findLastIndex(self, callback: Callable[..., bool] | None = None) -> int:
         """[Returns the last index of an element in an array that passes a test]"""
         it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
@@ -3418,7 +3431,7 @@ class Array:
             return undefined
         return self.args.pop(0)
 
-    def map(self, func: Callable[[Any], Any]) -> list[Any]:
+    def map(self, func: Callable[..., Any] | None = None) -> list[Any]:
         """[Creates a new array with the result of calling a function for each array element]
 
         Args:
@@ -3430,7 +3443,7 @@ class Array:
         it = _js_iteratee(func)
         return [it(value, i, self.args) for i, value in enumerate(self.args)]
 
-    def some(self, func: Callable[..., bool]) -> bool:
+    def some(self, func: Callable[..., bool] | None = None) -> bool:
         """Checks if any of the elements in an array pass a test"""
         it = _js_iteratee(func)
         return any(it(value, i, self.args) for i, value in enumerate(self.args))
@@ -3483,10 +3496,12 @@ class Array:
         copy[index] = value
         return Array._new(copy)
 
-    def reduce(self, callback: Callable[..., Any], initialValue: Any = None) -> Any:
+    def reduce(self, cb: Any = None, initialValue: Any = None) -> Any:
         """Reduces the array to a single value (going left-to-right)
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
+        _require_callback(cb)
+        callback: Callable[..., Any] = cb
         arguments = self.args
         offset = 0
         if initialValue is None:
@@ -3512,11 +3527,12 @@ class Array:
         return acc
 
     def reduceRight(
-        self, callback: Callable[..., Any], initialValue: Any = None
+        self, callback: Callable[..., Any] | None = None, initialValue: Any = None
     ) -> Any:
         """Reduces the array to a single value (going right-to-left)
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
+        _require_callback(callback)
         arguments = self.args
         last = len(arguments) - 1
         if initialValue is None:
@@ -3530,7 +3546,7 @@ class Array:
             initialValue = step(initialValue, arguments[i], i, self.args)
         return initialValue
 
-    def filter(self, func: Callable[[Any], bool]) -> list[Any]:
+    def filter(self, func: Callable[..., bool] | None = None) -> list[Any]:
         """
         Creates a new array with every element in an array that pass a test
         i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )
@@ -3544,7 +3560,7 @@ class Array:
         it = _js_iteratee(func)
         return [v for i, v in enumerate(self.args) if it(v, i, self.args)]
 
-    def find(self, func: Callable[..., bool]) -> Any:
+    def find(self, func: Callable[..., bool] | None = None) -> Any:
         """Returns the value of the first element in an array that pass a test"""
         it = _js_iteratee(func)
         for i, each in enumerate(self.args):
@@ -3565,7 +3581,7 @@ class Array:
                     return i
         return -1
 
-    def forEach(self, func: Callable[..., Any]) -> None:
+    def forEach(self, func: Callable[..., Any] | None = None) -> None:
         """Calls a function for each array element"""
         it = _js_iteratee(func)
         for index, value in enumerate(list(self.args)):
@@ -3608,7 +3624,7 @@ class Array:
         for i, value in enumerate(self.args):
             yield [i, value]
 
-    def every(self, func: Callable[..., bool]) -> bool:
+    def every(self, func: Callable[..., bool] | None = None) -> bool:
         """[Checks if every element in an array pass a test]"""
         it = _js_iteratee(func)
         return all(it(value, i, self.args) for i, value in enumerate(self.args))
@@ -4046,7 +4062,7 @@ def _js_replacer(fn: "Callable[..., Any]") -> "Callable[[Any], str]":
     """
     try:
         params = list(inspect.signature(fn).parameters.values())
-    except (TypeError, ValueError):
+    except (_PyTypeError, ValueError):
         return fn
     positional = [
         p
@@ -6064,25 +6080,66 @@ class Float64Array(TypedArray):
 
 
 class Error(Exception):
-    """Raise Errors"""
+    """JavaScript ``Error``. ``name`` defaults to ``"Error"``; ``str(err)`` is
+    ``"Error: message"`` (just ``"Error"`` when there is no message)."""
 
-    def __init__(self, message: str, *args: Any, **kwargs: Any) -> None:
-        self.message = message
-        super(Error, self).__init__(message)
+    name: str = "Error"
 
-    # def __str__(self):
-    #     return self.message
+    def __init__(self, message: Any = "", *args: Any, **kwargs: Any) -> None:
+        self.message = "" if message is None else str(message)
+        options = args[0] if args and isinstance(args[0], dict) else kwargs
+        self.cause = options.get("cause") if isinstance(options, dict) else None
+        self.stack = f"{self.name}: {self.message}"
+        super().__init__(self.message)
+
+    def __str__(self) -> str:
+        return f"{self.name}: {self.message}" if self.message else self.name
+
+    def toString(self) -> str:
+        return self.__str__()
 
 
-# Error
-# AggregateError
-# EvalError
-# InternalError
-# RangeError
-# ReferenceError
-# SyntaxError
-# TypeError
-# URIError
+# each also subclasses the matching Python built-in, so ``throw new TypeError``
+# in ported code is still a Python ``TypeError`` and ``except TypeError`` keeps
+# working for callers that imported this module's name.
+class TypeError(Error, builtins.TypeError):  # noqa: A001
+    name = "TypeError"
+
+
+class RangeError(Error, builtins.ValueError):
+    name = "RangeError"
+
+
+class SyntaxError(Error, builtins.SyntaxError):  # noqa: A001
+    name = "SyntaxError"
+
+
+class ReferenceError(Error, builtins.NameError):
+    name = "ReferenceError"
+
+
+class EvalError(Error):
+    name = "EvalError"
+
+
+class URIError(Error):
+    name = "URIError"
+
+
+class InternalError(Error):
+    name = "InternalError"
+
+
+class AggregateError(Error):
+    """``new AggregateError(errors, message?)`` -- several errors wrapped as one."""
+
+    name = "AggregateError"
+
+    def __init__(
+        self, errors: Any = (), message: Any = "", *args: Any, **kwargs: Any
+    ) -> None:
+        self.errors = list(errors) if errors is not None else []
+        super().__init__(message, *args, **kwargs)
 
 
 # ---- STUBBING OUT SOME NEW ONES TO WORK ON ----
@@ -6397,6 +6454,18 @@ class JSON:
 # (reachable via getattr, and present for feature detection).
 setattr(Object, "is", Object.is_)
 setattr(Array, "with", Array.with_)
+
+
+# ``from domonic.javascript import *`` must not quietly shadow Python's own
+# ``TypeError`` / ``SyntaxError`` / ``AggregateError`` (they break ``except`` /
+# ``assertRaises`` in code that never asked for the JS versions). They stay
+# importable by name -- ``from domonic.javascript import TypeError``.
+_STAR_HIDDEN = {"TypeError", "SyntaxError", "AggregateError", "_STAR_HIDDEN"}
+__all__ = [
+    _n
+    for _n in dir()
+    if not _n.startswith("_") and _n not in _STAR_HIDDEN
+]
 
 
 '''
