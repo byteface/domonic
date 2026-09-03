@@ -4135,9 +4135,26 @@ class String:
         return ord(char)
 
     @staticmethod
-    def raw(string: str) -> str:
-        """Returns the string as-is (no interpretation of backslash escapes)."""
-        return string
+    def raw(template: Any, *substitutions: Any) -> str:
+        """``String.raw`` -- the tag function for raw template literals.
+
+        ``template`` is the strings object (``{"raw": [...]}`` or anything with
+        a ``raw`` sequence); the raw segments are interleaved with
+        ``substitutions``. A plain string is returned unchanged, so
+        ``String.raw(r"a\\nb")`` still works.
+        """
+        if isinstance(template, str):
+            return template
+        if isinstance(template, dict):
+            parts = list(template.get("raw", []))
+        else:
+            parts = list(getattr(template, "raw", template))
+        out: list[str] = []
+        for i, part in enumerate(parts):
+            out.append(str(part))
+            if i < len(substitutions):
+                out.append(str(substitutions[i]))
+        return "".join(out)
 
     # @staticmethod
     # def fromCharCode(code: int):
@@ -4895,8 +4912,10 @@ _JS_PROP_RE = re.compile(r"\\([pP])\{([A-Za-z_]+(?:=[A-Za-z_]+)?)\}")
 def _translate_js_regex(pattern: str) -> str:
     """Best-effort JS -> Python regex source translation.
 
-    - ``\\p{P}`` / ``\\P{L}`` etc. -> character classes from ``unicodedata``
     - ``(?<name>...)`` -> ``(?P<name>...)`` and ``\\k<name>`` -> ``(?P=name)``
+    - ``[^]`` (any char) -> ``[\\s\\S]``
+    - ``\\u{1F600}`` (braced code-point escape) -> ``\\U0001F600``
+    - ``\\p{P}`` / ``\\P{Script=Greek}`` etc. -> classes from ``unicodedata``
     """
     if "(?<" in pattern:
         pattern = re.sub(r"\(\?<([A-Za-z_]\w*)>", r"(?P<\1>", pattern)
@@ -4904,8 +4923,20 @@ def _translate_js_regex(pattern: str) -> str:
 
     # JS ``[^]`` (empty negated class = "any char, newlines included") is a
     # syntax error in Python's re -- rewrite it. ``[^]]`` (not "]") is left be.
+    # The leading group soaks up any run of *paired* backslashes so ``\\[^]``
+    # (an escaped backslash, then the class) is still rewritten.
     if "[^]" in pattern:
-        pattern = re.sub(r"(?<!\\)\[\^\](?!\])", r"[\\s\\S]", pattern)
+        pattern = re.sub(
+            r"(?<!\\)((?:\\\\)*)\[\^\](?!\])", r"\1[\\s\\S]", pattern
+        )
+
+    # JS ``\u{1F600}`` (braced code-point escape, u/v flags) -> Python ``\Uxxxxxxxx``
+    if "\\u{" in pattern:
+        pattern = re.sub(
+            r"\\u\{([0-9A-Fa-f]{1,6})\}",
+            lambda m: "\\U%08X" % int(m.group(1), 16),
+            pattern,
+        )
 
     if "\\p{" not in pattern and "\\P{" not in pattern:
         return pattern

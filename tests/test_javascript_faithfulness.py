@@ -179,6 +179,20 @@ class StringRegexFaithfulness(unittest.TestCase):
         self.assertEqual(
             S("a/* c */b").replace(RegExp(r"/\*[^]*?\*/", "g"), ""), "ab"
         )
+        # \\[^] -- escaped backslash then any char (matching an escape sequence)
+        self.assertTrue(RegExp(r"\\[^]").test("\\x"))
+        self.assertTrue(
+            RegExp(r"^(?:'((?:\\[^]|[^'\\])*?)')", "").test("'use strict'")
+        )
+
+    def test_braced_codepoint_escape(self):
+        self.assertTrue(RegExp(r"\u{1F600}", "u").test("\U0001F600"))
+        self.assertTrue(RegExp(r"[\u{41}-\u{5A}]", "u").test("M"))
+
+    def test_string_raw(self):
+        self.assertEqual(String.raw({"raw": ["a", "b", "c"]}, 1, 2), "a1b2c")
+        self.assertEqual(String.raw({"raw": ["x", "y"]}, "-"), "x-y")
+        self.assertEqual(String.raw(r"a\nb"), r"a\nb")  # plain-string shortcut
 
 
 class RegExpFaithfulness(unittest.TestCase):
