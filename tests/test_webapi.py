@@ -7,7 +7,7 @@ import json
 import os
 import tempfile
 import threading
-import time
+import time as _pytime
 import unittest
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -590,7 +590,7 @@ class TestCase(unittest.TestCase):
             {"delay": 1},
         )
         self.assertTrue(done.wait(1))
-        time.sleep(0.01)
+        _pytime.sleep(0.01)
         self.assertEqual(promise.state, "fulfilled")
         self.assertEqual(promise.data, "later")
 

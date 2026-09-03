@@ -580,7 +580,7 @@ class Window(JavaScriptWindow, EventTarget):
         )
 
     @property
-    def localStorage(self) -> Storage:
+    def localStorage(self) -> Storage:  # type: ignore[override]
         return self._localStorage
 
     @property
@@ -837,7 +837,9 @@ class Window(JavaScriptWindow, EventTarget):
             self._running_microtasks = False
         return None
 
-    def requestAnimationFrame(self, callback: Callable[[float], Any]) -> int:
+    def requestAnimationFrame(  # type: ignore[override]
+        self, callback: Callable[[float], Any]
+    ) -> int:
         if not callable(callback):
             raise TypeError("requestAnimationFrame callback must be callable")
         request_id = self._next_animation_frame_id
@@ -899,7 +901,7 @@ class Window(JavaScriptWindow, EventTarget):
         return None
 
     @property
-    def screen(self) -> Screen:
+    def screen(self) -> Screen:  # type: ignore[override]
         return self._screen
 
     @property

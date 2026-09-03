@@ -23,6 +23,7 @@ files = [
     "domonic/cmd.py",
     "domonic/components.py",
     "domonic/JSON.py",
+    "domonic/javascript.py",
     "domonic/constants/keyboard.py",
     "domonic/d3/array.py",
     "domonic/d3/color.py",

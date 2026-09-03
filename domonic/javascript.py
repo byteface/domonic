@@ -29,7 +29,7 @@ import signal
 import struct
 import sys
 import threading
-import time
+import time as _time
 import urllib.parse
 from collections.abc import Iterable as IterableABC
 from collections.abc import Mapping as MappingABC
@@ -1463,14 +1463,14 @@ clearTimeout = Global.clearTimeout
 
 class Performance:
 
-    _start: float = time.time()
+    _start: float = _time.time()
 
     def __init__(self) -> None:
         self._entries: list[Any] = []
         self._marks: dict[str, float] = {}
 
     def now(self) -> float:
-        end = time.time()
+        end = _time.time()
         return end - Performance._start
 
     def mark(self, name: str) -> Any:
@@ -1554,7 +1554,7 @@ class Performance:
         ]
 
     # def reset(self):
-    #     Performance._start = time.time()
+    #     Performance._start = _time.time()
 
 
 performance = Performance()
@@ -2155,7 +2155,7 @@ class Date(Object):
     @staticmethod
     def now() -> int:
         """Returns the number of milliseconds since midnight Jan 1, 1970"""
-        return round(time.time() * 1000)
+        return round(_time.time() * 1000)
 
     def setDate(self, day: int) -> int:
         """Sets the day of the month of a date object
@@ -2571,7 +2571,7 @@ class Promise:
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        self.data = None
+        self.data: Any = None
         self.state = "pending"  # fullfilled, rejected
         self._then_callbacks: list[Callable[[Any], Any]] = []
         self._catch_callbacks: list[Callable[[Any], Any]] = []
@@ -5348,104 +5348,77 @@ class __byteutils__:
         return list(struct.pack(">f", v))
 
 
-Int8Array = type(
-    "Int8Array",
-    (TypedArray,),
-    {
-        "name": "Int8Array",
-        "BYTES_PER_ELEMENT": 1,
-        "_pack": __byteutils__.packI8,
-        "_unpack": __byteutils__.unpackI8,
-    },
-)
+class Int8Array(TypedArray):
+    name = "Int8Array"
+    BYTES_PER_ELEMENT = 1
+    _pack = __byteutils__.packI8
+    _unpack = __byteutils__.unpackI8
 
-Uint8Array = type(
-    "Uint8Array",
-    (TypedArray,),
-    {
-        "name": "Uint8Array",
-        "BYTES_PER_ELEMENT": 1,
-        "_pack": __byteutils__.packU8,
-        "_unpack": __byteutils__.unpackU8,
-    },
-)
 
-Uint8ClampedArray = type(
-    "Uint8ClampedArray",
-    (TypedArray,),
-    {
-        "name": "Uint8ClampedArray",
-        "BYTES_PER_ELEMENT": 1,
-        "_pack": __byteutils__.packU8Clamped,
-        "_unpack": __byteutils__.unpackU8,
-    },
-)
 
-Int16Array = type(
-    "Int16Array",
-    (TypedArray,),
-    {
-        "name": "Int16Array",
-        "BYTES_PER_ELEMENT": 2,
-        "_pack": __byteutils__.packI16,
-        "_unpack": __byteutils__.unpackI16,
-    },
-)
+class Uint8Array(TypedArray):
+    name = "Uint8Array"
+    BYTES_PER_ELEMENT = 1
+    _pack = __byteutils__.packU8
+    _unpack = __byteutils__.unpackU8
 
-Uint16Array = type(
-    "Uint16Array",
-    (TypedArray,),
-    {
-        "name": "Uint16Array",
-        "BYTES_PER_ELEMENT": 2,
-        "_pack": __byteutils__.packU16,
-        "_unpack": __byteutils__.unpackU16,
-    },
-)
 
-Int32Array = type(
-    "Int32Array",
-    (TypedArray,),
-    {
-        "name": "Int32Array",
-        "BYTES_PER_ELEMENT": 4,
-        "_pack": __byteutils__.packI32,
-        "_unpack": __byteutils__.unpackI32,
-    },
-)
 
-Uint32Array = type(
-    "Uint32Array",
-    (TypedArray,),
-    {
-        "name": "Uint32Array",
-        "BYTES_PER_ELEMENT": 4,
-        "_pack": __byteutils__.packU32,
-        "_unpack": __byteutils__.unpackU32,
-    },
-)
+class Uint8ClampedArray(TypedArray):
+    name = "Uint8ClampedArray"
+    BYTES_PER_ELEMENT = 1
+    _pack = __byteutils__.packU8Clamped
+    _unpack = __byteutils__.unpackU8
 
-Float32Array = type(
-    "Float32Array",
-    (TypedArray,),
-    {
-        "name": "Float32Array",
-        "BYTES_PER_ELEMENT": 4,
-        "_pack": __byteutils__.packF32,
-        "_unpack": __byteutils__.unpackF32,
-    },
-)
 
-Float64Array = type(
-    "Float64Array",
-    (TypedArray,),
-    {
-        "name": "Float64Array",
-        "BYTES_PER_ELEMENT": 8,
-        "_pack": __byteutils__.packF64,
-        "_unpack": __byteutils__.unpackF64,
-    },
-)
+
+class Int16Array(TypedArray):
+    name = "Int16Array"
+    BYTES_PER_ELEMENT = 2
+    _pack = __byteutils__.packI16
+    _unpack = __byteutils__.unpackI16
+
+
+
+class Uint16Array(TypedArray):
+    name = "Uint16Array"
+    BYTES_PER_ELEMENT = 2
+    _pack = __byteutils__.packU16
+    _unpack = __byteutils__.unpackU16
+
+
+
+class Int32Array(TypedArray):
+    name = "Int32Array"
+    BYTES_PER_ELEMENT = 4
+    _pack = __byteutils__.packI32
+    _unpack = __byteutils__.unpackI32
+
+
+
+class Uint32Array(TypedArray):
+    name = "Uint32Array"
+    BYTES_PER_ELEMENT = 4
+    _pack = __byteutils__.packU32
+    _unpack = __byteutils__.unpackU32
+
+
+
+class Float32Array(TypedArray):
+    name = "Float32Array"
+    BYTES_PER_ELEMENT = 4
+    _pack = __byteutils__.packF32
+    _unpack = __byteutils__.unpackF32
+
+
+
+class Float64Array(TypedArray):
+    name = "Float64Array"
+    BYTES_PER_ELEMENT = 8
+    _pack = __byteutils__.packF64
+    _unpack = __byteutils__.unpackF64
+
+
 
 # BigInt64Array = type('BigInt64Array',
 # (TypedArray,), {'name': 'BigInt64Array', '_pack': __byteutils__.packI64, '_unpack': __byteutils__.unpackI64})

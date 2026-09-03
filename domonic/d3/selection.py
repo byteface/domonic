@@ -89,13 +89,13 @@ def selector(selector):
 # // selection; we don’t ever want to create a selection backed by a live
 # // HTMLCollection or NodeList. However, note that selection.selectAll will use a
 # // static NodeList as a group, since it safely derived from querySelectorAll.
-def array(x):
+def array(x):  # type: ignore[no-redef]
     b = x if Array.isArray(x) else Array.from_(x)
     return [] if x == None else b
 
 
 # export {default as window} from "./window.js";
-def window(node):
+def window(node):  # type: ignore[no-redef]
     return (
         (node.ownerDocument and node.ownerDocument.defaultView)
         or (node.document and node)

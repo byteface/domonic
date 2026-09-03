@@ -125,7 +125,7 @@ formatTypes: dict[str, Any] = {
     "p": lambda x, p: formatRounded(x * 100, p),
     "r": formatRounded,
     "s": formatPrefixAuto,
-    "X": lambda x, ignore=None: Number(Math.round(x)).toString(16).toUpperCase(),
+    "X": lambda x, ignore=None: Number(Math.round(x)).toString(16).upper(),
     "x": lambda x, ignore=None: Number(Math.round(x)).toString(16),
 }
 
