@@ -2878,19 +2878,35 @@ class DOMRect(DOMRectReadOnly):
         rect = DOMRectReadOnly.fromRect(other)
         return DOMRect(rect.x, rect.y, rect.width, rect.height)
 
-    @DOMRectReadOnly.x.setter
+    @property
+    def x(self) -> float:
+        return self._x
+
+    @x.setter
     def x(self, value: float) -> None:
         self._x = value
 
-    @DOMRectReadOnly.y.setter
+    @property
+    def y(self) -> float:
+        return self._y
+
+    @y.setter
     def y(self, value: float) -> None:
         self._y = value
 
-    @DOMRectReadOnly.width.setter
+    @property
+    def width(self) -> float:
+        return self._width
+
+    @width.setter
     def width(self, value: float) -> None:
         self._width = value
 
-    @DOMRectReadOnly.height.setter
+    @property
+    def height(self) -> float:
+        return self._height
+
+    @height.setter
     def height(self, value: float) -> None:
         self._height = value
 
@@ -4306,14 +4322,6 @@ class Element(Node):
         _serialize_fragment_element(self, out)
         return "".join(out)
 
-    def getHTML(self, options: Any = None) -> str:
-        """DOM ``Element.getHTML()`` -- serialised inner HTML.
-
-        ``options`` is accepted for signature compatibility; shadow-root
-        serialisation is not implemented.
-        """
-        return _serialize_html_fragment(self)
-
     @outerHTML.setter
     def outerHTML(self, value):
         if self.parentNode is None:
@@ -4321,6 +4329,14 @@ class Element(Node):
         replacement = DocumentFragment(*self._parse_html_fragment(value))
         self.parentNode.replaceChild(replacement, self)
         return self
+
+    def getHTML(self, options: Any = None) -> str:
+        """DOM ``Element.getHTML()`` -- serialised inner HTML.
+
+        ``options`` is accepted for signature compatibility; shadow-root
+        serialisation is not implemented.
+        """
+        return _serialize_html_fragment(self)
 
     def html(self, *args):
         self.replaceChildren(*args)
@@ -8394,6 +8410,14 @@ class DOMMatrixReadOnly:
     transforms, points, and animation/geometry helpers.
     """
 
+    # m11..m44 are installed as ``property`` objects by the loop after this
+    # class body (and given setters on ``DOMMatrix``); declare them so callers
+    # and the 2D aliases below type-check.
+    m11: float; m12: float; m13: float; m14: float
+    m21: float; m22: float; m23: float; m24: float
+    m31: float; m32: float; m33: float; m34: float
+    m41: float; m42: float; m43: float; m44: float
+
     @staticmethod
     def fromFloat64Array(array: Iterable[float]) -> "DOMMatrixReadOnly":
         return DOMMatrixReadOnly(*list(array))
@@ -8601,27 +8625,51 @@ class DOMMatrix(DOMMatrixReadOnly):
         readonly = DOMMatrixReadOnly.fromMatrix(matrix)
         return DOMMatrix(*readonly.toFloat64Array())
 
-    @DOMMatrixReadOnly.a.setter
+    @property
+    def a(self) -> float:
+        return self.m11
+
+    @a.setter
     def a(self, value: float) -> None:
         self.m11 = value
 
-    @DOMMatrixReadOnly.b.setter
+    @property
+    def b(self) -> float:
+        return self.m12
+
+    @b.setter
     def b(self, value: float) -> None:
         self.m12 = value
 
-    @DOMMatrixReadOnly.c.setter
+    @property
+    def c(self) -> float:
+        return self.m21
+
+    @c.setter
     def c(self, value: float) -> None:
         self.m21 = value
 
-    @DOMMatrixReadOnly.d.setter
+    @property
+    def d(self) -> float:
+        return self.m22
+
+    @d.setter
     def d(self, value: float) -> None:
         self.m22 = value
 
-    @DOMMatrixReadOnly.e.setter
+    @property
+    def e(self) -> float:
+        return self.m41
+
+    @e.setter
     def e(self, value: float) -> None:
         self.m41 = value
 
-    @DOMMatrixReadOnly.f.setter
+    @property
+    def f(self) -> float:
+        return self.m42
+
+    @f.setter
     def f(self, value: float) -> None:
         self.m42 = value
 
