@@ -441,7 +441,7 @@ class DOMTest(unittest.TestCase):
         # myobj.style.zIndex = "1"
         # print('---')
         self.assertEqual(
-            True, str(myobj) == '<div class="mytest" style="float:left;"></div>'
+            True, str(myobj) == '<div class="mytest" style="float: left;"></div>'
         )
 
         # print("NOW>>>>")
@@ -1562,7 +1562,7 @@ class DOMTest(unittest.TestCase):
         self.assertIs(shadow_button.getRootNode({"composed": True}), page)
         self.assertEqual(
             shadow_selection.getRangeAt(0).toString(),
-            '<button id="shadow-button" style="left:0px;top:0px;width:40px;height:20px;">go</button>',
+            '<button id="shadow-button" style="left: 0px; top: 0px; width: 40px; height: 20px;">go</button>',
         )
 
     def test_custom_elements_registry_and_upgrade(self):
@@ -2171,6 +2171,20 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
         self.assertIsNone(host.parentNode)
         self.assertIs(wrapper.children[0].parentNode, wrapper)
+
+    def test_domparser_and_xmlserializer(self):
+        from domonic.dom import DOMParser, XMLSerializer
+
+        doc = DOMParser().parseFromString("<main><p>hi</p></main>")
+        self.assertEqual(doc.querySelector("p").textContent, "hi")
+
+        xml = DOMParser().parseFromString(
+            "<root><item>1</item></root>", "application/xml"
+        )
+        self.assertEqual(xml.querySelector("item").textContent, "1")
+
+        node = xml.querySelector("item")
+        self.assertEqual(XMLSerializer().serializeToString(node), "<item>1</item>")
 
     def test_html_helper_replaces_children_and_detaches_old_nodes(self):
         old_child = span("old", _id="old")

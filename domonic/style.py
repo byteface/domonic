@@ -2025,7 +2025,9 @@ class Style:
             entries = [entry for entry in entries if entry[0] != property_name]
         else:
             entries = _set_css_declaration(entries, property_name, value, priority)
-        css_text = _serialize_css_declarations(entries, compact=True)
+        # Normalised "prop: value; " form, the same as ``setProperty`` and a
+        # browser's -- assigning through ``el.style`` rewrites the attribute.
+        css_text = _serialize_css_declarations(entries)
         self._parent_node.setAttribute("style", css_text)
         if hasattr(self, "_css_text"):
             object.__setattr__(self, "_css_text", css_text)

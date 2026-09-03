@@ -9306,6 +9306,28 @@ class TreeWalker:
 # XMLSerializer.serializeToString(rootNode)
 
 
+class DOMParser:
+    """``new DOMParser().parseFromString(markup, mimeType)`` -- parse a string
+    into a document, mirroring the browser API."""
+
+    def parseFromString(self, string: str, mimeType: str = "text/html") -> "Node":
+        from domonic import domonic
+
+        mime = (mimeType or "text/html").lower()
+        if "xml" in mime or "svg" in mime:
+            return domonic.parseString(str(string), parser="expat")
+        return domonic.parseString(str(string))
+
+
+class XMLSerializer:
+    """``new XMLSerializer().serializeToString(node)`` -- serialise a node back
+    to markup."""
+
+    def serializeToString(self, node: Any) -> str:
+        outer = getattr(node, "outerHTML", None)
+        return outer if isinstance(outer, str) else str(node)
+
+
 class Sanitizer:
     """Backward-compatible proxy for ``domonic.webapi.sanitizer.Sanitizer``."""
 

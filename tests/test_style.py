@@ -23,7 +23,7 @@ class TestCase(unittest.TestCase):
         assert test.style.getPropertyValue("align-content") == "center"
         test.style.alignContent = "flex-start"
         assert test.style.alignContent == "flex-start"
-        assert str(test) == '<div style="align-content:flex-start;">huh?</div>'
+        assert str(test) == '<div style="align-content: flex-start;">huh?</div>'
 
         atag = a(
             "linky", _href="https://eventual.technology", _style="alignContent: center;"
@@ -44,7 +44,7 @@ class TestCase(unittest.TestCase):
         assert sometag.style.fontSize == "12px"
         sometag.style.display = "none"
         assert sometag.style.getPropertyValue("display") == "none"
-        assert "font-size:12px;" in str(sometag)
+        assert "font-size: 12px;" in str(sometag)
         sometag.style.cssFloat = "right"
         assert sometag.style.getPropertyValue("float") == "right"
         assert sometag.style.float == "right"
@@ -551,7 +551,7 @@ class TestCase(unittest.TestCase):
 
         self.assertEqual(
             node.getAttribute("style"),
-            "color:green;accent-color:hotpink;container-type:inline-size;",
+            "color: green; accent-color: hotpink; container-type: inline-size;",
         )
         self.assertEqual(node.style.getPropertyValue("color"), "green")
         self.assertEqual(node.style.getPropertyValue("accent-color"), "hotpink")
@@ -834,6 +834,27 @@ class TestCase(unittest.TestCase):
         self.assertEqual(node.style.getPropertyValue("border-top-width"), "2px")
         self.assertEqual(node.style.getPropertyValue("border-color"), "blue")
 
+    def test_cssom_writes_serialise_consistently(self):
+        # both the camelCase-attribute path and setProperty produce the same
+        # normalised "prop: value; " form (like a browser)
+        a = div()
+        a.style.setProperty("color", "red")
+        a.style.setProperty("font-size", "12px")
+
+        b = div()
+        b.style.color = "red"
+        b.style.fontSize = "12px"
+
+        self.assertEqual(a.style.cssText, "color: red; font-size: 12px;")
+        self.assertEqual(b.style.cssText, a.style.cssText)
+        self.assertEqual(b.getAttribute("style"), a.getAttribute("style"))
+
+        # a directly-authored attribute stays verbatim until a CSSOM write
+        n = div(_style="color:red;font-size:12px")
+        self.assertEqual(n.getAttribute("style"), "color:red;font-size:12px")
+        n.style.color = "blue"
+        self.assertEqual(n.getAttribute("style"), "color: blue; font-size: 12px;")
+
     def test_setting_a_property_to_empty_string_removes_the_declaration(self):
         node = div()
         node.style.color = "red"
@@ -841,7 +862,7 @@ class TestCase(unittest.TestCase):
 
         node.style.color = ""  # camelCase attribute path
         self.assertNotIn("color:", str(node))
-        self.assertEqual(str(node), '<div style="background:blue;"></div>')
+        self.assertEqual(str(node), '<div style="background: blue;"></div>')
 
         node.style["background"] = ""  # subscript / setProperty path
         self.assertEqual(str(node), '<div style=""></div>')
