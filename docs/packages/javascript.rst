@@ -262,9 +262,33 @@ copied from JS code keep working:
 	r = RegExp(r"\d+", "y"); r.lastIndex = 3
 	r.exec("abc123")                                          # ['123']
 
-	# RegExp.replace with $1..$n, or a JS-style callback
+	# RegExp.replace with $1..$n / $& / $` / $', or a JS-style callback
 	RegExp(r"(\w+)@(\w+)").replace("user@host", "$2:$1")      # "host:user"
 	String("a1b2").replace(RegExp(r"\d", "g"), lambda m, *a: f"[{m}]")
+
+``\p{...}`` accepts long category names and ``Script=<name>`` for common
+scripts, and the JS idiom ``[^]`` (any character, newlines included) is
+translated. ``String.search`` returns the match index, ``String.match`` returns
+an exec-style array (or a list of matches with ``/g``), and ``matchAll`` yields
+match arrays -- all matching the browser.
+
+Strings are UTF-16
+------------------
+
+Like JavaScript, ``String`` length and indexing are **UTF-16 code-unit** based,
+so an astral-plane character (an emoji, rare CJK, ...) counts as two.
+
+.. code-block :: python
+
+	from domonic.javascript import String
+
+	s = String("a\U0001F600b")
+	s.length            # 4  -- the emoji is two code units
+	s.charCodeAt(1)     # 55357  (0xD83D, the lead surrogate)
+	s.codePointAt(1)    # 128512 (the recombined scalar)
+	s.slice(1, 3)       # "😀"
+
+Pure-BMP text behaves exactly as a plain Python ``str`` would.
 
 
 Object methods
