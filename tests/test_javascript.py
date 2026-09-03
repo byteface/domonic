@@ -388,7 +388,7 @@ class TestCase(unittest.TestCase):
 
     def test_domonic_Number(self):
         self.assertEqual(1, Global.Number(1))
-        self.assertEqual("NaN", Global.Number("test"))
+        self.assertTrue(math.isnan(Global.Number("test")))
         self.assertEqual(2, Global.Number("1") + Global.Number("1.0"))
 
     def test_domonic_global_boolean_and_isfinite(self):
@@ -408,10 +408,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Global.Number("   "), 0)
         self.assertEqual(Global.Number(True), 1)
         self.assertEqual(Global.Number(False), 0)
-        self.assertEqual(Global.Number(None), "NaN")
+        self.assertTrue(math.isnan(Global.Number(None)))
         self.assertEqual(Global.Number("0x10"), 16)
         self.assertEqual(Global.Number("-1.5e2"), -150.0)
-        self.assertEqual(Global.Number("1_000"), "NaN")
+        self.assertTrue(math.isnan(Global.Number("1_000")))
 
         self.assertTrue(Global.isFinite(""))
         self.assertFalse(Global.isFinite(None))
@@ -424,13 +424,13 @@ class TestCase(unittest.TestCase):
         self.assertEqual(Global.parseFloat(".5rem"), 0.5)
         self.assertEqual(Global.parseFloat("1e3ms"), 1000.0)
         self.assertEqual(Global.parseFloat("0x10"), 0.0)
-        self.assertEqual(Global.parseFloat("nope"), "NaN")
+        self.assertTrue(math.isnan(Global.parseFloat("nope")))
         self.assertEqual(Global.parseInt("  -12px"), -12)
         self.assertEqual(Global.parseInt("0x10"), 16)
         self.assertEqual(Global.parseInt("10", 2), 2)
         self.assertEqual(Global.parseInt("0x10", 10), 0)
         self.assertEqual(Global.parseInt("ff", 16), 255)
-        self.assertEqual(Global.parseInt("nope"), "NaN")
+        self.assertTrue(math.isnan(Global.parseInt("nope")))
 
     def test_domonic_global_this_alias(self):
         self.assertIs(globalThis, Global)

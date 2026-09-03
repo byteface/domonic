@@ -332,6 +332,24 @@ class Boolean:
     def __init__(self, value: Any = False) -> None:
         self.value: bool = Global.Boolean(value)
 
+    def __bool__(self) -> bool:
+        return self.value
+
+    def __eq__(self, other: object) -> bool:
+        return self.value == (other.value if isinstance(other, Boolean) else other)
+
+    def __hash__(self) -> int:
+        return hash(self.value)
+
+    def __str__(self) -> str:
+        return "true" if self.value else "false"
+
+    def valueOf(self) -> bool:
+        return self.value
+
+    def toString(self) -> str:
+        return "true" if self.value else "false"
+
 
 class Object:
     def __init__(
@@ -1206,16 +1224,26 @@ class Math(Object):
             return math.log(x, base)
 
     @staticmethod
-    @_force_number
-    def max(x: float, y: float) -> float:
-        """Returns the largest of two numbers."""
-        return max(x, y)
+    def _extreme(args: tuple[Any, ...], pick: Any, empty: float) -> Any:
+        if not args:
+            return empty
+        nums = [float(Global.Number(a)) for a in args]
+        if any(n != n for n in nums):
+            return float("nan")
+        result = pick(nums)
+        return int(result) if result.is_integer() else result
 
     @staticmethod
-    @_force_number
-    def min(x: float, y: float) -> float:
-        """Returns the smallest of two numbers."""
-        return min(x, y)
+    def max(*args: Any) -> Any:
+        """The largest of the arguments (``-Infinity`` for none, ``NaN`` if any
+        is ``NaN``) -- variadic, like JavaScript."""
+        return Math._extreme(args, builtins.max, float("-inf"))
+
+    @staticmethod
+    def min(*args: Any) -> Any:
+        """The smallest of the arguments (``Infinity`` for none, ``NaN`` if any
+        is ``NaN``) -- variadic, like JavaScript."""
+        return Math._extreme(args, builtins.min, float("inf"))
 
     @staticmethod
     @_force_number
@@ -1393,28 +1421,28 @@ class Global:
         eval(pythonstring)  # nosec B307
 
     @staticmethod
-    def isFinite(x) -> bool:
-        """Returns true if x is a finite number"""
-        value = Global.Number(x)
-        if value == "NaN":
+    def isFinite(x: Any) -> bool:
+        """Returns true if x coerces to a finite number."""
+        try:
+            return math.isfinite(float(Global.Number(x)))
+        except (ValueError, _PyTypeError):
             return False
-        return math.isfinite(float(value))
 
     @staticmethod
     def isNaN(x: Any) -> bool:
-        """Determines whether a value is an illegal number"""
-        value = Global.Number(x)
-        if value == "NaN":
+        """Determines whether a value coerces to NaN."""
+        try:
+            return math.isnan(float(Global.Number(x)))
+        except (ValueError, _PyTypeError):
             return True
-        return math.isnan(float(value))
 
     @staticmethod
-    def Number(x: Any) -> int | float | str:
-        """Converts an object's value to a number"""
+    def Number(x: Any) -> int | float:
+        """Converts a value to a number, JS-style (non-numeric -> NaN)."""
         if isinstance(x, bool):
             return 1 if x else 0
         if x is None:
-            return "NaN"
+            return float("nan")
         if isinstance(x, (int, float)):
             return x
         if isinstance(x, (list, tuple)):
@@ -1422,14 +1450,14 @@ class Global:
                 return 0
             if len(x) == 1:
                 return Global.Number(x[0])
-            return "NaN"
+            return float("nan")
 
         if isinstance(x, str):
             value = x.strip()
             if value == "":
                 return 0
             if "_" in value or value.lower() == "nan":
-                return "NaN"
+                return float("nan")
 
             unsigned = value[1:] if value[:1] in ("+", "-") else value
             try:
@@ -1445,13 +1473,13 @@ class Global:
                         return float(value)
                     return int(value, 10)
             except Exception:
-                return "NaN"
-            return "NaN"
+                return float("nan")
+            return float("nan")
 
         try:
             return float(x)
         except Exception:
-            return "NaN"
+            return float("nan")
 
     @staticmethod
     def Boolean(x: Any) -> bool:
@@ -1466,7 +1494,7 @@ class Global:
         return True
 
     @staticmethod
-    def parseFloat(x: str) -> float | str:
+    def parseFloat(x: str) -> float:
         """Parses a string and returns a floating point number"""
         value = str(x).lstrip()
         match = re.match(
@@ -1474,14 +1502,14 @@ class Global:
             value,
         )
         if not match:
-            return "NaN"
+            return float("nan")
         try:
             return float(match.group(0))
         except Exception:
-            return "NaN"
+            return float("nan")
 
     @staticmethod
-    def parseInt(x: str, radix: int = 0) -> int | str:
+    def parseInt(x: str, radix: int = 0) -> int | float:
         """Parses a string and returns an integer"""
         value = str(x).lstrip()
         sign = 1
@@ -1492,10 +1520,10 @@ class Global:
         try:
             radix = int(radix or 0)
         except Exception:
-            return "NaN"
+            return float("nan")
 
         if radix and (radix < 2 or radix > 36):
-            return "NaN"
+            return float("nan")
         if radix == 0:
             if value.lower().startswith("0x"):
                 radix = 16
@@ -1515,11 +1543,11 @@ class Global:
                 break
 
         if not digits:
-            return "NaN"
+            return float("nan")
         return sign * int("".join(digits), radix)
 
     @staticmethod
-    def String(x: Any) -> str:
+    def String(x: Any = "") -> str:
         """Converts a value to a string the way JavaScript's ``String(x)`` does."""
         if x is None or x is undefined:
             return "undefined" if x is undefined and undefined is not None else "null"
@@ -3794,8 +3822,23 @@ class Number(float):
 
     # prototype Allows you to add properties and methods to an object   Number
 
+    def __new__(cls, x: Any = "", *args: Any, **kwargs: Any) -> "Number":
+        # coerce with JS semantics first, so ``Number("abc")`` is NaN rather
+        # than a Python ``ValueError`` out of ``float.__new__``
+        try:
+            numeric = float(Global.Number(x))
+        except (ValueError, _PyTypeError):
+            numeric = float("nan")
+        return super().__new__(cls, numeric)
+
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
         self.x: Any = Global.Number(x)
+
+    def __str__(self) -> str:
+        return Global.String(self.x)
+
+    def __repr__(self) -> str:
+        return Global.String(self.x)
 
     def __add__(self, other):
         return self.x + other
@@ -4290,7 +4333,7 @@ class String:
         return ord(char)
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
-        self.x = str(x)
+        self.x = Global.String(x)
         self._u16_cache: "list[int] | None" = None
         self._astral: "bool | None" = None
 

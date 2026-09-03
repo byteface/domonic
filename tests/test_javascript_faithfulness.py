@@ -461,7 +461,7 @@ class CoercionFaithfulness(unittest.TestCase):
         self.assertEqual(Global.Number(True), 1)
         self.assertEqual(Global.Number([5]), 5)
         self.assertEqual(Global.Number([]), 0)
-        self.assertEqual(str(Global.Number(None)), "NaN")
+        self.assertTrue(math.isnan(Global.Number(None)))
 
     def test_parseint_edges(self):
         self.assertEqual(Global.parseInt("  42  "), 42)
@@ -469,7 +469,7 @@ class CoercionFaithfulness(unittest.TestCase):
         self.assertEqual(Global.parseInt("-0x10"), -16)
         self.assertEqual(Global.parseInt("z", 36), 35)
         self.assertEqual(Global.parseInt("12abc"), 12)
-        self.assertEqual(str(Global.parseInt("abc")), "NaN")
+        self.assertTrue(math.isnan(Global.parseInt("abc")))
 
     def test_parsefloat_edges(self):
         self.assertEqual(Global.parseFloat("3.14.15"), 3.14)
