@@ -52,9 +52,9 @@ except ImportError:  # pragma: no cover - optional dependency chain
 try:
     from domonic.utils import NumberUnit, NumberUtils, Utils
 except ImportError:  # pragma: no cover - optional dependency chain
-    NumberUnit = None
-    NumberUtils = None
-    Utils = None
+    NumberUnit = None  # type: ignore[assignment,misc]
+    NumberUtils = None  # type: ignore[assignment,misc]
+    Utils = None  # type: ignore[assignment,misc]
 
 
 class domonic:
@@ -284,24 +284,24 @@ class domonic:
                 num = int(
                     Utils.digits(str(e))
                 )  # go backwards from this line. to the one before it opened
-                pyml = pyml.splitlines()
+                pyml_lines = pyml.splitlines()
 
                 # NOTE - working backwards from the error line. we try to wrap any content.
                 # if already wrapped, we don't want to wrap again. so move back 1 line until we can wrap again
                 # this is because a node may take several lines.
                 countback = 2
-                start_line = pyml[num - countback]
+                start_line = pyml_lines[num - countback]
                 while "_" not in start_line:
                     countback += 1
-                    line = pyml[num - countback]
+                    line = pyml_lines[num - countback]
                     if "html" not in line:
                         start_line = line
-                pyml[num - countback] = (
+                pyml_lines[num - countback] = (
                     start_line + ").html("
                 )  # need to know when to close tag comma vs wrap
 
                 # pyml[num - 2] = pyml[num - 2] + ").html(" + str(num)   # need to know when to close tag comma vs wrap
-                pyml = "\n".join(pyml)
+                pyml = "\n".join(pyml_lines)
                 return domonic.evaluate(pyml, *args, **kwargs)  # try again
 
             return pyml
