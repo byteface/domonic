@@ -5777,6 +5777,32 @@ class CSSStyleDeclaration(Style):
     def _property_entries(self):
         return _parse_css_declarations(self._current_css_text())
 
+    def _expanded_entries(self):
+        """The declaration block the way a browser *enumerates* it: every set
+        shorthand contributes its longhand sub-properties (in canonical order),
+        not a single entry. This is what ``length`` / ``item`` / iteration see
+        -- ``margin: 1px`` is four properties. Serialisation still collapses
+        them back (see ``_collapse_box_shorthands`` / ``cssText``).
+
+        Shorthands ``_cssom.expand_shorthand`` cannot split losslessly
+        (``background``, ``transition``, ``animation``, ``grid-template``,
+        ``grid-area``) stay as the single shorthand entry.
+        """
+        order: list[str] = []
+        seen: dict[str, tuple[str, str]] = {}
+        for name, value, priority in self._property_entries():
+            expanded = (
+                _cssom.expand_shorthand(name, value)
+                if _cssom.is_shorthand(name)
+                else None
+            )
+            pairs = expanded if expanded else [(name, value)]
+            for long_name, long_value in pairs:
+                if long_name not in seen:
+                    order.append(long_name)
+                seen[long_name] = (long_value, priority)
+        return [(n, seen[n][0], seen[n][1]) for n in order]
+
     def _sync_css_text(self, entries):
         css_text = _serialize_css_declarations(entries)
         self.cssText = css_text
@@ -5840,8 +5866,10 @@ class CSSStyleDeclaration(Style):
 
     @property
     def length(self):
-        """The number of properties. See the item() method below."""
-        return len(self._property_entries())
+        """The number of properties in the declaration block. A set shorthand
+        counts as its longhand sub-properties, the way a browser reports it
+        (``el.style.margin = "1px"`` -> ``length`` 4)."""
+        return len(self._expanded_entries())
 
     # @property
     # def parentRule(self):
@@ -5861,6 +5889,10 @@ class CSSStyleDeclaration(Style):
         """Returns the optional priority, "important"."""
         target = self._to_kebab(propertyName)
         for name, _, priority in self._property_entries():
+            if name == target:
+                return priority
+        # a longhand inherits the priority of a set shorthand
+        for name, _, priority in self._expanded_entries():
             if name == target:
                 return priority
         return ""
@@ -5902,7 +5934,7 @@ class CSSStyleDeclaration(Style):
         An alternative to accessing nodeList[i] (which instead returns undefined when i is out-of-bounds).
         This is mostly useful for non-JavaScript DOM implementations.
         """
-        entries = self._property_entries()
+        entries = self._expanded_entries()
         if index < 0 or index >= len(entries):
             return ""
         return entries[index][0]
@@ -6370,6 +6402,10 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             (name, self._resolved.get(name), "")
             for name in self._resolved.names()
         ]
+
+    def _expanded_entries(self):
+        # a computed style is already a flat set of resolved longhands
+        return self._property_entries()
 
     @property
     def cssText(self):

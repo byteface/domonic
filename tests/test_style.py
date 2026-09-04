@@ -869,6 +869,34 @@ class TestCase(unittest.TestCase):
         self.assertEqual(s2.getPropertyValue("border-top-width"), "1px")
         self.assertEqual(s2.getPropertyValue("border-style"), "solid")
 
+    def test_shorthand_counts_as_its_longhands(self):
+        # a browser enumerates a set shorthand as its longhand sub-properties
+        s = div().style
+        s.setProperty("margin", "1px 2px 3px 4px")
+        self.assertEqual(s.length, 4)
+        self.assertEqual(
+            [s.item(i) for i in range(s.length)],
+            ["margin-top", "margin-right", "margin-bottom", "margin-left"],
+        )
+        self.assertEqual(list(s), list(s)[: s.length])
+        # ...but serialisation still collapses back to the shorthand
+        self.assertEqual(s.cssText, "margin: 1px 2px 3px 4px;")
+
+        s.setProperty("color", "red")
+        self.assertEqual(s.length, 5)
+
+        b = div().style
+        b.setProperty("border", "1px solid red")
+        self.assertEqual(b.length, 12)
+        self.assertEqual(b.item(0), "border-top-width")
+        self.assertEqual(b.cssText, "border: 1px solid red;")
+
+        # important flag propagates to the longhand view
+        p = div().style
+        p.setProperty("padding", "5px", "important")
+        self.assertEqual(p.length, 4)
+        self.assertEqual(p.getPropertyPriority("padding-top"), "important")
+
     def test_csstext_setter_always_returns_serialised_form(self):
         s = div().style
         s.cssText = "color: red; margin-top: 5px"  # no trailing ;

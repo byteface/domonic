@@ -425,12 +425,17 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
                 color = token if color is None else f"{color} {token}"
         prefix = "border" if name == "border" else name
         if name == "border":
-            out = []
-            for side in ("top", "right", "bottom", "left"):
-                out.append((f"border-{side}-width", width or "medium"))
-                out.append((f"border-{side}-style", style or "none"))
-                out.append((f"border-{side}-color", color or "currentcolor"))
-            return out
+            # grouped by component then side, matching SHORTHANDS["border"] and
+            # a browser's declaration-block enumeration order
+            return [
+                (f"border-{side}-{comp}", val)
+                for comp, val in (
+                    ("width", width or "medium"),
+                    ("style", style or "none"),
+                    ("color", color or "currentcolor"),
+                )
+                for side in ("top", "right", "bottom", "left")
+            ]
         return [
             (f"{prefix}-width", width or "medium"),
             (f"{prefix}-style", style or "none"),
