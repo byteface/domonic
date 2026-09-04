@@ -8930,9 +8930,20 @@ class DOMMatrix(DOMMatrixReadOnly):
         self.m42 = value
 
     def multiplySelf(self, other: Any) -> "DOMMatrix":
+        """``self = self . other`` (post-multiply), matching the spec:
+        ``a.multiplySelf(b)`` transforms a point as ``a.transformPoint(
+        b.transformPoint(p))`` -- ``b`` is applied first.
+
+        ``_values`` stores each matrix pre-transposed (row ``r``, column ``c``
+        lives at ``_values[r*4+c]``, but a point is transformed as
+        ``p . _values`` -- see ``transformPoint``): storing ``Aᵀ`` for spec
+        matrix ``A``. Composing spec matrices as ``A · B`` therefore means
+        storing ``(A · B)ᵀ = Bᵀ · Aᵀ`` -- ``other``'s (transposed) storage on
+        the left of the raw row-major product, ``self``'s on the right.
+        """
         other_matrix = DOMMatrixReadOnly.fromMatrix(other)
-        left = self._values
-        right = other_matrix._values
+        left = other_matrix._values
+        right = self._values
         result = [0.0] * 16
         for row in range(4):
             for col in range(4):
@@ -9708,10 +9719,13 @@ def _parse_svg_transform(value: Any) -> "DOMMatrix":
             rot = DOMMatrix(cos_a, sin_a, -sin_a, cos_a, 0, 0)
             if len(args) >= 3:
                 cx, cy = args[1], args[2]
+                # translate to the origin, rotate, translate back: the "back"
+                # step is outermost (applied to the point last), so it pre-
+                # multiplies -- spec order T(cx,cy) . R . T(-cx,-cy)
                 token = (
-                    DOMMatrix(1, 0, 0, 1, -cx, -cy)
+                    DOMMatrix(1, 0, 0, 1, cx, cy)
                     .multiply(rot)
-                    .multiply(DOMMatrix(1, 0, 0, 1, cx, cy))
+                    .multiply(DOMMatrix(1, 0, 0, 1, -cx, -cy))
                 )
             else:
                 token = rot
@@ -9721,7 +9735,10 @@ def _parse_svg_transform(value: Any) -> "DOMMatrix":
             token = DOMMatrix(1, math.tan(math.radians(args[0] if args else 0)), 0, 1, 0, 0)
         else:
             continue
-        matrix = token.multiply(matrix)
+        # SVG (like CSS) composes a transform list in written order --
+        # matrix = t1 . t2 . ...  -- so each new token is appended on the
+        # right (DOMMatrix.multiply post-multiplies: a.multiply(b) is a . b)
+        matrix = matrix.multiply(token)
     return matrix
 
 
@@ -9912,17 +9929,23 @@ def _svg_bbox(element: "Element", _include_own_transform: bool = False) -> "DOMR
 
 
 def _svg_ctm(element: "Element", to_screen: bool) -> "DOMMatrix":
+    # Walking from the element up to the root: each ancestor's own transform
+    # is more "outer" than everything accumulated so far, so it pre-multiplies
+    # the accumulator (``local.multiply(matrix)``, spec ``local · matrix``) --
+    # not the other way round. ``DOMMatrix.multiply`` post-multiplies
+    # (``a.multiply(b)`` is spec ``a · b``), so build it via ``local`` on the
+    # left explicitly rather than ``matrix.multiply(local)``.
     matrix = DOMMatrix()
     node: "Any" = element
     while isinstance(node, Element):
         local = _parse_svg_transform(node.getAttribute("transform"))
-        matrix = matrix.multiply(local)
+        matrix = local.multiply(matrix)
         name = str(getattr(node, "nodeName", "")).lower()
         if name == "svg":
             x = _svg_length(node.getAttribute("x"))
             y = _svg_length(node.getAttribute("y"))
             if x or y:
-                matrix = matrix.multiply(DOMMatrix(1, 0, 0, 1, x, y))
+                matrix = DOMMatrix(1, 0, 0, 1, x, y).multiply(matrix)
             if not to_screen:
                 break
         node = getattr(node, "parentNode", None)

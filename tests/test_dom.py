@@ -4042,9 +4042,11 @@ class DOMTest(unittest.TestCase):
         self.assertEqual((point.x, point.y), (12.0, 23.0))
 
         matrix = DOMMatrix()
+        # post-multiply, spec order: the *last*-chained op is applied to the
+        # point *first* -- scale(1,1) -> (2,3), then translate(+5,+7) -> (7,10)
         matrix.translateSelf(5, 7).scaleSelf(2, 3)
         moved = matrix.transformPoint(DOMPoint(1, 1))
-        self.assertEqual((moved.x, moved.y), (12.0, 24.0))
+        self.assertEqual((moved.x, moved.y), (7.0, 10.0))
 
         inverse = DOMMatrix.fromMatrix(matrix).invertSelf()
         original = inverse.transformPoint(moved)
@@ -4071,6 +4073,29 @@ class DOMTest(unittest.TestCase):
             DOMMatrix().skewXSelf(45).toString(), "matrix(1, 0, 1, 1, 0, 0)"
         )
         self.assertFalse(DOMMatrix().rotateSelf(0, 30, 0).is2D)
+
+    def test_dommatrix_composition_order_matches_spec(self):
+        # DOMMatrix.multiplySelf / chained .xSelf() calls post-multiply, per
+        # spec: "this matrix post-multiplied by ..." -- a.multiplySelf(b)
+        # transforms a point as a.transformPoint(b.transformPoint(p)), so the
+        # *last*-chained operation is applied to the point *first*.
+        def apply(m, x, y):
+            p = m.transformPoint(DOMPoint(x, y))
+            return (round(p.x, 6), round(p.y, 6))
+
+        # translateSelf(10,0).rotateSelf(90): rotate first, then translate
+        m = DOMMatrix().translateSelf(10, 0).rotateSelf(90)
+        self.assertEqual(apply(m, 1, 0), (10.0, 1.0))
+        self.assertEqual(m.toString(), "matrix(0, 1, -1, 0, 10, 0)")
+
+        # the reverse chain applies translate first, then rotate
+        m2 = DOMMatrix().rotateSelf(90).translateSelf(10, 0)
+        self.assertEqual(apply(m2, 1, 0), (0.0, 11.0))
+
+        # a.multiply(b) == chaining b onto a: b applied to the point first
+        a = DOMMatrix().translateSelf(10, 0)
+        b = DOMMatrix().rotateSelf(90)
+        self.assertEqual(apply(a.multiply(b), 1, 0), apply(m, 1, 0))
 
     def test_domquad_from_rect_uses_rect_bounds(self):
         quad = DOMQuad.fromRect(DOMRect(5, 10, 20, 30))

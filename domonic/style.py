@@ -6864,9 +6864,11 @@ def _transform_to_matrix(
     def length(tok: str) -> "float | None":
         return _length_string_to_px(tok, em_px=em_px, rem_px=rem_px, percent_px=None)
 
-    # apply right-to-left: CSS lists the outermost transform first, and domonic's
-    # DOMMatrix multiplies with row vectors
-    for name, raw_args in reversed(functions):
+    # apply left-to-right: DOMMatrix.multiplySelf post-multiplies (self . other,
+    # spec order), so composing in written order -- I . f1 . f2 . ... -- gives
+    # the same matrix CSS does (the rightmost function applied to the point
+    # first).
+    for name, raw_args in functions:
         fn = name.lower()
         args = [a.strip() for a in raw_args.split(",") if a.strip()]
         try:

@@ -188,6 +188,20 @@ class TestCase(unittest.TestCase):
         p = ctm.transformPoint(DOMPoint(10, 10))
         self.assertEqual((p.x, p.y), (220.0, 120.0))
 
+    def test_transform_attribute_list_composes_in_written_order(self):
+        # SVG (like CSS) composes a `transform` list left-to-right, with the
+        # rightmost function applied to the point first
+        from domonic.dom import DOMPoint, _parse_svg_transform
+
+        m = _parse_svg_transform("translate(10,0) rotate(90)")
+        p = m.transformPoint(DOMPoint(1, 0))
+        self.assertEqual((round(p.x, 6), round(p.y, 6)), (10.0, 1.0))
+
+        # rotate(angle, cx, cy) rotates about (cx, cy)
+        about = _parse_svg_transform("rotate(90, 5, 5)")
+        p2 = about.transformPoint(DOMPoint(6, 5))
+        self.assertEqual((round(p2.x, 6), round(p2.y, 6)), (5.0, 6.0))
+
     def test_createElementNS_and_d3_append_get_svg_api(self):
         from domonic.dom import document
         from domonic.d3.selection import select
