@@ -254,6 +254,13 @@ class ArrayFaithfulness(unittest.TestCase):
         self.assertEqual(A(1, 2, 3, 4).slice(-2), [3, 4])
         self.assertEqual(A(1, 2, 3, 4).splice(1, 2), [2, 3])
 
+    def test_from_with_map_callback(self):
+        from domonic.javascript import Array
+
+        self.assertEqual(Array.from_([1, 2, 3], lambda x, *_: x * 2), [2, 4, 6])
+        self.assertEqual(Array.from_("abc", lambda c, i: f"{c}{i}"), ["a0", "b1", "c2"])
+        self.assertEqual(Array.from_({"length": 3}, lambda _, i: i), [0, 1, 2])
+
     def test_iteration_helpers(self):
         self.assertEqual(A(1, 2, 3).map(lambda x, *a: x * 2), [2, 4, 6])
         self.assertEqual(A(1, 2, 3, 4).filter(lambda x, *a: x % 2 == 0), [2, 4])
@@ -436,9 +443,22 @@ class ObjectFaithfulness(unittest.TestCase):
 
     def test_assign_and_fromentries(self):
         self.assertEqual(Object.assign({"a": 1}, {"b": 2}), {"a": 1, "b": 2})
+        # variadic, and returns the target
+        target: dict = {}
+        result = Object.assign(target, {"a": 1}, {"b": 2}, {"a": 3})
+        self.assertEqual(result, {"a": 3, "b": 2})
+        self.assertIs(result, target)
         self.assertEqual(
             Object.fromEntries([["a", 1], ["b", 2]]), {"a": 1, "b": 2}
         )
+
+    def test_freeze_blocks_mutation(self):
+        frozen = Object.freeze({"a": 1})
+        self.assertTrue(Object.isFrozen(frozen))
+        with self.assertRaises(TypeError):
+            frozen["a"] = 2
+        self.assertEqual(frozen["a"], 1)
+        self.assertTrue(Object.isFrozen("a string"))  # primitives are frozen
 
     def test_is_and_hasown(self):
         self.assertTrue(Object.is_(float("nan"), float("nan")))
@@ -489,6 +509,19 @@ class CoercionFaithfulness(unittest.TestCase):
         self.assertEqual(Global.parseFloat("1e3"), 1000.0)
         self.assertEqual(Global.parseFloat("Infinity"), float("inf"))
 
+    def test_string_number_wrappers_are_primitives(self):
+        from domonic.javascript import String, Number
+
+        # String(x) / Number(x) are real str / float, not just wrappers
+        self.assertIsInstance(String(5), str)
+        self.assertEqual(String(5), "5")
+        self.assertIsInstance(Number("7"), float)
+        self.assertEqual(Number("7"), 7)
+        # still carry the JS method surface
+        self.assertEqual(String("hi").toUpperCase(), "HI")
+        self.assertEqual(String("a-b-c").split("-"), ["a", "b", "c"])
+        self.assertEqual(hash(String("k")), hash("k"))
+
 
 class DateFaithfulness(unittest.TestCase):
     def test_component_constructor_is_zero_indexed_month(self):
@@ -534,6 +567,24 @@ class JSONFaithfulness(unittest.TestCase):
 
         self.assertEqual(JSON.stringify({"a": 1, "b": [1, 2]}), '{"a":1,"b":[1,2]}')
         self.assertEqual(JSON.stringify({"a": 1}, None, 2), '{\n  "a": 1\n}')
+
+    def test_reviver_and_replacer_callbacks(self):
+        from domonic.javascript import JSON
+
+        # replacer function: returning undefined (None) omits the key
+        self.assertEqual(
+            JSON.stringify({"a": 1, "b": 2}, lambda k, v: None if k == "b" else v),
+            '{"a":1}',
+        )
+        # replacer array: a key whitelist
+        self.assertEqual(
+            JSON.stringify({"a": 1, "b": 2, "c": 3}, ["a", "c"]), '{"a":1,"c":3}'
+        )
+        # reviver: bottom-up transform
+        self.assertEqual(
+            JSON.parse('{"a":1,"b":2}', lambda k, v: v * 10 if isinstance(v, int) else v),
+            {"a": 10, "b": 20},
+        )
 
     def test_parse_of_invalid_json_raises_syntaxerror(self):
         # JS: JSON.parse("{") throws a SyntaxError, not a language-specific

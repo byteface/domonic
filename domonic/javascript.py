@@ -351,6 +351,28 @@ class Boolean:
         return "true" if self.value else "false"
 
 
+class _FrozenDict(dict):
+    """A ``dict`` that raises on any mutation -- the value ``Object.freeze``
+    returns for a plain dict (JS throws on writing a frozen object in strict
+    mode)."""
+
+    _MSG = "cannot modify a frozen object"
+
+    def _blocked(self, *_a: Any, **_k: Any) -> Any:
+        raise _PyTypeError(self._MSG)
+
+    __setitem__ = _blocked
+    __delitem__ = _blocked
+    clear = _blocked
+    pop = _blocked
+    popitem = _blocked
+    setdefault = _blocked
+    update = _blocked
+
+    def __reduce__(self) -> Any:
+        return (_FrozenDict, (dict(self),))
+
+
 class Object:
     def __init__(
         self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any
@@ -421,24 +443,25 @@ class Object:
         return {k: v for k, v in entries}
 
     @staticmethod
-    def assign(target: Any, source: Any) -> Any:
-        """Copies the values of all enumerable own properties from one or more source objects to a target object."""
-        if isinstance(target, dict):
+    def assign(target: Any, *sources: Any) -> Any:
+        """Copy the enumerable own properties of each source onto ``target``
+        (left to right) and return ``target`` -- ``Object.assign(t, s1, s2, ...)``.
+        """
+        for source in sources:
+            if source is None:
+                continue
             if isinstance(source, dict):
-                for k, v in source.items():
-                    target[k] = v
+                pairs: Any = source.items()
+            elif hasattr(source, "attribs"):
+                pairs = source.attribs.items()
             else:
-                for k, v in source.__dict__.items():
+                pairs = vars(source).items()
+            for k, v in pairs:
+                if isinstance(target, dict):
                     target[k] = v
-        else:
-            if isinstance(source, dict):
-                for k, v in source.items():
+                else:
                     setattr(target, k, v)
-            else:
-                for k, v in source.attribs.items():
-                    setattr(target, k, v)
-
-        # return target
+        return target
         # for prop in source.__dict__:
         #     if source.propertyIsEnumerable(prop):
         #         target.__dict__[prop] = source.__dict__[prop]
@@ -539,6 +562,8 @@ class Object:
     @staticmethod
     def isSealed(obj: Any) -> bool:
         """Determines if an object is sealed."""
+        if isinstance(obj, _FrozenDict):
+            return True
         if isinstance(obj, Object):
             return bool(getattr(obj, "_Object__sealed", False))
         return False
@@ -573,8 +598,12 @@ class Object:
     @staticmethod
     def isFrozen(obj: Any) -> bool:
         """Determines if an object was frozen."""
+        if isinstance(obj, _FrozenDict):
+            return True
         if isinstance(obj, Object):
             return bool(getattr(obj, "_Object__frozen", False))
+        if isinstance(obj, (str, int, float, bool, tuple, frozenset, type(None))):
+            return True  # primitives are frozen
         return bool(getattr(obj, "__isFrozen", False))
 
     @staticmethod
@@ -609,7 +638,14 @@ class Object:
 
     @staticmethod
     def freeze(obj: Any) -> Any:
-        """Freezes an object. Other code cannot delete or change its properties."""
+        """Freeze an object so its properties can no longer be added, removed,
+        or changed. As in JS, the (frozen) object is returned -- for a plain
+        ``dict`` that is a read-only copy that raises on mutation, so use the
+        return value (``cfg = Object.freeze(cfg)``)."""
+        if isinstance(obj, _FrozenDict):
+            return obj
+        if isinstance(obj, dict):
+            return _FrozenDict(obj)
         if isinstance(obj, Object):
             object.__setattr__(obj, "_Object__extensible", False)
             object.__setattr__(obj, "_Object__sealed", True)
@@ -3235,22 +3271,33 @@ class Array:
     """javascript array"""
 
     @staticmethod
-    def from_(obj: Any) -> Array:
-        """Creates a new Array instance from an array-like or iterable object."""
+    def from_(obj: Any, mapFn: Any = None, thisArg: Any = None) -> Array:
+        """Creates a new Array instance from an array-like or iterable object.
+
+        The optional ``mapFn(value, index)`` is applied to each element as the
+        array is built, exactly like ``Array.from(iterable, fn)`` in JS.
+        """
         if isinstance(obj, Array):
-            return Array(*obj.args)
-        if isinstance(obj, (list, tuple)):
-            return Array._new(obj)
-        if isinstance(obj, dict):
-            return Array._new(obj.items())
-        if isinstance(obj, str):
-            return Array._new(obj)
-        if hasattr(obj, "__iter__"):
-            return Array._new(obj)
-        length = getattr(obj, "length", None)
-        if isinstance(length, int):
-            return Array._new([None] * length)
-        return Array._new([])
+            items: list[Any] = list(obj.args)
+        elif isinstance(obj, (list, tuple, str)):
+            items = list(obj)
+        elif isinstance(obj, dict):
+            # an array-like ``{length: n, 0: ..., 1: ...}`` reads by index;
+            # any other dict falls back to its entries (domonic convenience)
+            length = obj.get("length")
+            if isinstance(length, int):
+                items = [obj.get(i, obj.get(str(i))) for i in range(length)]
+            else:
+                items = list(obj.items())
+        elif hasattr(obj, "__iter__"):
+            items = list(obj)
+        else:
+            length = getattr(obj, "length", None)
+            items = [None] * length if isinstance(length, int) else []
+        if mapFn is not None:
+            iteratee = _js_iteratee(mapFn)
+            items = [iteratee(value, index, items) for index, value in enumerate(items)]
+        return Array._new(items)
 
     @classmethod
     def _new(cls, items: Any) -> "Array":
@@ -4408,8 +4455,25 @@ def _unit_index_to_cp(s: str, unit_index: int) -> int:
     return len(s)
 
 
-class String:
-    """javascript String methods"""
+class String(str):
+    """JavaScript ``String``.
+
+    Subclasses ``str`` so ``String(x)`` *is* a real string primitive (like
+    ``Number(float)``) -- ``isinstance(String(5), str)`` is ``True`` and it
+    interoperates everywhere a ``str`` is expected -- while still carrying the
+    JS method surface (``charAt``, ``padStart``, UTF-16 ``length``, ...).
+    ``self.x`` is kept as a read-only alias of the string content so the ~180
+    internal references keep working.
+    """
+
+    def __new__(cls, x: Any = "", *args: Any, **kwargs: Any) -> "String":
+        return super().__new__(cls, Global.String(x))
+
+    @property
+    def x(self) -> str:  # noqa: D401 - internal alias
+        return str.__str__(self)
+
+    __hash__ = str.__hash__
 
     @staticmethod
     def fromCodePoint(codePoint: int) -> str:
@@ -4454,7 +4518,6 @@ class String:
         return ord(char)
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
-        self.x = Global.String(x)
         self._u16_cache: "list[int] | None" = None
         self._astral: "bool | None" = None
 
@@ -4497,7 +4560,7 @@ class String:
     # def __repr__(self):
     #     return self.x
 
-    def __getitem__(self, item: "int | slice") -> Any:
+    def __getitem__(self, item: "int | slice") -> Any:  # type: ignore[override]
         if isinstance(item, slice):
             return self.x[item]
         # JS bracket indexing: the char at a valid position, else ``undefined``
@@ -4525,16 +4588,16 @@ class String:
     def __isub__(self, other: str) -> Any:
         return self.x - other  # type: ignore[operator]
 
-    def __mul__(self, other: int) -> str:
+    def __mul__(self, other: int) -> str:  # type: ignore[override]
         return self.x * int(other)
 
-    def __rmul__(self, other: int) -> str:
+    def __rmul__(self, other: int) -> str:  # type: ignore[override]
         return self.x * int(other)
 
-    def __imul__(self, other: int) -> str:
+    def __imul__(self, other: int) -> str:  # type: ignore[override]
         return self.x * int(other)
 
-    def split(
+    def split(  # type: ignore[override]
         self, expr: "str | RegExp | None" = None, limit: int | None = None
     ) -> list[str]:
         """``String.prototype.split(separator, limit)``.
@@ -4696,7 +4759,7 @@ class String:
             return ""
         return _units_to_str([units[index]])
 
-    def replace(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
+    def replace(self, old: str | RegExp, new: str | Callable[..., str]) -> str:  # type: ignore[override]
         """
         Searches a string for a specified value, or a regular expression,
         and returns a new string where the specified values are replaced.
@@ -6600,13 +6663,72 @@ class JSON:
         import json as _stdjson
 
         try:
-            return importlib.import_module("domonic.JSON").parse(text)
+            result = importlib.import_module("domonic.JSON").parse(text)
         except _stdjson.JSONDecodeError as exc:
             raise SyntaxError(str(exc)) from exc
 
+        if not callable(reviver):
+            return result
+
+        # spec walk: bottom-up, ``reviver(key, value)`` per entry; a ``None``
+        # (undefined) result deletes the key / nulls the array slot
+        def _revive(holder: Any, key: Any) -> Any:
+            value = holder[key]
+            if isinstance(value, dict):
+                for k in list(value.keys()):
+                    revived = _revive(value, k)
+                    if revived is None:
+                        del value[k]
+                    else:
+                        value[k] = revived
+            elif isinstance(value, list):
+                for i in range(len(value)):
+                    value[i] = _revive(value, i)
+            return reviver(str(key), value)
+
+        return _revive({"": result}, "")
+
     @staticmethod
-    def stringify(value: Any, replacer: Any = None, space: Any = None) -> str:
+    def stringify(
+        value: Any, replacer: Any = None, space: Any = None
+    ) -> "str | None":
         import importlib
+
+        if callable(replacer):
+            _omit = object()
+
+            def _replace(key: Any, val: Any) -> Any:
+                val = replacer(str(key), val)
+                if isinstance(val, dict):
+                    out: dict[Any, Any] = {}
+                    for k, v in list(val.items()):
+                        rv = _replace(k, v)
+                        if rv is not _omit:
+                            out[k] = rv
+                    return out
+                if isinstance(val, (list, tuple)):
+                    return [
+                        None if (rv := _replace(i, v)) is _omit else rv
+                        for i, v in enumerate(val)
+                    ]
+                return _omit if val is None else val
+
+            value = _replace("", value)
+            if value is _omit:
+                return None
+        elif isinstance(replacer, (list, tuple, Array)):
+            allow = {
+                str(k) for k in (replacer.args if isinstance(replacer, Array) else replacer)
+            }
+
+            def _filter(val: Any) -> Any:
+                if isinstance(val, dict):
+                    return {k: _filter(v) for k, v in val.items() if str(k) in allow}
+                if isinstance(val, (list, tuple)):
+                    return [_filter(v) for v in val]
+                return val
+
+            value = _filter(value)
 
         kwargs: dict[str, Any] = {}
         if space is not None:
