@@ -135,6 +135,7 @@ files = [
     "domonic/templates/__init__.py",
     "domonic/__init__.py",
     "domonic/parsers/expatbuilder.py",
+    "domonic/dom.py",
 ]
 follow_imports = "skip"
 ignore_missing_imports = true

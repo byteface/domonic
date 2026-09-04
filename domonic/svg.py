@@ -55,7 +55,8 @@ class SVGElement(Element):
         current = getattr(self, "parentNode", None)
         while isinstance(current, Element):
             if (
-                getattr(current, "namespaceURI", None) == SVG_NAMESPACE
+                isinstance(current, SVGElement)
+                and current.namespaceURI == SVG_NAMESPACE
                 and getattr(current, "name", None) == "svg"
             ):
                 return current

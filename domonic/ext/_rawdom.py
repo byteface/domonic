@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import importlib
 import re
-from typing import Any
+from typing import Any, TypeVar
 
 from domonic import dom
 
@@ -30,6 +30,8 @@ SVG_TAGS = frozenset(importlib.import_module("domonic.svg").svg_tags) - HTML_TAG
 MATHML_TAGS = frozenset(importlib.import_module("domonic.xml.mathml").mathml_tags)
 SVG_TAG_NAMES = frozenset(tag.lower() for tag in SVG_TAGS)
 MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
+
+_NodeT = TypeVar("_NodeT", bound=dom.Node)
 
 _HTML_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
@@ -96,8 +98,8 @@ _TEXT_STATE_DEFAULTS = {
 
 
 def _initialize_node_raw(
-    node: dom.Node, args: tuple[Any, ...] = ()
-) -> dom.Node:
+    node: _NodeT, args: tuple[Any, ...] = ()
+) -> _NodeT:
     state = node.__dict__
     state.update(_NODE_STATE_DEFAULTS)
     state["args"] = args

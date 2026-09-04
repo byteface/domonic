@@ -5639,21 +5639,6 @@ class Element(Node):
             self.style = Style()
         return self.__style
 
-    @property
-    def attributeStyleMap(self):
-        """CSS Typed OM view over the inline ``style`` declaration block."""
-        from domonic.style import StylePropertyMap
-
-        return StylePropertyMap(self.style)
-
-    def computedStyleMap(self):
-        """CSS Typed OM read-only view over the element's computed style."""
-        from domonic.style import ComputedStyleDeclaration, StylePropertyMap
-
-        return StylePropertyMap(
-            ComputedStyleDeclaration(self), read_only=True
-        )
-
     @style.setter
     def style(self, style):
         if style is None:
@@ -5671,6 +5656,21 @@ class Element(Node):
 
         self.__style = Style(self)
         self.__style.cssText = style
+
+    @property
+    def attributeStyleMap(self):
+        """CSS Typed OM view over the inline ``style`` declaration block."""
+        from domonic.style import StylePropertyMap
+
+        return StylePropertyMap(self.style)
+
+    def computedStyleMap(self):
+        """CSS Typed OM read-only view over the element's computed style."""
+        from domonic.style import ComputedStyleDeclaration, StylePropertyMap
+
+        return StylePropertyMap(
+            ComputedStyleDeclaration(self), read_only=True
+        )
 
     # def tabIndex(self):
     # ''' Sets or returns the value of the tabindex attribute of an element'''
@@ -6763,7 +6763,9 @@ class TimeRanges:
 class Document(Element):
     """The Document interface represents the entire HTML or XML document."""
 
-    URL: ClassVar[URL | None] = None
+    # DOM spec: `readonly attribute USVString URL` -- a string, not a URL
+    # instance (domonic.webapi.url.URL parses it on demand, e.g. Document.host)
+    URL: str = ""
 
     def __init__(self, *args, **kwargs):
         """Constructor for Document objects"""
@@ -7675,7 +7677,8 @@ class Document(Element):
 
 class Location:
     def __init__(self, url: str | None = None, *args, **kwargs) -> None:
-        self.href = url
+        # DOM spec: `stringifier attribute USVString href` -- a plain string
+        self.href: str = url or ""
 
     def __str__(self) -> str:
         return self.href or ""

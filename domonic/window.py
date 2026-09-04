@@ -331,7 +331,9 @@ class CustomElementRegistry:
 
         element_class = self._coerce_constructor(normalized, constructor, options)
         if options is not None and "extends" in options:
-            element_class.extends = options["extends"]
+            # not a generic Element attribute -- bookkeeping this registry
+            # reads back with getattr(candidate, "extends", "")
+            setattr(element_class, "extends", options["extends"])
             # A customized built-in keeps its host tag name (``<button is="...">``);
             # only autonomous elements take the hyphenated name as their tag.
             if getattr(element_class, "name", None) in (None, "", normalized):
@@ -722,7 +724,7 @@ class Window(JavaScriptWindow, EventTarget):
     def document(self, value: Document) -> None:
         self._set_document(value)
 
-    @property
+    @property  # type: ignore[override]
     def location(self) -> Location:
         return self._location
 
