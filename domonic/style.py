@@ -6512,22 +6512,23 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 ).strip()
             if target in _USED_LENGTH_PROPERTIES:
                 return self._to_used_length(target, value)
-            if (
-                target != "color"
-                and target.endswith("color")
-                and "currentcolor" in value.lower()
-            ):
-                current = self.getPropertyValue("color")
-                if current and current.lower() != "currentcolor":
-                    return re.sub(
-                        r"(?i)\bcurrentcolor\b", current, value
-                    )
+            if target in _COLOR_PROPERTIES or target.endswith("color"):
+                return self._to_used_color(target, value)
             return value
         if _cssom.is_shorthand(target):
             return _cssom.build_shorthand(target, self.getPropertyValue)
         return value
 
     # -- used-value resolution (font-relative + absolute length units) ----
+
+    def _to_used_color(self, target: str, value: str) -> str:
+        # currentColor (anywhere but `color` itself) -> the computed color
+        if target != "color" and "currentcolor" in value.lower():
+            current = self.getPropertyValue("color")
+            if current and current.lower() != "currentcolor":
+                value = re.sub(r"(?i)\bcurrentcolor\b", current, value)
+        normalized = _cssom.normalize_color(value)
+        return normalized if normalized is not None else value
 
     def _font_size_px(self) -> float:
         cached = self.__dict__.get("_font_size_px_cache")
@@ -6668,6 +6669,16 @@ _USED_LENGTH_PROPERTIES = frozenset({
     "top", "right", "bottom", "left",
     "border-top-left-radius", "border-top-right-radius",
     "border-bottom-right-radius", "border-bottom-left-radius",
+})
+
+#: properties whose computed value getComputedStyle reports as ``rgb()`` /
+#: ``rgba()`` (also everything matching ``*color`` -- see getPropertyValue)
+_COLOR_PROPERTIES = frozenset({
+    "color", "background-color", "border-top-color", "border-right-color",
+    "border-bottom-color", "border-left-color", "outline-color",
+    "column-rule-color", "text-decoration-color", "caret-color",
+    "text-emphasis-color", "fill", "stroke", "stop-color", "flood-color",
+    "lighting-color",
 })
 
 _ABSOLUTE_FONT_SIZE_KEYWORDS = {

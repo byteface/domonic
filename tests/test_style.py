@@ -1019,7 +1019,7 @@ class TestCase(unittest.TestCase):
 
         hero = page.querySelector("#hero")
         computed = window.getComputedStyle(hero)
-        self.assertEqual(computed.getPropertyValue("color"), "blue")  # inline wins
+        self.assertEqual(computed.getPropertyValue("color"), "rgb(0, 0, 255)")  # inline wins
         self.assertEqual(computed.getPropertyValue("padding"), "8px")  # .box
         self.assertEqual(computed.getPropertyValue("padding-top"), "8px")
         self.assertEqual(computed.getPropertyValue("font-weight"), "bold")  # #hero
@@ -1029,7 +1029,7 @@ class TestCase(unittest.TestCase):
 
         span = page.querySelector("span")
         span_computed = window.getComputedStyle(span)
-        self.assertEqual(span_computed.getPropertyValue("color"), "blue")  # inherited
+        self.assertEqual(span_computed.getPropertyValue("color"), "rgb(0, 0, 255)")  # inherited
         self.assertEqual(span_computed.getPropertyValue("font-size"), "13px")  # inherited
         self.assertEqual(span_computed.getPropertyValue("margin"), "0px")  # not inherited
 
@@ -1059,7 +1059,7 @@ class TestCase(unittest.TestCase):
         )
         div = page.querySelector("#a")
         self.assertEqual(
-            window.getComputedStyle(div).getPropertyValue("color"), "green"
+            window.getComputedStyle(div).getPropertyValue("color"), "rgb(0, 128, 0)"
         )
 
     def test_css_register_property_and_at_property_rule(self):
@@ -1141,6 +1141,23 @@ class TestCase(unittest.TestCase):
         # letter-spacing inherits, so unset == inherit == parent's "normal"
         self.assertEqual(c.getPropertyValue("letter-spacing"), "normal")
 
+    def test_computed_colors_are_normalised_to_rgb(self):
+        e = document.createElement("div")
+        e.setAttribute(
+            "style",
+            "color: red; background-color: #0a0; "
+            "outline-color: hsl(120, 100%, 50%); "
+            "border-top-color: rgba(0, 0, 0, 0.25)",
+        )
+        document.createElement("div").appendChild(e)
+        c = ComputedStyleDeclaration(e)
+        self.assertEqual(c.getPropertyValue("color"), "rgb(255, 0, 0)")
+        self.assertEqual(c.getPropertyValue("background-color"), "rgb(0, 170, 0)")
+        self.assertEqual(c.getPropertyValue("outline-color"), "rgb(0, 255, 0)")
+        self.assertEqual(c.getPropertyValue("border-top-color"), "rgba(0, 0, 0, 0.25)")
+        # a regular declaration is NOT normalised
+        self.assertEqual(e.style.getPropertyValue("color"), "red")
+
     def test_computed_currentcolor_resolves_to_color(self):
         e = document.createElement("div")
         e.setAttribute(
@@ -1166,9 +1183,9 @@ class TestCase(unittest.TestCase):
         doc.createElement("div").appendChild(p)
         p._ownerDocument = doc
 
-        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("color"), "black")
+        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("color"), "rgb(0, 0, 0)")
         before = ComputedStyleDeclaration(p, "::before")
-        self.assertEqual(before.getPropertyValue("color"), "red")
+        self.assertEqual(before.getPropertyValue("color"), "rgb(255, 0, 0)")
         self.assertEqual(before.getPropertyValue("content"), '"* "')
         # the element's own style is unaffected by ::before rules
         self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("content"), "")
@@ -1188,7 +1205,7 @@ class TestCase(unittest.TestCase):
         el._ownerDocument = doc
 
         computed = ComputedStyleDeclaration(el)
-        self.assertEqual(computed.getPropertyValue("color"), "rebeccapurple")
+        self.assertEqual(computed.getPropertyValue("color"), "rgb(102, 51, 153)")
 
     def test_cascade_layers_ordering(self):
         from domonic.window import window
@@ -1200,12 +1217,13 @@ class TestCase(unittest.TestCase):
 
         # unlayered beats any layer
         self.assertEqual(
-            color_of("@layer a { #x { color: red } } #x { color: blue }"), "blue"
+            color_of("@layer a { #x { color: red } } #x { color: blue }"),
+            "rgb(0, 0, 255)",
         )
         # later layer wins for normal declarations
         self.assertEqual(
             color_of("@layer a { div { color: red } } @layer b { div { color: green } }"),
-            "green",
+            "rgb(0, 128, 0)",
         )
         # a `@layer a, b;` statement pre-declares the order
         self.assertEqual(
@@ -1214,7 +1232,7 @@ class TestCase(unittest.TestCase):
                 "@layer theme { div { color: green } }"
                 "@layer base { div { color: red } }"
             ),
-            "green",
+            "rgb(0, 128, 0)",
         )
         # for !important the earliest layer wins
         self.assertEqual(
@@ -1222,7 +1240,7 @@ class TestCase(unittest.TestCase):
                 "@layer a { div { color: red !important } }"
                 "@layer b { div { color: green !important } }"
             ),
-            "red",
+            "rgb(255, 0, 0)",
         )
 
     def test_important_author_rule_beats_inline_style(self):
@@ -1239,7 +1257,7 @@ class TestCase(unittest.TestCase):
         )
         a = window.getComputedStyle(page.querySelector("#a"))
         # important author beats normal inline...
-        self.assertEqual(a.getPropertyValue("color"), "red")
+        self.assertEqual(a.getPropertyValue("color"), "rgb(255, 0, 0)")
         # ...but normal author loses to normal inline
         self.assertEqual(a.getPropertyValue("padding-left"), "9px")
 
@@ -1251,7 +1269,7 @@ class TestCase(unittest.TestCase):
         # important inline still wins over important author
         self.assertEqual(
             window.getComputedStyle(b.querySelector("#c")).getPropertyValue("color"),
-            "blue",
+            "rgb(0, 0, 255)",
         )
 
     def test_get_computed_style_substitutes_var_references(self):
@@ -1268,15 +1286,15 @@ class TestCase(unittest.TestCase):
         )
         div = page.querySelector("#a")
         computed = window.getComputedStyle(div)
-        self.assertEqual(computed.getPropertyValue("color"), "#0a0")
+        self.assertEqual(computed.getPropertyValue("color"), "rgb(0, 170, 0)")
         self.assertEqual(computed.getPropertyValue("padding"), "4px")
         self.assertEqual(computed.getPropertyValue("margin"), "6px")
-        self.assertEqual(computed.getPropertyValue("border-color"), "#0a0")
+        self.assertEqual(computed.getPropertyValue("border-color"), "rgb(0, 170, 0)")
         # custom property itself is returned raw
         self.assertEqual(computed.getPropertyValue("--brand"), "#0a0")
         # inherited through the parent's already-substituted computed value
         child = window.getComputedStyle(page.querySelector("#b"))
-        self.assertEqual(child.getPropertyValue("color"), "#0a0")
+        self.assertEqual(child.getPropertyValue("color"), "rgb(0, 170, 0)")
 
     def test_root_custom_properties_reach_descendants(self):
         from domonic.window import window
@@ -1292,7 +1310,7 @@ class TestCase(unittest.TestCase):
         child = window.getComputedStyle(page.querySelector("#child"))
         self.assertEqual(child.getPropertyValue("--gap"), "10px")
         self.assertEqual(child.getPropertyValue("margin"), "10px")
-        self.assertEqual(child.getPropertyValue("color"), "#0a0")
+        self.assertEqual(child.getPropertyValue("color"), "rgb(0, 170, 0)")
 
     def test_computed_style_resolves_font_relative_and_absolute_lengths(self):
         outer = document.createElement("div")
@@ -1325,7 +1343,7 @@ class TestCase(unittest.TestCase):
             "<section style='--p: 3px'><b id='leaf'>x</b></section></div></body>"
         )
         leaf = window.getComputedStyle(page.querySelector("#leaf"))
-        self.assertEqual(leaf.getPropertyValue("color"), "teal")
+        self.assertEqual(leaf.getPropertyValue("color"), "rgb(0, 128, 128)")
         self.assertEqual(leaf.getPropertyValue("padding"), "3px")
 
     def test_structural_pseudo_class_selectors(self):
