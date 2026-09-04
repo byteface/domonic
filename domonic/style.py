@@ -6511,6 +6511,16 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 ).strip()
             if target in _USED_LENGTH_PROPERTIES:
                 return self._to_used_length(target, value)
+            if (
+                target != "color"
+                and target.endswith("color")
+                and "currentcolor" in value.lower()
+            ):
+                current = self.getPropertyValue("color")
+                if current and current.lower() != "currentcolor":
+                    return re.sub(
+                        r"(?i)\bcurrentcolor\b", current, value
+                    )
             return value
         if _cssom.is_shorthand(target):
             return _cssom.build_shorthand(target, self.getPropertyValue)

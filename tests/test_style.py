@@ -1109,6 +1109,18 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_currentcolor_resolves_to_color(self):
+        e = document.createElement("div")
+        e.setAttribute(
+            "style",
+            "color: rgb(10, 20, 30); border-top-color: currentColor; "
+            "border-top-style: solid; border-top-width: 1px",
+        )
+        document.createElement("div").appendChild(e)
+        c = ComputedStyleDeclaration(e)
+        self.assertEqual(c.getPropertyValue("border-top-color"), "rgb(10, 20, 30)")
+        self.assertEqual(c.getPropertyValue("border-top"), "1px solid rgb(10, 20, 30)")
+
     def test_get_computed_style_for_pseudo_element(self):
         from domonic.dom import Document
         from domonic.style import CSSStyleSheet, ComputedStyleDeclaration
