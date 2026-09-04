@@ -12,7 +12,7 @@ from domonic.constants import (
     mime_types,
     namespaces,
 )
-from domonic.constants.color import Color
+from domonic.constants.color import Color, WebColors, XKCDColors
 from domonic.constants.entities import Char, Entity
 from domonic.constants.keyboard import (
     Code,
@@ -117,6 +117,23 @@ class ConstantsTest(unittest.TestCase):
         self.assertEqual(Color.rgb2hex(255, 0, 255), "#ff00ff")
         self.assertEqual(Color(255, 0, 255).toRGBA(), (255, 0, 255, 1))
         self.assertEqual(Color("#00ff00").convert("css"), "#00ff00")
+
+    def test_color_red_green_blue_are_real_channel_properties(self):
+        # WebColors / XKCDColors used to live as class attributes directly on
+        # Color, and their "red" / "green" / "blue" named-colour entries
+        # silently clobbered the red/green/blue channel @property descriptors
+        # (Color.red ended up "#e50000", not the channel accessor) -- they now
+        # live in their own classes so Color's OOP surface can't collide.
+        c = Color(10, 20, 30)
+        self.assertEqual(c.red, 10)
+        self.assertEqual(c.green, 20)
+        self.assertEqual(c.blue, 30)
+        c.red = 99
+        self.assertEqual(c.red, 99)
+        self.assertEqual(c.r, 99)  # the setter syncs the channel it backs
+
+        self.assertEqual(WebColors.RebeccaPurple, "#663399")
+        self.assertEqual(XKCDColors.acidgreen, "#8ffe09")
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ class Color:
         if h[0] == "#":
             h = h.lstrip("#")
         if len(h) == 6:
-            return tuple(int(h[i : i + 2], 16) for i in (0, 2, 4))
+            return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
         raise ValueError(f"Unsupported color string: #{h}")
 
     rgb = hex2rgb
@@ -122,10 +122,12 @@ class Color:
         if isinstance(r, Sequence) and not isinstance(r, (str, bytes, bytearray)):
             if len(r) < 3:
                 raise ValueError("RGB sequence must contain at least three values")
-            r, g, b = r[:3]
-        if g is None or b is None:
-            raise ValueError("rgb2hex requires red, green and blue values")
-        return "#%02x%02x%02x" % (r, g, b)
+            red, green, blue = int(r[0]), int(r[1]), int(r[2])
+        else:
+            if g is None or b is None:
+                raise ValueError("rgb2hex requires red, green and blue values")
+            red, green, blue = int(r), g, b
+        return "#%02x%02x%02x" % (red, green, blue)
 
     # deprecated
     @staticmethod
@@ -161,8 +163,10 @@ class Color:
         - str: Hex color in "#RRGGBB" or "#RGB" format or named colors
         - int/float: r, g, b, [a]
         """
-        self.r = self.g = self.b = 0
-        self.a = 1  # Default alpha
+        self.r: float = 0
+        self.g: float = 0
+        self.b: float = 0
+        self.a: float = 1  # Default alpha
 
         # Handle vector inputs (vec4, vec3)
         if len(args) == 1:
@@ -272,7 +276,7 @@ class Color:
     # return str(self)
 
     def __str__(self) -> str:
-        return Color.rgb2hex(self.r, self.g, self.b)
+        return Color.rgb2hex(int(self.r), int(self.g), int(self.b))
 
     # def __repr__(self):
     #     return str(self)
@@ -283,7 +287,7 @@ class Color:
 
     def toCSS(self) -> str:
         """return the color as a CSS string"""
-        return "#%02x%02x%02x" % (self.r, self.g, self.b)
+        return "#%02x%02x%02x" % (int(self.r), int(self.g), int(self.b))
 
     def toHex(self) -> str:
         return str(self)
@@ -335,6 +339,7 @@ class Color:
             return self.toHex()
         if to == "css":
             return self.toCSS()
+        return None
 
     # set(*args)
 
@@ -371,7 +376,10 @@ class Color:
         """divide a color with this color"""
         return Color(self.r / color.r, self.g / color.g, self.b / color.b)
 
-    # web
+
+class WebColors:
+    """CSS/X11 "web" named colours (e.g. ``WebColors.RebeccaPurple``)."""
+
     Black: str = "#000000"  #:
     Navy: str = "#000080"  #:
     DarkBlue: str = "#00008B"  #:
@@ -521,7 +529,11 @@ class Color:
     Ivory: str = "#FFFFF0"  #:
     White: str = "#FFFFFF"  #:
 
-    # XKCD
+
+
+class XKCDColors:
+    """The XKCD crowdsourced colour-name survey (e.g. ``XKCDColors.acidgreen``)."""
+
     acidgreen: str = "#8ffe09"  #:
     adobe: str = "#bd6c48"  #:
     algae: str = "#54ac68"  #:
@@ -1444,3 +1456,4 @@ class Color:
     yellowtan: str = "#ffe36e"  #:
     yellowybrown: str = "#ae8b0c"  #:
     yellowygreen: str = "#bff128"  #:
+
