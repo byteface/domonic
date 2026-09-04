@@ -6579,9 +6579,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         return " ".join(parts) if changed else value
 
     def _property_entries(self):
+        # getComputedStyle enumerates longhands (and custom properties) only,
+        # never the shorthand entries the cascade also parked in _resolved,
+        # and reports used values
         return [
-            (name, self._resolved.get(name), "")
+            (name, self.getPropertyValue(name), "")
             for name in self._resolved.names()
+            if name.startswith("--") or not _cssom.is_shorthand(name)
         ]
 
     def _expanded_entries(self):
