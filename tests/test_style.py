@@ -1109,6 +1109,22 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_css_wide_keywords(self):
+        parent = document.createElement("div")
+        parent.setAttribute("style", "color: rgb(1, 2, 3); font-size: 24px")
+        child = document.createElement("span")
+        child.setAttribute(
+            "style", "color: inherit; font-size: initial; letter-spacing: unset"
+        )
+        parent.appendChild(child)
+        document.createElement("div").appendChild(parent)
+
+        c = ComputedStyleDeclaration(child)
+        self.assertEqual(c.getPropertyValue("color"), "rgb(1, 2, 3)")   # inherit
+        self.assertEqual(c.getPropertyValue("font-size"), "16px")        # initial
+        # letter-spacing inherits, so unset == inherit == parent's "normal"
+        self.assertEqual(c.getPropertyValue("letter-spacing"), "normal")
+
     def test_computed_currentcolor_resolves_to_color(self):
         e = document.createElement("div")
         e.setAttribute(

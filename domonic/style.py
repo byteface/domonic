@@ -6753,9 +6753,29 @@ class _ResolvedView:
     def names(self):
         return list(self._declared)
 
+    def _inherited(self, name: str) -> str:
+        if self._parent is not None:
+            value = self._parent.getPropertyValue(name)
+            if value:
+                return value
+        return _cssom.initial_value(name)
+
     def get(self, name: str) -> str:
         if name in self._declared:
-            return self._declared[name]
+            value = self._declared[name]
+            low = value.strip().lower()
+            # CSS-wide keywords as explicit values
+            if low == "inherit":
+                return self._inherited(name)
+            if low == "initial":
+                return _cssom.initial_value(name)
+            if low in ("unset", "revert", "revert-layer"):
+                return (
+                    self._inherited(name)
+                    if _cssom.inherits(name)
+                    else _cssom.initial_value(name)
+                )
+            return value
         if _cssom.inherits(name) and self._parent is not None:
             inherited = self._parent.getPropertyValue(name)
             if inherited:
