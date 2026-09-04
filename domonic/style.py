@@ -6335,6 +6335,15 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             sheet_list = list(sheets) if sheets is not None else []
         except TypeError:
             sheet_list = []
+        # constructable stylesheets adopted on the document or the element's
+        # shadow root also feed the cascade
+        for holder in (document, getattr(element, "getRootNode", lambda: None)()):
+            adopted = getattr(holder, "adoptedStyleSheets", None)
+            if adopted:
+                try:
+                    sheet_list = sheet_list + list(adopted)
+                except TypeError:
+                    pass
         window = getattr(document, "defaultView", None) if document else None
         viewport = (
             getattr(window, "innerWidth", None),

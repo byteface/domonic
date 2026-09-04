@@ -1087,6 +1087,23 @@ class TestCase(unittest.TestCase):
         self.assertFalse(rule.inherits)
         self.assertEqual(rule.initialValue, "8px")
 
+    def test_adopted_stylesheets_feed_the_cascade(self):
+        from domonic.dom import Document
+        from domonic.style import CSSStyleSheet, ComputedStyleDeclaration
+
+        doc = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".hl { color: rebeccapurple; }")
+        doc.adoptedStyleSheets = [sheet]
+
+        el = doc.createElement("span")
+        el.setAttribute("class", "hl")
+        doc.createElement("div").appendChild(el)
+        el._ownerDocument = doc
+
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("color"), "rebeccapurple")
+
     def test_cascade_layers_ordering(self):
         from domonic.window import window
 

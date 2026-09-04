@@ -6723,6 +6723,7 @@ class Document(Element):
         self._referrer = ""
         self._timeline = None
         self.stylesheets = None
+        self.adoptedStyleSheets: list = []
         self.doctype = None
         super().__init__(*args, **kwargs)
         try:
