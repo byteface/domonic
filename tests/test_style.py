@@ -1163,6 +1163,47 @@ class TestCase(unittest.TestCase):
         child = window.getComputedStyle(page.querySelector("#b"))
         self.assertEqual(child.getPropertyValue("color"), "#0a0")
 
+    def test_root_custom_properties_reach_descendants(self):
+        from domonic.window import window
+
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            ":root { --gap: 10px; --brand: #0a0; }"
+            "#child { margin: var(--gap); color: var(--brand); }"
+            "</style></head>"
+            "<body><div id='child'></div></body>"
+        )
+        child = window.getComputedStyle(page.querySelector("#child"))
+        self.assertEqual(child.getPropertyValue("--gap"), "10px")
+        self.assertEqual(child.getPropertyValue("margin"), "10px")
+        self.assertEqual(child.getPropertyValue("color"), "#0a0")
+
+    def test_custom_properties_inherit_from_any_ancestor(self):
+        from domonic.window import window
+
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>#leaf { color: var(--c); padding: var(--p); }</style>"
+            "</head><body><div style='--c: teal'>"
+            "<section style='--p: 3px'><b id='leaf'>x</b></section></div></body>"
+        )
+        leaf = window.getComputedStyle(page.querySelector("#leaf"))
+        self.assertEqual(leaf.getPropertyValue("color"), "teal")
+        self.assertEqual(leaf.getPropertyValue("padding"), "3px")
+
+    def test_structural_pseudo_class_selectors(self):
+        page = document.createElement("div")
+        page.innerHTML = "<p>a</p><p></p><span>c</span>"
+        self.assertEqual(page.querySelector("p:first-child").textContent, "a")
+        self.assertEqual(len(page.querySelectorAll("p")), 2)
+        self.assertIs(
+            page.querySelector("p:empty"), page.querySelectorAll("p")[1]
+        )
+        self.assertTrue(page.querySelector("span").matches(":last-child"))
+        self.assertTrue(page.querySelector("span").matches("span:only-of-type"))
+        self.assertFalse(page.querySelector("p").matches(":only-child"))
+
     def test_element_matches_combinators(self):
         page = document.createElement("div")
         page.innerHTML = (

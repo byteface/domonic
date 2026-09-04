@@ -6197,9 +6197,13 @@ def _rule_bucket_key(selector: str) -> str:
     """The bucket a selector belongs in: ``#id``, ``.class``, ``tag`` from its
     rightmost compound, or ``*`` when that cannot be determined cheaply."""
     sel = selector.strip().rstrip()
-    # drop a trailing pseudo-element / pseudo-class for bucketing purposes
-    sel = re.sub(r"::?[-\w]+(?:\([^)]*\))?\s*$", "", sel).strip() or selector.strip()
-    match = _RIGHTMOST_KEY.search(sel)
+    # drop a trailing pseudo-element / pseudo-class for bucketing purposes; a
+    # selector that is *only* a pseudo (``:root``, ``:hover``, ``:not(...)``)
+    # has no cheap type/id/class key, so it goes in the "*" bucket
+    stripped = re.sub(r"::?[-\w]+(?:\([^)]*\))?\s*$", "", sel).strip()
+    if not stripped:
+        return "*"
+    match = _RIGHTMOST_KEY.search(stripped)
     if not match:
         return "*"
     token = match.group(1)

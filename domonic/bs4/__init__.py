@@ -754,6 +754,9 @@ def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
             _get_attribute(element, attr), operator, value
         ):
             return False
+    for pseudo in parsed.get("pseudos", ()):
+        if not Element._matches_structural_pseudo(element, pseudo):
+            return False
     return True
 
 

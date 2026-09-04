@@ -3944,13 +3944,17 @@ class Element(Node):
         if not selector:
             return None
 
-        parsed: dict[str, Any] = {"tag": "*", "id": None, "classes": [], "attributes": []}
+        parsed: dict[str, Any] = {
+            "tag": "*", "id": None, "classes": [], "attributes": [], "pseudos": []
+        }
         position = 0
-        tag_match = re.match(r"^(\*|[A-Za-z_][\w:-]*)", selector)
+        # a type selector stops at the first '.', '#', '[' or ':' -- ':' in that
+        # position is always a pseudo-class, never part of the tag name
+        tag_match = re.match(r"^(\*|[A-Za-z_][\w-]*)", selector)
         if tag_match:
             parsed["tag"] = tag_match.group(1)
             position = tag_match.end()
-        elif selector[0] not in ".#[":
+        elif selector[0] not in ".#[:":
             return None
 
         while position < len(selector):
@@ -3991,9 +3995,84 @@ class Element(Node):
                 )
                 position = end + 1
                 continue
+            if char == ":":
+                # Only a small set of self-contained structural pseudo-classes
+                # is understood here; anything else (``:hover``, ``:nth-child``,
+                # pseudo-elements, ...) fails the parse so the caller falls back
+                # to the full selector engine.
+                pseudo_match = re.match(
+                    r"::?([-\w]+)", selector[position:]
+                )
+                if not pseudo_match:
+                    return None
+                pseudo_name = pseudo_match.group(1).lower()
+                if pseudo_name not in Element._STRUCTURAL_PSEUDO_CLASSES:
+                    return None
+                parsed["pseudos"].append(pseudo_name)
+                position += pseudo_match.end()
+                continue
             return None
 
         return parsed
+
+    _STRUCTURAL_PSEUDO_CLASSES = frozenset({
+        "root", "empty",
+        "first-child", "last-child", "only-child",
+        "first-of-type", "last-of-type", "only-of-type",
+    })
+
+    @staticmethod
+    def _matches_structural_pseudo(element, pseudo: str) -> bool:
+        parent = getattr(element, "parentNode", None)
+        parent_is_element = (
+            parent is not None
+            and getattr(parent, "nodeType", None) == Node.ELEMENT_NODE
+        )
+
+        if pseudo == "root":
+            # the root element of the document (``<html>`` in HTML): an element
+            # whose parent is the document, or a detached tree's top element
+            return not parent_is_element
+
+        if pseudo == "empty":
+            for child in element.__dict__.get("args", ()):
+                if getattr(child, "nodeType", None) == Node.ELEMENT_NODE:
+                    return False
+                if isinstance(child, str) and str(child).strip():
+                    return False
+                if (
+                    getattr(child, "nodeType", None) == Node.TEXT_NODE
+                    and str(getattr(child, "textContent", "") or "").strip()
+                ):
+                    return False
+            return True
+
+        siblings = (
+            [
+                c
+                for c in parent.__dict__.get("args", ())
+                if getattr(c, "nodeType", None) == Node.ELEMENT_NODE
+            ]
+            if parent_is_element
+            else [element]
+        )
+        if pseudo == "first-child":
+            return bool(siblings) and siblings[0] is element
+        if pseudo == "last-child":
+            return bool(siblings) and siblings[-1] is element
+        if pseudo == "only-child":
+            return len(siblings) == 1 and siblings[0] is element
+
+        same_type = [
+            s for s in siblings if getattr(s, "tagName", None) == element.tagName
+        ]
+        if pseudo == "first-of-type":
+            return bool(same_type) and same_type[0] is element
+        if pseudo == "last-of-type":
+            return bool(same_type) and same_type[-1] is element
+        if pseudo == "only-of-type":
+            return len(same_type) == 1 and same_type[0] is element
+        return False
 
     @staticmethod
     def _attribute_selector_matches(attr_value, operator: str, value: str) -> bool:
@@ -4045,6 +4124,10 @@ class Element(Node):
             if not Element._attribute_selector_matches(
                 element.getAttribute(attr), operator, value
             ):
+                return False
+
+        for pseudo in parsed.get("pseudos", ()):
+            if not Element._matches_structural_pseudo(element, pseudo):
                 return False
         return True
 
