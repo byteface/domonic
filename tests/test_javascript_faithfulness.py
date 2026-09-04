@@ -586,6 +586,14 @@ class JSONFaithfulness(unittest.TestCase):
             {"a": 10, "b": 20},
         )
 
+    def test_number_serialisation_is_js_faithful(self):
+        from domonic.javascript import JSON, Number
+
+        self.assertEqual(JSON.stringify(3.0), "3")            # not "3.0"
+        self.assertEqual(JSON.stringify({"n": Number(5)}), '{"n":5}')
+        self.assertEqual(JSON.stringify(float("nan")), "null")
+        self.assertEqual(JSON.stringify([1.0, 2.5]), "[1,2.5]")
+
     def test_parse_of_invalid_json_raises_syntaxerror(self):
         # JS: JSON.parse("{") throws a SyntaxError, not a language-specific
         # decode error.

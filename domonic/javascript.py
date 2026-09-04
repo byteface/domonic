@@ -6730,6 +6730,24 @@ class JSON:
 
             value = _filter(value)
 
+        # JS prints a whole-number float without the ``.0`` (``JSON.stringify(3.0)``
+        # is ``"3"``); normalise integral floats -- and NaN / Infinity, which JS
+        # serialises as ``null``
+        def _num(val: Any) -> Any:
+            if isinstance(val, bool):
+                return val
+            if isinstance(val, float):
+                if val != val or val in (float("inf"), float("-inf")):
+                    return None
+                return int(val) if val.is_integer() else val
+            if isinstance(val, dict):
+                return {k: _num(v) for k, v in val.items()}
+            if isinstance(val, (list, tuple)):
+                return [_num(v) for v in val]
+            return val
+
+        value = _num(value)
+
         kwargs: dict[str, Any] = {}
         if space is not None:
             kwargs["indent"] = space

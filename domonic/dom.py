@@ -1316,7 +1316,7 @@ class Node(EventTarget):
         return "".join(self.stream())
 
     def _stream_value(self, value: Any) -> Iterator[str]:
-        if callable(value) and not isinstance(value, Node):
+        if callable(value) and not isinstance(value, (Node, str)):
             value = value()
 
         if isinstance(value, Text):
@@ -1379,7 +1379,7 @@ class Node(EventTarget):
                 stack.append(("value", child))
                 continue
 
-            if callable(value) and not isinstance(value, Node):
+            if callable(value) and not isinstance(value, (Node, str)):
                 value = value()
 
             if isinstance(value, Text):
