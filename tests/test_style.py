@@ -1109,6 +1109,28 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_transform_composes_to_matrix(self):
+        def transform_of(value):
+            e = document.createElement("div")
+            e.setAttribute("style", f"font-size: 16px; transform: {value}")
+            document.createElement("div").appendChild(e)
+            return ComputedStyleDeclaration(e).getPropertyValue("transform")
+
+        self.assertEqual(transform_of("none"), "none")
+        self.assertEqual(
+            transform_of("translate(10px, 20px)"), "matrix(1, 0, 0, 1, 10, 20)"
+        )
+        self.assertEqual(transform_of("scale(2)"), "matrix(2, 0, 0, 2, 0, 0)")
+        self.assertEqual(transform_of("rotate(90deg)"), "matrix(0, 1, -1, 0, 0, 0)")
+        # CSS list order: rotate is applied first, then the translate
+        self.assertEqual(
+            transform_of("translateX(10px) rotate(90deg)"),
+            "matrix(0, 1, -1, 0, 10, 0)",
+        )
+        self.assertEqual(transform_of("translate(2em, 1rem)"), "matrix(1, 0, 0, 1, 32, 16)")
+        # a percentage translate needs layout -- keep it verbatim
+        self.assertEqual(transform_of("translate(50%, 0)"), "translate(50%, 0)")
+
     def test_computed_calc_length_evaluation(self):
         e = document.createElement("div")
         e.setAttribute(

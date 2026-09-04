@@ -6514,6 +6514,12 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 return self._to_used_length(target, value)
             if target in _COLOR_PROPERTIES or target.endswith("color"):
                 return self._to_used_color(target, value)
+            if target == "transform":
+                composed = _transform_to_matrix(
+                    value, em_px=self._font_size_px(),
+                    rem_px=self._root_font_size_px(),
+                )
+                return composed if composed is not None else value
             mapped = _COMPUTED_KEYWORD_MAP.get(target)
             if mapped is not None:
                 return mapped.get(value.strip().lower(), value)
@@ -6707,6 +6713,115 @@ def _px_str(px: float) -> str:
     if rounded == int(rounded):
         return f"{int(rounded)}px"
     return f"{rounded}px"
+
+
+def _angle_to_deg(token: str) -> "float | None":
+    match = re.match(r"^([+-]?(?:\d+\.?\d*|\.\d+))(deg|rad|grad|turn)?$", token.strip(), re.I)
+    if not match:
+        return None
+    number = float(match.group(1))
+    unit = (match.group(2) or "deg").lower()
+    return {
+        "deg": number,
+        "rad": math.degrees(number),
+        "grad": number * 0.9,
+        "turn": number * 360.0,
+    }[unit]
+
+
+def _transform_to_matrix(
+    value: str, *, em_px: float, rem_px: float
+) -> "str | None":
+    """Compose a CSS ``transform`` list into ``matrix(...)`` / ``matrix3d(...)``
+    the way ``getComputedStyle`` reports it, or ``None`` to keep it verbatim
+    (a percentage length, or an unsupported function)."""
+    text = value.strip()
+    if text.lower() in ("", "none"):
+        return "none"
+
+    functions = re.findall(r"([a-zA-Z0-9]+)\s*\(([^)]*)\)", text)
+    if not functions:
+        return None
+
+    from domonic.dom import DOMMatrix
+
+    result = DOMMatrix()
+
+    def length(tok: str) -> "float | None":
+        return _length_string_to_px(tok, em_px=em_px, rem_px=rem_px, percent_px=None)
+
+    # apply right-to-left: CSS lists the outermost transform first, and domonic's
+    # DOMMatrix multiplies with row vectors
+    for name, raw_args in reversed(functions):
+        fn = name.lower()
+        args = [a.strip() for a in raw_args.split(",") if a.strip()]
+        try:
+            if fn in ("translate", "translatex", "translatey", "translate3d"):
+                xs = args + ["0", "0", "0"]
+                tx = length(xs[0]) if fn != "translatey" else 0.0
+                ty = (
+                    length(xs[0]) if fn == "translatey"
+                    else length(xs[1]) if fn in ("translate", "translate3d")
+                    else 0.0
+                )
+                if tx is None or ty is None:
+                    return None
+                result.translateSelf(tx, ty)
+            elif fn == "translatez":
+                if length(args[0]) is None:
+                    return None
+            elif fn in ("scale", "scalex", "scaley", "scale3d"):
+                if fn == "scalex":
+                    sx, sy = float(args[0]), 1.0
+                elif fn == "scaley":
+                    sx, sy = 1.0, float(args[0])
+                else:
+                    sx = float(args[0])
+                    sy = float(args[1]) if len(args) > 1 else sx
+                result.scaleSelf(sx, sy)
+            elif fn in ("rotate", "rotatez"):
+                deg = _angle_to_deg(args[0])
+                if deg is None:
+                    return None
+                result.rotateSelf(deg)
+            elif fn in ("rotatex", "rotatey"):
+                deg = _angle_to_deg(args[0])
+                if deg is None:
+                    return None
+                if fn == "rotatex":
+                    result.rotateSelf(deg, 0, 0)
+                else:
+                    result.rotateSelf(0, deg, 0)
+            elif fn == "rotate3d":
+                x, y, z = float(args[0]), float(args[1]), float(args[2])
+                deg = _angle_to_deg(args[3])
+                if deg is None:
+                    return None
+                result.rotateSelf(x * deg, y * deg, z * deg)
+            elif fn in ("skew", "skewx", "skewy"):
+                ax = _angle_to_deg(args[0]) if fn != "skewy" else 0.0
+                ay = (
+                    _angle_to_deg(args[0]) if fn == "skewy"
+                    else _angle_to_deg(args[1]) if fn == "skew" and len(args) > 1
+                    else 0.0
+                )
+                if ax is None or ay is None:
+                    return None
+                if ay:
+                    result.skewYSelf(ay)
+                if ax:
+                    result.skewXSelf(ax)
+            elif fn in ("matrix", "matrix3d"):
+                result.multiplySelf(DOMMatrix(*[float(a) for a in args]))
+            elif fn == "perspective":
+                if length(args[0]) is None:
+                    return None
+            else:
+                return None
+        except (ValueError, IndexError):
+            return None
+
+    return result.toString()
 
 
 def _length_string_to_px(

@@ -8580,6 +8580,15 @@ class DOMPointReadOnly(DOMPoint):
         return "({}, {}, {}, {})".format(self.x, self.y, self.z, self.w)
 
 
+def _format_matrix_number(value: float) -> str:
+    """Serialise a matrix component the way a browser does -- an integer with no
+    decimal point, otherwise a trimmed decimal."""
+    rounded = round(value, 6)
+    if rounded == int(rounded):
+        return str(int(rounded))
+    return f"{rounded:.6f}".rstrip("0").rstrip(".")
+
+
 class DOMMatrixReadOnly:
     """Read-only 4x4 transformation matrix for DOM geometry APIs.
 
@@ -8757,6 +8766,17 @@ class DOMMatrixReadOnly:
     def inverse(self) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).invertSelf()
 
+    def rotate(
+        self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None
+    ) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).rotateSelf(rotX, rotY, rotZ)
+
+    def skewX(self, sx: float = 0) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).skewXSelf(sx)
+
+    def skewY(self, sy: float = 0) -> "DOMMatrix":
+        return DOMMatrix.fromMatrix(self).skewYSelf(sy)
+
     def transformPoint(self, point: Any | None = None) -> DOMPoint:
         if point is None:
             point = DOMPoint(0, 0, 0, 1)
@@ -8908,6 +8928,51 @@ class DOMMatrix(DOMMatrixReadOnly):
             1,
         )
         return self.multiplySelf(scale)
+
+    def rotateSelf(
+        self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None
+    ) -> "DOMMatrix":
+        # 1-arg form is a rotation about the Z axis (the common CSS ``rotate()``)
+        if rotY is None and rotZ is None:
+            rotZ, rotX = rotX, 0.0
+        rotY = rotY or 0.0
+        rotZ = rotZ or 0.0
+        for angle, build in (
+            (rotX, lambda c, s: DOMMatrix(1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1)),
+            (rotY, lambda c, s: DOMMatrix(c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1)),
+            (rotZ, lambda c, s: DOMMatrix(c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)),
+        ):
+            if angle:
+                rad = math.radians(angle)
+                self.multiplySelf(build(math.cos(rad), math.sin(rad)))
+        return self
+
+    def rotateFromVectorSelf(self, x: float = 0, y: float = 0) -> "DOMMatrix":
+        angle = math.degrees(math.atan2(y, x)) if (x or y) else 0.0
+        return self.rotateSelf(angle)
+
+    def skewXSelf(self, sx: float = 0) -> "DOMMatrix":
+        return self.multiplySelf(
+            DOMMatrix(1, 0, math.tan(math.radians(sx)), 1, 0, 0)
+        )
+
+    def skewYSelf(self, sy: float = 0) -> "DOMMatrix":
+        return self.multiplySelf(
+            DOMMatrix(1, math.tan(math.radians(sy)), 0, 1, 0, 0)
+        )
+
+    def toString(self) -> str:
+        if self.is2D:
+            parts = [self.a, self.b, self.c, self.d, self.e, self.f]
+            return "matrix(" + ", ".join(_format_matrix_number(v) for v in parts) + ")"
+        return (
+            "matrix3d("
+            + ", ".join(_format_matrix_number(v) for v in self._values)
+            + ")"
+        )
+
+    def __str__(self) -> str:
+        return self.toString()
 
     def invertSelf(self) -> "DOMMatrix":
         matrix = [[self._values[row * 4 + col] for col in range(4)] for row in range(4)]

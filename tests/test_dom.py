@@ -4027,6 +4027,22 @@ class DOMTest(unittest.TestCase):
         )
         self.assertEqual((multiplied.e, multiplied.f), (4.0, 6.0))
 
+    def test_dommatrix_rotate_skew_and_tostring(self):
+        self.assertEqual(DOMMatrix().toString(), "matrix(1, 0, 0, 1, 0, 0)")
+        self.assertEqual(
+            DOMMatrix().scaleSelf(2, 3).toString(), "matrix(2, 0, 0, 3, 0, 0)"
+        )
+        self.assertEqual(
+            DOMMatrix().rotateSelf(90).toString(), "matrix(0, 1, -1, 0, 0, 0)"
+        )
+        rotated = DOMMatrix().rotateSelf(90).transformPoint(DOMPoint(1, 0))
+        self.assertAlmostEqual(rotated.x, 0.0)
+        self.assertAlmostEqual(rotated.y, 1.0)
+        self.assertEqual(
+            DOMMatrix().skewXSelf(45).toString(), "matrix(1, 0, 1, 1, 0, 0)"
+        )
+        self.assertFalse(DOMMatrix().rotateSelf(0, 30, 0).is2D)
+
     def test_domquad_from_rect_uses_rect_bounds(self):
         quad = DOMQuad.fromRect(DOMRect(5, 10, 20, 30))
         bounds = DOMQuad.getBounds(quad)
