@@ -22,7 +22,10 @@ from domonic.events import (
     MouseEvent,
     SubmitEvent,
 )
-from domonic.html import *
+from domonic.html import *  # type: ignore[no-redef]  # <time> tag element wins
+# over domonic.dom's own `import time`, which leaks through the star-import
+# above (dom.py has no __all__); this is the intended, unambiguous runtime
+# result, just not something two wildcard imports can express to mypy.
 from domonic.javascript import *
 
 _UNSET = object()

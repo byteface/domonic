@@ -42,13 +42,17 @@ _SIMPLE_FILTER_TYPES = (str, type(None))
 class BeautifulSlop:
     """Parse markup and return a domonic tree with BS4-style helpers."""
 
-    def __new__(
+    def __new__(  # type: ignore[misc]
         cls,
         markup: str = "",
         features: str | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> Node:
+        # deliberately returns a parsed domonic tree, not a BeautifulSlop
+        # instance -- BeautifulSlop(markup) is a bs4.BeautifulSoup-compatible
+        # entry point, not a real constructor (so __init__ never runs, since
+        # the returned object isn't an instance of cls)
         install()
         parser = _normalize_parser(features or kwargs.pop("parser", None))
         return domonic.parseString(markup, parser=parser)
@@ -1382,14 +1386,14 @@ def _getitem(self: Element, key: str | int) -> Any:
     return value
 
 
-def _setitem(self: Element, key: str | int, value: Any) -> None:
+def _setitem(self: Element, key: str | int, value: Any) -> Element:
     if isinstance(key, int):
         raise TypeError(
             "Element child assignment by index is not supported by the BS4 layer"
         )
     _invalidate_index(self)
     self.setAttribute(key, value)
-    return self
+    return self  # matches Node.__setitem__'s chaining contract (this replaces it)
 
 
 def _delitem(self: Element, key: str | int) -> None:

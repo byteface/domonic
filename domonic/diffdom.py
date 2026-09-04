@@ -95,11 +95,12 @@ def objToNode(data: dict[str, Any] | str) -> Any:
     if node_name == COMMENT_NODE_NAME:
         return Comment(data.get("data", ""))
 
+    tag_name = str(node_name or "")
     namespace = data.get("namespaceURI")
     if namespace:
-        node = Document.createElementNS(namespace, node_name)
+        node = Document.createElementNS(str(namespace), tag_name)
     else:
-        node = Document.createElement(node_name)
+        node = Document.createElement(tag_name)
 
     for name, value in data.get("attributes", {}).items():
         node.setAttribute(name, value)
@@ -145,7 +146,7 @@ def _replace_node_contents(node: Node, replacement: Any) -> None:
         node.name = replacement.name
     if hasattr(replacement, "kwargs"):
         node.kwargs = dict(replacement.kwargs)
-    node.namespaceURI = getattr(replacement, "namespaceURI", None)
+    node.namespaceURI = getattr(replacement, "namespaceURI", "") or ""
     node.args = tuple(getattr(replacement, "args", ()))
     for child in node.args:
         if isinstance(child, Node):
