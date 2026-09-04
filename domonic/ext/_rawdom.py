@@ -59,6 +59,9 @@ _NODE_STATE_DEFAULTS = {
     "prefix": None,
     "_escape_text_on_render": False,
     "_escape_attributes_on_render": False,
+    # every element/text node this module's HTML-parser adapters build belongs
+    # to an HTML document -- gates Element.tagName / nodeName upper-casing
+    "_html_doc": True,
 }
 
 _DOCUMENT_STATE_DEFAULTS = {
@@ -88,6 +91,7 @@ _TEXT_STATE_DEFAULTS = {
     "prefix": None,
     "_escape_text_on_render": True,
     "_escape_attributes_on_render": False,
+    "_html_doc": True,
 }
 
 

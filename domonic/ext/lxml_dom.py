@@ -118,6 +118,9 @@ def initialize_node_raw(node, args=(), namespace_uri=None):
     state["prefix"] = None
     state["_escape_text_on_render"] = False
     state["_escape_attributes_on_render"] = False
+    # this adapter is only used by HTML-producing backends (lxml_html,
+    # markupever, html5_parser) -- see Node.tagName in dom.py
+    state["_html_doc"] = True
     return node
 
 

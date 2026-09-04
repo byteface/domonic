@@ -269,7 +269,9 @@ class XPathExpression:
 
     @staticmethod
     def _node_name(node: Any) -> str:
-        return getattr(node, "tagName", getattr(node, "name", ""))
+        # localName, never tagName -- XPath step names are lower-case even
+        # when tagName upper-cases for an HTML document
+        return str(getattr(node, "localName", None) or getattr(node, "name", ""))
 
     @staticmethod
     def _predicate_matches(

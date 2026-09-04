@@ -2165,7 +2165,7 @@ class DOMTest(unittest.TestCase):
             "<section id='replacement'>R</section><aside id='tail'>T</aside>"
         )
         self.assertEqual(
-            [child.tagName for child in wrapper.children], ["section", "aside"]
+            [child.tagName for child in wrapper.children], ["SECTION", "ASIDE"]
         )
         self.assertEqual(wrapper.querySelector("#replacement").textContent, "R")
         self.assertEqual(wrapper.querySelector("#tail").textContent, "T")
@@ -2185,6 +2185,35 @@ class DOMTest(unittest.TestCase):
 
         node = xml.querySelector("item")
         self.assertEqual(XMLSerializer().serializeToString(node), "<item>1</item>")
+
+    def test_tag_name_and_node_name_case(self):
+        from domonic import domonic
+        from domonic.dom import DOMParser
+
+        # HTML-parsed elements: tagName / nodeName upper-case, localName stays
+        # lower-case, matching a browser in an HTML document
+        page = domonic.parseString("<div><p>hi</p><svg><circle/></svg></div>")
+        div_el = page
+        p_el = page.querySelector("p")
+        self.assertEqual(div_el.tagName, "DIV")
+        self.assertEqual(p_el.tagName, "P")
+        self.assertEqual(p_el.nodeName, "P")
+        self.assertEqual(p_el.localName, "p")
+        # SVG stays lower-case even inside an HTML document
+        self.assertEqual(page.querySelector("svg").tagName, "svg")
+        self.assertEqual(page.querySelector("circle").tagName, "circle")
+
+        # XML parsing (expat) keeps case -- it is not an HTML document
+        xml_doc = domonic.parseString("<Root><Child/></Root>", parser="expat")
+        self.assertEqual(xml_doc.querySelector("Child").tagName, "Child")
+
+        # DOMParser's XML mode likewise stays lower/mixed-case
+        xml = DOMParser().parseFromString("<root><item/></root>", "application/xml")
+        self.assertEqual(xml.querySelector("item").tagName, "item")
+
+        # programmatic construction (no owner document) is not upper-cased --
+        # a known, documented limitation, not a regression
+        self.assertEqual(div(span()).tagName, "div")
 
     def test_html_helper_replaces_children_and_detaches_old_nodes(self):
         old_child = span("old", _id="old")

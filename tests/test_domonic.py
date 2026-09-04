@@ -244,7 +244,7 @@ _id="one", _class="two",
                     self.skipTest(f"{parser} is not installed")
                 node = (
                     page
-                    if getattr(page, "tagName", None) == "p"
+                    if (getattr(page, "tagName", None) or "").lower() == "p"
                     else page.querySelector("p")
                 )
                 self.assertEqual(node.textContent, "x y")
@@ -308,7 +308,7 @@ _id="one", _class="two",
 
                 node = (
                     page
-                    if getattr(page, "tagName", None) == "p"
+                    if (getattr(page, "tagName", None) or "").lower() == "p"
                     else page.querySelector("p")
                 )
                 self.assertEqual(node.textContent, "<img>")
@@ -336,7 +336,7 @@ _id="one", _class="two",
         page = domonic.parseString('<p title="ok">x</p>', parser="html.parser")
         node = (
             page
-            if getattr(page, "tagName", None) == "p"
+            if (getattr(page, "tagName", None) or "").lower() == "p"
             else page.querySelector("p")
         )
 
@@ -410,7 +410,7 @@ _id="one", _class="two",
     def test_parse_string_with_stdlib_html_parser_basic_elements(self):
         page = domonic.parseString("<p>Hello</p>", parser="html.parser")
 
-        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.tagName, "P")
         self.assertEqual(page.text, "Hello")
 
     def test_parse_string_with_stdlib_html_parser_nested_elements(self):
@@ -483,7 +483,7 @@ _id="one", _class="two",
         )
 
         self.assertIsInstance(page, HTMLDocument)
-        self.assertEqual(page.documentElement.tagName, "html")
+        self.assertEqual(page.documentElement.tagName, "HTML")
         self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
         self.assertEqual(page.querySelector("title").text, "T")
         self.assertEqual(page.querySelector("p").text, "Hi")
@@ -503,7 +503,7 @@ _id="one", _class="two",
     def test_parse_string_with_stdlib_html_parser_malformed_reasonable_html(self):
         page = domonic.parseString("<div><p>One<p>Two</div>", parser="html.parser")
 
-        self.assertEqual(page.tagName, "div")
+        self.assertEqual(page.tagName, "DIV")
         self.assertEqual(
             [node.text for node in page.querySelectorAll("p")], ["One", "Two"]
         )
@@ -529,7 +529,7 @@ _id="one", _class="two",
         page = parse("<p>Hello</p>")
         fragment = parse("<p>Hello</p><p>World</p>")
 
-        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.tagName, "P")
         self.assertEqual(len(fragment.childNodes), 2)
 
     def test_parse_string_with_html5_parser_option(self):
@@ -614,7 +614,7 @@ _id="one", _class="two",
             script = page.querySelector("script")
 
             self.assertIsInstance(page, HTMLDocument)
-            self.assertEqual(page.documentElement.tagName, "html")
+            self.assertEqual(page.documentElement.tagName, "HTML")
             self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
             self.assertEqual(page.baseURI, "https://example.com/")
             self.assertEqual(paragraph.baseURI, "https://example.com/")
@@ -658,7 +658,7 @@ _id="one", _class="two",
             if cached_adapter is not None:
                 sys.modules[module_name] = cached_adapter
 
-        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.tagName, "P")
         self.assertEqual(page.getAttribute("data-x"), "1")
         self.assertEqual(page.textContent, "Hi")
 
@@ -678,7 +678,7 @@ _id="one", _class="two",
             script = page.querySelector("script")
 
             self.assertIsInstance(page, HTMLDocument)
-            self.assertEqual(page.documentElement.tagName, "html")
+            self.assertEqual(page.documentElement.tagName, "HTML")
             self.assertEqual(page.baseURI, "https://example.com/")
             self.assertEqual(paragraph.baseURI, "https://example.com/")
             self.assertEqual(paragraph.getAttribute("data-src"), "/img.png")
@@ -720,7 +720,7 @@ _id="one", _class="two",
             if cached_adapter is not None:
                 sys.modules[module_name] = cached_adapter
 
-        self.assertEqual(page.tagName, "p")
+        self.assertEqual(page.tagName, "P")
         self.assertEqual(page.getAttribute("data-x"), "1")
         self.assertEqual(page.textContent, "Hi")
 

@@ -271,6 +271,8 @@ def _render_attribute_value(value: Any, escape: bool | None = None) -> str:
 # attribute values). Ports whose fixtures diff against real browser output
 # (DOMPurify, sanitiser suites) need this byte-compatible form.
 
+XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
+
 _HTML_VOID_ELEMENTS = frozenset({
     "area", "base", "basefont", "bgsound", "br", "col", "embed", "frame", "hr",
     "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr",
@@ -1116,6 +1118,14 @@ class Node(EventTarget):
         self._ownerDocument = None
         self.parentNode = None
         self.prefix = None  # 🗑️
+        # whether this node belongs to an HTML document -- gates tagName /
+        # nodeName upper-casing (see the property). Programmatic construction
+        # (this path) is not associated with any document, so it defaults
+        # False; the HTML-producing parser adapters set it True on every node
+        # they build (see ``_rawdom.py`` / ``lxml_dom.py``). expat/XML parsing
+        # goes through this same __init__, so it stays False without any
+        # special-casing there.
+        self._html_doc = False
         self._escape_text_on_render = False
         # Attribute values are always escaped on serialization: emitting a raw
         # ``"`` / ``&`` / ``<`` inside a quoted value produces malformed markup
@@ -1980,8 +1990,12 @@ class Node(EventTarget):
 
     @property
     def localName(self) -> str | None:
+        # the lower-case local part -- never upper-cased like ``tagName``.
+        # ``None`` for anything that isn't an element (a plain Node has no tag).
+        if not isinstance(self, Element):
+            return None
         try:
-            return self.tagName
+            return self.name
         except Exception:
             return None
 
@@ -2382,9 +2396,14 @@ class Node(EventTarget):
 
     @property
     def tag(self):
-        """Returns the tag name of the current node"""
-        return self.nodeName
-        # return self.tagName  # not sure current is correct as would return #nodeName
+        """Returns the tag name of the current node.
+
+        ElementTree / elementpath compatibility -- always the lower-case local
+        name for an element (``tagName`` upper-cases for an HTML document,
+        which ``etree``-style code does not expect), else ``nodeName``.
+        """
+        local = self.localName
+        return local if local is not None else self.nodeName
 
     @property
     def text(self):
@@ -2418,7 +2437,7 @@ class Node(EventTarget):
         """
         Determine if this node matches the given name and namespace.
         """
-        if name and name != self.tagName:
+        if name and name != self.localName:
             return False
         if default_namespace and getattr(self, "namespace", None) != default_namespace:
             return False
@@ -5659,7 +5678,21 @@ class Element(Node):
 
     @property
     def tagName(self):
-        return self.name
+        # DOM: an HTML element's tag name is upper-cased when its node document
+        # is an HTML document (SVG / MathML / XML keep their case regardless).
+        # ``self._html_doc`` is set on every element the HTML-producing parser
+        # adapters build (see ``_rawdom.py`` / ``lxml_dom.py``); programmatic
+        # construction (``div()``, ``document.createElement()``, XML parsing)
+        # is not associated with an HTML document, so it stays lower-case --
+        # see the ``domonic-serialization`` memory for what that leaves open.
+        name = self.name
+        if (
+            isinstance(name, str)
+            and getattr(self, "_html_doc", False)
+            and getattr(self, "namespaceURI", XHTML_NAMESPACE) == XHTML_NAMESPACE
+        ):
+            return name.upper()
+        return name
 
     # @property
     # def textContent(self):
