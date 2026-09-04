@@ -111,10 +111,39 @@ values from the parent, then each property's initial value.
 	)
 	hero = page.querySelector("#hero")
 	computed = window.getComputedStyle(hero)
-	print(computed.getPropertyValue("color"))        # blue  (inline wins)
+	print(computed.getPropertyValue("color"))        # rgb(0, 0, 255)  (inline wins)
 	print(computed.getPropertyValue("padding-top"))  # 8px   (.card, shorthand expanded)
-	print(computed.getPropertyValue("font-weight"))  # bold  (#hero)
+	print(computed.getPropertyValue("font-weight"))  # 700   (#hero; keyword -> number)
 	print(computed.getPropertyValue("display"))      # inline (initial value)
+
+Like a browser, the computed values are **used values**: colours are reported
+as ``rgb()`` / ``rgba()``, ``em`` / ``rem`` / ``pt`` / ``cm`` lengths and
+``calc()`` are resolved to ``px`` (against the element's font-size and the
+containing block where one can be found without full layout), ``currentColor``
+resolves to the element's ``color``, ``font-weight`` keywords become numbers,
+an out-of-flow ``display: inline`` blockifies, and ``inherit`` / ``initial`` /
+``unset`` are resolved. ``%`` values that need layout, and a ``transform``
+list, are reported the browser way too:
+
+.. code-block :: python
+
+	from domonic.dom import document
+	from domonic.style import ComputedStyleDeclaration
+
+	outer = document.createElement("div")
+	outer.setAttribute("style", "font-size: 20px; width: 400px")
+	inner = document.createElement("p")
+	inner.setAttribute("style", "margin: 1em; width: 50%; transform: rotate(90deg)")
+	outer.appendChild(inner)
+	document.createElement("div").appendChild(outer)
+
+	c = ComputedStyleDeclaration(inner)
+	c.getPropertyValue("margin")     # 20px       (1em of the 20px font-size)
+	c.getPropertyValue("width")      # 200px      (50% of the 400px container)
+	c.getPropertyValue("transform")  # matrix(0, 1, -1, 0, 0, 0)
+
+Pass a pseudo-element to read its style: ``window.getComputedStyle(el,
+"::before")``.
 
 The cascade understands modern selector specificity: ``:where()`` contributes
 zero, ``:is()`` / ``:not()`` / ``:has()`` take the specificity of their most
@@ -131,13 +160,14 @@ unlayered rule beats any layer).
 	    "</style></head><body><p>hi</p></body>"
 	)
 	p = page.querySelector("p")
-	window.getComputedStyle(p).getPropertyValue("color")   # blue  (theme layer is later)
+	window.getComputedStyle(p).getPropertyValue("color")   # rgb(0, 0, 255)  (theme layer is later)
 
 CSS custom properties and ``var()``
 -----------------------------------
 
-``var()`` references are substituted when computing a value, using custom
-properties set on the **same element** (inline or via a matched rule).
+``var()`` references are substituted when computing a value. Custom properties
+inherit, so a ``--token`` declared on ``:root`` (or any ancestor, inline or via
+a rule) resolves on a descendant.
 
 .. code-block :: python
 
@@ -161,6 +191,52 @@ Values API.
 	    "initialValue": "rebeccapurple",
 	})
 	# --brand now resolves to rebeccapurple on any element until overridden
+
+CSS Typed OM
+------------
+
+The numeric-value core of CSS Typed OM is available: ``CSSUnitValue`` /
+``CSSKeywordValue`` (via ``CSSStyleValue.parse``), the ``CSS.px()`` / ``em()``
+/ ``rem()`` / ``percent()`` / ``deg()`` / ``s()`` / ``fr()`` factories, and
+``element.attributeStyleMap`` / ``element.computedStyleMap()``.
+
+.. code-block :: python
+
+	from domonic.style import CSS
+	from domonic.html import div
+
+	CSS.px(10) + CSS.px(5)          # CSSUnitValue 15px
+	CSS.px(96).to("in")            # CSSUnitValue 1in
+
+	el = div(_style="width: 10px")
+	el.attributeStyleMap.get("width")        # CSSUnitValue 10px
+	el.attributeStyleMap.set("height", CSS.px(20))
+
+constructable stylesheets
+-------------------------
+
+``new CSSStyleSheet({media, disabled})`` and ``sheet.replaceSync(cssText)``
+build a stylesheet in code; adding it to ``document.adoptedStyleSheets`` (or a
+shadow root's) feeds it into ``getComputedStyle``.
+
+.. code-block :: python
+
+	from domonic.dom import Document
+	from domonic.style import CSSStyleSheet
+
+	doc = Document()
+	sheet = CSSStyleSheet()
+	sheet.replaceSync(".hl { color: rebeccapurple }")
+	doc.adoptedStyleSheets = [sheet]
+
+media queries
+-------------
+
+``window.matchMedia(query)`` evaluates width / height / orientation, the range
+syntax (``(width >= 600px)``, ``(400px <= width <= 900px)``), ``resolution``
+(from ``window.devicePixelRatio``), and the discrete preference features
+(``prefers-color-scheme``, ``prefers-reduced-motion``, ``hover``, ``pointer``,
+...). Override a preference for the session via ``window.mediaFeatures``.
 
 stylesheets
 -----------

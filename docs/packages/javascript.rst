@@ -140,6 +140,11 @@ Many of the familiar JavaScript array methods are available in Python form:
 String methods
 ----------------
 
+``String`` subclasses ``str`` (like ``Number`` subclasses ``float``), so
+``String(x)`` *is* a real string primitive -- ``isinstance(String(5), str)``
+is ``True``, it hashes, sorts, and drops into any API that expects a ``str`` --
+while still carrying the JavaScript method surface below.
+
 A wide set of familiar string methods is available:
 
 .. code-block :: python
