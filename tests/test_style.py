@@ -1109,6 +1109,26 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_get_computed_style_for_pseudo_element(self):
+        from domonic.dom import Document
+        from domonic.style import CSSStyleSheet, ComputedStyleDeclaration
+
+        doc = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync('p { color: black; } p::before { content: "* "; color: red; }')
+        doc.adoptedStyleSheets = [sheet]
+
+        p = doc.createElement("p")
+        doc.createElement("div").appendChild(p)
+        p._ownerDocument = doc
+
+        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("color"), "black")
+        before = ComputedStyleDeclaration(p, "::before")
+        self.assertEqual(before.getPropertyValue("color"), "red")
+        self.assertEqual(before.getPropertyValue("content"), '"* "')
+        # the element's own style is unaffected by ::before rules
+        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("content"), "")
+
     def test_adopted_stylesheets_feed_the_cascade(self):
         from domonic.dom import Document
         from domonic.style import CSSStyleSheet, ComputedStyleDeclaration

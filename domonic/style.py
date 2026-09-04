@@ -6414,12 +6414,27 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         for cls in str(element.getAttribute("class") or "").split():
             buckets.append(f".{cls}")
 
+        want_pseudo = ""
+        if self._pseudo:
+            want_pseudo = str(self._pseudo).strip().lower().lstrip(":")
+
         cascade: dict[str, tuple[tuple, str, bool]] = {}
         for bucket in buckets:
             for selector, spec, order, layer, entries in index.get(bucket, ()):
+                pe = re.search(
+                    r"::?(before|after|marker|placeholder|first-line|"
+                    r"first-letter|selection|backdrop|file-selector-button)\s*$",
+                    selector,
+                )
+                sel_pseudo = pe.group(1) if pe else ""
+                if sel_pseudo != want_pseudo:
+                    continue
+                base_selector = selector[: pe.start()].strip() if pe else selector
+                if not base_selector:
+                    base_selector = "*"
                 try:
-                    ok = element._matchElement(element, selector) or (
-                        element._matches_selector_chain(selector) is True
+                    ok = element._matchElement(element, base_selector) or (
+                        element._matches_selector_chain(base_selector) is True
                     )
                 except Exception:
                     ok = False
