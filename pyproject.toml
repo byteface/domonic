@@ -117,6 +117,22 @@ files = [
     "domonic/xml/rss.py",
     "domonic/xml/sitemap.py",
     "domonic/xml/x3d.py",
+    "domonic/i18n/ar/__init__.py",
+    "domonic/i18n/ch/__init__.py",
+    "domonic/i18n/da/__init__.py",
+    "domonic/i18n/de/__init__.py",
+    "domonic/i18n/es/__init__.py",
+    "domonic/i18n/fr/__init__.py",
+    "domonic/i18n/hi/__init__.py",
+    "domonic/i18n/it/__init__.py",
+    "domonic/i18n/mi/__init__.py",
+    "domonic/i18n/ru/__init__.py",
+    "domonic/i18n/sw/__init__.py",
+    "domonic/i18n/uk/__init__.py",
+    "domonic/i18n/zu/__init__.py",
+    "domonic/constants/color.py",
+    "domonic/constants/entities.py",
+    "domonic/templates/__init__.py",
 ]
 follow_imports = "skip"
 ignore_missing_imports = true

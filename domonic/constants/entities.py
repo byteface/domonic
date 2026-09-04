@@ -169,36 +169,36 @@ class Char:
     YACUTE: str = "&Yacute;"  #: Ý
     THORN: str = "&THORN;"  #: Þ
     SZLIG: str = "&szlig;"  #: ß
-    AGRAVE: str = "&agrave;"  #: à
-    AACUTE: str = "&aacute;"  #: á
-    ACIRC: str = "&acirc;"  #: â
-    ATILDE: str = "&atilde;"  #: ã
-    AUML: str = "&auml;"  #: ä
-    ARING: str = "&aring;"  #: å
-    AELIG: str = "&aelig;"  #: æ
-    CCEDIL: str = "&ccedil;"  #: ç
-    EGRAVE: str = "&egrave;"  #: è
-    EACUTE: str = "&eacute;"  #: é
-    ECIRC: str = "&ecirc;"  #: ê
-    EUML: str = "&euml;"  #: ë
-    IGRAVE: str = "&igrave;"  #: ì
-    IACUTE: str = "&iacute;"  #: í
-    ICIRC: str = "&icirc;"  #: î
-    IUML: str = "&iuml;"  #: ï
-    ETH: str = "&eth;"  #: ð
-    NTILDE: str = "&ntilde;"  #: ñ
-    OGRAVE: str = "&ograve;"  #: ò
-    OACUTE: str = "&oacute;"  #: ó
-    OCIRC: str = "&ocirc;"  #: ô
-    OTILDE: str = "&otilde;"  #: õ
-    OUML: str = "&ouml;"  #: ö
-    OSLASH: str = "&oslash;"  #: ø
-    UGRAVE: str = "&ugrave;"  #: ù
-    UACUTE: str = "&uacute;"  #: ú
-    UCIRC: str = "&ucirc;"  #: û
-    UUML: str = "&uuml;"  #: ü
-    YACUTE: str = "&yacute;"  #: ý
-    THORN: str = "&thorn;"  #: þ
+    AGRAVE: str = "&agrave;"  # type: ignore[no-redef]  #: à
+    AACUTE: str = "&aacute;"  # type: ignore[no-redef]  #: á
+    ACIRC: str = "&acirc;"  # type: ignore[no-redef]  #: â
+    ATILDE: str = "&atilde;"  # type: ignore[no-redef]  #: ã
+    AUML: str = "&auml;"  # type: ignore[no-redef]  #: ä
+    ARING: str = "&aring;"  # type: ignore[no-redef]  #: å
+    AELIG: str = "&aelig;"  # type: ignore[no-redef]  #: æ
+    CCEDIL: str = "&ccedil;"  # type: ignore[no-redef]  #: ç
+    EGRAVE: str = "&egrave;"  # type: ignore[no-redef]  #: è
+    EACUTE: str = "&eacute;"  # type: ignore[no-redef]  #: é
+    ECIRC: str = "&ecirc;"  # type: ignore[no-redef]  #: ê
+    EUML: str = "&euml;"  # type: ignore[no-redef]  #: ë
+    IGRAVE: str = "&igrave;"  # type: ignore[no-redef]  #: ì
+    IACUTE: str = "&iacute;"  # type: ignore[no-redef]  #: í
+    ICIRC: str = "&icirc;"  # type: ignore[no-redef]  #: î
+    IUML: str = "&iuml;"  # type: ignore[no-redef]  #: ï
+    ETH: str = "&eth;"  # type: ignore[no-redef]  #: ð
+    NTILDE: str = "&ntilde;"  # type: ignore[no-redef]  #: ñ
+    OGRAVE: str = "&ograve;"  # type: ignore[no-redef]  #: ò
+    OACUTE: str = "&oacute;"  # type: ignore[no-redef]  #: ó
+    OCIRC: str = "&ocirc;"  # type: ignore[no-redef]  #: ô
+    OTILDE: str = "&otilde;"  # type: ignore[no-redef]  #: õ
+    OUML: str = "&ouml;"  # type: ignore[no-redef]  #: ö
+    OSLASH: str = "&oslash;"  # type: ignore[no-redef]  #: ø
+    UGRAVE: str = "&ugrave;"  # type: ignore[no-redef]  #: ù
+    UACUTE: str = "&uacute;"  # type: ignore[no-redef]  #: ú
+    UCIRC: str = "&ucirc;"  # type: ignore[no-redef]  #: û
+    UUML: str = "&uuml;"  # type: ignore[no-redef]  #: ü
+    YACUTE: str = "&yacute;"  # type: ignore[no-redef]  #: ý
+    THORN: str = "&thorn;"  # type: ignore[no-redef]  #: þ
     YUML: str = "&yuml;"  #: ÿ
 
     # ISO-8859-1 Symbols
@@ -302,31 +302,31 @@ class Char:
     CHI: str = "&Chi;"  #: Χ
     PSI: str = "&Psi;"  #: Ψ
     OMEGA: str = "&Omega;"  #: Ω
-    ALPHA: str = "&alpha;"  #: α
-    BETA: str = "&beta;"  #: β
-    GAMMA: str = "&gamma;"  #: γ
-    DELTA: str = "&delta;"  #: δ
-    EPSILON: str = "&epsilon;"  #: ε
-    ZETA: str = "&zeta;"  #: ζ
-    ETA: str = "&eta;"  #: η
-    THETA: str = "&theta;"  #: θ
-    IOTA: str = "&iota;"  #: ι
-    KAPPA: str = "&kappa;"  #: κ
-    LAMBDA: str = "&lambda;"  #: λ
-    MU: str = "&mu;"  #: μ
-    NU: str = "&nu;"  #: ν
-    XI: str = "&xi;"  #: ξ
-    OMICRON: str = "&omicron;"  #: ο
-    PI: str = "&pi;"  #: π
-    RHO: str = "&rho;"  #: ρ
+    ALPHA: str = "&alpha;"  # type: ignore[no-redef]  #: α
+    BETA: str = "&beta;"  # type: ignore[no-redef]  #: β
+    GAMMA: str = "&gamma;"  # type: ignore[no-redef]  #: γ
+    DELTA: str = "&delta;"  # type: ignore[no-redef]  #: δ
+    EPSILON: str = "&epsilon;"  # type: ignore[no-redef]  #: ε
+    ZETA: str = "&zeta;"  # type: ignore[no-redef]  #: ζ
+    ETA: str = "&eta;"  # type: ignore[no-redef]  #: η
+    THETA: str = "&theta;"  # type: ignore[no-redef]  #: θ
+    IOTA: str = "&iota;"  # type: ignore[no-redef]  #: ι
+    KAPPA: str = "&kappa;"  # type: ignore[no-redef]  #: κ
+    LAMBDA: str = "&lambda;"  # type: ignore[no-redef]  #: λ
+    MU: str = "&mu;"  # type: ignore[no-redef]  #: μ
+    NU: str = "&nu;"  # type: ignore[no-redef]  #: ν
+    XI: str = "&xi;"  # type: ignore[no-redef]  #: ξ
+    OMICRON: str = "&omicron;"  # type: ignore[no-redef]  #: ο
+    PI: str = "&pi;"  # type: ignore[no-redef]  #: π
+    RHO: str = "&rho;"  # type: ignore[no-redef]  #: ρ
     SIGMAF: str = "&sigmaf;"  #: ς
-    SIGMA: str = "&sigma;"  #: σ
-    TAU: str = "&tau;"  #: τ
-    UPSILON: str = "&upsilon;"  #: υ
-    PHI: str = "&phi;"  #: φ
-    CHI: str = "&chi;"  #: χ
-    PSI: str = "&psi;"  #: ψ
-    OMEGA: str = "&omega;"  #: ω
+    SIGMA: str = "&sigma;"  # type: ignore[no-redef]  #: σ
+    TAU: str = "&tau;"  # type: ignore[no-redef]  #: τ
+    UPSILON: str = "&upsilon;"  # type: ignore[no-redef]  #: υ
+    PHI: str = "&phi;"  # type: ignore[no-redef]  #: φ
+    CHI: str = "&chi;"  # type: ignore[no-redef]  #: χ
+    PSI: str = "&psi;"  # type: ignore[no-redef]  #: ψ
+    OMEGA: str = "&omega;"  # type: ignore[no-redef]  #: ω
     THETASYM: str = "&thetasym;"  #: ϑ
     UPSIH: str = "&upsih;"  #: ϒ
     PIV: str = "&piv;"  #: ϖ
@@ -336,10 +336,10 @@ class Char:
     SCARON: str = "&Scaron;"  #: Š
     Scaron: str = "&Scaron;"  #: Š
     scaron: str = "&scaron;"  #: š
-    YUML: str = "&Yuml;"  #: Ÿ
+    YUML: str = "&Yuml;"  # type: ignore[no-redef]  #: Ÿ
     FNOF: str = "&fnof;"  #: ƒ
     CIRC: str = "&circ;"  #: ˆ
-    TILDE: str = "&tilde;"  #: ˜
+    TILDE: str = "&tilde;"  # type: ignore[no-redef]  #: ˜
 
     #     &ensp;  &#8194; En space
     #     &emsp;  &#8195; Em space
@@ -358,12 +358,12 @@ class Char:
     RDQUO: str = "&rdquo;"  #: ”
     BDQUO: str = "&bdquo;"  #: „
     DAGGER: str = "&dagger;"  #: †
-    DAGGER: str = "&Dagger;"  #: ‡
+    DAGGER: str = "&Dagger;"  # type: ignore[no-redef]  #: ‡
     BULL: str = "&bull;"  #: •
     HELLIP: str = "&hellip;"  #: …
     PERMIL: str = "&permil;"  #: ‰
     PRIME: str = "&prime;"  #: ′
-    PRIME: str = "&Prime;"  #: ″
+    PRIME: str = "&Prime;"  # type: ignore[no-redef]  #: ″
     LSAQUO: str = "&lsaquo;"  #: ‹
     RSAQUO: str = "&rsaquo;"  #: ›
     OLINE: str = "&oline;"  #: ‾
@@ -430,6 +430,13 @@ class Char:
     MALE: str = "&male;"  #: ♂
 
 
+# A handful of HTML entity names differ only by case (&Agrave; / &agrave;,
+# &Alpha; / &alpha;, ...) and share one bare Char.NAME above (the second,
+# case-insensitively identical, assignment in the class body intentionally
+# overwrites the first -- ``# type: ignore[no-redef]`` there marks that on
+# purpose, not oversight). Both variants stay reachable: the bare name
+# resolves to whichever was assigned last, and a fully-disambiguated alias
+# for each is set below.
 _CHAR_DISAMBIGUATED_ALIASES = {
     "LATIN_CAPITAL_A_GRAVE": "&Agrave;",
     "LATIN_CAPITAL_A_ACUTE": "&Aacute;",

@@ -35,7 +35,7 @@ saghir = صغير = small
 austushhid = استشهد = cite
 kwd = كود = code
 alfareii = الفرعي = sub
-sub = سوب = sup
+soob = سوب = sup
 ealamat = علامة = mark
 rwby = روبي = ruby
 tamtadu = تمتد = span
