@@ -6514,6 +6514,9 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 return self._to_used_length(target, value)
             if target in _COLOR_PROPERTIES or target.endswith("color"):
                 return self._to_used_color(target, value)
+            mapped = _COMPUTED_KEYWORD_MAP.get(target)
+            if mapped is not None:
+                return mapped.get(value.strip().lower(), value)
             return value
         if _cssom.is_shorthand(target):
             return _cssom.build_shorthand(target, self.getPropertyValue)
@@ -6670,6 +6673,11 @@ _USED_LENGTH_PROPERTIES = frozenset({
     "border-top-left-radius", "border-top-right-radius",
     "border-bottom-right-radius", "border-bottom-left-radius",
 })
+
+#: enumerated computed values a browser reports in a canonical form
+_COMPUTED_KEYWORD_MAP: dict[str, dict[str, str]] = {
+    "font-weight": {"normal": "400", "bold": "700"},
+}
 
 #: properties whose computed value getComputedStyle reports as ``rgb()`` /
 #: ``rgba()`` (also everything matching ``*color`` -- see getPropertyValue)

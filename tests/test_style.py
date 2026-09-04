@@ -1022,7 +1022,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(computed.getPropertyValue("color"), "rgb(0, 0, 255)")  # inline wins
         self.assertEqual(computed.getPropertyValue("padding"), "8px")  # .box
         self.assertEqual(computed.getPropertyValue("padding-top"), "8px")
-        self.assertEqual(computed.getPropertyValue("font-weight"), "bold")  # #hero
+        self.assertEqual(computed.getPropertyValue("font-weight"), "700")  # #hero
         self.assertEqual(computed.getPropertyValue("font-size"), "13px")  # .box
         self.assertEqual(computed.getPropertyValue("margin"), "4px")  # inline
         self.assertEqual(computed.getPropertyValue("display"), "inline")  # initial
