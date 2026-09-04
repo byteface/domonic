@@ -6520,6 +6520,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                     rem_px=self._root_font_size_px(),
                 )
                 return composed if composed is not None else value
+            if target == "display":
+                return self._computed_display(value)
             mapped = _COMPUTED_KEYWORD_MAP.get(target)
             if mapped is not None:
                 return mapped.get(value.strip().lower(), value)
@@ -6629,6 +6631,34 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 changed = True
                 parts.append(_px_str(px))
         return " ".join(parts) if changed else value
+
+    #: two-value ``display`` syntax -> the legacy single keyword a browser
+    #: reports (CSS Display 3 "computed value" column)
+    _DISPLAY_TWO_VALUE = {
+        "block flow": "block", "inline flow": "inline",
+        "block flow-root": "flow-root", "inline flow-root": "inline-block",
+        "block flex": "flex", "inline flex": "inline-flex",
+        "block grid": "grid", "inline grid": "inline-grid",
+        "block table": "table", "inline table": "inline-table",
+        "block list-item": "list-item", "flow list-item": "list-item",
+        "block flow list-item": "list-item",
+    }
+    _DISPLAY_BLOCKIFY = {
+        "inline": "block", "inline-block": "block", "run-in": "block",
+        "inline-table": "table", "inline-flex": "flex", "inline-grid": "grid",
+        "-webkit-inline-box": "-webkit-box",
+    }
+
+    def _computed_display(self, value: str) -> str:
+        display = value.strip().lower()
+        display = self._DISPLAY_TWO_VALUE.get(display, display)
+        if display in ("none", "contents"):
+            return display
+        float_val = str(self._resolved.get("float") or "none").strip().lower()
+        position = str(self._resolved.get("position") or "static").strip().lower()
+        if float_val != "none" or position in ("absolute", "fixed"):
+            return self._DISPLAY_BLOCKIFY.get(display, display)
+        return display
 
     def _percent_base_px(self, target: str) -> "float | None":
         """The px a ``%`` resolves against for *target*, when it can be found

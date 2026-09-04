@@ -1109,6 +1109,25 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_display_blockification(self):
+        def display_of(style):
+            e = document.createElement("span")
+            e.setAttribute("style", style)
+            document.createElement("div").appendChild(e)
+            return ComputedStyleDeclaration(e).getPropertyValue("display")
+
+        self.assertEqual(display_of("display: inline"), "inline")
+        # out-of-flow (float / abs-pos) blockifies the display type
+        self.assertEqual(display_of("display: inline; float: left"), "block")
+        self.assertEqual(
+            display_of("display: inline-block; position: absolute"), "block"
+        )
+        self.assertEqual(display_of("display: inline-flex; float: right"), "flex")
+        self.assertEqual(display_of("display: none; float: left"), "none")
+        # two-value display syntax -> the legacy single keyword
+        self.assertEqual(display_of("display: block flow"), "block")
+        self.assertEqual(display_of("display: inline flow-root"), "inline-block")
+
     def test_computed_percentage_lengths(self):
         outer = document.createElement("div")
         outer.setAttribute("style", "width: 400px")
