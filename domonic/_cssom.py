@@ -564,11 +564,11 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
 
     if name in ("border-top", "border-right", "border-bottom", "border-left",
                 "outline", "column-rule"):
-        prefix = "border" if name.startswith("border") else name
-        parts = [get(f"{prefix}-{p}") for p in ("width", "style", "color")]
+        # longs is (<x>-width, <x>-style, <x>-color) for this exact shorthand
+        parts = [get(long) for long in longs]
         if any(p == "" for p in parts):
             return ""
-        return " ".join(p for p in parts if p and p != "currentcolor" and p != "medium") or parts[1]
+        return " ".join(p for p in parts if p and p not in ("currentcolor", "medium")) or parts[1]
 
     if name == "border":
         # only if all four sides are identical

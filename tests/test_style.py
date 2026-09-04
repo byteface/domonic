@@ -897,6 +897,51 @@ class TestCase(unittest.TestCase):
         self.assertEqual(p.length, 4)
         self.assertEqual(p.getPropertyPriority("padding-top"), "important")
 
+    def test_complete_longhand_set_collapses_on_serialisation(self):
+        # a browser re-forms the shorthand when every longhand is present
+        def css(pairs):
+            s = div().style
+            for name, value in pairs:
+                s.setProperty(name, value)
+            return s.cssText
+
+        self.assertEqual(
+            css([("border-top-width", "1px"), ("border-top-style", "solid"),
+                 ("border-top-color", "red")]),
+            "border-top: 1px solid red;",
+        )
+        self.assertEqual(
+            css([("overflow-x", "hidden"), ("overflow-y", "hidden")]),
+            "overflow: hidden;",
+        )
+        self.assertEqual(
+            css([("overflow-x", "hidden"), ("overflow-y", "scroll")]),
+            "overflow: hidden scroll;",
+        )
+        self.assertEqual(
+            css([("flex-grow", "1"), ("flex-shrink", "1"), ("flex-basis", "0%")]),
+            "flex: 1 1 0%;",
+        )
+        self.assertEqual(
+            css([("row-gap", "1px"), ("column-gap", "2px")]),
+            "gap: 1px 2px;",
+        )
+        # all four sides equal -> the one-word border shorthand
+        self.assertEqual(
+            css([(f"border-{s}-{c}", v) for c, v in
+                 (("width", "1px"), ("style", "solid"), ("color", "red"))
+                 for s in ("top", "right", "bottom", "left")]),
+            "border: 1px solid red;",
+        )
+        # a mixed !important set must not collapse
+        s = div().style
+        s.setProperty("margin-top", "1px", "important")
+        s.setProperty("margin-right", "2px")
+        s.setProperty("margin-bottom", "3px")
+        s.setProperty("margin-left", "4px")
+        self.assertIn("margin-top: 1px !important;", s.cssText)
+        self.assertNotIn("margin:", s.cssText)
+
     def test_csstext_setter_always_returns_serialised_form(self):
         s = div().style
         s.cssText = "color: red; margin-top: 5px"  # no trailing ;

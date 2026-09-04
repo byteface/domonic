@@ -6023,28 +6023,66 @@ class CSSStyleDeclaration(Style):
         finally:
             object.__setattr__(self, "_suspend_style_sync", False)
 
-    @staticmethod
-    def _collapse_box_shorthands(entries):
-        """Replace a full set of box-shorthand longhands with the shorthand,
-        the way a browser normalises ``cssText``."""
-        by_name = {}
-        for name, value, priority in entries:
-            by_name[name] = (value, priority)
-        for shorthand in _cssom.BOX_SHORTHANDS | _cssom.RADIUS_SHORTHANDS:
+    #: shorthands re-formed from a complete longhand set when serialising the
+    #: declaration block, the way a browser normalises ``cssText``. Ordered
+    #: widest-first so ``border`` claims all 12 longhands before ``border-width``
+    #: / ``border-top`` get a chance at the leftovers. ``font`` / ``list-style``
+    #: / ``text-decoration`` / ``background`` / ``transition`` / ``animation`` /
+    #: ``grid-*`` are deliberately absent -- browsers only collapse those when
+    #: every longhand (including ones domonic does not model) is at its initial
+    #: value, so re-forming them here would emit shorthands a browser would not.
+    _COLLAPSE_ORDER = (
+        "border",
+        "border-width", "border-style", "border-color",
+        "border-top", "border-right", "border-bottom", "border-left",
+        "border-radius",
+        "margin", "padding", "inset",
+        "outline", "column-rule",
+        "overflow", "gap", "place-content", "place-items", "place-self",
+        "columns", "flex-flow", "flex",
+    )
+
+    @classmethod
+    def _collapse_shorthands(cls, entries):
+        """Replace each complete, priority-consistent set of longhands with its
+        shorthand, matching how a browser serialises a declaration block."""
+        entries = list(entries)
+        for shorthand in cls._COLLAPSE_ORDER:
             longs = _cssom.longhands_for(shorthand)
+            by_name = {name: (value, priority) for name, value, priority in entries}
             if not all(ln in by_name for ln in longs):
                 continue
             priorities = {by_name[ln][1] for ln in longs}
             if len(priorities) != 1:
                 continue
-            collapsed = _cssom.collapse_box_values(*(by_name[ln][0] for ln in longs))
+            collapsed = _cssom.build_shorthand(
+                shorthand, lambda ln: by_name.get(ln, ("", ""))[0]
+            )
             if not collapsed:
                 continue
             priority = priorities.pop()
             first_idx = min(i for i, e in enumerate(entries) if e[0] in longs)
             entries = [e for e in entries if e[0] not in longs]
             entries.insert(first_idx, (shorthand, collapsed, priority))
+
+        # widen the border-width / border-style / border-color trio (each a
+        # single, all-sides-equal value) into `border`, the way a browser does
+        trio = ("border-width", "border-style", "border-color")
+        by_name = {name: (value, priority) for name, value, priority in entries}
+        if all(t in by_name for t in trio):
+            prios = {by_name[t][1] for t in trio}
+            vals = [by_name[t][0] for t in trio]
+            if len(prios) == 1 and all(v and " " not in v for v in vals):
+                merged = " ".join(
+                    v for v in vals if v not in ("medium", "currentcolor")
+                ) or vals[1]
+                first_idx = min(i for i, e in enumerate(entries) if e[0] in trio)
+                entries = [e for e in entries if e[0] not in trio]
+                entries.insert(first_idx, ("border", merged, prios.pop()))
         return entries
+
+    # back-compat alias -- this used to only handle the box + radius shorthands
+    _collapse_box_shorthands = _collapse_shorthands
 
     def getPropertyCSSValue(self, propertyName: str):
         """Only supported via getComputedStyle in Firefox. Returns the property value as a
