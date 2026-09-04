@@ -441,7 +441,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     """
     value = value.strip()
     longs = SHORTHANDS.get(name)
-    if not longs:
+    if not longs or not value:
         return None
     lower = value.lower()
     if lower in _GLOBAL_KEYWORDS:

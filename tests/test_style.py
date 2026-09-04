@@ -1191,6 +1191,27 @@ class TestCase(unittest.TestCase):
         self.assertEqual(child.getPropertyValue("margin"), "10px")
         self.assertEqual(child.getPropertyValue("color"), "#0a0")
 
+    def test_computed_style_resolves_font_relative_and_absolute_lengths(self):
+        outer = document.createElement("div")
+        outer.setAttribute("style", "font-size: 20px")
+        inner = document.createElement("p")
+        inner.setAttribute(
+            "style",
+            "font-size: 1.5em; margin: 1em; padding: 2rem 10px; "
+            "line-height: 2; border-top-width: 0.25rem; width: 50%",
+        )
+        outer.appendChild(inner)
+        document.createElement("div").appendChild(outer)
+
+        c = ComputedStyleDeclaration(inner)
+        self.assertEqual(c.getPropertyValue("font-size"), "30px")   # 1.5 * 20
+        self.assertEqual(c.getPropertyValue("margin"), "30px")      # 1em of own 30
+        self.assertEqual(c.getPropertyValue("padding"), "32px 10px")  # 2rem == 32
+        self.assertEqual(c.getPropertyValue("line-height"), "60px")   # 2 * 30
+        self.assertEqual(c.getPropertyValue("border-top-width"), "4px")
+        # % needs layout -- left untouched
+        self.assertEqual(c.getPropertyValue("width"), "50%")
+
     def test_custom_properties_inherit_from_any_ancestor(self):
         from domonic.window import window
 

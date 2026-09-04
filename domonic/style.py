@@ -6430,14 +6430,102 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
+        # a shorthand is rebuilt from its (already used-value-resolved) longhands
+        if _cssom.is_shorthand(target) and _cssom.expand_shorthand(
+            target, self._resolved.get(target) or ""
+        ) is not None:
+            built = _cssom.build_shorthand(target, self.getPropertyValue)
+            if built:
+                return built
         value = self._resolved.get(target)
         if value:
             if not target.startswith("--") and "var(" in value:
-                return _expand_var_references(value, self._custom_property).strip()
+                value = _expand_var_references(
+                    value, self._custom_property
+                ).strip()
+            if target in _USED_LENGTH_PROPERTIES:
+                return self._to_used_length(target, value)
             return value
         if _cssom.is_shorthand(target):
             return _cssom.build_shorthand(target, self.getPropertyValue)
         return value
+
+    # -- used-value resolution (font-relative + absolute length units) ----
+
+    def _font_size_px(self) -> float:
+        cached = self.__dict__.get("_font_size_px_cache")
+        if cached is not None:
+            return cached
+        parent = self._parent_computed()
+        parent_px = parent._font_size_px() if parent is not None else 16.0
+        raw = str(self._resolved.get("font-size") or "medium").strip()
+        px = _length_string_to_px(
+            raw, em_px=parent_px, rem_px=self._root_font_size_px(),
+            percent_px=parent_px,
+        )
+        if px is None:
+            px = _ABSOLUTE_FONT_SIZE_KEYWORDS.get(raw.lower(), parent_px)
+        self.__dict__["_font_size_px_cache"] = px
+        return px
+
+    def _root_font_size_px(self) -> float:
+        cache = self._chain_cache
+        if "__root_font_px__" in cache:
+            return cache["__root_font_px__"]
+        node = self._element
+        root = node
+        while True:
+            parent = getattr(node, "parentNode", None)
+            if parent is None or getattr(parent, "nodeType", None) != 1:
+                root = node
+                break
+            node = parent
+        px = 16.0
+        if root is not self._element:
+            rc = ComputedStyleDeclaration(root, None, _chain_cache=cache)
+            px = rc._font_size_px()
+        cache["__root_font_px__"] = px
+        return px
+
+    def _parent_computed(self):
+        parent = getattr(self._element, "parentNode", None)
+        if parent is None or getattr(parent, "nodeType", None) != 1:
+            return None
+        cache = self._chain_cache
+        got = cache.get(id(parent))
+        if got is None:
+            got = ComputedStyleDeclaration(parent, None, _chain_cache=cache)
+            cache[id(parent)] = got
+        return got
+
+    def _to_used_length(self, target: str, value: str) -> str:
+        if target == "font-size":
+            return _px_str(self._font_size_px())
+
+        font_px = self._font_size_px()
+        if target == "line-height":
+            low = value.strip().lower()
+            if low in ("normal", "inherit", "initial", "unset", ""):
+                return value
+            match = _LENGTH_TOKEN_RE.match(value.strip())
+            if match and match.group(2) == "":  # unitless multiplier
+                return _px_str(float(match.group(1)) * font_px)
+
+        parts = []
+        changed = False
+        for token in value.split():
+            px = _length_string_to_px(
+                token,
+                em_px=font_px,
+                rem_px=self._root_font_size_px(),
+                percent_px=None,  # % needs layout -- leave it alone
+            )
+            if px is None:
+                parts.append(token)
+            else:
+                changed = True
+                parts.append(_px_str(px))
+        return " ".join(parts) if changed else value
 
     def _property_entries(self):
         return [
@@ -6471,6 +6559,63 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         raise Exception(
             "NoModificationAllowedError: getComputedStyle is read-only"
         )
+
+
+#: properties whose computed value getComputedStyle reports as a used <length>
+#: in px. ``%`` / ``auto`` / ``calc()`` / keywords are left untouched (they need
+#: layout); only font-relative and absolute units are resolved.
+_USED_LENGTH_PROPERTIES = frozenset({
+    "font-size", "line-height", "letter-spacing", "word-spacing", "text-indent",
+    "margin-top", "margin-right", "margin-bottom", "margin-left",
+    "padding-top", "padding-right", "padding-bottom", "padding-left",
+    "border-top-width", "border-right-width", "border-bottom-width",
+    "border-left-width", "outline-width", "column-rule-width", "column-width",
+    "column-gap", "row-gap", "border-spacing",
+    "width", "height", "min-width", "min-height", "max-width", "max-height",
+    "top", "right", "bottom", "left",
+    "border-top-left-radius", "border-top-right-radius",
+    "border-bottom-right-radius", "border-bottom-left-radius",
+})
+
+_ABSOLUTE_FONT_SIZE_KEYWORDS = {
+    "xx-small": 9.6, "x-small": 12.0, "small": 13.333, "medium": 16.0,
+    "large": 18.667, "x-large": 24.0, "xx-large": 32.0, "xxx-large": 48.0,
+}
+
+#: absolute length unit -> px (CSS reference pixel: 1in == 96px)
+_ABSOLUTE_LENGTH_UNITS = {
+    "px": 1.0, "in": 96.0, "cm": 96.0 / 2.54, "mm": 96.0 / 25.4,
+    "q": 96.0 / 25.4 / 4, "pt": 96.0 / 72.0, "pc": 16.0,
+}
+_LENGTH_TOKEN_RE = re.compile(r"^([+-]?(?:\d+\.?\d*|\.\d+))([a-z%]*)$", re.I)
+
+
+def _px_str(px: float) -> str:
+    rounded = round(px, 4)
+    if rounded == int(rounded):
+        return f"{int(rounded)}px"
+    return f"{rounded}px"
+
+
+def _length_string_to_px(
+    token: str, *, em_px: float, rem_px: float, percent_px: "float | None"
+) -> "float | None":
+    """Convert a single length token to px, or ``None`` if it is not a plain
+    length this resolver handles (``auto``, ``calc(...)``, a bare keyword, or a
+    ``%`` with no base)."""
+    match = _LENGTH_TOKEN_RE.match(token.strip())
+    if not match:
+        return None
+    number, unit = float(match.group(1)), match.group(2).lower()
+    if unit in ("", ) and number == 0:
+        return 0.0
+    if unit == "%":
+        return None if percent_px is None else number / 100.0 * percent_px
+    if unit in ("em", "rem"):
+        return number * (em_px if unit == "em" else rem_px)
+    if unit == "":
+        return None  # a unitless non-zero number is not a length
+    return None if unit not in _ABSOLUTE_LENGTH_UNITS else number * _ABSOLUTE_LENGTH_UNITS[unit]
 
 
 def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
