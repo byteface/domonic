@@ -1109,6 +1109,33 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_percentage_lengths(self):
+        outer = document.createElement("div")
+        outer.setAttribute("style", "width: 400px")
+        inner = document.createElement("div")
+        inner.setAttribute(
+            "style",
+            "font-size: 20px; width: 50%; padding-left: 10%; "
+            "margin-top: 25%; line-height: 150%",
+        )
+        outer.appendChild(inner)
+        document.createElement("div").appendChild(outer)
+
+        c = ComputedStyleDeclaration(inner)
+        self.assertEqual(c.getPropertyValue("width"), "200px")
+        self.assertEqual(c.getPropertyValue("padding-left"), "40px")
+        # vertical margin % is still resolved against the containing block width
+        self.assertEqual(c.getPropertyValue("margin-top"), "100px")
+        self.assertEqual(c.getPropertyValue("line-height"), "30px")
+
+        # no ancestor with an explicit size -> % is kept
+        lone = document.createElement("div")
+        lone.setAttribute("style", "width: 50%")
+        document.createElement("div").appendChild(lone)
+        self.assertEqual(
+            ComputedStyleDeclaration(lone).getPropertyValue("width"), "50%"
+        )
+
     def test_computed_transform_composes_to_matrix(self):
         def transform_of(value):
             e = document.createElement("div")

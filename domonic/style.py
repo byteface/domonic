@@ -6609,6 +6609,10 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             match = _LENGTH_TOKEN_RE.match(value.strip())
             if match and match.group(2) == "":  # unitless multiplier
                 return _px_str(float(match.group(1)) * font_px)
+            if match and match.group(2) == "%":  # % of the computed font-size
+                return _px_str(float(match.group(1)) / 100.0 * font_px)
+
+        percent_px = self._percent_base_px(target) if "%" in value else None
 
         parts = []
         changed = False
@@ -6617,7 +6621,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 token,
                 em_px=font_px,
                 rem_px=self._root_font_size_px(),
-                percent_px=None,  # % needs layout -- leave it alone
+                percent_px=percent_px,
             )
             if px is None:
                 parts.append(token)
@@ -6625,6 +6629,41 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 changed = True
                 parts.append(_px_str(px))
         return " ".join(parts) if changed else value
+
+    def _percent_base_px(self, target: str) -> "float | None":
+        """The px a ``%`` resolves against for *target*, when it can be found
+        without full layout: the used inline size of the containing block --
+        approximated by the nearest ancestor with an explicit px ``width`` (or
+        ``height`` for the vertical box-sizing properties), else the viewport
+        for a root-level element."""
+        vertical = target in ("height", "min-height", "max-height", "top", "bottom")
+        prop = "height" if vertical else "width"
+        node = getattr(self._element, "parentNode", None)
+        cache = self._chain_cache
+        while node is not None and getattr(node, "nodeType", None) == 1:
+            declared = _parse_css_declarations(
+                getattr(node, "getAttribute", lambda *_: "")("style") or ""
+            )
+            for name, val, _ in declared:
+                if name == prop:
+                    px = _length_string_to_px(
+                        val.strip(), em_px=16.0, rem_px=self._root_font_size_px(),
+                        percent_px=None,
+                    )
+                    if px is not None:
+                        return px
+            node = getattr(node, "parentNode", None)
+        # root-level: fall back to the viewport inline size
+        window = cache.get("__window__")
+        if window is None:
+            document = getattr(self._element, "ownerDocument", None)
+            window = getattr(document, "defaultView", None) if document else None
+            cache["__window__"] = window
+        if window is not None:
+            return float(
+                getattr(window, "innerHeight" if vertical else "innerWidth", 0) or 0
+            ) or None
+        return None
 
     def _property_entries(self):
         # getComputedStyle enumerates longhands (and custom properties) only,
