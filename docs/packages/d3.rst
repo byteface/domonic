@@ -54,6 +54,7 @@ Build a Small Data List
 	)
 
 	print(root)
+	# <div id="chart"><span>10%</span><span>20%</span><span>30%</span></div>
 
 
 format
@@ -244,78 +245,65 @@ d3 has a shape API.
 D3 expects a polygon to be a 2D array of integers listed counterclockwise, though clockwise works too.
 This is not the same as SVG's polygon element. SVG polygons have a points method that you can parse into a 2D array and use here.
 
-``polygonArea()`` finds the area of a given polygon. It returns a float or int.
+``polygonArea()`` finds the area of a given polygon. It returns a float.
 
 .. code-block :: python
 
-    def test_polygonArea(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]       # area: 15
-        irreg_1 = [[-6,12],[23,2],[19,-8],[-7,-6]]  # area: 400
-        irreg_2 = [[0,4],[12,8],[23,-5],[-5,-3]]    # area: 203
-        square = [[0,4],[4,4],[4,0],[0,0]]          # area: 16
-        triangle = [[-4,0],[0,4],[2,0]]             # area: 12
+    from domonic.d3.polygon import polygonArea
 
-        self.assertEqual(polygonArea(irreg_0), 15)
-        self.assertEqual(polygonArea(irreg_1), 400)
-        self.assertEqual(polygonArea(irreg_2), 203)
-        self.assertEqual(polygonArea(square), 16)
-        self.assertEqual(polygonArea(triangle), 12)
+    irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
+    square = [[0,4],[4,4],[4,0],[0,0]]
+    triangle = [[-4,0],[0,4],[2,0]]
 
-``polygonCentroid()`` finds the center of mass of a polygon. It returns two ints in an array, representing the polygon's center point.
+    print(polygonArea(irreg_0))    # 15.0
+    print(polygonArea(square))     # 16.0
+    print(polygonArea(triangle))   # 12.0
+
+``polygonCentroid()`` finds the center of mass of a polygon. It returns two
+floats in an array, representing the polygon's center point.
 
 .. code-block :: python
 
-    def test_polygonCentroid(self): 
-        irreg = [[-4,0],[8,12],[4,8],[-4,-4],[0,0]] # centroid: [0, 4]
-        square = [[0,4],[4,4],[4,0],[0,0]]          # centroid: [2, 2]
-        triangle = [[-4,0],[0,4],[4,2]]             # centroid: [0, 2]
+    from domonic.d3.polygon import polygonCentroid
 
-        self.assertEqual(polygonCentroid(irreg), [0, 4])
-        self.assertEqual(polygonCentroid(square), [2, 2])
-        self.assertEqual(polygonCentroid(triangle), [0, 2])
+    irreg = [[-4,0],[8,12],[4,8],[-4,-4],[0,0]]
+    square = [[0,4],[4,4],[4,0],[0,0]]
+
+    print(polygonCentroid(irreg))   # [-0.0, 4.0]
+    print(polygonCentroid(square))  # [2.0, 2.0]
 
 ``polygonHull()`` takes a 2D array of points and determines the hull using Andrew's monotone chain algorithm. It returns the hull as a 2D array of points.
 
 .. code-block :: python
 
-    def test_polygonHull(self):
-        points_0 = [[0,6],[12,8],[23,-5],[-5,-3],[5,11],[12,4],[7,7],[6,1]]
-        points_1 = [[-4,0],[8,12],[4,8],[-4,-4],[0,0],[-6,12],[23,2],[19,-8],[-7,-6]]
+    from domonic.d3.polygon import polygonHull
 
-        hull_0 = [[-5,-3],[0,6],[5,11],[12,8],[23,-5]]
-        hull_1 = [[-7,-6],[-6,12],[8,12],[19,-8],[23,2]]
-        
-        self.assertEqual(polygonHull(points_0), hull_0)
-        self.assertEqual(polygonHull(points_1), hull_1)
+    points = [[0,6],[12,8],[23,-5],[-5,-3],[5,11],[12,4],[7,7],[6,1]]
+    print(polygonHull(points))
+    # [[-5, -3], [0, 6], [5, 11], [12, 8], [23, -5]]
 
 ``polygonContains()`` takes a polygon and a point. It returns ``True`` if the point is inside the polygon and ``False`` otherwise.
 
 .. code-block :: python
 
-    def test_polygonContains(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
-        square = [[0,4],[4,4],[4,0],[0,0]]
-        triangle = [[-4,0],[0,4],[2,0]]
+    from domonic.d3.polygon import polygonContains
 
-        self.assertTrue(polygonContains(irreg_0, [6,8]))
-        self.assertFalse(polygonContains(irreg_0, [0,0]))
-        self.assertTrue(polygonContains(square, [2,2]))
-        self.assertFalse(polygonContains(square, [-2,-2]))
-        self.assertTrue(polygonContains(triangle, [0,1]))
-        self.assertFalse(polygonContains(triangle, [0,-1]))
+    square = [[0,4],[4,4],[4,0],[0,0]]
+
+    print(polygonContains(square, [2, 2]))    # True
+    print(polygonContains(square, [-2, -2]))  # False
 
 ``polygonLength()`` takes a polygon and returns the sum of its side lengths.
 
 .. code-block :: python
 
-    def test_polygonLength(self):
-        irreg_0 = [[5,11],[12,4],[7,7],[6,1]]   # length = 31.863
-        square = [[0,4],[4,4],[4,0],[0,0]]      # length = 16
-        triangle = [[-4,0],[0,4],[2,0]]         # length ~ 16.129
+    from domonic.d3.polygon import polygonLength
 
-        self.assertEqual(round(polygonLength(irreg_0), 3), 31.863)
-        self.assertEqual(polygonLength(square), 16)
-        self.assertEqual(round(polygonLength(triangle), 3), 16.129)
+    irreg_0 = [[5,11],[12,4],[7,7],[6,1]]
+    square = [[0,4],[4,4],[4,0],[0,0]]
+
+    print(round(polygonLength(irreg_0), 3))  # 31.863
+    print(polygonLength(square))             # 16.0
 
 Related Examples and Guides
 ---------------------------

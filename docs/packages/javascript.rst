@@ -191,8 +191,8 @@ A wide set of familiar string methods is available:
 
 	# search
 	mystr = String("Some String")
-	mystr.search('a') # False
-	mystr.search('o') # True
+	mystr.search('a') # -1 (not found)
+	mystr.search('o') # 1  (index of the first match)
 
 	# substr
 	print(mystr.substr(1, 2))
@@ -227,10 +227,15 @@ Some obsolete JavaScript string helpers are also available:
 
 	>>> test = String("Hello World!")
 	>>> test.blink()
+	'<blink>Hello World!</blink>'
 	>>> test.sub()
+	'<sub>Hello World!</sub>'
 	>>> test.sup()
+	'<sup>Hello World!</sup>'
 	>>> test.div() # ?? hang on?
+	'<div>Hello World!</div>'
 	>>> test.webpage() # ??? err... wait what!!!
+	'<html><head><title>Hello World!</title>...</head><body><h1>Hello World!</h1></body></html>'
 
 
 You can actually transform a type String into any tag.
@@ -241,7 +246,9 @@ Call ``()`` on a string value to transform it into a node:
 
 	>>> test = String("time to take a mo")
 	>>> test('div', _style="font-color:red;")
+	<div style="font-color:red;">time to take a mo</div>
 	>>> str(test('div', _style="font-color:red;"))
+	'<div style="font-color:red;">time to take a mo</div>'
 
 Pass the tag name and attributes.
 
@@ -310,6 +317,51 @@ Object methods
 
 It also contains a growing list of methods you may know from JavaScript.
 
+``Object.assign`` is variadic and returns the target; ``Object.freeze``
+returns a version of a ``dict`` that raises on any mutation (use the return
+value, the way you would in JS -- a plain Python ``dict`` can't be frozen in
+place):
+
+.. code-block :: python
+
+	from domonic.javascript import Object
+
+	config = Object.assign({}, {"a": 1}, {"b": 2}, {"a": 3})
+	print(config)               # {'a': 3, 'b': 2}
+
+	config = Object.freeze(config)
+	print(Object.isFrozen(config))   # True
+	config["a"] = 99             # raises TypeError: cannot modify a frozen object
+
+``Array.from_`` (JS ``Array.from``) applies an optional map callback, and
+reads an array-like ``{"length": n}`` by index:
+
+.. code-block :: python
+
+	from domonic.javascript import Array
+
+	print(Array.from_([1, 2, 3], lambda x, *_: x * 2))   # [2, 4, 6]
+	print(Array.from_({"length": 3}, lambda _, i: i))    # [0, 1, 2]
+
+``JSON.parse`` / ``JSON.stringify`` honour a reviver / replacer, the way
+JavaScript's do:
+
+.. code-block :: python
+
+	from domonic.javascript import JSON
+
+	# replacer function: returning None (JS undefined) omits the key
+	print(JSON.stringify({"a": 1, "b": 2}, lambda k, v: None if k == "b" else v))
+	# {"a":1}
+
+	# replacer array: a key whitelist
+	print(JSON.stringify({"a": 1, "b": 2, "c": 3}, ["a", "c"]))
+	# {"a":1,"c":3}
+
+	# reviver: bottom-up transform while parsing
+	print(JSON.parse('{"a":1,"b":2}', lambda k, v: v * 10 if isinstance(v, int) else v))
+	# {'a': 10, 'b': 20}
+
 
 setInterval
 ----------------
@@ -317,6 +369,8 @@ setInterval
 You can use ``setInterval`` and ``clearInterval`` with parameters:
 
 .. code-block :: python
+
+	from domonic.javascript import window
 
 	x=0
 
@@ -330,6 +384,11 @@ You can use ``setInterval`` and ``clearInterval`` with parameters:
 	time.sleep(5)
 	window.clearInterval(test)
 	print(f"Final value of x:{x}")
+	# 2
+	# 4
+	# 6
+	# 8
+	# Final value of x:8
 
 
 
@@ -446,7 +505,7 @@ Styling gets passed to the style tag on render.
 	mytag.style.backgroundColor = "black"
 	mytag.style.fontSize = "12px"
 	print(mytag)
-	# <div id="test" style="background-color:black;font-size:12px;">hi</div>
+	# <div id="test" style="background-color: black; font-size: 12px;">hi</div>
 
 
 There are many other features. Take a look at the module docs below.

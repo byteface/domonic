@@ -24,6 +24,7 @@ Basic SVG
     )
 
     print(icon)
+    # <svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="gold"></circle></svg>
 
 Inline SVG Icon
 ---------------
@@ -37,17 +38,22 @@ Inline SVG Icon
             _d="M20 6L9 17l-5-5",
             _fill="none",
             _stroke="currentColor",
-            _stroke_width="2",
-            _stroke_linecap="round",
-            _stroke_linejoin="round",
+            **{"_stroke-width": "2", "_stroke-linecap": "round", "_stroke-linejoin": "round"},
         ),
         _viewBox="0 0 24 24",
         _width="24",
         _height="24",
-        _aria_hidden="true",
+        **{"_aria-hidden": "true"},
     )
 
     print(check)
+    # <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+
+A Python identifier can't contain a hyphen, so hyphenated attributes such as
+``stroke-width`` or ``aria-hidden`` need the ``**{"_name": value}`` form (the
+same pattern used for ``data-*`` attributes in :doc:`html`) -- a plain
+``_stroke_width=`` keyword argument renders literally as ``stroke_width``,
+which browsers do not recognise.
 
 SVG Bar Chart
 -------------
@@ -67,6 +73,7 @@ SVG Bar Chart
     )
 
     print(chart)
+    # <svg viewBox="0 0 120 64"><rect x="0" y="28" width="24" height="12"></rect><rect x="32" y="10" width="24" height="30"></rect><rect x="64" y="22" width="24" height="18"></rect><text x="0" y="58">Visits</text></svg>
 
 Mix SVG and HTML
 ----------------
@@ -83,6 +90,7 @@ Mix SVG and HTML
     )
 
     print(save_button)
+    # <button type="button"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"></circle></svg> Save</button>
 
 Measuring Text and Geometry
 ---------------------------
@@ -104,6 +112,19 @@ return the union of their descendants with each child ``transform`` applied.
     box = g(label).getBBox()       # unions children
 
     label.getScreenCTM()           # composes ancestor transform attributes
+
+``getScreenCTM()`` reads a ``transform`` attribute the same way a browser
+parses it: each function in the list composes left-to-right into one
+``DOMMatrix``:
+
+.. code-block :: python
+
+    from domonic.svg import g, text
+
+    label = text("Alice", _x=0, _y=0)
+    group = g(label, _transform="translate(10,20) rotate(90)")
+    print(label.getScreenCTM())
+    # matrix(0, 1, -1, 0, 10, 20)
 
 Elements created via ``document.createElementNS(SVG_NAMESPACE, ...)`` or a
 ``d3.selection`` ``.append()`` get the same geometry API as the

@@ -19,18 +19,22 @@ dQuery uses the º symbol (alt+0).
 	from domonic.html import *
 	from domonic.dQuery import º
 
-    d = html(head(body(li(_class='things'), div(_id="test"))))
-    
-    º(d) # you need to init a dom first. i.e. a html element
+	d = html(head(body(li(_class='things'), div(_id="test"))))
 
-    # now you can use it
-    print( º('#test') )
-    print( º('.things') )
-    a = º('<div class="test2"></div>')
-    print( a )
+	º(d) # you need to init a dom first. i.e. a html element
 
-    b = º('#test').append(a)
-    print(b)
+	# now you can use it
+	print( º('#test') )
+	# <div id="test"></div>
+	print( º('.things') )
+	# <li class="things"></li>
+	a = º('<div class="test2"></div>')
+	print( a )
+	# <div class="test2"></div>
+
+	b = º('#test').append(a)
+	print(b)
+	# <div id="test"><div class="test2"></div></div>
 
 
 
@@ -39,7 +43,8 @@ You can quickly access returned elements as if they were a list:
 .. code-block :: python
 
 	somehtml = º('<html><table id="mytable" class="one"></table></html>')
-	str(º('html')[0])
+	str(º('table')[0])
+	# <table id="mytable" class="one"></table>
 
 
 
@@ -52,14 +57,18 @@ You do not need a DOM fragment to use dQuery. It also contains useful static met
     second = ["d", "e", "f"]
     result = º.merge(first, second)
     print(result)
+    # ['a', 'b', 'c', 'd', 'e', 'f']
 
     obj1 = {'a':1,'b':2}
     obj2 = {'c':1,'b':5}
     print(º.extend(obj1,obj2))
+    # {'a': 1, 'b': 5, 'c': 1}
 
     print(º.trim("  some tst \n   TEST."))
+    # 'some tst    TEST.'
 
     print(º.now())
+    # milliseconds since the epoch, e.g. 1788565840995
 
 
 Ajax helpers
@@ -93,6 +102,7 @@ Manipulate Nodes
     º("#app p").addClass("item")
 
     print(page)
+    # <html><div id="app"><p class="item">one</p><p class="item">two</p></div></html>
 
 Related Examples and Guides
 ---------------------------

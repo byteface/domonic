@@ -57,13 +57,14 @@ Here's an example of creating your own elements using the DOM API:
 
 .. code-block :: python
 
-	from domonic.dom import *
+	from domonic.html import html
 	from domonic.dom import document
 
 	site = html()
 	el = document.createElement('myelement')
 	site.appendChild(el)
 	print(site)
+	# <html><myelement></myelement></html>
 
 
 querySelectorAll
@@ -76,15 +77,26 @@ browser JavaScript, tests, scraping scripts, and domonic server-side rendering.
 
 .. code-block :: python
 
-	mysite.querySelectorAll('button')
-	mysite.querySelectorAll('.fa-twitter')
-	mysite.querySelectorAll("a[rel=nofollow]")
-	mysite.querySelectorAll("a[href='#services']")
-	mysite.querySelectorAll("a[href$='technology']")
+	from domonic import domonic
+
+	mysite = domonic.parseString(
+	    '<div>'
+	    '<button class="fa-twitter">Follow</button>'
+	    '<a href="#services">Services</a>'
+	    '<a rel="nofollow" href="https://twitter.com/technology">Twitter</a>'
+	    '</div>'
+	)
+
+	mysite.querySelectorAll('button')             # [<button class="fa-twitter">]
+	mysite.querySelectorAll('.fa-twitter')        # [<button class="fa-twitter">]
+	mysite.querySelectorAll("a[rel=nofollow]")            # [<a rel="nofollow" ...>]
+	mysite.querySelectorAll("a[href='#services']")        # [<a href="#services">]
+	mysite.querySelectorAll("a[href$='technology']")      # [<a rel="nofollow" ...>]
 
 	somelinks = mysite.querySelectorAll("a[href*='twitter']")
 	for l in somelinks:
 		print(l.href)
+	# https://twitter.com/technology
 
 See the examples folder for other uses of the Python virtual DOM.
 
@@ -118,6 +130,67 @@ a test diffs against real browser output.
 Rendering behaviour of ``str(node)`` is configurable through ``DOMConfig``
 (below); the fragment serialisation is not.
 
+``<script>`` / ``<style>`` and the other HTML "raw text" elements are always
+serialised verbatim in every one of these forms -- their text content is
+never entity-escaped, matching a browser (escaping it would change what the
+script actually executes):
+
+.. code-block :: python
+
+	from domonic.dom import DOMParser
+
+	doc = DOMParser().parseFromString(
+	    '<html><body><script>if (a && b) x("y");</script></body></html>'
+	)
+	print(str(doc.body))
+	# <body><script>if (a && b) x("y");</script></body>
+
+
+tagName, nodeName and localName
+--------------------------------
+
+Per the DOM spec, an HTML element's ``tagName`` / ``nodeName`` are
+upper-cased when the element came from parsing HTML (SVG, MathML, and XML
+keep their original case); ``localName`` is always lower-case:
+
+.. code-block :: python
+
+	from domonic import domonic
+
+	page = domonic.parseString("<div><p>hi</p><svg><circle/></svg></div>")
+	page.tagName                          # 'DIV'
+	page.querySelector("p").tagName       # 'P'
+	page.querySelector("p").localName     # 'p'
+	page.querySelector("svg").tagName     # 'svg'  (SVG keeps its case)
+
+Elements you build yourself (``div()``, ``document.createElement(...)``) are
+not associated with an HTML document the way a parsed tree is, so their
+``tagName`` stays lower-case:
+
+.. code-block :: python
+
+	from domonic.html import div
+
+	div().tagName   # 'div'
+
+
+dataset
+-------
+
+``element.dataset`` reflects an element's ``data-*`` attributes both as a
+mapping and as JavaScript-style attribute access:
+
+.. code-block :: python
+
+	from domonic.html import div
+
+	el = div()
+	el.dataset.userId = "42"       # same as el.setAttribute("data-user-id", "42")
+	print(el)                      # <div data-user-id="42"></div>
+	print(el.dataset.userId)       # '42'
+	print(el.dataset["userId"])    # '42'
+	print(el.dataset.missing)      # None (JS: undefined)
+
 
 DOMConfig
 ----------------
@@ -134,10 +207,12 @@ For example, here we set several flags away from their defaults:
 	DOMConfig.HTMX_ENABLED = True
 	DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS = False
 	print(html(head(),body(div(h1('heading'),div(button('hi & hack',_get='/get_hi'))))))
-	# <html><head></head><body><div><h1>heading</h1><div><button data-hx-get="/get_hi">hi & hack</button></div></div></body></html>
+	# <html><head><body><div><h1>heading</h1><div><button data-hx-get="/get_hi">hi &amp; hack</button></div></div>
 
-When ``HTMX_ENABLED`` is set, domonic maps HTMX-style shortcut attributes to
-the configurable ``data-hx-`` secondary prefix recognised by HTMX:
+When ``DOMConfig.HTMX_ENABLED`` is set (as above), domonic maps HTMX-style
+shortcut attributes to the configurable ``data-hx-`` secondary prefix
+recognised by HTMX -- the rest of the examples on this page assume it stays
+set:
 
 .. code-block :: python
 
@@ -156,7 +231,7 @@ or with ``__inherited`` as a Python-friendly suffix:
 .. code-block :: python
 
 	div(_confirm__inherited="Are you sure?", _headers__inherited='{"X-CSRF": "token"}')
-	# <div data-hx-confirm:inherited="Are you sure?" data-hx-headers:inherited="{"X-CSRF": "token"}"></div>
+	# <div data-hx-confirm:inherited="Are you sure?" data-hx-headers:inherited="{&quot;X-CSRF&quot;: &quot;token&quot;}"></div>
 
 HTMX 4 attributes and popular extension attributes are available as shortcuts,
 including ``_query``, ``_pending``, ``_status``, ``_ignore``, ``_morph_skip``,
@@ -198,7 +273,36 @@ server-side constraint checks.
 
 	email = input(_type="email", _required=True, _value="not-an-email")
 	print(email.validity.typeMismatch)
+	# True
 	print(email.validationMessage)
+	# Please enter a valid value.
+
+
+DOMMatrix
+----------------
+
+``DOMMatrix`` / ``DOMPoint`` / ``DOMRect`` implement the CSS/SVG geometry
+interfaces: 2D and 3D affine transforms, composition, inversion, and
+transforming points. Composition follows the spec's post-multiply rule --
+``a.multiplySelf(b)`` (and chaining ``a.translateSelf(...).rotateSelf(...)``)
+transforms a point as ``a.transformPoint(b.transformPoint(p))``, so the
+*last*-chained operation is the one applied to the point first:
+
+.. code-block :: python
+
+	from domonic.dom import DOMMatrix, DOMPoint
+
+	m = DOMMatrix().translateSelf(10, 0).rotateSelf(90)
+	print(m.toString())
+	# matrix(0, 1, -1, 0, 10, 0)
+
+	p = m.transformPoint(DOMPoint(1, 0))
+	print(p.x, p.y)
+	# 10.0 1.0  (rotate is applied first, then the translate)
+
+``getComputedStyle(el).getPropertyValue("transform")`` uses the same matrix
+type, composing a CSS ``transform`` list the way a browser does -- see
+:doc:`style`.
 
 
 The full list of available DOM methods are listed below...

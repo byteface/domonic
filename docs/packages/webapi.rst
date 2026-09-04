@@ -36,8 +36,9 @@ fetch
 
 	from domonic.webapi.fetch import fetch
 
-	response = fetch("https://example.com")
-	print(response.text())
+	# fetch() returns a Promise, same as in the browser
+	fetch("https://example.com").then(lambda response: print(response.text()[:15]))
+	# <!doctype html>
 
 
 XHR
@@ -82,12 +83,14 @@ History
 
 	from domonic.window import Window
 
-	win = Window("https://example.com/")
+	win = Window(url="https://example.com/")
 	win.history.pushState({"page": 2}, "", "/page/2")
 	win.history.replaceState({"page": 2, "filter": "new"}, "", "/page/2?filter=new")
 
 	print(win.location.href)
+	# https://example.com/page/2?filter=new
 	print(win.history.state)
+	# {'page': 2, 'filter': 'new'}
 
 
 Geolocation
@@ -103,6 +106,7 @@ read the current position, or watch for position changes.
 	geo = Geolocation()
 	geo.setPosition({"latitude": 51.5072, "longitude": -0.1276, "accuracy": 10})
 	geo.getCurrentPosition(lambda position: print(position.coords.latitude))
+	# 51.5072
 
 
 Web Crypto
@@ -190,8 +194,13 @@ available for Web Streams-style examples and tests.
 
 	from domonic.webapi.streams import ReadableStream
 
-	stream = ReadableStream(["hello", "world"])
-	print(stream.getReader().read().value)
+	stream = ReadableStream(b"hello world")
+	print(stream.getReader())
+	# b'hello world'
+	print(stream.read(5))
+	# b'hello'
+	print(stream.read())
+	# b' world'
 
 
 Canvas and WebGL
@@ -209,6 +218,7 @@ examples and tests can verify canvas output without a browser renderer.
 	ctx = surface.getContext("2d")
 	ctx.fillRect(0, 0, 20, 20)
 	print(ctx.commands)
+	# [{'name': 'fillRect', 'args': [0, 0, 20, 20]}]
 
 
 CSS Font Loading
@@ -315,9 +325,13 @@ URL
 
 	myurl = URL("http://www.google.com/search?q=domonic")
 	print(myurl.host)
-	print(myurl.query)
-	print(myurl.query.q)
-	print(myurl.query.q.value)
+	# www.google.com
+	print(myurl.search)
+	# ?q=domonic
+	print(myurl.searchParams)
+	# q=domonic
+	print(myurl.searchParams.get("q"))
+	# domonic
 
 Object URLs work with the File API:
 
@@ -329,6 +343,7 @@ Object URLs work with the File API:
 	blob = Blob(["hello"], {"type": "text/plain"})
 	url = URL.createObjectURL(blob)
 	print(url)
+	# blob:domonic/<uuid>
 	URL.revokeObjectURL(url)
 
 For more information see the MDN URL API docs:
@@ -353,6 +368,8 @@ Here's a quick example of using XPath:
 	evaluator = XPathEvaluator()
 	expression = evaluator.createExpression("//div")
 	result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+	print(result.snapshotLength)
+	# 2
 	assert result.snapshotLength == 2
 
 

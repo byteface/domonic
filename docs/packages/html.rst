@@ -86,9 +86,9 @@ templating
 
 .. code-block :: python
 
-  from domonic.html import *
+    from domonic.html import *
 
-    output = render( 
+    output = render(
         html(
             head(
                 style(),
@@ -97,7 +97,7 @@ templating
             body(
                 div("hello world"),
                 a("this is a link", _href="http://www.somesite.com", _style="font-size:10px;"),
-                ol(''.join([f'{li()}' for thing in range(5)])),
+                ol(''.join([str(li()) for thing in range(5)])),
                 h1("test", _class="test"),
             )
         )
@@ -146,11 +146,15 @@ Use a list comprehension and join it to strip the square brackets.
 
 .. code-block :: python
 
-	ul(''.join([f'{li()}' for thing in range(5)])),
+	ul(''.join([str(li()) for thing in range(5)])),
 
 .. code-block :: html
 
-	<ul><li></li><li></li><li></li><li></li></ul>
+	<ul><li></li><li></li><li></li><li></li><li></li></ul>
+
+Use ``str()``, not an f-string, to join child markup this way -- ``f"{li()}"``
+calls ``__format__`` (see "f-strings" below), which pretty-prints with
+newlines instead of producing the compact HTML shown above.
 
 
 data-tags
@@ -189,7 +193,9 @@ Load from a source:
 
 .. code-block :: python
 
-	link(_href="/docs/5.0/dist/css/bootstrap.min.css", _rel="stylesheet", __integrity="sha384-12345", __crossorigin="anonymous"),
+	link(_href="/docs/5.0/dist/css/bootstrap.min.css", _rel="stylesheet", _integrity="sha384-12345", _crossorigin="anonymous"),
+	# <link href="..." rel="stylesheet" integrity="sha384-12345" crossorigin="anonymous"/>
+	# (a double leading underscore, e.g. __integrity, leaves a literal "_" in the rendered attribute name)
 
 Or use inline CSS:
 
@@ -331,6 +337,7 @@ You can use decorators to wrap elements around function results.
 .. code-block :: python
 
 	from domonic.decorators import el
+	from domonic.html import html, body, div
 
 	@el(html)
 	@el(body)
@@ -363,21 +370,26 @@ You need to render them yourself by iterating and calling ``str``:
 
 **Divide**
 
-A divisor also creates more but will instead call render and give a list of strings...
+A divisor also creates more, but renders them straight away and joins the
+result into a single HTML string instead of returning a list of nodes...
 
 .. code-block :: python
 
 	from domonic.html import *
 	print(div()/100)
+	# <div></div><div></div><div></div> ... (100 of them, joined into one string)
 
-This means they are rendered strings and cannot be edited as nodes.
+This means the result is rendered markup and cannot be edited as nodes.
 
-You can convert them back by parsing and then calling ``domonify``:
+You can convert it back into nodes by parsing it:
 
 .. code-block :: python
 
+    from domonic.html import li
+    from domonic import domonic as domonic_
+
     mylist = li()/10
-    myobj = domonic.domonify(domonic.parse(mylist))
+    myobj = domonic_.parseString(f"<ul>{mylist}</ul>")
     print(myobj)
 
 
@@ -555,7 +567,7 @@ Loading .pyml templates
 .. code-block:: python
 
     div("Hello World")
-    #<div>Hello tabs</div>
+    #<div>Hello World</div>
 
 
 ``loads`` imports a PyML file and turns it into a program.
@@ -564,23 +576,30 @@ This example loads a template and passes parameters for rendering:
 
 .. code-block :: python
 
-    from domonic import loads
+    from domonic import domonic
     from domonic.html import *
 
     # Create some variables. These are referenced in the template file.
     brand = "MyBrand"
-    links = ['one', 'two', 'three']
 
     # Load a template and pass it some data.
-    webpage = domonic.loads('templates/webpage.com.pyml', links=links, brand=brand)
+    # templates/webpage.com.pyml contains, e.g.:
+    #     html(head(), body(h1(brand)))
+    webpage = domonic.loads('templates/webpage.com.pyml', brand=brand)
 
     render(webpage, 'webpage.html')
 
+``loads`` accepts a restricted PyML subset for safety: only calls to markup
+tags (and their ``.html()`` chaining method), literals, dicts/lists/tuples and
+starred expressions are evaluated -- arbitrary Python such as list
+comprehensions or attribute access beyond ``.html()`` is rejected.
 
 ``load`` is different from ``loads``: it takes HTML strings and converts them to a program.
 
 .. code-block :: python
 
+    from domonic import domonic
+    from domonic.html import *
     from domonic.dQuery import º
 
     webpage = domonic.load('<html><head></head><body id="test"></body></html>')
@@ -710,7 +729,13 @@ You can also choose a parser directly through ``domonic.parseString()``:
     page = domonic.parseString("<p>Hello World!</p>", parser="markupever")
     page = domonic.parseString("<p>Hello World!</p>", parser="html5_parser")
     page = domonic.parseString("<p>Hello World!</p>", parser="html.parser")
-    print(page.querySelector("p").text)
+    print(page.text)
+    # Hello World!
+
+When markup has a single root element, ``parseString`` returns that element
+itself (here, the ``<p>``) rather than a document wrapping it, so query it
+directly -- ``querySelector`` and friends only search *descendants*, not the
+node itself.
 
 Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, ``turbohtml``, and ``expat``.
 
