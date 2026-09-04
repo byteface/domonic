@@ -379,6 +379,47 @@ _FONT_STRETCH_KEYWORDS = frozenset(
 _GLOBAL_KEYWORDS = frozenset({"inherit", "initial", "unset", "revert", "revert-layer"})
 
 
+def _has_top_level_comma(value: str) -> bool:
+    depth = 0
+    for char in value:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth = max(depth - 1, 0)
+        elif char == "," and depth == 0:
+            return True
+    return False
+
+
+def _split_ws_keep_funcs(value: str) -> list[str]:
+    """Split on whitespace, but keep ``func(...)`` groups intact and emit a
+    bare ``/`` as its own token."""
+    tokens: list[str] = []
+    buf: list[str] = []
+    depth = 0
+    for char in value.strip():
+        if char == "(":
+            depth += 1
+            buf.append(char)
+        elif char == ")":
+            depth = max(depth - 1, 0)
+            buf.append(char)
+        elif depth == 0 and char.isspace():
+            if buf:
+                tokens.append("".join(buf))
+                buf = []
+        elif depth == 0 and char == "/":
+            if buf:
+                tokens.append("".join(buf))
+                buf = []
+            tokens.append("/")
+        else:
+            buf.append(char)
+    if buf:
+        tokens.append("".join(buf))
+    return tokens
+
+
 def _looks_like_length(token: str) -> bool:
     token = token.strip().lower()
     if token in _BORDER_WIDTH_KEYWORDS:
@@ -541,7 +582,51 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             ("font-family", family),
         ]
 
-    # transition / animation / background / grid-template / grid-area:
+    if name == "background":
+        # single-layer best effort; multiple comma-separated layers keep verbatim
+        # (a comma inside url()/rgb()/gradient() is not a layer separator)
+        if _has_top_level_comma(value):
+            return None
+        bg = {k: "" for k in (
+            "image", "position", "size", "repeat", "attachment", "origin", "clip",
+            "color",
+        )}
+        tokens = _split_ws_keep_funcs(value)
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+            tl = token.lower()
+            if tl in ("repeat", "no-repeat", "repeat-x", "repeat-y", "space", "round"):
+                bg["repeat"] = f"{bg['repeat']} {token}".strip()
+            elif tl in ("fixed", "local", "scroll"):
+                bg["attachment"] = token
+            elif tl in ("border-box", "padding-box", "content-box"):
+                bg["origin" if not bg["origin"] else "clip"] = token
+            elif tl == "none" or tl.startswith("url(") or "-gradient(" in tl:
+                bg["image"] = token
+            elif tl in ("left", "right", "top", "bottom", "center") or _looks_like_length(token):
+                bg["position"] = f"{bg['position']} {token}".strip()
+                if i + 1 < len(tokens) and tokens[i + 1] == "/":
+                    if i + 2 < len(tokens):
+                        bg["size"] = tokens[i + 2]
+                    i += 2
+            elif tl in _GLOBAL_KEYWORDS:
+                return [(long, token) for long in longs]
+            else:
+                bg["color"] = f"{bg['color']} {token}".strip()
+            i += 1
+        return [
+            ("background-image", bg["image"] or "none"),
+            ("background-position", bg["position"] or "0% 0%"),
+            ("background-size", bg["size"] or "auto"),
+            ("background-repeat", bg["repeat"] or "repeat"),
+            ("background-origin", bg["origin"] or "padding-box"),
+            ("background-clip", bg["clip"] or bg["origin"] or "border-box"),
+            ("background-attachment", bg["attachment"] or "scroll"),
+            ("background-color", bg["color"] or "transparent"),
+        ]
+
+    # transition / animation / grid-template / grid-area:
     # keep them as the shorthand only (round-trips correctly, just not split).
     return None
 

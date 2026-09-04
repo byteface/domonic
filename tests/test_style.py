@@ -942,6 +942,18 @@ class TestCase(unittest.TestCase):
         self.assertIn("margin-top: 1px !important;", s.cssText)
         self.assertNotIn("margin:", s.cssText)
 
+    def test_background_shorthand_expands_to_longhands(self):
+        s = div().style
+        s.setProperty("background", "#fff url(x.svg) no-repeat")
+        self.assertEqual(s.getPropertyValue("background-color"), "#fff")
+        self.assertEqual(s.getPropertyValue("background-image"), "url(x.svg)")
+        self.assertEqual(s.getPropertyValue("background-repeat"), "no-repeat")
+        self.assertEqual(s.length, 8)
+        # a comma-separated multi-layer value is kept verbatim (not split)
+        s2 = div().style
+        s2.setProperty("background", "red, url(a.png)")
+        self.assertEqual(s2.getPropertyValue("background"), "red, url(a.png)")
+
     def test_csstext_setter_always_returns_serialised_form(self):
         s = div().style
         s.cssText = "color: red; margin-top: 5px"  # no trailing ;
