@@ -536,7 +536,8 @@ class TestCase(unittest.TestCase):
         style.cssText = "margin: 0;"
         self.assertEqual(style.getPropertyValue("color"), "")
         self.assertEqual(style.getPropertyValue("width"), "")
-        self.assertEqual(style.getPropertyValue("margin"), "0")
+        # the CSSOM normalises a unit-optional zero to "0px"
+        self.assertEqual(style.getPropertyValue("margin"), "0px")
         self.assertNotIn("color", style)
 
         style["padding"] = "1rem"
@@ -868,6 +869,33 @@ class TestCase(unittest.TestCase):
         s2.border = "1px solid red"
         self.assertEqual(s2.getPropertyValue("border-top-width"), "1px")
         self.assertEqual(s2.getPropertyValue("border-style"), "solid")
+
+    def test_shorthand_idl_getter_reconstructs_from_longhands(self):
+        s = div().style
+        s.marginTop = s.marginRight = s.marginBottom = s.marginLeft = "1px"
+        self.assertEqual(s.margin, "1px")  # four equal longhands collapse
+
+        b = div().style
+        b.borderTopWidth = "1px"
+        b.borderTopStyle = "solid"
+        b.borderTopColor = "red"
+        self.assertEqual(b.borderTop, "1px solid red")
+
+    def test_unit_optional_zero_normalises_to_0px(self):
+        s = div().style
+        s.padding = "0"
+        self.assertEqual(s.paddingTop, "0px")
+        self.assertEqual(s.cssText, "padding: 0px;")
+        s2 = div().style
+        s2.marginTop = "0"
+        self.assertEqual(s2.marginTop, "0px")
+        s3 = div().style
+        s3.cssText = "padding: 0"
+        self.assertEqual(s3.getPropertyValue("padding-top"), "0px")
+        # a percentage / unitless-number property is untouched
+        s4 = div().style
+        s4.lineHeight = "0"
+        self.assertEqual(s4.getPropertyValue("line-height"), "0")
 
     def test_shorthand_counts_as_its_longhands(self):
         # a browser enumerates a set shorthand as its longhand sub-properties

@@ -253,6 +253,30 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
     return entries
 
 
+#: <length>-valued properties where a bare ``0`` is serialised as ``0px`` (the
+#: CSSOM normalises unit-optional zero). ``line-height`` is excluded -- a
+#: unitless number there is a multiplier, not a length.
+_ZERO_LENGTH_PROPERTIES = frozenset({
+    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+    "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+    "inset", "top", "right", "bottom", "left",
+    "width", "height", "min-width", "min-height", "max-width", "max-height",
+    "border-width", "border-top-width", "border-right-width",
+    "border-bottom-width", "border-left-width", "outline-width",
+    "column-rule-width", "column-width", "column-gap", "row-gap", "gap",
+    "letter-spacing", "word-spacing", "text-indent", "outline-offset",
+    "border-radius", "border-top-left-radius", "border-top-right-radius",
+    "border-bottom-right-radius", "border-bottom-left-radius",
+})
+_BARE_ZERO_RE = re.compile(r"(?<![\w.#])0(?![\w.%])")
+
+
+def _normalize_zero_lengths(property_name: str, value: str) -> str:
+    if property_name in _ZERO_LENGTH_PROPERTIES and "0" in value:
+        return _BARE_ZERO_RE.sub("0px", value)
+    return value
+
+
 def _set_css_declaration(
     entries: list[tuple[str, str, str]],
     property_name: str,
@@ -260,6 +284,7 @@ def _set_css_declaration(
     priority: str = "",
 ) -> list[tuple[str, str, str]]:
     value = "" if value is None else str(value)
+    value = _normalize_zero_lengths(property_name, value)
     priority = "important" if str(priority or "").lower() == "important" else ""
     updated = False
     next_entries: list[tuple[str, str, str]] = []
@@ -2075,6 +2100,13 @@ class Style:
             value = args[0]
             if value is None:
                 value = "none"
+            elif _css_property_name(func.__name__) in _ZERO_LENGTH_PROPERTIES:
+                normalized = _normalize_zero_lengths(
+                    _css_property_name(func.__name__), str(value)
+                )
+                if normalized != str(value):
+                    value = normalized
+                    args = (value,) + tuple(args[1:])
             func(self, value, *args, **kwargs)
 
             # to only render to the Node what gets set. allows init to run first
@@ -2107,10 +2139,19 @@ class Style:
 
         @wraps(func)
         def style_wrapper(value=None, *args, **kwargs):
-            value = func(value, *args, **kwargs)
-            if value is None:
-                value = "none"
-            return value
+            self = value
+            result = func(value, *args, **kwargs)
+            # a shorthand (``el.style.margin``) reflects the declaration block:
+            # ``getPropertyValue`` returns an explicitly-set shorthand or
+            # reconstructs one from longhands set individually
+            kebab = _css_property_name(func.__name__)
+            if _cssom.is_shorthand(kebab) and hasattr(self, "getPropertyValue"):
+                rebuilt = self.getPropertyValue(kebab)
+                if rebuilt:
+                    return rebuilt
+            if result is None:
+                result = "none"
+            return result
 
         return style_wrapper
 
@@ -5843,7 +5884,10 @@ class CSSStyleDeclaration(Style):
     @cssText.setter
     def cssText(self, value):
         raw = "" if value is None else str(value).strip()
-        parsed_entries = _parse_css_declarations(raw)
+        parsed_entries = [
+            (name, _normalize_zero_lengths(name, val), priority)
+            for name, val, priority in _parse_css_declarations(raw)
+        ]
         entries = self._collapse_box_shorthands(parsed_entries)
         # CSSOM: the getter always returns the *serialised* declaration block,
         # regardless of the input text -- so normalise here.
@@ -6028,6 +6072,7 @@ class CSSStyleDeclaration(Style):
             self.removeProperty(target)
             return
 
+        value = _normalize_zero_lengths(target, value)
         entries = self._property_entries()
 
         if _cssom.is_shorthand(target):
