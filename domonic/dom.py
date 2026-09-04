@@ -1397,6 +1397,18 @@ class Node(EventTarget):
                     continue
 
                 yield f"<{value.name}{value.__attributes__}>"
+                if value.name in _HTML_RAWTEXT_ELEMENTS:
+                    # raw-text elements (<script>, <style>, ...): content is
+                    # serialised verbatim, never entity-escaped
+                    for child in value.args:
+                        if isinstance(child, Text):
+                            yield str(child.textContent)
+                        elif isinstance(child, Node):
+                            yield from child.stream()
+                        else:
+                            yield str(child)
+                    yield f"</{value.name}>"
+                    continue
                 if (
                     DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
                     or value.name not in optional_closing_tags
@@ -2314,7 +2326,9 @@ class Node(EventTarget):
                     Node.PROCESSING_INSTRUCTION_NODE,
                 ):
                     continue
-                val = each.textContent
+                val = getattr(each, "textContent", None)
+                if val is None and not isinstance(each, Node):
+                    val = str(each)  # a stray non-node child
                 if val is not None:
                     outp = outp + val
         if outp == "":
@@ -2324,6 +2338,10 @@ class Node(EventTarget):
     @textContent.setter
     def textContent(self, content):
         """Sets the text content of a node and its descendants"""
+        # IDL: ``textContent`` is ``DOMString?`` -- null clears, anything else
+        # is stringified before assignment
+        if content is not None and not isinstance(content, str):
+            content = str(content)
         old_value = self.textContent
         removed_nodes = [node for node in self.args if isinstance(node, Node)]
         for node in removed_nodes:
@@ -4565,7 +4583,10 @@ class Element(Node):
     @className.setter
     def className(self, newname: str):
         """Sets or returns the value of the className attribute of an element"""
-        self.setAttribute("class", newname)
+        self.setAttribute(
+            "class",
+            newname if newname is None or isinstance(newname, str) else str(newname),
+        )
 
     def click(self):
         """Simulates a mouse-click on an element"""
@@ -4999,7 +5020,9 @@ class Element(Node):
     @id.setter
     def id(self, newid: str):
         """Sets or returns the value of the id attribute of an element"""
-        self.setAttribute("id", newid)
+        self.setAttribute(
+            "id", newid if newid is None or isinstance(newid, str) else str(newid)
+        )
 
     # Sets or returns the text content of a node and its descendants
     def innerText(self, *args: Any) -> str:
@@ -5658,7 +5681,10 @@ class Element(Node):
         Args:
             newtitle (str): [the new title value]
         """
-        self.setAttribute("title", newtitle)
+        self.setAttribute(
+            "title",
+            newtitle if newtitle is None or isinstance(newtitle, str) else str(newtitle),
+        )
 
     def toString(self) -> str:
         """Converts an element to a string"""
