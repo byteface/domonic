@@ -70,6 +70,31 @@ class TestCase(unittest.TestCase):
         self.assertIsInstance(query, MediaQueryList)
         self.assertTrue(query.matches)
 
+    def test_match_media_range_and_preference_features(self):
+        win = Window()
+        win.resizeTo(800, 600)
+
+        self.assertTrue(win.matchMedia("(width >= 800px)").matches)
+        self.assertFalse(win.matchMedia("(width > 800px)").matches)
+        self.assertTrue(win.matchMedia("(400px <= width <= 900px)").matches)
+        self.assertFalse(win.matchMedia("(400px <= width < 800px)").matches)
+
+        # discrete preference features default to a typical desktop browser
+        self.assertTrue(win.matchMedia("(prefers-color-scheme: light)").matches)
+        self.assertFalse(win.matchMedia("(prefers-color-scheme: dark)").matches)
+        self.assertTrue(
+            win.matchMedia("(prefers-reduced-motion: no-preference)").matches
+        )
+        self.assertFalse(win.matchMedia("(hover: none)").matches)
+
+        # ...and are overridable per session
+        win.mediaFeatures["prefers-color-scheme"] = "dark"
+        self.assertTrue(win.matchMedia("(prefers-color-scheme: dark)").matches)
+
+        win.devicePixelRatio = 2
+        self.assertTrue(win.matchMedia("(min-resolution: 2dppx)").matches)
+        self.assertTrue(win.matchMedia("(resolution >= 96dpi)").matches)
+
         win.moveTo(5, 10)
         self.assertEqual((win.screenLeft, win.screenTop), (5, 10))
 

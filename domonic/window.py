@@ -53,6 +53,29 @@ from domonic.webapi.serviceworker import ServiceWorkerContainer
 from domonic.webapi.webstorage import Storage
 
 
+def _split_top_level(text: str, separator: str) -> list[str]:
+    """Split ``text`` on ``separator`` only where parenthesis depth is zero."""
+    parts: list[str] = []
+    depth = 0
+    start = 0
+    i = 0
+    step = len(separator)
+    while i < len(text):
+        char = text[i]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth = max(depth - 1, 0)
+        elif depth == 0 and text[i:i + step] == separator:
+            parts.append(text[start:i].strip())
+            start = i + step
+            i += step
+            continue
+        i += 1
+    parts.append(text[start:].strip())
+    return [p for p in parts if p]
+
+
 class MediaQueryList(EventTarget):
     """Result object returned by ``Window.matchMedia()``.
 
@@ -60,59 +83,160 @@ class MediaQueryList(EventTarget):
     listeners in the familiar browser style.
     """
 
-    def __init__(self, media: str, *, width: int, height: int) -> None:
+    #: default answers for the discrete preference / capability media features,
+    #: matching a typical desktop browser. ``Window`` copies this onto each
+    #: instance as ``window.mediaFeatures`` so it can be overridden per session
+    #: (e.g. ``window.mediaFeatures["prefers-color-scheme"] = "dark"``).
+    DEFAULT_FEATURES: dict[str, str] = {
+        "prefers-color-scheme": "light",
+        "prefers-reduced-motion": "no-preference",
+        "prefers-reduced-transparency": "no-preference",
+        "prefers-reduced-data": "no-preference",
+        "prefers-contrast": "no-preference",
+        "forced-colors": "none",
+        "inverted-colors": "none",
+        "hover": "hover",
+        "any-hover": "hover",
+        "pointer": "fine",
+        "any-pointer": "fine",
+        "update": "fast",
+        "scripting": "enabled",
+        "color-gamut": "srgb",
+        "display-mode": "browser",
+    }
+
+    def __init__(
+        self, media: str, *, width: int, height: int,
+        features: "dict[str, str] | None" = None,
+        resolution: float = 1.0,
+    ) -> None:
         super().__init__()
         self.media = media
-        self.matches = self._evaluate(media, width=width, height=height)
+        self._features = features if features is not None else dict(self.DEFAULT_FEATURES)
+        self._resolution = resolution
+        self.matches = self._evaluate(
+            media, width=width, height=height,
+            features=self._features, resolution=resolution,
+        )
         self.onchange: Callable[[Event], Any] | None = None
 
     @staticmethod
-    def _evaluate(media: str, *, width: int, height: int) -> bool:
+    def _to_px(number: str, unit: str) -> float:
+        try:
+            value = float(number)
+        except ValueError:
+            return 0.0
+        return value * {"em": 16.0, "rem": 16.0, "pt": 96.0 / 72.0}.get(unit, 1.0)
+
+    @classmethod
+    def _evaluate(
+        cls, media: str, *, width: int, height: int,
+        features: "dict[str, str] | None" = None, resolution: float = 1.0,
+    ) -> bool:
         if not media:
             return False
+        features = features or cls.DEFAULT_FEATURES
         text = media.strip().lower()
         if "," in text:
             return any(
-                MediaQueryList._evaluate(part, width=width, height=height)
-                for part in text.split(",")
+                cls._evaluate(part, width=width, height=height,
+                              features=features, resolution=resolution)
+                for part in _split_top_level(text, ",")
+            )
+        if " and " in text:
+            return all(
+                cls._evaluate(part, width=width, height=height,
+                              features=features, resolution=resolution)
+                for part in _split_top_level(text, " and ")
             )
         if text.startswith("not "):
-            return not MediaQueryList._evaluate(
-                text[4:].strip(), width=width, height=height
+            return not cls._evaluate(
+                text[4:].strip(), width=width, height=height,
+                features=features, resolution=resolution,
             )
         if text.startswith("only "):
             text = text[5:].strip()
-        if text in ("all", "screen"):
+        if text in ("all", "screen", "print"):
             return True
+        if text in ("speech", "tty", "tv", "projection", "handheld", "braille"):
+            return False
 
-        checks: list[bool] = []
-        for label, value in (
-            ("min-width", width),
-            ("max-width", width),
-            ("min-height", height),
-            ("max-height", height),
-        ):
-            match = re.search(rf"\({label}\s*:\s*(\d+)px\)", text)
-            if not match:
-                continue
-            target = int(match.group(1))
-            if label.startswith("min-"):
-                checks.append(value >= target)
-            else:
-                checks.append(value <= target)
-
+        # (orientation: portrait|landscape)
         orientation_match = re.search(
-            r"\(orientation\s*:\s*(portrait|landscape)\)", text
+            r"\(\s*orientation\s*:\s*(portrait|landscape)\s*\)", text
         )
         if orientation_match:
             orientation = "landscape" if width >= height else "portrait"
-            checks.append(orientation == orientation_match.group(1))
+            return orientation == orientation_match.group(1)
+
+        # discrete feature: (prefers-color-scheme: dark), (hover: none), ...
+        discrete = re.search(r"\(\s*([a-z-]+)\s*:\s*([a-z-]+)\s*\)", text)
+        if discrete and discrete.group(1) in features:
+            return features[discrete.group(1)] == discrete.group(2)
+        # boolean feature form: (pointer), (prefers-reduced-motion)
+        boolean = re.fullmatch(r"\(\s*([a-z-]+)\s*\)", text)
+        if boolean and boolean.group(1) in features:
+            return features[boolean.group(1)] not in ("none", "no-preference")
+
+        # resolution: (min-resolution: 2dppx), (resolution >= 150dpi)
+        res_match = re.search(
+            r"\(\s*(min-|max-)?resolution\s*(:|<=|>=|<|>)?\s*([\d.]+)(dppx|dpi|x)\s*\)",
+            text,
+        )
+        if res_match:
+            bound, cmp, number, unit = res_match.groups()
+            target = float(number) / (96.0 if unit == "dpi" else 1.0)
+            if bound == "min-" or cmp in (">=", ">"):
+                return resolution >= target
+            if bound == "max-" or cmp in ("<=", "<"):
+                return resolution <= target
+            return abs(resolution - target) < 1e-9
+
+        # width / height -- (min-width: Npx) / (max-height: Npx) prefix form and
+        # the range form (width >= Npx), (400px <= width <= 900px)
+        checks: list[bool] = []
+        for axis_name, axis in (("width", width), ("height", height)):
+            for m in re.finditer(
+                rf"\(\s*(min-|max-)?{axis_name}\s*(:|<=|>=|<|>|=)\s*([\d.]+)([a-z%]*)\s*\)",
+                text,
+            ):
+                bound, cmp, number, unit = m.groups()
+                target = cls._to_px(number, unit)
+                if bound == "min-":
+                    checks.append(axis >= target)
+                elif bound == "max-":
+                    checks.append(axis <= target)
+                elif cmp == ">=":
+                    checks.append(axis >= target)
+                elif cmp == ">":
+                    checks.append(axis > target)
+                elif cmp == "<=":
+                    checks.append(axis <= target)
+                elif cmp == "<":
+                    checks.append(axis < target)
+                else:
+                    checks.append(axis == target)
+            # double-ended range: (400px <= width <= 900px)
+            for m in re.finditer(
+                rf"\(\s*([\d.]+)([a-z%]*)\s*(<=?|>=?)\s*{axis_name}\s*"
+                rf"(<=?|>=?)\s*([\d.]+)([a-z%]*)\s*\)",
+                text,
+            ):
+                lo, lounit, locmp, hicmp, hi, hiunit = m.groups()
+                lo_px, hi_px = cls._to_px(lo, lounit), cls._to_px(hi, hiunit)
+                checks.append(
+                    (axis >= lo_px if locmp == "<=" else axis > lo_px)
+                    and (axis <= hi_px if hicmp == "<=" else axis < hi_px)
+                )
 
         return all(checks) if checks else False
 
     def _set_viewport(self, *, width: int, height: int) -> None:
         previous = self.matches
-        self.matches = self._evaluate(self.media, width=width, height=height)
+        self.matches = self._evaluate(
+            self.media, width=width, height=height,
+            features=self._features, resolution=self._resolution,
+        )
         if self.matches != previous:
             event = Event("change", {"bubbles": False, "cancelable": False})
             event.matches = self.matches
@@ -471,6 +595,9 @@ class Window(JavaScriptWindow, EventTarget):
         self._scroll_y = 0
         self._stopped = False
         self._media_query_lists: list[MediaQueryList] = []
+        #: discrete media-feature answers used by ``matchMedia`` -- override e.g.
+        #: ``window.mediaFeatures["prefers-color-scheme"] = "dark"``
+        self.mediaFeatures: dict[str, str] = dict(MediaQueryList.DEFAULT_FEATURES)
         self._microtask_queue: list[Callable[[], Any]] = []
         self._running_microtasks = False
         self._next_animation_frame_id = 1
@@ -721,7 +848,11 @@ class Window(JavaScriptWindow, EventTarget):
 
     def matchMedia(self, media_query_list):
         query = MediaQueryList(
-            media_query_list, width=self.innerWidth, height=self.innerHeight
+            media_query_list,
+            width=self.innerWidth,
+            height=self.innerHeight,
+            features=self.mediaFeatures,
+            resolution=float(getattr(self, "devicePixelRatio", 1.0) or 1.0),
         )
         self._media_query_lists.append(query)
         return query
