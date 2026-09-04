@@ -1109,6 +1109,22 @@ class TestCase(unittest.TestCase):
         plain.media.mediaText = "screen, print"
         self.assertEqual(list(plain.media), ["screen", "print"])
 
+    def test_computed_calc_length_evaluation(self):
+        e = document.createElement("div")
+        e.setAttribute(
+            "style",
+            "font-size: 16px; width: calc(100px + 2em); "
+            "margin-top: calc(10px * 3); height: calc((4 + 1) * 8px); "
+            "padding-left: calc(50% + 10px)",
+        )
+        document.createElement("div").appendChild(e)
+        c = ComputedStyleDeclaration(e)
+        self.assertEqual(c.getPropertyValue("width"), "132px")
+        self.assertEqual(c.getPropertyValue("margin-top"), "30px")
+        self.assertEqual(c.getPropertyValue("height"), "40px")
+        # a percentage term needs layout -- calc() is kept verbatim
+        self.assertEqual(c.getPropertyValue("padding-left"), "calc(50% + 10px)")
+
     def test_computed_css_wide_keywords(self):
         parent = document.createElement("div")
         parent.setAttribute("style", "color: rgb(1, 2, 3); font-size: 24px")

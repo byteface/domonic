@@ -11,6 +11,7 @@ documents.
 
 from __future__ import annotations
 
+import ast
 import math
 import re
 from re import M, findall, finditer
@@ -6535,10 +6536,15 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         parent = self._parent_computed()
         parent_px = parent._font_size_px() if parent is not None else 16.0
         raw = str(self._resolved.get("font-size") or "medium").strip()
-        px = _length_string_to_px(
-            raw, em_px=parent_px, rem_px=self._root_font_size_px(),
-            percent_px=parent_px,
-        )
+        if "calc(" in raw.lower():
+            px = _eval_calc_to_px(
+                raw, em_px=parent_px, rem_px=self._root_font_size_px()
+            )
+        else:
+            px = _length_string_to_px(
+                raw, em_px=parent_px, rem_px=self._root_font_size_px(),
+                percent_px=parent_px,
+            )
         if px is None:
             px = _ABSOLUTE_FONT_SIZE_KEYWORDS.get(raw.lower(), parent_px)
         self.__dict__["_font_size_px_cache"] = px
@@ -6579,6 +6585,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             return _px_str(self._font_size_px())
 
         font_px = self._font_size_px()
+
+        if "calc(" in value.lower():
+            evaluated = _eval_calc_to_px(
+                value, em_px=font_px, rem_px=self._root_font_size_px()
+            )
+            return _px_str(evaluated) if evaluated is not None else value
+
         if target == "line-height":
             low = value.strip().lower()
             if low in ("normal", "inherit", "initial", "unset", ""):
@@ -6696,6 +6709,69 @@ def _length_string_to_px(
     if unit == "":
         return None  # a unitless non-zero number is not a length
     return None if unit not in _ABSOLUTE_LENGTH_UNITS else number * _ABSOLUTE_LENGTH_UNITS[unit]
+
+
+_CALC_LENGTH_TERM_RE = re.compile(
+    r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|in|cm|mm|q|pt|pc)\b", re.I
+)
+
+
+def _eval_calc_to_px(
+    expr: str, *, em_px: float, rem_px: float
+) -> "float | None":
+    """Evaluate a ``calc(...)`` body to px, or ``None`` if it mixes in a
+    percentage / viewport / other unit that needs layout."""
+    body = expr.strip()
+    if body.lower().startswith("calc(") and body.endswith(")"):
+        body = body[5:-1]
+    # any unit we cannot resolve to px -> bail (keep the calc() verbatim)
+    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)"
+                 r"(%|vw|vh|vmin|vmax|ch|ex|fr|svh|lvh|dvh)\b", body, re.I):
+        return None
+    if "calc(" in body.lower():
+        return None  # nested calc -- keep it simple
+
+    def _sub(match: "re.Match[str]") -> str:
+        px = _length_string_to_px(
+            match.group(0), em_px=em_px, rem_px=rem_px, percent_px=None
+        )
+        return repr(px) if px is not None else match.group(0)
+
+    numeric = _CALC_LENGTH_TERM_RE.sub(_sub, body)
+    if re.search(r"[a-z]", numeric, re.I):  # an unresolved unit slipped through
+        return None
+    if not re.fullmatch(r"[-+*/()\d.eE\s]+", numeric):
+        return None
+    try:
+        node: Any = ast.parse(numeric, "<calc>", "eval")
+    except SyntaxError:
+        return None
+
+    def _ev(n: Any) -> float:
+        if isinstance(n, ast.Expression):
+            return _ev(n.body)
+        if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+            return float(n.value)
+        if isinstance(n, ast.UnaryOp) and isinstance(n.op, (ast.UAdd, ast.USub)):
+            v = _ev(n.operand)
+            return v if isinstance(n.op, ast.UAdd) else -v
+        if isinstance(n, ast.BinOp) and isinstance(
+            n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)
+        ):
+            a, b = _ev(n.left), _ev(n.right)
+            if isinstance(n.op, ast.Add):
+                return a + b
+            if isinstance(n.op, ast.Sub):
+                return a - b
+            if isinstance(n.op, ast.Mult):
+                return a * b
+            return a / b if b else 0.0
+        raise ValueError("unsupported calc expression")
+
+    try:
+        return _ev(node)
+    except (ValueError, ZeroDivisionError):
+        return None
 
 
 def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
