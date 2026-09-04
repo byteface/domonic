@@ -433,6 +433,10 @@ _id="one", _class="two",
                 "<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>",
             "<p>one<p>two<div>three</div>":
                 "<p>one</p><p>two</p><div>three</div>",
+            "<table><tr><td>x</td></tr></table>":
+                "<table><tbody><tr><td>x</td></tr></tbody></table>",
+            "<table><td>y</td></table>":
+                "<table><tbody><tr><td>y</td></tr></tbody></table>",
         }
         for markup, expected in cases.items():
             with self.subTest(markup=markup):

@@ -87,10 +87,38 @@ class DomonicHTMLParser(HTMLParser):
     def current(self) -> Node:
         return self.stack[-1]
 
+    _TABLE_SECTIONS = {"thead", "tbody", "tfoot"}
+
+    def _open_implicit(self, tag: str) -> None:
+        element = self._create_element(tag, [])
+        _append_child_raw(self.current, element, self.child_stack[-1])
+        self.stack.append(element)
+        self.child_stack.append([])
+        self.namespace_stack.append(element.namespaceURI)
+
+    def _insert_implied_table_containers(self, tag: str) -> None:
+        """The HTML tree builder inserts ``<tbody>`` / ``<tr>`` that the markup
+        omits; stdlib ``HTMLParser`` does not, so do it here."""
+        current = getattr(self.current, "tagName", "").lower()
+        if tag in self._TABLE_SECTIONS or tag in ("caption", "colgroup"):
+            if current in self._TABLE_SECTIONS:
+                self._close_open_element(self._TABLE_SECTIONS)
+            return
+        if tag == "tr" and current == "table":
+            self._open_implicit("tbody")
+            return
+        if tag in ("td", "th"):
+            if current == "table":
+                self._open_implicit("tbody")
+                current = "tbody"
+            if current in self._TABLE_SECTIONS:
+                self._open_implicit("tr")
+
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
         tag = tag.lower()
+        self._insert_implied_table_containers(tag)
         if tag in AUTOCLOSE_ON_START:
             self._close_open_element(
                 AUTOCLOSE_ON_START[tag], boundary=AUTOCLOSE_BOUNDARY.get(tag)
