@@ -5979,7 +5979,28 @@ class CSSStyleDeclaration(Style):
         """Removes a property from the CSS declaration block."""
         current = self.getPropertyValue(propertyName)
         target = self._to_kebab(propertyName)
-        entries = [entry for entry in self._property_entries() if entry[0] != target]
+        entries = self._property_entries()
+        if not any(e[0] == target for e in entries):
+            # removing a longhand covered by a stored shorthand: expand the
+            # shorthand first so the other longhands survive, like a browser
+            for shorthand in _cssom.LONGHAND_TO_SHORTHANDS.get(target, ()):
+                shorthand_entry = next(
+                    (e for e in entries if e[0] == shorthand), None
+                )
+                if shorthand_entry is None:
+                    continue
+                expanded = _cssom.expand_shorthand(shorthand, shorthand_entry[1])
+                if not expanded:
+                    continue
+                idx = entries.index(shorthand_entry)
+                prio = shorthand_entry[2]
+                entries = (
+                    entries[:idx]
+                    + [(ln, lv, prio) for ln, lv in expanded]
+                    + entries[idx + 1:]
+                )
+        entries = [entry for entry in entries if entry[0] != target]
+        entries = self._collapse_shorthands(entries)
         self._sync_css_text(entries)
         try:
             object.__setattr__(self, "_suspend_style_sync", True)

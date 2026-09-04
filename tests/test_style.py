@@ -942,6 +942,15 @@ class TestCase(unittest.TestCase):
         self.assertIn("margin-top: 1px !important;", s.cssText)
         self.assertNotIn("margin:", s.cssText)
 
+    def test_remove_longhand_of_a_set_shorthand(self):
+        s = div().style
+        s.setProperty("margin", "1px 2px 3px 4px")
+        s.removeProperty("margin-right")
+        self.assertEqual(s.getPropertyValue("margin-right"), "")
+        self.assertEqual(s.getPropertyValue("margin-top"), "1px")
+        self.assertEqual(s.length, 3)
+        self.assertNotIn("margin:", s.cssText)
+
     def test_background_shorthand_expands_to_longhands(self):
         s = div().style
         s.setProperty("background", "#fff url(x.svg) no-repeat")
