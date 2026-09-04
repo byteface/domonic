@@ -1087,6 +1087,19 @@ class TestCase(unittest.TestCase):
         self.assertFalse(rule.inherits)
         self.assertEqual(rule.initialValue, "8px")
 
+    def test_constructable_stylesheet_options_and_metadata(self):
+        from domonic.style import CSSStyleSheet
+
+        sheet = CSSStyleSheet({"media": "print", "disabled": True})
+        self.assertEqual(sheet.media.mediaText, "print")
+        self.assertTrue(sheet.disabled)
+        self.assertEqual(sheet.type, "text/css")
+
+        plain = CSSStyleSheet()
+        self.assertFalse(plain.disabled)  # spec default is enabled
+        plain.media.mediaText = "screen, print"
+        self.assertEqual(list(plain.media), ["screen", "print"])
+
     def test_adopted_stylesheets_feed_the_cascade(self):
         from domonic.dom import Document
         from domonic.style import CSSStyleSheet, ComputedStyleDeclaration

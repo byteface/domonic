@@ -392,13 +392,14 @@ class StyleSheet:
     """
 
     def __init__(self) -> None:
-        self.disabled: bool = (
-            True  # a boolean value representing whether the current stylesheet has been applied or not
-        )
+        # whether the sheet is prevented from applying (spec default: enabled)
+        self.disabled: bool = False
         self.href: str | None = None
         self.parentStyleSheet: StyleSheet | None = None
         self.ownerNode = None
-        self.media = None
+        self.title: str | None = None
+        self.type: str = "text/css"
+        self.media: MediaList = MediaList()
 
     # @property
     # def href(self):
@@ -443,17 +444,17 @@ class StyleSheetList(list):
         sheets = doc.querySelectorAll('link[rel="stylesheet"]')
         for sheet in sheets:
             ss = CSSStyleSheet()
+            ss._constructed = False
             ss.href = sheet.href
             ss.ownerNode = sheet
-            ss.disabled = False
             self.append(ss)
 
         styles = doc.querySelectorAll("style")
         for style in styles:
             ss = CSSStyleSheet()
+            ss._constructed = False
             ss.href = doc.URL
             ss.ownerNode = style
-            ss.disabled = False
             ss.replaceSync(style.textContent or "")
             self.append(ss)
 
@@ -1091,7 +1092,13 @@ class MediaList(list):
     @property
     def mediaText(self) -> str:
         """Returns a string containing the text of the media query."""
-        return ",".join(self)
+        return ", ".join(self)
+
+    @mediaText.setter
+    def mediaText(self, value: Any) -> None:
+        self[:] = [
+            part.strip() for part in str(value or "").split(",") if part.strip()
+        ]
 
     def item(self, index: int) -> str | None:
         """Returns the media at the given index in the MediaList."""
@@ -1132,11 +1139,24 @@ class CSSRuleList(list):
 class CSSStyleSheet(StyleSheet):
     """Creates a new CSSStyleSheet object."""
 
-    def __init__(self) -> None:
+    def __init__(self, options: "dict[str, Any] | None" = None) -> None:
         super().__init__()
         self.rules: list[CSSRule] = []
         self.cssRules: CSSRuleList = CSSRuleList()
         self.ownerRule: CSSRule | None = None
+        # constructed sheets (``new CSSStyleSheet(...)``) accept an options bag
+        # and are the only sheets ``replace`` / ``replaceSync`` may target
+        self._constructed = True
+        if isinstance(options, dict):
+            if options.get("media") is not None:
+                media = options["media"]
+                self.media = (
+                    media if isinstance(media, MediaList)
+                    else MediaList(str(media).split(","))
+                )
+            self.disabled = bool(options.get("disabled", False))
+            if options.get("baseURL") is not None:
+                self.href = str(options["baseURL"])
 
     # @property
     # def cssRules():  # -> 'CSSStyleRuleList':
