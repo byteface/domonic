@@ -76,7 +76,8 @@ class TestCase(unittest.TestCase):
         self.assertEqual(root.dataset["equation"], "linear")
 
         root.style = "color: red;"
-        self.assertIs(root.attributeStyleMap, root.style)
+        # attributeStyleMap is a CSS Typed OM view over the inline style block
+        self.assertEqual(str(root.attributeStyleMap.get("color")), "red")
 
         root.nonce = "abc123"
         self.assertEqual(root.getAttribute("nonce"), "abc123")

@@ -11,6 +11,7 @@ documents.
 
 from __future__ import annotations
 
+import math
 import re
 from re import M, findall, finditer
 from typing import Any, Callable
@@ -6788,8 +6789,210 @@ def _supports_condition(condition_text: str) -> bool:
     return len(entries) == 1 and _supports_property_value(entries[0][0], entries[0][1])
 
 
+class CSSStyleValue:
+    """Base of the CSS Typed OM value hierarchy."""
+
+    def __str__(self) -> str:  # pragma: no cover - overridden
+        return ""
+
+    def toString(self) -> str:
+        return str(self)
+
+    @staticmethod
+    def parse(property_name: str, css_text: str) -> "CSSStyleValue":
+        return _parse_css_style_value(str(css_text))
+
+    @staticmethod
+    def parseAll(property_name: str, css_text: str) -> "list[CSSStyleValue]":
+        return [
+            _parse_css_style_value(part)
+            for part in _split_top_level_commas(str(css_text))
+        ] or [_parse_css_style_value(str(css_text))]
+
+
+class CSSKeywordValue(CSSStyleValue):
+    def __init__(self, value: Any) -> None:
+        self.value = str(value)
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, CSSKeywordValue):
+            return self.value == other.value
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash(self.value)
+
+
+class CSSUnitValue(CSSStyleValue):
+    """A numeric value with a unit -- ``CSS.px(10)`` / ``CSSUnitValue(10, "px")``."""
+
+    def __init__(self, value: float, unit: str) -> None:
+        self.value = float(value)
+        # CSSOM unit names: "number", "percent", or the CSS unit token lowercased
+        self.unit = {"": "number", "%": "percent"}.get(unit, unit.lower())
+
+    @property
+    def _token(self) -> str:
+        return {"number": "", "percent": "%"}.get(self.unit, self.unit)
+
+    def __str__(self) -> str:
+        number = int(self.value) if self.value == int(self.value) else self.value
+        return f"{number}{self._token}"
+
+    def to(self, unit: str) -> "CSSUnitValue":
+        target = {"": "number", "%": "percent"}.get(unit, unit.lower())
+        if target == self.unit:
+            return CSSUnitValue(self.value, unit)
+        factor = _CSS_UNIT_CANONICAL.get(self.unit)
+        target_factor = _CSS_UNIT_CANONICAL.get(target)
+        if factor is None or target_factor is None:
+            raise TypeError(f"cannot convert {self.unit!r} to {target!r}")
+        return CSSUnitValue(self.value * factor / target_factor, unit)
+
+    def _combine(self, other: Any, op: Callable[[float, float], float]) -> "CSSUnitValue":
+        if isinstance(other, (int, float)):
+            return CSSUnitValue(op(self.value, float(other)), self._token)
+        if isinstance(other, CSSUnitValue) and other.unit == self.unit:
+            return CSSUnitValue(op(self.value, other.value), self._token)
+        raise TypeError("CSSUnitValue operands must share a unit")
+
+    def __add__(self, other: Any) -> "CSSUnitValue":
+        return self._combine(other, lambda a, b: a + b)
+
+    def __sub__(self, other: Any) -> "CSSUnitValue":
+        return self._combine(other, lambda a, b: a - b)
+
+    def __mul__(self, other: Any) -> "CSSUnitValue":
+        return self._combine(other, lambda a, b: a * b)
+
+    def __truediv__(self, other: Any) -> "CSSUnitValue":
+        return self._combine(other, lambda a, b: a / b)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, CSSUnitValue):
+            return self.value == other.value and self.unit == other.unit
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash((self.value, self.unit))
+
+
+#: canonical-unit factors for CSSUnitValue.to() within a compatible group
+_CSS_UNIT_CANONICAL = {
+    "px": 1.0, "in": 96.0, "cm": 96.0 / 2.54, "mm": 96.0 / 25.4,
+    "q": 96.0 / 25.4 / 4, "pt": 96.0 / 72.0, "pc": 16.0,
+    "deg": 1.0, "grad": 0.9, "rad": 180.0 / math.pi, "turn": 360.0,
+    "s": 1.0, "ms": 0.001,
+    "hz": 1.0, "khz": 1000.0,
+    "dppx": 1.0, "dpi": 1.0 / 96.0, "dpcm": 2.54 / 96.0,
+}
+
+_CSS_TYPED_OM_UNIT_RE = re.compile(
+    r"^\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)\s*([a-z%]*)\s*$", re.I
+)
+
+
+def _parse_css_style_value(css_text: str) -> CSSStyleValue:
+    text = str(css_text).strip()
+    match = _CSS_TYPED_OM_UNIT_RE.match(text)
+    if match:
+        return CSSUnitValue(float(match.group(1)), match.group(2))
+    return CSSKeywordValue(text)
+
+
+class StylePropertyMap:
+    """Minimal ``StylePropertyMap`` / ``StylePropertyMapReadOnly``.
+
+    Backed by a live ``CSSStyleDeclaration``; ``get`` returns a Typed OM value,
+    ``getAll`` a list, and (when writable) ``set`` / ``append`` / ``delete`` /
+    ``clear`` proxy to the declaration.
+    """
+
+    def __init__(self, declaration, *, read_only: bool = False) -> None:
+        self._decl = declaration
+        self._read_only = read_only
+
+    def _guard(self) -> None:
+        if self._read_only:
+            raise Exception("NoModificationAllowedError: this map is read-only")
+
+    def get(self, property_name: str):
+        value = self._decl.getPropertyValue(property_name)
+        return _parse_css_style_value(value) if value else None
+
+    def getAll(self, property_name: str) -> list:
+        value = self._decl.getPropertyValue(property_name)
+        if not value:
+            return []
+        return [
+            _parse_css_style_value(part)
+            for part in _split_top_level_commas(value)
+        ] or [_parse_css_style_value(value)]
+
+    def has(self, property_name: str) -> bool:
+        return self._decl.getPropertyValue(property_name) != ""
+
+    def set(self, property_name: str, value: Any) -> None:
+        self._guard()
+        self._decl.setProperty(property_name, str(value))
+
+    def append(self, property_name: str, value: Any) -> None:
+        self._guard()
+        existing = self._decl.getPropertyValue(property_name)
+        combined = f"{existing}, {value}" if existing else str(value)
+        self._decl.setProperty(property_name, combined)
+
+    def delete(self, property_name: str) -> None:
+        self._guard()
+        self._decl.removeProperty(property_name)
+
+    def clear(self) -> None:
+        self._guard()
+        for name in list(self._decl):
+            self._decl.removeProperty(name)
+
+    def __iter__(self):
+        for name in self._decl:
+            yield name, self.get(name)
+
+    @property
+    def size(self) -> int:
+        return self._decl.length
+
+
 class CSS:
     """Namespace for CSS utility functions."""
+
+    # -- CSS Typed OM numeric factories -----------------------------------
+    number = staticmethod(lambda v=0: CSSUnitValue(v, ""))
+    percent = staticmethod(lambda v=0: CSSUnitValue(v, "%"))
+    px = staticmethod(lambda v=0: CSSUnitValue(v, "px"))
+    em = staticmethod(lambda v=0: CSSUnitValue(v, "em"))
+    rem = staticmethod(lambda v=0: CSSUnitValue(v, "rem"))
+    ex = staticmethod(lambda v=0: CSSUnitValue(v, "ex"))
+    ch = staticmethod(lambda v=0: CSSUnitValue(v, "ch"))
+    vw = staticmethod(lambda v=0: CSSUnitValue(v, "vw"))
+    vh = staticmethod(lambda v=0: CSSUnitValue(v, "vh"))
+    vmin = staticmethod(lambda v=0: CSSUnitValue(v, "vmin"))
+    vmax = staticmethod(lambda v=0: CSSUnitValue(v, "vmax"))
+    cm = staticmethod(lambda v=0: CSSUnitValue(v, "cm"))
+    mm = staticmethod(lambda v=0: CSSUnitValue(v, "mm"))
+    Q = staticmethod(lambda v=0: CSSUnitValue(v, "Q"))
+    pt = staticmethod(lambda v=0: CSSUnitValue(v, "pt"))
+    pc = staticmethod(lambda v=0: CSSUnitValue(v, "pc"))
+    deg = staticmethod(lambda v=0: CSSUnitValue(v, "deg"))
+    grad = staticmethod(lambda v=0: CSSUnitValue(v, "grad"))
+    rad = staticmethod(lambda v=0: CSSUnitValue(v, "rad"))
+    turn = staticmethod(lambda v=0: CSSUnitValue(v, "turn"))
+    s = staticmethod(lambda v=0: CSSUnitValue(v, "s"))
+    ms = staticmethod(lambda v=0: CSSUnitValue(v, "ms"))
+    fr = staticmethod(lambda v=0: CSSUnitValue(v, "fr"))
+    dpi = staticmethod(lambda v=0: CSSUnitValue(v, "dpi"))
+    dpcm = staticmethod(lambda v=0: CSSUnitValue(v, "dpcm"))
+    dppx = staticmethod(lambda v=0: CSSUnitValue(v, "dppx"))
 
     @staticmethod
     def escape(ident: Any) -> str:

@@ -5597,6 +5597,21 @@ class Element(Node):
             self.style = Style()
         return self.__style
 
+    @property
+    def attributeStyleMap(self):
+        """CSS Typed OM view over the inline ``style`` declaration block."""
+        from domonic.style import StylePropertyMap
+
+        return StylePropertyMap(self.style)
+
+    def computedStyleMap(self):
+        """CSS Typed OM read-only view over the element's computed style."""
+        from domonic.style import ComputedStyleDeclaration, StylePropertyMap
+
+        return StylePropertyMap(
+            ComputedStyleDeclaration(self), read_only=True
+        )
+
     @style.setter
     def style(self, style):
         if style is None:
@@ -9800,10 +9815,6 @@ class MathMLElement(Element):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.namespaceURI = MATHML_NAMESPACE
-
-    @property
-    def attributeStyleMap(self):
-        return self.style
 
     @property
     def nonce(self) -> str | None:

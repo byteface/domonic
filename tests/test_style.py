@@ -1252,6 +1252,37 @@ class TestCase(unittest.TestCase):
         self.assertTrue(y.matches("section + p"))
         self.assertFalse(y.matches("p + p"))
 
+    def test_css_typed_om_values_and_style_maps(self):
+        from domonic.style import CSS, CSSUnitValue, CSSKeywordValue, CSSStyleValue
+
+        self.assertEqual(str(CSS.px(10)), "10px")
+        self.assertEqual(CSS.px(10).unit, "px")
+        self.assertEqual(CSS.number(3).unit, "number")
+        self.assertEqual(CSS.percent(50).unit, "percent")
+        self.assertEqual(CSS.px(10) + CSS.px(5), CSSUnitValue(15, "px"))
+        self.assertEqual(str(CSS.px(96).to("in")), "1in")
+        self.assertEqual(str(CSS.deg(360).to("turn")), "1turn")
+        with self.assertRaises(TypeError):
+            CSS.px(1) + CSS.em(1)
+
+        self.assertIsInstance(CSSStyleValue.parse("width", "10px"), CSSUnitValue)
+        self.assertIsInstance(
+            CSSStyleValue.parse("display", "grid"), CSSKeywordValue
+        )
+
+        el = document.createElement("div")
+        el.setAttribute("style", "width: 10px; color: red")
+        attr_map = el.attributeStyleMap
+        self.assertEqual(attr_map.get("width"), CSSUnitValue(10, "px"))
+        self.assertEqual(str(attr_map.get("color")), "red")
+        attr_map.set("height", CSS.px(20))
+        self.assertEqual(el.style.getPropertyValue("height"), "20px")
+
+        computed_map = el.computedStyleMap()
+        self.assertEqual(computed_map.get("width"), CSSUnitValue(10, "px"))
+        with self.assertRaises(Exception):
+            computed_map.set("width", CSS.px(1))
+
     def test_css_namespace_utilities(self):
         self.assertEqual(CSS.escape("123 item"), "\\31 23\\ item")
         self.assertEqual(CSS.escape("-"), "\\-")
