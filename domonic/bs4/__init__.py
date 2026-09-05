@@ -1628,7 +1628,11 @@ def _extend(self: Node, items: Iterable[Any]) -> None:
 
 def _insert(self: Node, index: int, item: Any) -> Any:
     _invalidate_index(self)
-    children = list(_iter_child_nodes(self))
+    # ``args`` is already the ordered child sequence -- index it directly
+    # instead of materialising the whole list just to read one slot (this
+    # helper is called in a loop, so the old ``list(...)`` made a run of
+    # inserts O(n^2) in the child count).
+    children = getattr(self, "args", ()) or ()
     if index >= len(children):
         self.appendChild(item)
     else:
