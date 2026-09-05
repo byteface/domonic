@@ -52,7 +52,8 @@ autodoc_default_options = {
     "show-inheritance": True,
     "member-order": "bysource",
 }
-autodoc_typehints = "none"
+autodoc_typehints = "description"
+autodoc_typehints_description_target = "documented_params"
 autosummary_generate = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True

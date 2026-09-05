@@ -609,11 +609,11 @@ def speculationrules(
 
 class TemplateError(IndexError):
     def __init__(self, error: Exception, message: str = "TemplateError: "):
-        """[raised when a template error occurs]
+        """raised when a template error occurs
 
         Args:
-            error ([type]): [the error]
-            message (str, optional): [description]. Defaults to "Templating error: ".
+            error (Exception): The underlying error.
+            message (str, optional): Defaults to "TemplateError: ".
         """
         self.error = error
         self.hint = ""

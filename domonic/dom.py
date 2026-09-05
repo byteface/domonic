@@ -1587,7 +1587,7 @@ class Node(EventTarget):
         raise AttributeError
 
     def __pyml__(self):
-        """[returns a representation of the object as a pyml string]"""
+        """returns a representation of the object as a pyml string"""
         # from domonic.dom import Text
         params = ""
         for key, value in self.kwargs.items():
@@ -1848,10 +1848,10 @@ class Node(EventTarget):
     def appendChild(self, aChild: "Node") -> "Node":
         """
         Adds a child to the current element.
-        If item is a DocumentFragment, all its children are added.
+        If aChild is a DocumentFragment, all its children are added.
 
         Args:
-            item (Node): The Node to add.
+            aChild (Node): The Node to add.
         """
         items = _coerce_insertion_nodes(aChild)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
@@ -2081,11 +2081,11 @@ class Node(EventTarget):
 
     @property
     def rootNode(self) -> "Node":
-        """[read-only property returns a Node object representing the topmost node in the tree,
-        or the current node if it's the topmost node in the tree]
+        """Read-only property returning a Node object representing the topmost node in the tree,
+        or the current node if it's the topmost node in the tree.
 
         Returns:
-            [Node]: [the topmost Node in the tree]
+            Node: The topmost Node in the tree.
         """
         if isinstance(self, Document):
             return self
@@ -2171,14 +2171,14 @@ class Node(EventTarget):
         return None
 
     def replaceChild(self, newChild: "Node", oldChild: "Node") -> "Node":
-        """[Replaces a child node within the given (parent) node.]
+        """Replaces a child node within the given (parent) node.
 
         Args:
-            newChild ([type]): [a Node object]
-            oldChild ([type]): [a Node object]
+            newChild (Node): The replacement Node.
+            oldChild (Node): The Node to be replaced.
 
         Returns:
-            [type]: [the old child node]
+            Node: The old child node.
         """
         if newChild is oldChild:
             return oldChild
@@ -2299,7 +2299,7 @@ class Node(EventTarget):
 
     @property
     def nextSibling(self):
-        """[returns the next sibling of the current node.]"""
+        """returns the next sibling of the current node."""
         if self.parentNode is None:
             return None
         else:
@@ -2316,7 +2316,7 @@ class Node(EventTarget):
 
     @property
     def previousSibling(self):
-        """[returns the previous sibling of the current node.]"""
+        """returns the previous sibling of the current node."""
         if self.parentNode is None:
             return None
         else:
@@ -4169,15 +4169,15 @@ class Element(Node):
         return True
 
     def matches(self, s: str) -> bool:
-        """[checks to see if the Element would be selected by the provided selectorString]
+        """Checks to see if the Element would be selected by the provided selectorString.
 
         https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
 
         Args:
-            s (str): [css selector]
+            s (str): A CSS selector string.
 
         Returns:
-            [bool]: [True if selector maches Element otherwise False]
+            bool: True if the selector matches the Element, otherwise False.
         """
         selectors = [
             selector.strip() for selector in str(s).split(",") if selector.strip()
@@ -4884,13 +4884,13 @@ class Element(Node):
         return selection
 
     def getElementsByClassName(self, className: str) -> "HTMLCollection":
-        """[Returns a collection of all child elements with the specified class name]
+        """Returns a collection of all child elements with the specified class name.
 
         Args:
-            className (str): [a DOMString representing the class name to match]
+            className (str): A DOMString representing the class name to match.
 
         Returns:
-            [type]: [a NodeList of all child elements with the specified class name]
+            HTMLCollection: All child elements with the specified class name.
         """
         required = {token for token in str(className).split() if token}
         if not required:
@@ -4952,13 +4952,13 @@ class Element(Node):
         return CaretPosition(target, 0)
 
     def getElementsByTagName(self, tagName: str) -> "HTMLCollection":
-        """[Returns a collection of all child elements with the specified tag name
+        """Returns a collection of all child elements with the specified tag name.
 
         Args:
-            tagName (str): [a DOMString representing the tag name to match]
+            tagName (str): A DOMString representing the tag name to match.
 
         Returns:
-            [type]: [method returns a live HTMLCollection of elements with the given tag name.]
+            HTMLCollection: A live HTMLCollection of elements with the given tag name.
         """
         elements = HTMLCollection()
         tagName = str(tagName)
@@ -5011,13 +5011,13 @@ class Element(Node):
         return super().__contains__(item)
 
     def hasAttribute(self, attribute: str) -> bool:
-        """Returns True if an element has the specified attribute, otherwise False
+        """Returns True if an element has the specified attribute, otherwise False.
 
         Args:
-            attribute (str): [the attribute to test for]
+            attribute (str): The attribute to test for.
 
         Returns:
-            bool: [True if an element has the specified attribute, otherwise False]
+            bool: True if an element has the specified attribute, otherwise False.
         """
         try:
             return self._attr_key(attribute) in self.kwargs
@@ -5195,10 +5195,10 @@ class Element(Node):
 
     @property
     def lastElementChild(self) -> Node | None:
-        """[Returns the last child element of an element]
+        """Returns the last child element of an element.
 
         Returns:
-            [type]: [the last child element of an element]
+            Element | None: The last child element of an element.
         """
         for child in reversed(self.args):
             if isinstance(child, Element):
@@ -5351,13 +5351,13 @@ class Element(Node):
         _notify_slot_change(self)
 
     def querySelector(self, query: str) -> Element | None:
-        """[Returns the first child element that matches a specified CSS selector(s) of an element]
+        """Returns the first child element that matches a specified CSS selector(s) of an element.
 
         Args:
-            query (str): [a CSS selector string]
+            query (str): A CSS selector string.
 
         Returns:
-            [type]: [an Element object]
+            Element | None: The first matching Element, or None.
         """
         if not query:
             return None
@@ -5410,13 +5410,13 @@ class Element(Node):
             return None
 
     def querySelectorAll(self, query: str) -> list[Element]:
-        """[Returns all child elements that matches a specified CSS selector(s) of an element]
+        """Returns all child elements that match a specified CSS selector(s) of an element.
 
         Args:
-            query (str): [a CSS selector string]
+            query (str): A CSS selector string.
 
         Returns:
-            [type]: [a list of Element objects]
+            list[Element]: A list of matching Element objects.
         """
         if not query:
             return []
@@ -5625,10 +5625,10 @@ class Element(Node):
         return False
 
     def setAttributeNode(self, attr):
-        """[Sets or changes the specified attribute node]
+        """Sets or changes the specified attribute node.
 
         Args:
-            attr ([type]): [an Attr object]
+            attr (Attr): An Attr object.
         """
         self.setAttribute(attr.name, attr.value)
 
@@ -5709,10 +5709,10 @@ class Element(Node):
 
     @title.setter
     def title(self, newtitle: str):
-        """[Sets the value of the title attribute of an element]
+        """Sets the value of the title attribute of an element.
 
         Args:
-            newtitle (str): [the new title value]
+            newtitle (str): The new title value.
         """
         self.setAttribute(
             "title",
@@ -5820,15 +5820,15 @@ class DOMImplementation:
     def createDocumentType(
         self, qualifiedName: str, publicId: str, systemId: str
     ) -> DocumentType:
-        """[creates a DocumentType node]
+        """Creates a DocumentType node.
 
         Args:
-            qualifiedName (str): [the qualified name of the document type]
-            publicId (str): [the public identifier of the document type]
-            systemId (str): [the system identifier of the document type]
+            qualifiedName (str): The qualified name of the document type.
+            publicId (str): The public identifier of the document type.
+            systemId (str): The system identifier of the document type.
 
         Returns:
-            [type]: [a DocumentType object]
+            DocumentType: A DocumentType object.
         """
         return DocumentType(qualifiedName, publicId, systemId)
 
@@ -6904,7 +6904,7 @@ class Document(Element):
 
     @property
     def anchors(self):
-        """[get the anchors in the document]"""
+        """Returns the anchors in the document."""
         # only the ones with a name
         tags = self.querySelectorAll("a")
         tags = [tag for tag in tags if tag.hasAttribute("name")]
@@ -7160,13 +7160,13 @@ class Document(Element):
 
     @staticmethod
     def createTextNode(text: str) -> "Text":
-        """[Creates a Text node with the specified text.
+        """Creates a Text node with the specified text.
 
         Args:
-            text ([str]): [the text to be inserted]
+            text (str): The text to be inserted.
 
         Returns:
-            [type]: [a new Text node]
+            Text: A new Text node.
         """
         return Text(text)
 
@@ -7177,15 +7177,16 @@ class Document(Element):
         filter: Any = None,
         entityReferenceExpansion: Any = None,
     ) -> "TreeWalker":
-        """[creates a TreeWalker object]
+        """Creates a TreeWalker object.
 
         Args:
-            root ([type]): [the root node at which to begin traversal]
-            whatToShow ([type], optional): [what types of nodes to show]. Defaults to None.
-            filter ([type], optional): [a NodeFilter or a function to be called for each node]. Defaults to None.
+            root (Node): The root node at which to begin traversal.
+            whatToShow (int, optional): What types of nodes to show. Defaults to None.
+            filter (Any, optional): A NodeFilter or a function to be called for each node. Defaults to None.
+            entityReferenceExpansion (Any, optional): Unused; kept for API compatibility. Defaults to None.
 
         Returns:
-            [type]: [a new TreeWalker object]
+            TreeWalker: A new TreeWalker object.
         """
         whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
         return TreeWalker(root, whatToShow, filter, entityReferenceExpansion)
@@ -7355,10 +7356,10 @@ class Document(Element):
 
     @property
     def embeds(self):
-        """[Returns a collection of all <embed> elements the document]
+        """Returns a collection of all <embed> elements in the document.
 
         Returns:
-            [type]: [a collection of all <embed> elements the document]
+            HTMLCollection: All <embed> elements in the document.
         """
         return self.querySelectorAll("embed")
 
@@ -7380,13 +7381,13 @@ class Document(Element):
         return False
 
     def getElementById(self, _id: str) -> Element | None:
-        """[Returns the element that has the ID attribute with the specified value]
+        """Returns the element that has the ID attribute with the specified value.
 
         Args:
-            _id ([str]): [the value of the ID attribute]
+            _id (str): The value of the ID attribute.
 
         Returns:
-            [type]: [the element that has the ID attribute with the specified value]
+            Element | None: The element that has the ID attribute with the specified value.
         """
         for each in self.childNodes:
             if not isinstance(each, Element):
@@ -7398,13 +7399,13 @@ class Document(Element):
         return None
 
     def getElementsByName(self, name: str):
-        """[Returns a NodeList containing all elements with a specified name]
+        """Returns a NodeList containing all elements with a specified name.
 
         Args:
-            name (str): [the name to search for]
+            name (str): The name to search for.
 
         Returns:
-            [type]: [the matching elements]
+            HTMLCollection: The matching elements.
         """
         matches = HTMLCollection()
 
@@ -7431,13 +7432,13 @@ class Document(Element):
 
     @head.setter
     def head(self, el: "HTMLHeadElement") -> None:
-        """[Sets the <head> element of the document]
+        """Sets the <head> element of the document.
 
         Args:
-            el ([HTMLHeadElement]): [the new <head> element]
+            el (HTMLHeadElement): The new <head> element.
 
         Raises:
-            DOMException: [if the el is not an HTMLHeadElement]
+            DOMException: If el is not an HTMLHeadElement.
         """
         if not isinstance(el, HTMLHeadElement):
             raise DOMException("el must be an HTMLHeadElement")
@@ -7560,15 +7561,15 @@ class Document(Element):
         self._referrer = "" if value is None else str(value)
 
     def renameNode(self, node, namespaceURI: str, nodename: str):
-        """[Renames the specified node, and returns the renamed node.]
+        """Renames the specified node, and returns the renamed node.
 
         Args:
-            node ([type]): [the node to rename]
-            namespaceURI ([type]): [a namespace URI]
-            nodename ([type]): [a node name]
+            node (Node): The node to rename.
+            namespaceURI (str): A namespace URI.
+            nodename (str): A node name.
 
         Returns:
-            [type]: [description]
+            Node | bool: The renamed node, or False if node is not an element.
         """
         if node.nodeType == Node.ELEMENT_NODE:
             node.nodeName = nodename
@@ -7601,10 +7602,10 @@ class Document(Element):
 
     @property
     def scripts(self):
-        """[Returns a collection of <script> elements in the document]
+        """Returns a collection of <script> elements in the document.
 
         Returns:
-            [type]: [a collection of <script> elements in the document]
+            HTMLCollection: All <script> elements in the document.
         """
         return self.querySelectorAll("script")
 
@@ -7614,10 +7615,10 @@ class Document(Element):
 
     @property
     def title(self) -> str:
-        """[gets the title of the document]
+        """Gets the title of the document.
 
         Returns:
-            [str]: The title of the document
+            str: The title of the document.
         """
         title_el = self.querySelector("title")
         if title_el is not None:
@@ -7626,10 +7627,10 @@ class Document(Element):
 
     @title.setter
     def title(self, value: str):
-        """[Sets the title of the document]
+        """Sets the title of the document.
 
         Args:
-            value ([str]): [the new title of the document]
+            value (str): The new title of the document.
         """
         title_el = self.querySelector("title")
         if title_el is not None:
@@ -7647,10 +7648,10 @@ class Document(Element):
         return "visible"
 
     def write(self, html: str = ""):
-        """[writes HTML text to a document
+        """Writes HTML text to a document.
 
         Args:
-            html (str, optional): [the content to write to the document]
+            html (str, optional): The content to write to the document.
         """
         html = str(html)
         current_open_filename = self._open_filename
@@ -7663,10 +7664,10 @@ class Document(Element):
         self._open_filename = current_open_filename
 
     def writeln(self, html: str = ""):
-        """[writes HTML text to a document, followed by a line break]
+        """Writes HTML text to a document, followed by a line break.
 
         Args:
-            html (str, optional): [the content to write to the document]
+            html (str, optional): The content to write to the document.
         """
         self.write(html + "\n")
 
@@ -8082,14 +8083,14 @@ class HTMLCollection(list):
         return "".join([str(a) for a in self])
 
     def item(self, index: int) -> Node | None:
-        """[gets the indexth item in the collection.
-        If index is greater than or equal to the number of nodes in the list, this returns null.]
+        """Gets the indexth item in the collection.
+        If index is greater than or equal to the number of nodes in the list, this returns None.
 
         Args:
-            index ([type]): [the index of the item to return.]
+            index (int): The index of the item to return.
 
         Returns:
-            [type]: [the node at the indexth position, or None]
+            Node | None: The node at the indexth position, or None.
         """
         if 0 <= index < len(self):
             return self[index]
@@ -9189,7 +9190,7 @@ def _coerce_what_to_show(whatToShow: int | str | None) -> int:
 
 
 class NodeIterator:
-    """[NodeIterator is an iterator object that iterates over the descendants of a node, in tree order.]"""
+    """NodeIterator is an iterator object that iterates over the descendants of a node, in tree order."""
 
     def __init__(
         self,
@@ -9368,10 +9369,9 @@ class TreeWalker:
     """The TreeWalker object represents the nodes of a document subtree and a position within them."""
 
     def _upgrade_dom(self) -> None:
-        """[
-            Our dom has some strings that are not Text Nodes
-            so we have to upgrade them to Node objects. As we can't know siblings otherwise
-        ]
+        """
+        Our dom has some strings that are not Text Nodes
+        so we have to upgrade them to Node objects. As we can't know siblings otherwise
         """
 
         def upgrade(el: Node) -> None:
@@ -10307,10 +10307,9 @@ class HTMLBodyElement(HTMLElement):
             aLink (str, optional): Color of text for hyperlinks when selected. Do not use this attribute! Use the CSS color property in conjunction with the :active pseudo-class instead.
             background (str, optional): URI of a image to use as a background. Do not use this attribute! Use the CSS background property on the element instead.
             bgColor (str, optional): Background color for the document. Do not use this attribute! Use the CSS background-color property on the element instead.
-            bgProperties (str, optional): The size of the text.
             link (str, optional): Color of text for unvisited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :link pseudo-class instead.
-            onload (str, optional): Function to call when the document is going away.
-            onunload (str, optional): Function to call when the document has finished loading.
+            onload (str, optional): Function to call when the document has finished loading.
+            onunload (str, optional): Function to call when the document is going away.
             text (str, optional): Foreground color of text. Do not use this attribute! Use CSS color property on the element instead.
             vLink (str, optional): Color of text for visited hypertext links. Do not use this attribute! Use the CSS color property in conjunction with the :visited pseudo-class instead.
         """
@@ -11478,12 +11477,12 @@ class HTMLMeterElement(HTMLElement):
         The <meter> HTML element represents either a scalar value within a known range or a fractional value.
 
         Args:
-            value (_type_, optional): The current numeric value. This must be between the minimum and maximum values (min attribute and max attribute) if they are specified.
-            min (_type_, optional): The lower numeric bound of the measured range. This must be less than the maximum value (max attribute), if specified. If unspecified, the minimum value is 0.
-            max (_type_, optional): The upper numeric bound of the measured range. This must be greater than the minimum value (min attribute), if specified. If unspecified, the maximum value is 1.
-            low (_type_, optional): _description_. Defaults to None.
-            high (_type_, optional): _description_. Defaults to None.
-            optimum (_type_, optional): _description_. Defaults to None.
+            value (str, optional): The current numeric value. This must be between the minimum and maximum values (min attribute and max attribute) if they are specified.
+            _min (str, optional): The lower numeric bound of the measured range. This must be less than the maximum value (max attribute), if specified. If unspecified, the minimum value is 0.
+            _max (str, optional): The upper numeric bound of the measured range. This must be greater than the minimum value (min attribute), if specified. If unspecified, the maximum value is 1.
+            low (str, optional): The upper numeric bound of the low end of the measured range. Defaults to None.
+            high (str, optional): The lower numeric bound of the high end of the measured range. Defaults to None.
+            optimum (str, optional): The optimum numeric value. Defaults to None.
         """
         super().__init__(*args, **kwargs)
         if value is not None:

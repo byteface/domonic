@@ -10,7 +10,7 @@ from domonic.javascript import Math
 
 
 class vec4:
-    """[vec4]"""
+    """vec4"""
 
     def __init__(
         self,

@@ -19,16 +19,16 @@ def formatDecimal(x, ignore=None):
 
 
 def formatDecimalParts(x, p=None):
-    """[ Computes the decimal coefficient and exponent of the specified number x with
-        significant digits p, where x is positive and p is in [1, 21] or undefined.
-        For example, formatDecimalParts(1.23) returns ["123", 0].]
+    """Computes the decimal coefficient and exponent of the specified number x with
+    significant digits p, where x is positive and p is in [1, 21] or undefined.
+    For example, formatDecimalParts(1.23) returns ["123", 0].
 
     Args:
-        x ([type]): [description]
-        p ([type]): [description]
+        x (float): A positive number.
+        p (int, optional): The number of significant digits, in [1, 21].
 
     Returns:
-        [type]: [description]
+        list | None: A [coefficient, exponent] pair, or None for NaN/±Infinity.
     """
     x = Number(x).toExponential() if p is None else Number(x).toExponential(p - 1)
     x2 = String(x).indexOf("e")
@@ -717,13 +717,13 @@ def _locale_definitions():
 
 
 def set_locale(code):
-    """[sets the locale of the formatting engine]
+    """Sets the locale of the formatting engine.
 
     Args:
-        code ([str]): [A language/country code i.e. en-GB, en-IN, en-US]
+        code (str): A language/country code, e.g. en-GB, en-IN, en-US.
 
     Returns:
-        [type]: [a new format obj]
+        formatLocale: A locale object with format/formatPrefix methods.
     """
     locales = _locale_definitions()
 

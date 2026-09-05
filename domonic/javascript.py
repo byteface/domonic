@@ -132,7 +132,7 @@ def function(python_str: str) -> Callable[[], Any]:
     ]
 
     Args:
-        python_str ([str]): [some valid python code as a string]
+        python_str (str): some valid python code as a string
     """
 
     def anon() -> Any:
@@ -325,8 +325,8 @@ def _looks_like_regex_separator(value: str) -> bool:
 
 
 class Boolean:
-    """[Creates a Boolean Object.
-    Warning this is NOT a boolean type. for that use Global.Boolean()]
+    """Creates a Boolean Object.
+    Warning this is NOT a boolean type. for that use Global.Boolean()
     """
 
     def __init__(self, value: Any = False) -> None:
@@ -377,10 +377,10 @@ class Object:
     def __init__(
         self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any
     ) -> None:
-        """[Creates a Javascript-like Object in python]
+        """Creates a Javascript-like Object in python
 
         Args:
-            obj ([type]): [pass an object, dict or callable to the contructor]
+            obj (Any, optional): An object, dict or callable to pass to the constructor.
         """
         if obj is None:
             obj = {}
@@ -803,36 +803,36 @@ class Object:
         return len(self.__dict__)
 
     def __contains__(self, key: str) -> bool:
-        """[Returns whether the specified property exists.]
+        """Returns whether the specified property exists.
 
         Args:
-            key ([str]): [The name of the property to check for.]
+            key (str): The name of the property to check for.
 
         Returns:
-            [bool]: [True if the specified property exists. Otherwise, False.]
+            bool: True if the specified property exists. Otherwise, False.
         """
         return key in self.__dict__
 
     def __getattr__(self, name: str) -> Any:
-        """[gets the value of the specified property]
+        """gets the value of the specified property
 
         Args:
-            name ([str]): [the name of the property]
+            name (str): the name of the property
 
         Returns:
-            [str]: [the value of the specified property]
+            str: the value of the specified property
         """
         return self.__getitem__(name)
 
     def __setattr__(self, name: str, val: Any) -> None:
-        """[sets the value of the specified property]
+        """sets the value of the specified property
 
         Args:
-            name ([str]): [the name of the property]
-            val ([str]): [the value of the property]
+            name (str): the name of the property
+            val (str): the value of the property
 
         Returns:
-            [str]: [the value of the property]
+            str: the value of the property
         """
         if name == "__dict__":
             object.__setattr__(self, name, val)
@@ -840,13 +840,10 @@ class Object:
         return self.__setitem__(name, val)
 
     def __delattr__(self, name: str) -> None:
-        """[deletes the specified property]
+        """Deletes the specified property.
 
         Args:
-            name ([str]): [the name of the property]
-
-        Returns:
-            [type]: [the value of the property]
+            name (str): The name of the property.
         """
         if name == "__dict__":
             object.__delattr__(self, name)
@@ -875,13 +872,14 @@ class Function(Object):
     def apply(
         self, thisArg: Any = None, args: Sequence[Any] | None = None, **kwargs: Any
     ) -> Any:
-        """[calls a function with a given this value, and arguments provided as an array]
+        """Calls a function with a given this value, and arguments provided as an array.
 
         Args:
-            thisArg ([type]): [The value of this provided for the call to func.]
+            thisArg (Any): The value of this provided for the call to func.
+            args (Sequence[Any], optional): The arguments to pass to func.
 
         Returns:
-            [type]: [result of calling the function.]
+            Any: The result of calling the function.
         """
         if thisArg is not None:
             try:
@@ -894,16 +892,16 @@ class Function(Object):
             return self.func()
 
     def bind(self, thisArg: Any, *args: Any, **kwargs: Any) -> Callable[..., Any]:
-        """[creates a new function that, when called,
+        """Creates a new function that, when called,
         has its this keyword set to the provided value,
-        with a given sequence of arguments preceding any provided when the new function is called.]
+        with a given sequence of arguments preceding any provided when the new function is called.
 
         Args:
-            thisArg ([type]): [The value to be passed as the this parameter to the target
-            function func when the bound function is called.]
+            thisArg (Any): The value to be passed as the this parameter to the target
+                function func when the bound function is called.
 
         Returns:
-            [type]: [A copy of the given function with the specified this value, and initial arguments (if provided).]
+            Callable: A copy of the given function with the specified this value, and initial arguments (if provided).
         """
         from functools import partial
 
@@ -913,13 +911,13 @@ class Function(Object):
 
     # @staticmethod
     def call(self, thisArg: Any = None, *args: Any, **kwargs: Any) -> Any:
-        """[calls a function with a given this value and arguments provided individually.]
+        """Calls a function with a given this value and arguments provided individually.
 
         Args:
-            thisArg ([type]): [description]
+            thisArg (Any, optional): The value of this provided for the call to func.
 
         Returns:
-            [type]: [result of calling the function.]
+            Any: The result of calling the function.
         """
         if thisArg is not None:
             try:
@@ -934,7 +932,7 @@ class Function(Object):
             return self.func()
 
     def toString(self) -> str:
-        """[Returns a string representing the source code of the function. Overrides the]"""
+        """Returns a string representing the source code of the function. Overrides the"""
         try:
             return inspect.getsource(self.func).strip()
         except (OSError, _PyTypeError):
@@ -1151,26 +1149,26 @@ class Math(Object):
     @staticmethod
     @_force_number
     def abs(x: float) -> float:
-        """[Returns the absolute value of a number.]
+        """Returns the absolute value of a number.
 
         Args:
-            x ([float]): [number]
+            x (float): number
 
         Returns:
-            [float]: [absolute value]
+            float: absolute value
         """
         return abs(x)
 
     @staticmethod
     @_force_number
     def acos(x: float) -> float:
-        """[Returns the arccosine (in radians) of a number.]
+        """Returns the arccosine (in radians) of a number.
 
         Args:
-            x ([float]): [number]
+            x (float): number
 
         Returns:
-            [float]: [arccosine]
+            float: arccosine
         """
         return math.acos(x)
 
@@ -1643,14 +1641,14 @@ class Global:
     def setTimeout(
         callback: str | Callable[..., Any], t: int | float, *args: Any, **kwargs: Any
     ) -> int:
-        """[sets a timer which executes a function or evaluates an expression after a specified delay]
+        """sets a timer which executes a function or evaluates an expression after a specified delay
 
         Args:
-            callback (function): [method to be executed after the delay]
-            t ([int]): [milliseconds]
+            callback (function): method to be executed after the delay
+            t (int): milliseconds
 
         Returns:
-            [str]: [an identifier for the timer]
+            str: an identifier for the timer
         """
         fn: Callable[..., Any] = (
             eval(callback) if isinstance(callback, str) else callback  # nosec B307
@@ -1664,10 +1662,10 @@ class Global:
 
     @staticmethod
     def clearTimeout(timeoutID: int) -> None:
-        """[cancels a timer set with setTimeout()]
+        """cancels a timer set with setTimeout()
 
         Args:
-            timeoutID ([str]): [the identifier returned by setTimeout()]
+            timeoutID (str): the identifier returned by setTimeout()
         """
         Global.__timers.pop(timeoutID).cancel()
 
@@ -2454,9 +2452,9 @@ class Date(Object):
         """Sets the year of a date object
 
         Args:
-            yearValue (_type_): _description_
-            monthValue (int, optional): _description_. Defaults to None.
-            dateValue (int, optional): _description_. Defaults to None.
+            yearValue (int): The year to set.
+            monthValue (int, optional): The month to set (0-11). Defaults to None.
+            dateValue (int, optional): The day of the month to set. Defaults to None.
 
         Returns:
             int: milliseconds between epoch and updated date.
@@ -2600,8 +2598,8 @@ class Date(Object):
         """Sets the seconds of a date object
 
         Args:
-            secondsValue (int): _description_
-            msValue (int, optional): _description_. Defaults to None.
+            secondsValue (int): The seconds to set.
+            msValue (int, optional): The milliseconds to set. Defaults to None.
 
         Returns:
             int: milliseconds between epoch and updated date.
@@ -2615,10 +2613,11 @@ class Date(Object):
         """Sets the date and time of a date object
 
         Args:
-            milliseconds (_type_, optional): _description_. Defaults to None.
+            milliseconds (int, optional): Milliseconds since the epoch. Defaults to None (uses now).
+            tz (optional): The timezone to use. Defaults to None.
 
         Returns:
-            _type_: _description_
+            int | None: milliseconds between epoch and updated date.
         """
         if milliseconds is None:
             self.date = datetime.datetime.now(tz)
@@ -3244,13 +3243,13 @@ class Window:
 
     @staticmethod
     def requestAnimationFrame(callback: Callable[[float], Any]) -> Any:
-        """[requests a frame of an animation]
+        """Requests a frame of an animation.
 
         Args:
-            callback (callable): [the callback function]
+            callback (callable): The callback function, invoked with the current performance time.
 
         Returns:
-            [type]: [description]
+            Any: The callback's return value.
         """
         perf = Global.performance.now()
         return callback(perf)
@@ -3315,7 +3314,7 @@ class Array:
         return Array._new(args)
 
     def __init__(self, *args: Any) -> None:
-        """[An Array that behaves like a js array]"""
+        """An Array that behaves like a js array"""
         # casting
         if len(args) == 1:
             if isinstance(args[0], list):
@@ -3426,7 +3425,7 @@ class Array:
         return Array._new(result)
 
     def flat(self, depth: int = 1) -> list[Any]:
-        """[Flattens an array into a single-dimensional array or a depth of arrays]"""
+        """Flattens an array into a single-dimensional array or a depth of arrays"""
         if depth < 0:
             raise ValueError("depth must be greater than or equal to 0")
 
@@ -3444,7 +3443,7 @@ class Array:
         return _flatten(self.args, depth)
 
     def flatMap(self, fn: Callable[..., Any] | None = None) -> Array:
-        """[Maps a function over an array and flattens the result]"""
+        """Maps a function over an array and flattens the result"""
         it = _js_iteratee(fn)
         mapped = [it(v, i, self.args) for i, v in enumerate(self.args)]
         return Array(*Array(mapped).flat(1))
@@ -3452,7 +3451,7 @@ class Array:
     def fill(
         self, value: Any = None, start: int | None = None, end: int | None = None
     ) -> list[Any]:
-        """[Fills elements of an array from a start index to an end index with a static value]"""
+        """Fills elements of an array from a start index to an end index with a static value"""
         length = len(self.args)
         start = _clamp_js_index(0 if start is None else int(start), length)
         end = length if end is None else _clamp_js_index(int(end), length)
@@ -3461,13 +3460,13 @@ class Array:
         return self.args
 
     def groupBy(self, callback) -> dict:
-        """[Groups the elements of an array according to the result of calling a callback function on each element]
+        """Groups the elements of an array according to the result of calling a callback function on each element
 
         Args:
-            callback (callable): [the callback recieves the following paramters(value, index, target)]
+            callback (callable): the callback recieves the following paramters(value, index, target)
 
         Returns:
-            [dict]: [a dictionary of arrays]
+            dict: a dictionary of arrays
         """
         groups: dict[Any, Any] = {}
         for i in range(len(self.args)):
@@ -3491,7 +3490,7 @@ class Array:
     #     return Map(groups)
 
     def findLast(self, callback: Callable[..., bool] | None = None) -> Any:
-        """[Returns the last element in an array that passes a test]"""
+        """Returns the last element in an array that passes a test"""
         it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
             if it(self.args[i], i, self.args):
@@ -3499,7 +3498,7 @@ class Array:
         return None
 
     def findLastIndex(self, callback: Callable[..., bool] | None = None) -> int:
-        """[Returns the last index of an element in an array that passes a test]"""
+        """Returns the last index of an element in an array that passes a test"""
         it = _js_iteratee(callback)
         for i in range(len(self.args) - 1, -1, -1):
             if it(self.args[i], i, self.args):
@@ -3510,10 +3509,10 @@ class Array:
         """[Check if an array contains the specified item
 
         Args:
-            value ([any]): [any value]
+            value (any): any value
 
         Returns:
-            [bool]: [a boolean]
+            bool: a boolean
         """
         return any(_js_same_value_zero(item, value) for item in self.args)
 
@@ -3527,13 +3526,13 @@ class Array:
 
     @staticmethod
     def isArray(thing: Any) -> bool:
-        """[Checks whether an object is an array]
+        """Checks whether an object is an array.
 
         Args:
-            thing ([type]): [thing to check]
+            thing (Any): The thing to check.
 
         Returns:
-            [bool]: [True if the object is list, tuple or Array]
+            bool: True if the object is a list, tuple or Array.
         """
         if isinstance(thing, (list, tuple, Array)):
             return True
@@ -3582,15 +3581,15 @@ class Array:
     def slice(
         self, start: int = 0, stop: int | None = None, step: int = 1
     ) -> list[Any]:
-        """[Selects a part of an array, and returns the new array]
+        """Selects a part of an array, and returns the new array.
 
         Args:
-            start ([int]): [index to slice from]
-            stop ([int], optional): [index to slice to]. Defaults to end of the array.
-            step (int, optional): [description]. Defaults to 1.
+            start (int): Index to slice from.
+            stop (int, optional): Index to slice to. Defaults to the end of the array.
+            step (int, optional): The step between elements. Defaults to 1.
 
         Returns:
-            [type]: [new array]
+            list: The new array.
         """
         if stop is None:
             stop = len(self.args)
@@ -3614,10 +3613,10 @@ class Array:
         # return self.args
 
     def unshift(self, *args: Any) -> int:
-        """[Adds new elements to the beginning of an array, and returns the new length]
+        """Adds new elements to the beginning of an array, and returns the new length.
 
         Returns:
-            [int]: [the length of the array]
+            int: The length of the array.
         """
         for i in reversed(args):
             self.args.insert(0, i)
@@ -3630,13 +3629,13 @@ class Array:
         return self.args.pop(0)
 
     def map(self, func: Callable[..., Any] | None = None) -> list[Any]:
-        """[Creates a new array with the result of calling a function for each array element]
+        """Creates a new array with the result of calling a function for each array element.
 
         Args:
-            func ([type]): [a function to call on each array element]
+            func (callable): A function to call on each array element.
 
         Returns:
-            [list]: [a new array]
+            list: A new array.
         """
         it = _js_iteratee(func)
         return [it(value, i, self.args) for i, value in enumerate(self.args)]
@@ -3818,29 +3817,29 @@ class Array:
         return self.args
 
     def entries(self) -> Iterator[list[Any]]:
-        """[Returns a key/value pair Array Iteration Object]
+        """Returns a key/value pair Array Iteration Object.
 
         Yields:
-            [type]: [key/value pair]
+            list[Any]: A [index, value] pair.
         """
         for i, value in enumerate(self.args):
             yield [i, value]
 
     def every(self, func: Callable[..., bool] | None = None) -> bool:
-        """[Checks if every element in an array pass a test]"""
+        """Checks if every element in an array pass a test."""
         it = _js_iteratee(func)
         return all(it(value, i, self.args) for i, value in enumerate(self.args))
 
     def at(self, index: int) -> Any:
-        """[takes an integer value and returns the item at that index,
+        """Takes an integer value and returns the item at that index,
         allowing for positive and negative integers.
-        Negative integers count back from the last item in the array.]
+        Negative integers count back from the last item in the array.
 
         Args:
-            index ([type]): [position of item]
+            index (int): Position of the item.
 
         Returns:
-            [type]: [item at the given position]
+            Any: The item at the given position.
         """
         index = int(index)
         if index < 0:
@@ -4182,13 +4181,13 @@ class Number(float):
         return n + "e" + e
 
     def toFixed(self, digits: int) -> str:
-        """[formats a number using fixed-point notation.]
+        """formats a number using fixed-point notation.
 
         Args:
-            digits ([int]): [The number of digits to appear after the decimal point
+            digits (int): [The number of digits to appear after the decimal point
 
         Returns:
-            [str]: [A string representing the given number using fixed-point notation.]
+            str: A string representing the given number using fixed-point notation.
         """
         digits = max(int(digits), 0)
         value = self.x
@@ -4207,13 +4206,13 @@ class Number(float):
         return f"{rounded:.{digits}f}"
 
     def toPrecision(self, precision: int) -> str:
-        """[returns a string representing the Number object to the specified precision.]
+        """returns a string representing the Number object to the specified precision.
 
         Args:
-            precision ([int]): [An integer specifying the number of significant digits.]
+            precision (int): An integer specifying the number of significant digits.
 
         Returns:
-            [str]: [A string representing a Number object in fixed-point
+            str: [A string representing a Number object in fixed-point
             or exponential notation rounded to precision significant digits]
         """
         precision = int(precision)
@@ -4624,13 +4623,14 @@ class String(str):
         return parts if limit is None else parts[: int(limit)]
 
     def concat(self, *args, seperator: str = "") -> str:
-        """[concatenates the string arguments to the calling string and returns a new string.]
+        """Concatenates the string arguments to the calling string and returns a new string.
 
         Args:
-            seperator (str, optional): []. Defaults to "".
+            args (str): The strings to concatenate.
+            seperator (str, optional): The separator placed between each string. Defaults to "".
 
         Returns:
-            [type]: [A new string containing the combined text of the strings provided.]
+            str: A new string containing the combined text of the strings provided.
         """
         parts = list(args)
         parts.insert(0, self.x)
@@ -4776,14 +4776,14 @@ class String(str):
         return self.x.replace(str(old), str(new), 1)
 
     def replaceAll(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
-        """[returns a new string where the specified values are replaced. ES2021]
+        """returns a new string where the specified values are replaced. ES2021
 
         Args:
-            old ([str | RegExp]): [word or global pattern to remove]
-            new ([str | Callable]): [replacement; ``$1`` etc. work with a RegExp]
+            old (str | RegExp): word or global pattern to remove
+            new (str | Callable): replacement; ``$1`` etc. work with a RegExp
 
         Returns:
-            [str]: [new string with all occurrences of old replaced]
+            str: new string with all occurrences of old replaced
         """
         if isinstance(old, RegExp):
             compiled = old._compiled()
@@ -4821,16 +4821,15 @@ class String(str):
         return self.x.upper()
 
     def indexOf(self, searchValue: str, fromIndex: int = 0) -> int:
-        """[returns the index within the calling String object of the first occurrence of the specified value,
-        starting the search at fromIndex ]
+        """Returns the index within the calling String object of the first occurrence of the specified value,
+        starting the search at fromIndex.
 
         Args:
-            searchValue (str): [The string value to search for.]
-            fromIndex (int): [An integer representing the index at which to start the search]
+            searchValue (str): The string value to search for.
+            fromIndex (int): An integer representing the index at which to start the search.
 
         Returns:
-            [type]: [The index of the first occurrence of searchValue, or -1 if not found.]
-
+            int: The index of the first occurrence of searchValue, or -1 if not found.
         """
         searchValue = str(searchValue)
         if not self._has_astral:
@@ -4845,13 +4844,13 @@ class String(str):
         return -1 if pos < 0 else _cp_index_to_unit(self.x, pos)
 
     def codePointAt(self, index: int) -> Any:
-        """[Returns the Unicode code point at the specified index (position)]
+        """Returns the Unicode code point at the specified index (position).
 
         Args:
-            index (int): [index position]
+            index (int): The index position.
 
         Returns:
-            [type]: [the Unicode code point at the specified index (position)]
+            int | None: The Unicode code point at the specified index, or None.
         """
         index = int(index)
         if not self._has_astral:
@@ -4868,15 +4867,15 @@ class String(str):
         return unit
 
     def padEnd(self, length: int, padChar: str = " ") -> str:
-        """[Pads the end of a string with a specified character
-        (repeated, if needed) to create a new string.]
+        """Pads the end of a string with a specified character
+        (repeated, if needed) to create a new string.
 
         Args:
-            length (int): [the length of the resulting string]
-            padChar (str, optional): [the character to use for padding. Defaults to " "].
+            length (int): the length of the resulting string
+            padChar (str, optional): the character to use for padding. Defaults to " ".
 
         Returns:
-            [str]: [the padded string]
+            str: the padded string
         """
         length = int(length)
         padChar = str(padChar)
@@ -4887,14 +4886,14 @@ class String(str):
         return self.x + padding
 
     def padStart(self, length: int, padChar: str = " ") -> str:
-        """[Pads the start of a string with a specified character]
+        """Pads the start of a string with a specified character
 
         Args:
-            length (int): [the length of the resulting string]
-            padChar (str, optional): [the character to use for padding. Defaults to " "].
+            length (int): the length of the resulting string
+            padChar (str, optional): the character to use for padding. Defaults to " ".
 
         Returns:
-            [str]: [the padded string]
+            str: the padded string
         """
         length = int(length)
         padChar = str(padChar)
@@ -4925,22 +4924,22 @@ class String(str):
         return (self.x > comparisonString) - (self.x < comparisonString)
 
     def trimStart(self) -> str:
-        """[Removes whitespace from the beginning of a string.]"""
+        """Removes whitespace from the beginning of a string."""
         return self.x.lstrip()
 
     def trimEnd(self) -> str:
-        """[Removes whitespace from the end of a string]"""
+        """Removes whitespace from the end of a string."""
         return self.x.rstrip()
 
     def includes(self, searchValue: str, position: int = 0) -> bool:
-        """[returns true if the specified string is found within the calling String object,]
+        """Returns true if the specified string is found within the calling String object.
 
         Args:
-            searchValue (str): [The string value to search for.]
-            position (int, optional): [the position to search from]. Defaults to 0.
+            searchValue (str): The string value to search for.
+            position (int, optional): The position to search from. Defaults to 0.
 
         Returns:
-            [type]: [a boolean value indicating whether the search value was found.]
+            bool: True if the search value was found, otherwise False.
         """
         position = min(max(int(position), 0), len(self.x))
         return searchValue in self.x[position:]
@@ -5029,125 +5028,125 @@ class String(str):
         return '<a name="{}">{}</a>'.format(name, self.x)
 
     def big(self) -> str:
-        """[wraps the string in big tags]
+        """wraps the string in big tags
 
         Returns:
-            [str]: [the string in big tags]
+            str: the string in big tags
         """
         return "<big>" + self.x + "</big>"
 
     def blink(self) -> str:
-        """[wraps the string in blink tags]
+        """wraps the string in blink tags
 
         Returns:
-            [str]: [the string in blink tags]
+            str: the string in blink tags
         """
         return "<blink>" + self.x + "</blink>"
 
     def bold(self) -> str:
-        """[wraps the string in bold tags]
+        """wraps the string in bold tags
 
         Returns:
-            [str]: [the string in bold tags]
+            str: the string in bold tags
         """
         return "<b>" + self.x + "</b>"
 
     def fixed(self) -> str:
-        """[wraps the string in fixed tags]
+        """wraps the string in fixed tags
 
         Returns:
-            [str]: [the string in fixed tags]
+            str: the string in fixed tags
         """
         return "<tt>" + self.x + "</tt>"
 
     def fontcolor(self, color: str) -> str:
-        """[wraps the string in font tags with a specified color]
+        """wraps the string in font tags with a specified color
 
         Args:
-            color (str): [the color to use]
+            color (str): the color to use
 
         Returns:
-            [str]: [the string in font tags]
+            str: the string in font tags
         """
         return "<font color=" + color + ">" + self.x + "</font>"
 
     def fontsize(self, size: str) -> str:
-        """[wraps the string in font tags with a specified size]
+        """wraps the string in font tags with a specified size
 
         Args:
-            size (str): [the size to use]
+            size (str): the size to use
 
         Returns:
-            [str]: [the string in font tags]
+            str: the string in font tags
         """
         return "<font size=" + size + ">" + self.x + "</font>"
 
     def italics(self) -> str:
-        """[wraps the string in italics tags]
+        """wraps the string in italics tags
 
         Returns:
-            [str]: [the string in italics tags]
+            str: the string in italics tags
         """
         return "<i>" + self.x + "</i>"
 
     def link(self, url: str) -> str:
-        """[wraps the string in a link tag]
+        """wraps the string in a link tag
 
         Args:
-            url (str): [the url to use]
+            url (str): the url to use
 
         Returns:
-            [str]: [the string in a link tag]
+            str: the string in a link tag
         """
         return "<a href=" + url + ">" + self.x + "</a>"
 
     def small(self) -> str:
-        """[wraps the string in small tags]
+        """wraps the string in small tags
 
         Returns:
-            [str]: [the string in small tags]
+            str: the string in small tags
         """
         return "<small>" + self.x + "</small>"
 
     def strike(self) -> str:
-        """[wraps the string in strike tags]
+        """wraps the string in strike tags
 
         Returns:
-            [str]: [the string in strike tags]
+            str: the string in strike tags
         """
         return "<strike>" + self.x + "</strike>"
 
     def sub(self) -> str:
-        """[wraps the string in sub tags]
+        """wraps the string in sub tags
 
         Returns:
-            [str]: [the string in sub tags]
+            str: the string in sub tags
         """
         return "<sub>" + self.x + "</sub>"
 
     def sup(self) -> str:
-        """[wraps the string in sup tags]
+        """wraps the string in sup tags
 
         Returns:
-            [str]: [the string in sup tags]
+            str: the string in sup tags
         """
         return "<sup>" + self.x + "</sup>"
 
     def div(self, *args: Any, **kwargs: Any) -> Any:
-        """[wraps the string in a div tag]
+        """wraps the string in a div tag
 
         Returns:
-            [str]: [the string in a div tag]
+            str: the string in a div tag
         """
         from domonic.html import div
 
         return div(self.x, *args, **kwargs)
 
     def webpage(self) -> str:
-        """[wraps the string in a webpage]
+        """wraps the string in a webpage
 
         Returns:
-            [str]: [the string as a webpage]
+            str: the string as a webpage
         """
         from domonic.html import body, h1, head, html, link, meta, script, style, title
 
@@ -5405,44 +5404,44 @@ class RegExp:
 
     @property
     def dotAll(self) -> bool:
-        """[Whether . matches newlines or not.]
+        """Whether . matches newlines or not.
 
         Returns:
-            [bool]: [True if dot matches newlines, False otherwise]
+            bool: True if dot matches newlines, False otherwise
         """
         return "s" in self._flags
 
     @dotAll.setter
     def dotAll(self, value: bool):
-        """[Whether . matches newlines or not.]
+        """Whether . matches newlines or not.
         Args:
-            value (bool): [True if dot matches newlines, False otherwise]
+            value (bool): True if dot matches newlines, False otherwise
         """
         if "s" not in self._flags:
             self._flags += "s" if value else ""
 
     @property
     def multiline(self) -> bool:
-        """[Whether . matches newlines or not.]
+        """Whether . matches newlines or not.
         Returns:
-            [bool]: [True if dot matches newlines, False otherwise]
+            bool: True if dot matches newlines, False otherwise
         """
         return "m" in self._flags
 
     @multiline.setter
     def multiline(self, value: bool):
-        """[Whether . matches newlines or not.]
+        """Whether . matches newlines or not.
         Args:
-            value (bool): [True if dot matches newlines, False otherwise]
+            value (bool): True if dot matches newlines, False otherwise
         """
         if "m" not in self._flags:
             self._flags += "m" if value else ""
 
     @property
     def source(self) -> str:
-        """[The text of the pattern.]
+        """The text of the pattern.
         Returns:
-            [str]: [The text of the pattern.]
+            str: The text of the pattern.
         """
         return self.expression
 
@@ -5469,74 +5468,74 @@ class RegExp:
 
     @property
     def global_(self) -> bool:
-        """[Whether to test the regular expression against all possible matches in a string,
-        or only against the first.]
+        """Whether to test the regular expression against all possible matches in a string,
+        or only against the first.
 
         Returns:
-            [bool]: [True if global, False otherwise]
+            bool: True if global, False otherwise
         """
         return "g" in self._flags
 
     @global_.setter
     def global_(self, value: bool):
-        """[Whether to test the regular expression against all possible matches in a string,
-        or only against the first.]
+        """Whether to test the regular expression against all possible matches in a string,
+        or only against the first.
         Args:
-            value (bool): [True if global, False otherwise]
+            value (bool): True if global, False otherwise
         """
         if "g" not in self._flags:
             self._flags += "g" if value else ""
 
     @property
     def hasIndices(self) -> bool:
-        """[Whether the regular expression result exposes the start and end indices of captured substrings.]
+        """Whether the regular expression result exposes the start and end indices of captured substrings.
 
         Returns:
-            [bool]: [True if hasIndices, False otherwise]
+            bool: True if hasIndices, False otherwise
         """
         return "d" in self._flags
 
     @hasIndices.setter
     def hasIndices(self, value: bool):
-        """[Whether the regular expression result exposes the start and end indices of captured substrings.]
+        """Whether the regular expression result exposes the start and end indices of captured substrings.
         Args:
-            value (bool): [True if hasIndices, False otherwise]
+            value (bool): True if hasIndices, False otherwise
         """
         if "d" not in self._flags:
             self._flags += "d" if value else ""
 
     @property
     def ignoreCase(self) -> bool:
-        """[Whether to ignore case while attempting a match in a string.]
+        """Whether to ignore case while attempting a match in a string.
 
         Returns:
-            [bool]: [True if ignoreCase, False otherwise]
+            bool: True if ignoreCase, False otherwise
         """
         return "i" in self._flags
 
     @ignoreCase.setter
     def ignoreCase(self, value: bool):
-        """[Whether to ignore case while attempting a match in a string.]
+        """Whether to ignore case while attempting a match in a string.
         Args:
-            value (bool): [True if ignoreCase, False otherwise]
+            value (bool): True if ignoreCase, False otherwise
         """
         if "i" not in self._flags:
             self._flags += "i" if value else ""
 
     @property
     def unicode(self) -> bool:
-        """[Whether or not Unicode features are enabled.]
+        """Whether or not Unicode features are enabled.
 
         Returns:
-            [bool]: [True if unicode, False otherwise]
+            bool: True if unicode, False otherwise
         """
         return "u" in self._flags
 
     @unicode.setter
     def unicode(self, value: bool):
-        """[Whether or not Unicode features are enabled.]
+        """Whether or not Unicode features are enabled.
         Args:
-            value (bool): [True if unicode, False otherwise]
+            value (bool): True if unicode, False otherwise
         """
         if "u" not in self._flags:
             self._flags += "u" if value else ""
@@ -5620,13 +5619,13 @@ class RegExp:
         return parts if limit is None else parts[:limit]
 
     def test(self, s: str) -> bool:
-        """[Tests for a match in its string parameter.]
+        """Tests for a match in its string parameter.
 
         Args:
-            s (str): [a string to match]
+            s (str): a string to match
 
         Returns:
-            [bool]: [True if match else False]
+            bool: True if match else False
         """
         pattern = self._compiled()
         stateful = self.global_ or self.sticky
@@ -5859,7 +5858,7 @@ class TypedArray:
     _unpack: Callable[..., int]
 
     def __init__(self, *args: Any) -> None:
-        """[ creates a new Int8Array
+        """ creates a new Int8Array
             can take the following forms:
                 Int8Array()
                 Int8Array(length)
@@ -5868,7 +5867,6 @@ class TypedArray:
                 Int8Array(buffer)
                 Int8Array(buffer, byteOffset)
                 Int8Array(buffer, byteOffset, length)
-        ]
         """
         self.name = "Int8Array"
         self.byteOffset = 0
@@ -6513,13 +6511,13 @@ class Symbol:
         # self.__class__.registry = self.registry
 
     def hasInstance(self, obj: Symbol) -> bool:
-        """[A method determining if a constructor object recognizes an object as its instance. Used by instanceof.]
+        """A method determining if a constructor object recognizes an object as its instance. Used by instanceof.
 
         Args:
-            obj ([type]): [a constructor object]
+            obj (Symbol): A constructor object.
 
         Returns:
-            [type]: [True if obj is an instance of this symbol, False otherwise]
+            bool: True if obj is an instance of this symbol, False otherwise.
         """
         return self.symbol == obj.symbol
 

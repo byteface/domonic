@@ -85,12 +85,16 @@ class EventHandler:
         data=None,
         options=None,
     ):
-        """[binds an event to a callback]
+        """Binds an event to a callback.
 
         Args:
-            event ([str]): [type of event]
-            callback (function): [callback function]
-            targetElement ([type]): [target element]
+            event (str): The type of event, optionally namespaced (e.g. "click.myPlugin").
+            callback (function): The callback function to invoke.
+            targetElement: The element to attach the listener to.
+            original (function, optional): The original callback, if callback wraps it. Defaults to None.
+            selector (str, optional): A delegated-event selector. Defaults to None.
+            data (optional): Data passed through to the handler. Defaults to None.
+            options (optional): Listener options passed to addEventListener. Defaults to None.
         """
         event_type, namespace = _split_event_name(event)
         if not event_type:
@@ -111,13 +115,13 @@ class EventHandler:
         setattr(targetElement, "_dquery_events", element_events)
 
     def findEvent(self, event):
-        """[finds an event]
+        """Finds a registered event.
 
         Args:
-            event ([str]): [event]
+            event (str): The event type, optionally namespaced.
 
         Returns:
-            [type]: [event]
+            dict | None: The matching registered event record, or None.
         """
         event_type, namespace = _split_event_name(event)
         for registered in self.events:
@@ -130,11 +134,13 @@ class EventHandler:
     def unbindEvent(
         self, event=None, targetElement=None, callback=None, selector=_UNSET
     ):
-        """[unbinds an event]
+        """Unbinds an event.
 
         Args:
-            event ([str]): [event]
-            targetElement ([type]): [description]
+            event (str, optional): The event type, optionally namespaced. Defaults to None (matches any type).
+            targetElement (optional): The element to unbind from. Defaults to None (matches any target).
+            callback (function, optional): Only remove listeners registered with this callback. Defaults to None.
+            selector (str, optional): Only remove listeners registered with this delegated selector.
         """
         event_type, namespace = _split_event_name(event) if event else (None, None)
         source = (
@@ -2931,13 +2937,13 @@ class º(dQuery_el):
 
     @staticmethod
     def unique(arr):
-        """[removes duplicate elements.]
+        """Removes duplicate elements.
 
         Args:
-            arr ([type]): [list of elements]
+            arr (list): A list of elements.
 
         Returns:
-            [type]: [a sorted array without duplicates]
+            list: The elements with duplicates removed (order is not preserved).
         """
         return list(set(arr))
 

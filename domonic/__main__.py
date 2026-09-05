@@ -587,7 +587,7 @@ def do_things(arguments):
 
 
 def run():
-    """[Entry point required by setup.py console_scripts. Saves having to add alias to .bash_profile]"""
+    """Entry point required by setup.py console_scripts. Saves having to add alias to .bash_profile"""
     args = parse_args()
     do_things(args)
 

@@ -336,17 +336,17 @@ class URL:
 
 
 class URLSearchParams:
-    """[utility methods to work with the query string of a URL]"""
+    """utility methods to work with the query string of a URL"""
 
     def __init__(
         self,
         paramString: ParamInput = "",
         _update: Callable[[URLSearchParams], Any] | None = None,
     ):
-        """[Returns a URLSearchParams object instance.]
+        """Returns a URLSearchParams object instance.
 
         Args:
-            paramString ([type]): [ i.e. q=URLUtils.searchParams&topic=api]
+            paramString (str, optional): A query string, e.g. "q=URLUtils.searchParams&topic=api".
         """
         self._update = _update
         if paramString is None:

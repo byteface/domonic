@@ -12,7 +12,7 @@ from domonic.geom.vec2 import vec2
 
 
 class matrix:
-    """[matrixs]"""
+    """matrixs"""
 
     def __init__(self, m):
         self.m = m

@@ -46,18 +46,18 @@ def polygonCentroid(polygon):
 
 
 def cross(a, b, c):
-    """[Returns the 2D cross product of AB and AC vectors, i.e., the z-component of
-        the 3D cross product in a quadrant I Cartesian coordinate system (+x is
-        right, +y is up). Returns a positive value if ABC is counter-clockwise,
-        negative if clockwise, and zero if the points are collinear.]
+    """Returns the 2D cross product of AB and AC vectors, i.e., the z-component of
+    the 3D cross product in a quadrant I Cartesian coordinate system (+x is
+    right, +y is up). Returns a positive value if ABC is counter-clockwise,
+    negative if clockwise, and zero if the points are collinear.
 
     Args:
-        a ([type]): [description]
-        b ([type]): [description]
-        c ([type]): [description]
+        a (list[float]): The [x, y] coordinates of point A.
+        b (list[float]): The [x, y] coordinates of point B.
+        c (list[float]): The [x, y] coordinates of point C.
 
     Returns:
-        [type]: [description]
+        float: The z-component of the cross product of AB and AC.
     """
     return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])
 

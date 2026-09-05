@@ -13,7 +13,7 @@ _random = random.SystemRandom()
 
 
 class vec2:
-    """[vec2]"""
+    """vec2"""
 
     def __init__(self, x: float = 0, y: float = 0):
         self.x: float = x

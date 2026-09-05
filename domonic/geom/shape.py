@@ -343,12 +343,12 @@ class Line(Shape):
 
 class Plane:
     def __init__(self, normal, distance, color=None, *args):
-        """[a plane is defined by its normal vector and a distance from the origin]
+        """a plane is defined by its normal vector and a distance from the origin
 
         Args:
-            normal ([vec2]): [a vector representing the normal vector of the plane]
-            distance ([type]): [a scalar representing the distance from the origin]
-            color ([vec3], optional): [the color of the plane]
+            normal (vec2): a vector representing the normal vector of the plane
+            distance (float): a scalar representing the distance from the origin
+            color (vec3, optional): the color of the plane
         """
         self.normal = normal
         self.distance = distance
@@ -876,32 +876,32 @@ class Polyline(Shape):
 
 class Circle(Shape):
     def __init__(self, x: float, y: float, radius: float = 1.0, color=None) -> None:
-        """[Circle(x, y, radius=1.0, color=None)]
+        """Circle(x, y, radius=1.0, color=None)
 
         Args:
-            x ([float]): [the x coordinate of the center of the circle]
-            y ([float]): [the y coordinate of the center of the circle]
-            radius (float, optional): [description]. Defaults to 1.0.
-            color ([type], optional): [description]. Defaults to None.
+            x (float): the x coordinate of the center of the circle
+            y (float): the y coordinate of the center of the circle
+            radius (float, optional): The radius of the circle. Defaults to 1.0.
+            color (optional): The color of the circle. Defaults to None.
         """
         super().__init__(x=x, y=y, color=color)
         self.radius = radius  # Create an instance variable radius
 
     @property
     def area(self) -> float:
-        """[area]
+        """area
 
         Returns:
-            [float]: [the area of the circle]
+            float: the area of the circle
         """
         return self.radius * self.radius * Math.PI
 
     @property
     def perimeter(self) -> float:
-        """[perimeter]
+        """perimeter
 
         Returns:
-            [float]: [the perimeter of the circle]
+            float: the perimeter of the circle
         """
         return 2 * self.radius * Math.PI
 

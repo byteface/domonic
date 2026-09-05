@@ -304,15 +304,15 @@ def replace_newlines(html_str: str):
 
 
 def clean_junk(page):
-    """[clears any typically invalid runs of chars that may exist in pyml.
+    """clears any typically invalid runs of chars that may exist in pyml.
         to be used at the end of all cleaning functions before an evaluation.
-        should not apply to content.]
+        should not apply to content.
 
     Args:
-        page ([str]): [pyml string]
+        page (str): pyml string
 
     Returns:
-        [str]: [pyml string with garbled chars removed]
+        str: pyml string with garbled chars removed
     """
     page = page.replace('",","', '","')
     page = page.replace('",",', '",')
@@ -358,10 +358,7 @@ def clean_junk(page):
 
 # @staticmethod
 def dent(pyml, use_tabs=False):
-    """[
-        proper dentage for pyml
-    ]
-    """
+    """Proper dentage for pyml."""
     tabs_or_spaces = "    "
     if use_tabs:
         tabs_or_spaces = "\t"
@@ -405,20 +402,20 @@ def dent(pyml, use_tabs=False):
 def add_cdata_tags_to_every_node(
     content: str,
 ):
-    """[puts a CDATA tag on every node in the document]"""
+    """puts a CDATA tag on every node in the document"""
     content = content.replace("<", "<![CDATA[")
     content = content.replace(">", "]]>")
     return content
 
 
 def remove_cdata_tags_from_every_node(content: str):
-    """[removes a CDATA tag from every node in the document]"""
+    """removes a CDATA tag from every node in the document"""
     content = content.replace("]]>", ">")
     content = content.replace("<![CDATA[", "<")
     return content
 
 
 def add_xml_declaration_to_document(content: str):
-    """[puts an XML declaration at the top of the document]"""
+    """puts an XML declaration at the top of the document"""
     content = content.replace("<", '<?xml version="1.0" encoding="UTF-8" ?>\n<')
     return content
