@@ -33,9 +33,11 @@ class TestExtScaffolds(unittest.TestCase):
 
             self.assertTrue(requirements, server)
             self.assertIsNotNone(hello_world, server)
-            self.assertIn("domonic.html", hello_world, server)
-            self.assertIn("html(", hello_world, server)
-            self.assertIn("Generated with domonic.html.", hello_world, server)
+            # the landing page ships as an importable module -- the scaffold
+            # imports it rather than carrying a copy of the markup
+            self.assertIn("from domonic.ext.lander import page", hello_world, server)
+            self.assertIn("page()", hello_world, server)
+            self.assertNotIn("_hello_page_source", hello_world, server)
 
     def test_server_requirements_are_pinned(self):
         for server in get_supported_servers():
@@ -49,6 +51,20 @@ class TestExtScaffolds(unittest.TestCase):
                 continue
             with self.subTest(server=server):
                 ast.parse(hello_world)
+
+    def test_lander_page_renders(self):
+        from domonic.ext.lander import LANDER, page
+
+        markup = page()
+        self.assertIsInstance(markup, str)
+        self.assertIn('<html lang="en">', markup)
+        self.assertIn("<style>", markup)
+        self.assertIn("It worked.", markup)
+        # <style> content must not be entity-escaped
+        css = markup.split("<style>", 1)[1].split("</style>", 1)[0]
+        self.assertIn(":root {", css)
+        self.assertNotIn("&lt;", css)
+        self.assertEqual(str(LANDER), markup)
 
     def test_modern_server_scaffolds_use_current_packages(self):
         self.assertEqual(

@@ -11,37 +11,14 @@ from __future__ import annotations
 from typing import Any
 
 
-def _hello_page_source(framework: str) -> str:
-    return f"""\
-def page():
-    return html(
-        head(
-            meta(_charset="utf-8"),
-            meta(_name="viewport", _content="width=device-width, initial-scale=1"),
-            title("domonic + {framework}"),
-        ),
-        body(
-            main(
-                h1("Hello from {framework}!"),
-                p("Generated with domonic.html."),
-            )
-        ),
-        _lang="en",
-    )
-"""
-
-
 HELLO_BLACKSHEEP: str = (
     """
 import uvicorn
 from blacksheep import Application, get, html as html_response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Application()
 
-"""
-    + _hello_page_source("BlackSheep")
-    + """
 
 @get("/")
 async def home():
@@ -57,13 +34,10 @@ HELLO_FAST_API: str = (
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = FastAPI()
 
-"""
-    + _hello_page_source("FastAPI")
-    + """
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
@@ -77,13 +51,10 @@ if __name__ == "__main__":
 HELLO_FASTHTML: str = (
     """
 from fasthtml.common import FastHTML, serve
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = FastHTML()
 
-"""
-    + _hello_page_source("FastHTML")
-    + """
 
 @app.get("/")
 def home():
@@ -100,11 +71,8 @@ import uvicorn
 from starlette.applications import Starlette
 from starlette.responses import HTMLResponse
 from starlette.routing import Route
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Starlette")
-    + """
 
 async def homepage(request):
     return HTMLResponse(str(page()))
@@ -120,13 +88,10 @@ HELLO_SANIC: str = (
     """
 from sanic import Sanic
 from sanic import response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Sanic("domonic_sanic")
 
-"""
-    + _hello_page_source("Sanic")
-    + """
 
 @app.get("/")
 async def index(request):
@@ -140,13 +105,10 @@ if __name__ == "__main__":
 HELLO_FLASK: str = (
     """
 from flask import Flask
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Flask(__name__)
 
-"""
-    + _hello_page_source("Flask")
-    + """
 
 @app.route("/")
 def index():
@@ -161,13 +123,10 @@ HELLO_API_FLASK: str = (
     """
 from apiflask import APIFlask
 from flask import Response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = APIFlask(__name__, title="domonic + APIFlask", version="1.0.0")
 
-"""
-    + _hello_page_source("APIFlask")
-    + """
 
 @app.get("/")
 def index():
@@ -181,11 +140,8 @@ if __name__ == "__main__":
 HELLO_CHERRYPY: str = (
     """
 import cherrypy
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("CherryPy")
-    + """
 
 class HelloWorld:
 
@@ -204,11 +160,8 @@ if __name__ == "__main__":
 HELLO_BOTTLE: str = (
     """
 from bottle import route, run
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Bottle")
-    + """
 
 @route("/")
 def index():
@@ -226,11 +179,8 @@ from django.conf import settings
 from django.core.management import execute_from_command_line
 from django.http import HttpResponse
 from django.urls import path
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Django")
-    + """
 
 def index(request):
     return HttpResponse(str(page()), content_type="text/html")
@@ -260,7 +210,7 @@ from django.conf import settings
 from django.core.management import execute_from_command_line
 from django.http import HttpResponse
 from django.urls import path
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 if not settings.configured:
     settings.configure(
@@ -277,9 +227,6 @@ from ninja import NinjaAPI
 
 api = NinjaAPI(title="domonic + Django Ninja")
 
-"""
-    + _hello_page_source("Django Ninja")
-    + """
 
 def index(request):
     return HttpResponse(str(page()), content_type="text/html")
@@ -303,11 +250,8 @@ HELLO_PYRAMID: str = (
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Pyramid")
-    + """
 
 def home(request):
     return Response(str(page()), content_type="text/html")
@@ -325,11 +269,8 @@ if __name__ == "__main__":
 HELLO_AIOHTTP: str = (
     """
 from aiohttp import web
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("aiohttp")
-    + """
 
 async def handle(request):
     return web.Response(text=str(page()), content_type="text/html")
@@ -346,11 +287,8 @@ HELLO_TORNADO: str = (
     """
 import tornado.ioloop
 import tornado.web
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Tornado")
-    + """
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -372,11 +310,8 @@ if __name__ == "__main__":
 HELLO_WERKZEUG: str = (
     """
 from werkzeug.wrappers import Request, Response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Werkzeug")
-    + """
 
 @Request.application
 def application(request):
@@ -392,11 +327,8 @@ HELLO_FALCON: str = (
     """
 import falcon
 from wsgiref.simple_server import make_server
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Falcon")
-    + """
 
 class HomeResource:
 
@@ -416,13 +348,10 @@ if __name__ == "__main__":
 HELLO_QUART: str = (
     """
 from quart import Quart
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Quart(__name__)
 
-"""
-    + _hello_page_source("Quart")
-    + """
 
 @app.route("/")
 async def index():
@@ -437,13 +366,10 @@ HELLO_MUFFIN: str = (
     """
 import muffin
 import uvicorn
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = muffin.Application()
 
-"""
-    + _hello_page_source("Muffin")
-    + """
 
 @app.route("/")
 async def index(request):
@@ -458,11 +384,8 @@ HELLO_BAIZE: str = (
     """
 import uvicorn
 from baize.asgi import HTMLResponse, request_response
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Baize")
-    + """
 
 @request_response
 async def app(request):
@@ -478,16 +401,13 @@ HELLO_ESMERALD: str = (
 import uvicorn
 from esmerald import Esmerald, EsmeraldSettings, Gateway, Response, get
 from esmerald.conf import monkay
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 class DomonicSettings(EsmeraldSettings):
     model_config = {**EsmeraldSettings.model_config, "env_prefix": "DOMONIC_ESMERALD_"}
 
 monkay.settings = DomonicSettings()
 
-"""
-    + _hello_page_source("Esmerald")
-    + """
 
 @get()
 async def homepage() -> Response:
@@ -503,11 +423,8 @@ if __name__ == "__main__":
 HELLO_GRANIAN: str = (
     """
 from granian import Granian
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Granian")
-    + """
 
 async def app(scope, receive, send):
     if scope["type"] == "lifespan":
@@ -544,13 +461,10 @@ if __name__ == "__main__":
 HELLO_EMMETT: str = (
     """
 from emmett import App
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = App(__name__)
 
-"""
-    + _hello_page_source("Emmett")
-    + """
 
 @app.route("/")
 async def index():
@@ -565,11 +479,8 @@ HELLO_LITESTAR: str = (
     """
 import uvicorn
 from litestar import Litestar, MediaType, get
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
-"""
-    + _hello_page_source("Litestar")
-    + """
 
 @get("/", media_type=MediaType.HTML)
 async def index() -> str:
@@ -585,13 +496,10 @@ if __name__ == "__main__":
 HELLO_ROBYN: str = (
     """
 from robyn import Robyn
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Robyn(__file__)
 
-"""
-    + _hello_page_source("Robyn")
-    + """
 
 @app.get("/")
 async def index(request):
@@ -605,14 +513,11 @@ if __name__ == "__main__":
 HELLO_EVE: str = (
     """
 from eve import Eve
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 settings = {"DOMAIN": {}}
 app = Eve(settings=settings)
 
-"""
-    + _hello_page_source("Eve")
-    + """
 
 @app.route("/hello")
 def index():
@@ -626,13 +531,10 @@ if __name__ == "__main__":
 HELLO_KLEIN: str = (
     """
 from klein import Klein
-from domonic.html import body, h1, head, html, main, meta, p, title
+from domonic.ext.lander import page
 
 app = Klein()
 
-"""
-    + _hello_page_source("Klein")
-    + """
 
 @app.route("/")
 def index(request):
