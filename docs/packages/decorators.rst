@@ -18,37 +18,57 @@ You can use the el decorator to wrap elements around function results.
 .. code-block :: python
 
     from domonic.decorators import el
+    from domonic.html import html, body, div
 
-    @el(html, True)
+    @el(html)
     @el(body)
     @el(div)
     def test():
         return 'hi!'
 
-    print(test())
-    # <html><body><div>hi!</div></body></html>
+    result = test()
+    print(type(result))  # <class 'domonic.html.html'> -- a PyML tag object
+    print(result)         # <html><body><div>hi!</div></body></html>
+    assert str(result) == '<html><body><div>hi!</div></body></html>'
 
-    # Returns PyML objects, so call str to render.
-    assert str(test()) == '<html><body><div>hi!</div></body></html>'
 
+It returns the tag object by default. Pass ``True`` as the second parameter to
+the outermost ``el`` to get a rendered string back instead:
 
-It returns the tag object by default.
+.. code-block :: python
 
-Pass ``True`` as the second parameter to return a rendered string instead. The first parameter can also be a string for custom tags.
+    @el(html, True)
+    @el(body)
+    @el(div)
+    def test_string():
+        return 'hi!'
+
+    result = test_string()
+    print(type(result))  # <class 'str'>
+    print(result)         # <html><body><div>hi!</div></body></html>
+
+The first parameter can also be a string for custom tags.
 
 
 silence
 --------------------------------
 
-Want to silence a noisy function while testing?
+Want to silence a function's ``print()`` output while testing?
+``silence`` redirects ``stdout`` for the duration of the call -- it does not
+suppress exceptions, only printed output.
 
 .. code-block :: python
 
     from domonic.decorators import silence
 
     @silence
-    def test_that_wont_pass():
-        assert True is False
+    def noisy():
+        print("this will not be printed")
+        return 42
+
+    result = noisy()
+    print(result)
+    # 42
 
 
 called
@@ -69,11 +89,16 @@ For example:
     from domonic.decorators import called
 
     @called(
-        lambda: º.ajax('https://www.google.com'),
-        lambda err: print('error:', err))
+        lambda: {"value": 42},
+        lambda err: print("error:", err))
     def success(data=None):
         print("Sweet as a Nut!")
-        print(data.text)
+        print(data["value"])
+    # Sweet as a Nut!
+    # 42
+
+The setup function could just as easily be an Ajax call, e.g.
+``lambda: º.ajax("https://example.com/api")`` from :doc:`dQuery`.
 
 
 It is intended for immediate callbacks, not class methods.
@@ -82,18 +107,28 @@ It is also aliased as ``iife`` for immediately invoked function expressions.
 
 .. code-block :: python
 
+    from domonic.decorators import iife
+
     @iife()
     def sup():
         print("sup!")
         return True
+    # sup!
 
 
 check
 --------------------------------
 
-``check`` logs the entry and exit of a function and is useful for debugging.
+``check`` logs the entry and exit of a function through Python's ``logging``
+module (not ``print()``), so it's useful for debugging without needing to
+strip print statements later. Configure logging to see it on the console:
 
 .. code-block :: python
+
+    import logging
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    from domonic.decorators import check
 
     @check
     def somefunc():
@@ -101,7 +136,7 @@ check
 
     somefunc()
 
-    # would output this to the console
+    # outputs this to the console
     # Entering somefunc
     # Exited somefunc
 

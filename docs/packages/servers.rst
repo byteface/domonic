@@ -40,7 +40,7 @@ The project command can generate a one-file hello world for a pinned server or f
 
 .. code-block :: bash
 
-    domonic project mysite --server fasthtml
+    domonic --project mysite --server fasthtml
 
 Current scaffold choices are:
 
