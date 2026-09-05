@@ -27,7 +27,6 @@ import inspect
 import json
 import locale as pylocale
 import math
-import multiprocessing
 import os
 import random
 import re
@@ -41,7 +40,6 @@ from collections.abc import Iterable as IterableABC
 from collections.abc import Mapping as MappingABC
 from datetime import timezone
 from email.utils import parsedate_to_datetime
-from multiprocessing.pool import ThreadPool as Pool
 from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
 from urllib.parse import quote, unquote
 
@@ -3223,6 +3221,11 @@ class Window:
             kwargs["callback_function"] = obj["c"]
             kwargs["error_handler"] = obj["e"]
             window._do_request(url, f, **kwargs)
+
+        # local import: multiprocessing pulls pickle/select/etc. at load time
+        # and this batch-request helper is the only thing in javascript.py
+        # that needs a thread pool
+        from multiprocessing.pool import ThreadPool as Pool
 
         p = Pool()
         jobs = [

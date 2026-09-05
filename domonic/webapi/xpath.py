@@ -15,10 +15,27 @@ from __future__ import annotations
 import re
 from typing import Any, Mapping
 
-try:
-    import elementpath
-except ImportError:  # pragma: no cover - optional dependency
-    elementpath = None
+# ``elementpath`` (plus the ``multiprocessing`` / ``xml.sax`` / ``urllib`` /
+# ``hashlib`` chain it drags in) is ~55 ms of import time -- half of
+# ``import domonic`` -- but it is only needed the first time an XPath
+# expression is actually evaluated (``document.evaluate`` / a
+# ``querySelectorAll`` that falls through to the XPath engine). Load it
+# lazily so importing domonic to build and render a tree never pays for it.
+_elementpath: Any = None
+_elementpath_loaded = False
+
+
+def _get_elementpath() -> Any:
+    global _elementpath, _elementpath_loaded
+    if not _elementpath_loaded:
+        _elementpath_loaded = True
+        try:
+            import elementpath as _ep
+
+            _elementpath = _ep
+        except ImportError:  # pragma: no cover - optional dependency
+            _elementpath = None
+    return _elementpath
 
 
 class XPathEvaluator:
@@ -80,6 +97,7 @@ class XPathExpression:
         self.expr = expr
         self.resolver = resolver
         self.namespaces = self._resolver_namespaces(resolver, expr)
+        elementpath = _get_elementpath()
         try:
             self.selector = (
                 elementpath.Selector(expr, namespaces=self.namespaces or None)
