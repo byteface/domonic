@@ -1826,41 +1826,43 @@ class Node(EventTarget):
     # return self.__dict__[name]
 
     def _update_parents(self):
-        """Assign this node as parent for child nodes.
+        """Assign this node as parent for its direct child nodes.
 
         This is called manually when ``args`` are amended because a decorator
         here would interfere with JSON serialisation in a few older helpers.
 
-        NOTE: recursing into ``el._update_parents()`` here looks redundant on
-        the surface -- a grandchild's ``parentNode`` already points at its
-        own direct parent, set when that parent was itself constructed or
-        last had its children amended, and reassigning *this* node's children
-        doesn't change any of those deeper relationships. Profiling shows the
-        recursion is genuinely expensive (a ~10k-node tree spent ~90k of its
-        ~93k calls into this method re-walking already-correct subtrees, one
-        extra redundant pass per level of nesting).
-        However: removing the recursion changes observable output for at
-        least one case -- ``with node:`` blocks (see ``__context`` /
-        ``__enter__`` above) can auto-append a node to the context as a
-        side effect of merely constructing it (``Node.__context[-1] +=
-        self``), which can leave the same node object referenced from two
-        different parents' ``args`` before a later ``_update_parents()``
-        call resolves which one "wins" as ``parentNode`` -- and thereby which
-        depth it renders at. The recursive walk here currently participates
-        in resolving that (accidentally, by re-visiting the node from
-        whichever ancestor updates last) -- see the ``with``-block duplicate-
-        insertion behaviour asserted byte-for-byte in
-        ``TestHTML.test_dialog``. Fixing this properly means fixing the
-        underlying double-insertion in the ``with`` mechanism, not leaving a
-        widely-called hot method doing O(depth) redundant work to paper over
-        it. Left recursive until that's addressed directly.
+        Only direct children need ``parentNode`` set here -- a grandchild's
+        ``parentNode`` already points at its own direct parent, set when that
+        parent was itself constructed or last had its children amended, and
+        reassigning this node's children doesn't change any of those deeper
+        relationships. ``ownerDocument`` (the one thing that depends on
+        ancestry) is computed lazily by walking *up* through ``rootNode`` on
+        read, so nothing further down needs eager refreshing here.
+
+        A child can arrive already attached elsewhere: ``with node:`` blocks
+        (see ``__context`` / ``__enter__`` above) auto-append a node to the
+        context the moment it's constructed (``Node.__context[-1] += self``),
+        which happens *before* that node is known to be about to become a
+        more specific child passed into another constructor a line later
+        (e.g. ``form(button("x"), ...)`` inside a ``with d:`` block appends
+        ``button`` to ``d`` first, then ``form`` claims it too). Detach such
+        a child from its stale parent's ``args`` the same way ``appendChild``
+        /``insertBefore`` already do (see ``_detach_node_for_insertion``),
+        so it never ends up physically listed under two parents at once and
+        rendered twice.
         """
         try:
             for el in self.args:
                 # if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                 if isinstance(el, (Element, Node)):
+                    old_parent = el.parentNode
+                    if (
+                        old_parent is not None
+                        and old_parent is not self
+                        and isinstance(old_parent, Node)
+                    ):
+                        old_parent.removeChild(el)
                     el.parentNode = self
-                    el._update_parents()
         except (AttributeError, TypeError) as exc:
             warnings.warn(f"unable to update parent: {exc}", RuntimeWarning)
 

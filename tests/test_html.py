@@ -1983,6 +1983,19 @@ body(
         )
 
     def test_dialog(self):
+        # Regression coverage for two real bugs found and fixed together:
+        # (1) `with node:` blocks auto-append a node to the context the
+        # instant it's constructed, before the caller passing it into
+        # another constructor (`form(button("x"), ...)`) is known -- so
+        # `button` used to land in both `d.args` and `form.args` at once,
+        # rendering as a stray top-level sibling *and* inside its real
+        # parent. (2) `form.__init__` called both `Node.__init__` and
+        # `Element.__init__` (which itself calls `Node.__init__` via
+        # super()), running `Node.__init__`'s with-context auto-append
+        # twice, so every `form` built inside a `with` block was appended
+        # to the context twice. Together these produced one orphan
+        # `<button>` plus a duplicated `<form>` in the old expected value
+        # below -- this now asserts the correct, non-duplicated tree.
         d = html()
         with d:
             dialog("hello", _open="")
@@ -1990,10 +2003,6 @@ body(
         assert f"{d}" == """<!DOCTYPE html>
 <html>
 	<dialog open>hello</dialog>
-		<button>close</button>
-	<form method="dialog" action="close">
-		<button>close</button>
-	</form>
 	<form method="dialog" action="close">
 		<button>close</button>
 	</form>

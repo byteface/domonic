@@ -692,7 +692,11 @@ class form(HTMLFormElement):
         kwargs = new_kwargs
 
         self.name = "form"
-        Node.__init__(self, *args, **kwargs)
+        # Element.__init__ already calls Node.__init__ via super() -- calling
+        # Node.__init__ directly here too ran its whole body twice per form()
+        # construction, including the `with node:` auto-append
+        # (Node.__context[-1] += self), which appended every form built
+        # inside a `with` block to the context node twice.
         Element.__init__(self, *args, **kwargs)
 
     @property
