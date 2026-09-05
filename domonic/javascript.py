@@ -5503,7 +5503,18 @@ class RegExp:
         return cache[1]
 
     def _compiled(self):
-        return re.compile(self._python_pattern(), self._re_flags())
+        # expression/flags are only ever reassigned as a pair (see replace()'s
+        # swap-and-restore above), so caching the compiled Pattern keyed on
+        # both -- like _python_pattern already caches the translated source
+        # -- is always correct, not just faster: without this, every single
+        # .exec()/.test() call went through _python_pattern + _re_flags +
+        # re.compile again, even in a tight exec() loop against one RegExp.
+        key = (self.expression, self._flags)
+        cache = getattr(self, "_compiled_cache", None)
+        if cache is None or cache[0] != key:
+            cache = (key, re.compile(self._python_pattern(), self._re_flags()))
+            object.__setattr__(self, "_compiled_cache", cache)
+        return cache[1]
 
     @property
     def global_(self) -> bool:
