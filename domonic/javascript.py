@@ -1588,6 +1588,12 @@ class Global:
     @staticmethod
     def String(x: Any = "") -> str:
         """Converts a value to a string the way JavaScript's ``String(x)`` does."""
+        # Fast path: already a str (or a domonic String) is by far the most
+        # common input -- skip the bool/float/list/dict coercion chain below.
+        if type(x) is str:
+            return x
+        if isinstance(x, str):
+            return str.__str__(x)
         if x is None or x is undefined:
             return "undefined" if x is undefined and undefined is not None else "null"
         if isinstance(x, bool):
@@ -3964,6 +3970,10 @@ class Set:
 class Number(float):
     """javascript Number methods"""
 
+    __slots__ = ("x", "_raw")
+    x: Any
+    _raw: Any
+
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
@@ -4006,15 +4016,21 @@ class Number(float):
 
     def __new__(cls, x: Any = "", *args: Any, **kwargs: Any) -> "Number":
         # coerce with JS semantics first, so ``Number("abc")`` is NaN rather
-        # than a Python ``ValueError`` out of ``float.__new__``
+        # than a Python ``ValueError`` out of ``float.__new__``. Computed once
+        # here and handed to __init__ via ``_raw`` -- Global.Number(x) is not
+        # free, and __new__/__init__ both used to call it separately on the
+        # same x.
         try:
-            numeric = float(Global.Number(x))
+            raw = Global.Number(x)
+            numeric = float(raw)
         except (ValueError, _PyTypeError):
-            numeric = float("nan")
-        return super().__new__(cls, numeric)
+            raw = numeric = float("nan")
+        obj = super().__new__(cls, numeric)
+        obj._raw = raw
+        return obj
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
-        self.x: Any = Global.Number(x)
+        self.x: Any = self._raw
 
     def __str__(self) -> str:
         return Global.String(self.x)
@@ -4474,12 +4490,14 @@ class String(str):
     internal references keep working.
     """
 
+    __slots__ = ("_x_cache", "_u16_cache", "_astral")
+
     def __new__(cls, x: Any = "", *args: Any, **kwargs: Any) -> "String":
         return super().__new__(cls, Global.String(x))
 
     @property
     def x(self) -> str:  # noqa: D401 - internal alias
-        return str.__str__(self)
+        return self._x_cache
 
     __hash__ = str.__hash__
 
@@ -4534,6 +4552,10 @@ class String(str):
         return ord(char)
 
     def __init__(self, x: Any = "", *args: Any, **kwargs: Any) -> None:
+        # ``self`` is already the fully-constructed (immutable) str content at
+        # this point, so computing the plain-str alias once here -- instead
+        # of on every ``.x`` access -- is always correct, not just faster.
+        self._x_cache: str = str.__str__(self)
         self._u16_cache: "list[int] | None" = None
         self._astral: "bool | None" = None
 
