@@ -345,7 +345,15 @@ class domonic:
         if not domonic._is_safe_pyml_ast(tree, context):
             raise ValueError("Unsafe PyML expression")
         code = compile(tree, "<domonic-pyml>", "eval")
-        return eval(code, {"__builtins__": {}}, context)  # nosec B307
+        # Pass ``context`` as eval's *globals*, not its locals. On Python
+        # <= 3.11 a comprehension body runs in its own function scope that
+        # can see eval's globals but not its locals, so whitelisted builtins
+        # and tag names living in a locals dict raise ``NameError`` inside
+        # ``[... for x in ...]``. Python 3.12+ (PEP 709) inlines
+        # comprehensions and papered over the bug. ``__builtins__`` stays
+        # ``{}`` so the sandbox is unchanged.
+        eval_globals = {**context, "__builtins__": {}}
+        return eval(code, eval_globals)  # nosec B307
 
     @staticmethod
     def _is_safe_pyml_ast(tree, context=None):
