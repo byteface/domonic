@@ -33,12 +33,16 @@ tree. Parsed nodes support the same DOM methods as nodes created with
 
    article = page.querySelector("article.post")
    print(article.querySelector("h1").textContent)
+   # Release
 
    for link in page.querySelectorAll("article a"):
        print(link.textContent, link.getAttribute("href"))
+   # Docs /docs
+   # API /api
 
    article.setAttribute("data-seen", "yes")
    print(article.getAttribute("data-seen"))
+   # yes
 
 CSS Selectors
 -------------
@@ -48,8 +52,11 @@ CSS Selectors
    page = domonic.parseString(markup, parser="html.parser")
 
    print(page.querySelector("article.post > h1").textContent)
+   # Release
    print([a.getAttribute("href") for a in page.querySelectorAll('a[href^="/"]')])
+   # ['/docs', '/api']
    print(page.querySelectorAll("article a.external"))
+   # [<a href="/docs" class="external">]
 
 XPath
 -----
@@ -66,6 +73,8 @@ XPath
 
    for node in result.nodes:
        print(node.textContent, node.getAttribute("href"))
+   # Docs /docs
+   # API /api
 
 Clean a Page
 ------------
@@ -117,9 +126,12 @@ still returns ordinary domonic DOM nodes.
 
    for link in soup.find_all("a", href=True):
        print(link.text, link["href"])
+   # Docs /docs
+   # API /api
 
    soup.find("article").setAttribute("data-seen", "yes")
    print(soup.querySelector("article").getAttribute("data-seen"))
+   # yes
 
 CLI Scraping
 ------------
@@ -127,8 +139,13 @@ CLI Scraping
 .. code-block:: bash
 
    domonic -q https://example.com 'a[href]' --attr href
-   domonic -q https://example.com 'main h1' --text --first --parser selectolax
+   # https://iana.org/domains/example
+
+   domonic -q https://example.com 'h1' --text --first --parser selectolax
+   # Example Domain
+
    domonic -x https://example.com '//a' --count --parser selectolax
+   # 1
 
 Next Steps
 ----------

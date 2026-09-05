@@ -24,6 +24,7 @@ Reusable Components
        )
 
    print(card("Docs", "Read the domonic guide.", "/docs"))
+   # <article class="card"><h2>Docs</h2><p>Read the domonic guide.</p><a href="/docs">Open</a></article>
 
 FastAPI
 -------
@@ -82,6 +83,7 @@ Enable htmx shortcut attributes when you want to generate ``data-hx-*`` markup.
    )
 
    print(fragment)
+   # <div><button data-hx-get="/items" data-hx-target="#items" data-hx-swap="outerHTML">Refresh</button><div id="items"></div></div>
 
 Alpine.js Attributes
 --------------------
@@ -124,6 +126,7 @@ placing it into the DOM.
 
    DOMConfig.GLOBAL_AUTOESCAPE = True
    print(p("<script>bad()</script>"))
+   # <p>&lt;script&gt;bad()&lt;/script&gt;</p>
 
 Project Scaffolding
 -------------------
