@@ -1075,6 +1075,35 @@ class TestCase(unittest.TestCase):
         self.assertEqual(computed.paddingTop, "8px")
         self.assertEqual(span_computed.color, "rgb(0, 0, 255)")
 
+    def test_style_initial_values_resolve_lazily(self):
+        # Style.__init__ no longer pre-assigns all ~380 property defaults
+        # (it was ~430 us per construction); the camelCase getters fall back
+        # to _STYLE_INITIAL_VALUES for an unset property. Behaviour must be
+        # identical to the old eager assignment.
+        from domonic.dom import document
+
+        el = document.createElement("div")
+        # a None-defaulted property renders as "none"
+        self.assertEqual(el.style.color, "none")
+        self.assertEqual(el.style.display, "none")
+        # non-None initial values are preserved exactly
+        self.assertEqual(el.style.fontSize, "medium")
+        self.assertEqual(el.style.fontWeight, "normal")
+        self.assertEqual(el.style.visibility, "visible")
+        self.assertEqual(el.style.marginTop, "0px")
+        self.assertEqual(el.style.borderRadius, "0px")
+        self.assertEqual(el.style.animationIterationCount, 1)
+        self.assertEqual(el.style.zIndex, "auto")
+        # a set value still wins, and unrelated unset props still resolve
+        el.style.color = "red"
+        self.assertEqual(el.style.color, "red")
+        self.assertEqual(el.style.fontSize, "medium")
+        # a bare Style() (no CSSOM read surface) resolves initial values too
+        from domonic.style import Style
+
+        self.assertEqual(Style().fontSize, "medium")
+        self.assertEqual(Style().opacity, "none")
+
     def test_selector_specificity_functional_pseudo_classes(self):
         from domonic.style import _selector_specificity as spec
 

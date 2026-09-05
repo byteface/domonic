@@ -270,6 +270,69 @@ _ZERO_LENGTH_PROPERTIES = frozenset({
 })
 _BARE_ZERO_RE = re.compile(r"(?<![\w.#])0(?![\w.%])")
 
+# The non-``None`` per-property defaults that ``Style.__init__`` used to assign
+# one-by-one through the property/decorator machinery (~380 assignments, ~430
+# us per ``Style()``). It is now built lazily: the camelCase getters
+# (``style_get_decorator``) fall back to this map when a property was never
+# set on the instance, so ``el.style.fontSize`` still reports ``"medium"`` etc.
+# ``None`` defaults are not listed -- the getter already renders a missing /
+# ``None`` value as ``"none"``. Keyed by the camelCase attribute name (the
+# getter function name), matching how the old assignments were spelled.
+_STYLE_INITIAL_VALUES: dict[str, Any] = {
+    "alignContent": "normal",
+    "alignItems": "normal",
+    "alignSelf": "auto",
+    "animation": "normal",
+    "animationDelay": 0,
+    "animationDirection": "normal",
+    "animationDuration": 0,
+    "animationIterationCount": 1,
+    "animationPlayState": "running",
+    "animationTimingFunction": "ease",
+    "backgroundAttachment": "scroll",
+    "border": "medium none black",
+    "borderBottom": "medium none black",
+    "borderBottomLeftRadius": "0px",
+    "borderBottomRightRadius": "0px",
+    "borderRadius": "0px",
+    "borderTopLeftRadius": "0px",
+    "borderTopRightRadius": "0px",
+    "columnGap": "normal",
+    "fontSize": "medium",
+    "fontStyle": "normal",
+    "fontWeight": "normal",
+    "height": "auto",
+    "justifyContent": "normal",
+    "left": "auto",
+    "margin": "0px",
+    "marginBottom": "0px",
+    "marginLeft": "0px",
+    "marginRight": "0px",
+    "marginTop": "0px",
+    "overflow": "visible",
+    "padding": "0px",
+    "paddingBottom": "0px",
+    "paddingLeft": "0px",
+    "paddingRight": "0px",
+    "paddingTop": "0px",
+    "pageBreakAfter": "auto",
+    "pageBreakBefore": "auto",
+    "pageBreakInside": "auto",
+    "right": "auto",
+    "tableLayout": "auto",
+    "textAlign": "left",
+    "textAlignLast": "auto",
+    "textOverflow": "clip",
+    "transitionDelay": 0,
+    "transitionDuration": 0,
+    "visibility": "visible",
+    "whiteSpace": "normal",
+    "width": "auto",
+    "wordBreak": "normal",
+    "wordWrap": "normal",
+    "zIndex": "auto",
+}
+
 
 def _normalize_zero_lengths(property_name: str, value: str) -> str:
     if property_name in _ZERO_LENGTH_PROPERTIES and "0" in value:
@@ -1273,766 +1336,6 @@ class Style:
 
         self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
-        self.alignContent = "normal"
-        """Sets or returns the alignment between the lines inside a flexible container
-        when the items do not use all available space"""
-
-        self.alignItems = "normal"
-        """Sets or returns the alignment for items inside a flexible container"""
-
-        self.alignSelf = "auto"
-        """Sets or returns the alignment for selected items inside a flexible container"""
-
-        self.animation = "normal"
-        """ shorthand property for all the animation properties below, except the animationPlayState property"""
-
-        self.animationDelay = 0
-        """Sets or returns when the animation will start"""
-
-        self.animationDirection = "normal"
-        """Sets or returns whether or not the animation should play in reverse on alternate cycles"""
-
-        self.animationDuration = 0
-        """Sets or returns how many seconds or milliseconds an animation takes to complete one cycle"""
-
-        self.animationFillMode = None
-        """Sets or returns what values are applied by the animation outside the time it is executing"""
-
-        self.animationIterationCount = 1
-        """Sets or returns the number of times an animation should be played"""
-
-        self.animationName = None
-        """Sets or returns a name for the @keyframes animation"""
-
-        self.animationTimingFunction = "ease"
-        """Sets or returns the speed curve of the animation"""
-
-        self.animationPlayState = "running"
-        """Sets or returns whether the animation is running or paused """
-
-        self.background = None
-        """Sets or returns all the background properties in one declaration"""
-
-        self.backgroundAttachment = "scroll"
-        """Sets or returns whether a background-image is fixed or scrolls with the page"""
-
-        self.backgroundColor = None
-        """Sets or returns the background-color of an element """
-
-        self.backgroundImage = None
-        """Sets or returns the background-image for an element"""
-
-        self.backgroundPosition = None
-        """Sets or returns the starting position of a background-image"""
-
-        self.backgroundRepeat = None
-        """Sets or returns how to repeat (tile) a background-image"""
-
-        self.backgroundClip = None
-        """Sets or returns the painting area of the background"""
-
-        self.backgroundOrigin = None
-        """Sets or returns the positioning area of the background images"""
-
-        self.backgroundSize = None
-        """Sets or returns the size of the background image"""
-
-        self.backfaceVisibility = None
-        """Sets or returns whether or not an element should be visible when not facing the screen """
-
-        self.border = "medium none black"
-        """Sets or returns borderWidth, borderStyle, and borderColor in one declaration"""
-
-        self.borderBottom = "medium none black"
-        """Sets or returns all the borderBottom properties in one declaration """
-
-        self.borderBottomColor = None
-        """Sets or returns the color of the bottom border  1 """
-
-        self.borderBottomLeftRadius = 0
-        """Sets or returns the shape of the border of the bottom-left corner"""
-
-        self.borderBottomRightRadius = 0
-        """Sets or returns the shape of the border of the bottom-right corner """
-
-        self.borderBottomStyle = None
-        """Sets or returns the style of the bottom border """
-
-        self.borderBottomWidth = None
-        """Sets or returns the width of the bottom border """
-
-        self.borderCollapse = None
-        """Sets or returns whether the table border should be collapsed into a single border, or not"""
-
-        self.borderColor = None
-        """Sets or returns the color of an element's border (can have up to four values)"""
-
-        self.borderImage = None
-        """horthand property for setting or returning all the borderImage properties"""
-
-        self.borderImageOutset = None
-        """Sets or returns the amount by which the border image area extends beyond the border box"""
-
-        self.borderImageRepeat = None
-        """Sets or returns whether the image-border should be repeated, rounded or stretched"""
-
-        self.borderImageSlice = None
-        """Sets or returns the inward offsets of the image-border """
-
-        self.borderImageSource = None
-        """Sets or returns the image to be used as a border"""
-
-        self.borderImageWidth = None
-        """Sets or returns the widths of the image-border """
-
-        self.borderLeft = None
-        """Sets or returns all the borderLeft properties in one declaration"""
-
-        self.borderLeftColor = None
-        """Sets or returns the color of the left border"""
-
-        self.borderLeftStyle = None
-        """Sets or returns the style of the left border"""
-
-        self.borderLeftWidth = None
-        """Sets or returns the width of the left border"""
-
-        self.borderRadius = 0
-        """A shorthand property for setting or returning all the four borderRadius properties """
-
-        self.borderRight = None
-        """Sets or returns all the borderRight properties in one declaration"""
-
-        self.borderRightColor = None
-        """Sets or returns the color of the right border"""
-
-        self.borderRightStyle = None
-        """Sets or returns the style of the right border"""
-
-        self.borderRightWidth = None
-        """Sets or returns the width of the right border"""
-
-        self.borderSpacing = None
-        """Sets or returns the space between cells in a table """
-
-        self.borderStyle = None
-        """Sets or returns the style of an element's border (can have up to four values)"""
-
-        self.borderTop = None
-        """Sets or returns all the borderTop properties in one declaration"""
-
-        self.borderTopColor = None
-        """Sets or returns the color of the top border"""
-
-        self.borderTopLeftRadius = 0
-        """Sets or returns the shape of the border of the top-left corner """
-
-        self.borderTopRightRadius = 0
-        """Sets or returns the shape of the border of the top-right corner"""
-
-        self.borderTopStyle = None
-        """Sets or returns the style of the top border"""
-
-        self.borderTopWidth = None
-        """Sets or returns the width of the top border"""
-
-        self.borderWidth = None
-        """Sets or returns the width of an element's border (can have up to four values)"""
-
-        self.bottom = None
-        """Sets or returns the bottom position of a positioned element"""
-
-        self.boxDecorationBreak = None
-        """Sets or returns the behaviour of the background and border of an element at page-break, or,
-        for in-line elements, at line-break."""
-
-        self.boxShadow = None
-        """ttaches one or more drop-shadows to the box"""
-
-        self.boxSizing = None
-        """llows you to define certain elements to fit an area in a certain way"""
-
-        self.captionSide = None
-        """Sets or returns the position of the table caption"""
-
-        self.clear = None
-        """Sets or returns the position of the element relative to floating objects"""
-
-        self.clip = None
-        """Sets or returns which part of a positioned element is visible"""
-
-        self.color = None
-        """Sets or returns the color of the text"""
-
-        self.columnCount = None
-        """Sets or returns the number of columns an element should be divided into"""
-
-        self.columnFill = None
-        """Sets or returns how to fill columns"""
-
-        self.columnGap = "normal"
-        """Sets or returns the gap between the columns"""
-
-        self.columnRule = None
-        """shorthand property for setting or returning all the columnRule properties"""
-
-        self.columnRuleColor = None
-        """Sets or returns the color of the rule between columns"""
-
-        self.columnRuleStyle = None
-        """Sets or returns the style of the rule between columns"""
-
-        self.columnRuleWidth = None
-        """Sets or returns the width of the rule between columns"""
-
-        self.columns = None
-        """horthand property for setting or returning columnWidth and columnCount"""
-
-        self.columnSpan = None
-        """Sets or returns how many columns an element should span across """
-
-        self.columnWidth = None
-        """Sets or returns the width of the columns"""
-
-        self.content = None
-        """d with the :before and :after pseudo-elements, to insert generated content"""
-
-        self.counterIncrement = None
-        """Increments one or more counters"""
-
-        self.counterReset = None
-        """Creates or resets one or more counters """
-
-        self.cursor = None
-        """Sets or returns the type of cursor to display for the mouse pointer"""
-
-        self.direction = None
-        """Sets or returns the text direction """
-
-        self.display = None
-        """Sets or returns an element's display type"""
-
-        self.emptyCells = None
-        """Sets or returns whether to show the border and background of empty cells, or not """
-
-        self.filter = None
-        """Sets or returns image filters (visual effects, like blur and saturation)"""
-
-        self.flex = None
-        """Sets or returns the length of the item, relative to the rest"""
-
-        self.flexBasis = None
-        """Sets or returns the initial length of a flexible item"""
-
-        self.flexDirection = None
-        """Sets or returns the direction of the flexible items"""
-
-        self.flexFlow = None
-        """A shorthand property for the flexDirection and the flexWrap properties """
-
-        self.flexGrow = None
-        """Sets or returns how much the item will grow relative to the rest"""
-
-        self.flexShrink = None
-        """Sets or returns how the item will shrink relative to the rest"""
-
-        self.flexWrap = None
-        """Sets or returns whether the flexible items should wrap or not"""
-
-        self.float = None  # ADDED BY ME
-
-        self.cssFloat = None
-        """Sets or returns the horizontal alignment of an element """
-
-        self.font = None
-        """Sets or returns fontStyle, fontVariant, fontWeight, fontSize, lineHeight, and fontFamily
-        in one declaration"""
-
-        self.fontFamily = None
-        """Sets or returns the font family for text"""
-
-        self.fontSize = "medium"
-        """Sets or returns the font size of the text"""
-
-        self.fontStyle = "normal"
-        """Sets or returns whether the style of the font is normal, italic or oblique """
-
-        self.fontVariant = None
-        """Sets or returns whether the font should be displayed in small capital letters"""
-
-        self.fontWeight = "normal"
-        """Sets or returns the boldness of the font"""
-
-        self.fontSizeAdjust = None
-        """eserves the readability of text when font fallback occurs"""
-
-        self.fontStretch = None
-        """ects a normal, condensed, or expanded face from a font family"""
-
-        self.hangingPunctuation = None
-        """ecifies whether a punctuation character may be placed outside the line box"""
-
-        self.height = "auto"
-        """Sets or returns the height of an element"""
-
-        self.hyphens = None
-        """Sets how to split words to improve the layout of paragraphs"""
-
-        self.icon = None
-        """Provides the author the ability to style an element with an iconic equivalent"""
-
-        self.imageOrientation = None
-        """Specifies a rotation in the right or clockwise direction that a user agent applies to an image """
-
-        self.isolation = None
-        """efines whether an element must create a new stacking content"""
-
-        self.justifyContent = "normal"
-        """Sets or returns the alignment between the items inside a flexible container when the items
-        do not use all available space. """
-
-        self.left = "auto"
-        """Sets or returns the left position of a positioned element"""
-
-        self.letterSpacing = None
-        """Sets or returns the space between characters in a text """
-
-        self.lineHeight = None
-        """Sets or returns the distance between lines in a text"""
-
-        self.listStyle = None
-        """Sets or returns listStyleImage, listStylePosition, and listStyleType in one declaration"""
-
-        self.listStyleImage = None
-        """Sets or returns an image as the list-item marker"""
-
-        self.listStylePosition = None
-        """Sets or returns the position of the list-item marker"""
-
-        self.listStyleType = None
-        """Sets or returns the list-item marker type"""
-
-        self.margin = 0
-        """Sets or returns the margins of an element (can have up to four values) """
-
-        self.marginBottom = 0
-        """Sets or returns the bottom margin of an element"""
-
-        self.marginLeft = 0
-        """Sets or returns the left margin of an element"""
-
-        self.marginRight = 0
-        """Sets or returns the right margin of an element """
-
-        self.marginTop = 0
-        """Sets or returns the top margin of an element"""
-
-        self.maxHeight = None
-        """Sets or returns the maximum height of an element """
-
-        self.maxWidth = None
-        """Sets or returns the maximum width of an element"""
-
-        self.minHeight = None
-        """Sets or returns the minimum height of an element """
-
-        self.minWidth = None
-        """Sets or returns the minimum width of an element"""
-
-        self.navDown = None
-        """Sets or returns where to navigate when using the arrow-down navigation key """
-
-        self.navIndex = None
-        """Sets or returns the tabbing order for an element"""
-
-        self.navLeft = None
-        """Sets or returns where to navigate when using the arrow-left navigation key """
-
-        self.navRight = None
-        """Sets or returns where to navigate when using the arrow-right navigation key"""
-
-        self.navUp = None
-        """Sets or returns where to navigate when using the arrow-up navigation key"""
-
-        self.objectFit = None
-        """pecifies how the contents of a replaced element should be fitted to the box
-        established by its used height and width"""
-
-        self.objectPosition = None
-        """ecifies the alignment of the replaced element inside its box """
-
-        self.opacity = None
-        """Sets or returns the opacity level for an element"""
-
-        self.order = None
-        """Sets or returns the order of the flexible item, relative to the rest"""
-
-        self.orphans = None
-        """Sets or returns the minimum number of lines for an element that must be left at the bottom
-        of a page when a page break occurs inside an element"""
-
-        self.outline = None
-        """Sets or returns all the outline properties in one declaration"""
-
-        self.outlineColor = None
-        """Sets or returns the color of the outline around a element"""
-
-        self.outlineOffset = None
-        """ffsets an outline, and draws it beyond the border edge"""
-
-        self.outlineStyle = None
-        """Sets or returns the style of the outline around an element """
-
-        self.outlineWidth = None
-        """Sets or returns the width of the outline around an element """
-
-        self.overflow = "visible"
-        """Sets or returns what to do with content that renders outside the element box """
-
-        self.overflowX = None
-        """pecifies what to do with the left/right edges of the content, if it overflows the element's content area"""
-
-        self.overflowY = None
-        """pecifies what to do with the top/bottom edges of the content, if it overflows the element's content area"""
-
-        self.padding = 0
-        """Sets or returns the padding of an element (can have up to four values) """
-
-        self.paddingBottom = 0
-        """Sets or returns the bottom padding of an element"""
-
-        self.paddingLeft = 0
-        """Sets or returns the left padding of an element """
-
-        self.paddingRight = 0
-        """Sets or returns the right padding of an element"""
-
-        self.paddingTop = 0
-        """Sets or returns the top padding of an element"""
-
-        self.pageBreakAfter = "auto"
-        """Sets or returns the page-break behavior after an element """
-
-        self.pageBreakBefore = "auto"
-        """Sets or returns the page-break behavior before an element"""
-
-        self.pageBreakInside = "auto"
-        """Sets or returns the page-break behavior inside an element"""
-
-        self.perspective = None
-        """Sets or returns the perspective on how 3D elements are viewed"""
-
-        self.perspectiveOrigin = None
-        """Sets or returns the bottom position of 3D elements """
-
-        self.position = None
-        """Sets or returns the type of positioning method used for an element (static, relative, absolute or fixed) """
-
-        self.quotes = None
-        """Sets or returns the type of quotation marks for embedded quotations"""
-
-        self.resize = None
-        """Sets or returns whether or not an element is resizable by the user """
-
-        self.right = "auto"
-        """Sets or returns the right position of a positioned element """
-
-        self.tableLayout = "auto"
-        """Sets or returns the way to lay out table cells, rows, and columns"""
-
-        self.tabSize = None
-        """Sets or returns the length of the tab-character"""
-
-        self.textAlign = "left"
-        """Sets or returns the horizontal alignment of text"""
-
-        self.textAlignLast = "auto"
-        """Sets or returns how the last line of a block or a line right before a forced line break
-        is aligned when text-align is justify"""
-
-        self.textDecoration = None
-        """Sets or returns the decoration of a text"""
-
-        self.textDecorationColor = None
-        """Sets or returns the color of the text-decoration"""
-
-        self.textDecorationLine = None
-        """Sets or returns the type of line in a text-decoration"""
-
-        self.textDecorationStyle = None
-        """Sets or returns the style of the line in a text decoration """
-
-        self.textIndent = None
-        """Sets or returns the indentation of the first line of text"""
-
-        self.textJustify = None
-        """Sets or returns the justification method used when text-align is justify"""
-
-        self.textOverflow = "clip"
-        """Sets or returns what should happen when text overflows the containing element"""
-
-        self.textShadow = None
-        """Sets or returns the shadow effect of a text"""
-
-        self.textTransform = None
-        """Sets or returns the capitalization of a text"""
-
-        self.top = None
-        """Sets or returns the top position of a positioned element """
-
-        self.transform = None
-        """pplies a 2D or 3D transformation to an element"""
-
-        self.transformOrigin = None
-        """Sets or returns the position of transformed elements"""
-
-        self.transformStyle = None
-        """Sets or returns how nested elements are rendered in 3D space"""
-
-        self.transition = None
-        """shorthand property for setting or returning the four transition properties"""
-
-        self.transitionProperty = None
-        """Sets or returns the CSS property that the transition effect is for """
-
-        self.transitionDuration = 0
-        """Sets or returns how many seconds or milliseconds a transition effect takes to complete """
-
-        self.transitionTimingFunction = None
-        """Sets or returns the speed curve of the transition effect"""
-
-        self.transitionDelay = 0
-        """Sets or returns when the transition effect will start"""
-
-        self.unicodeBidi = None
-        """Sets or returns whether the text should be overridden to support multiple languages in the same document """
-
-        self.userSelect = None
-        """Sets or returns whether the text of an element can be selected or not"""
-
-        self.verticalAlign = None
-        """Sets or returns the vertical alignment of the content in an element"""
-
-        self.visibility = "visible"
-        """Sets or returns whether an element should be visible"""
-
-        self.whiteSpace = "normal"
-        """ Sets or returns how to handle tabs, line breaks and whitespace in a text 1 """
-
-        self.width = "auto"
-        """Sets or returns the width of an element"""
-
-        self.wordBreak = "normal"
-        """Sets or returns line breaking rules for non-CJK scripts"""
-
-        self.wordSpacing = None
-        """Sets or returns the spacing between words in a text"""
-
-        self.wordWrap = "normal"
-        """Allows long, unbreakable words to be broken and wrap to the next line"""
-
-        self.widows = None
-        """Sets or returns the minimum number of lines for an element that must be visible at the top of a page """
-
-        self.zIndex = "auto"
-        """Sets or returns the stack order of a positioned element"""
-
-        # adds a bunch of more recent CSS3 properties
-        self.all = None
-        self.alignmentBaseline = None
-        self.appearance = None
-        self.backdropFilter = None
-        self.backgroundBlendMode = None
-        self.backgroundPositionX = None
-        self.backgroundPositionY = None
-        self.backgroundRepeatX = None
-        self.backgroundRepeatY = None
-        self.baselineShift = None
-        self.blockSize = None
-        self.borderBlockEnd = None
-        self.borderBlockEndColor = None
-        self.borderBlockEndStyle = None
-        self.borderBlockEndWidth = None
-        self.borderBlockStart = None
-        self.borderBlockStartColor = None
-        self.borderBlockStartStyle = None
-        self.borderBlockStartWidth = None
-        self.borderInlineEnd = None
-        self.borderInlineEndColor = None
-        self.borderInlineEndStyle = None
-        self.borderInlineEndWidth = None
-        self.borderInlineStart = None
-        self.borderInlineStartColor = None
-        self.borderInlineStartStyle = None
-        self.borderInlineStartWidth = None
-        self.breakAfter = None
-        self.breakBefore = None
-        self.breakInside = None
-        self.bufferedRendering = None
-        self.caretColor = None
-        self.clipPath = None
-        self.clipRule = None
-        self.colorInterpolation = None
-        self.colorInterpolationFilters = None
-        self.colorRendering = None
-        self.colorScheme = None
-        self.contain = None
-        self.containIntrinsicSize = None
-        self.contentVisibility = None
-        self.counterSet = None
-        self.cx = None
-        self.cy = None
-        self.dominantBaseline = None
-        self.d = None
-        self.fill = None
-        self.fillOpacity = None
-        self.fillRule = None
-        self.fontDisplay = None
-        self.floodColor = None
-        self.floodOpacity = None
-        self.fontFeatureSettings = None
-        self.fontKerning = None
-        self.fontOpticalSizing = None
-        self.fontVariantCaps = None
-        self.fontVariantEastAsian = None
-        self.fontVariantLigatures = None
-        self.fontVariantNumeric = None
-        self.fontVariationSettings = None
-        self.gap = None
-        self.grid = None
-        self.gridArea = None
-        self.gridAutoColumns = None
-        self.gridAutoFlow = None
-        self.gridAutoRows = None
-        self.gridColumn = None
-        self.gridColumnEnd = None
-        self.gridColumnGap = None
-        self.gridColumnStart = None
-        self.gridGap = None
-        self.gridRow = None
-        self.gridRowEnd = None
-        self.gridRowGap = None
-        self.gridRowStart = None
-        self.gridTemplate = None
-        self.gridTemplateAreas = None
-        self.gridTemplateColumns = None
-        self.gridTemplateRows = None
-        self.imageRendering = None
-        self.inherits = None
-        self.initialValue = None
-        self.inlineSize = None
-        self.justifyItems = None
-        self.justifySelf = None
-        self.lightingColor = None
-        self.lineBreak = None
-        self.marginBlockEnd = None
-        self.marginBlockStart = None
-        self.marginInlineEnd = None
-        self.marginInlineStart = None
-        self.marker = None
-        self.markerEnd = None
-        self.markerMid = None
-        self.markerStart = None
-        self.mask = None
-        self.maskType = None
-        self.maxBlockSize = None
-        self.maxInlineSize = None
-        self.maxZoom = None
-        self.minBlockSize = None
-        self.minInlineSize = None
-        self.minZoom = None
-        self.mixBlendMode = None
-        self.objectFit = None
-        self.objectPosition = None
-        self.offset = None
-        self.offsetDistance = None
-        self.offsetPath = None
-        self.offsetRotate = None
-        self.orientation = None
-        self.overflowAnchor = None
-        self.overflowWrap = None
-        self.overscrollBehavior = None
-        self.overscrollBehaviorBlock = None
-        self.overscrollBehaviorInline = None
-        self.overscrollBehaviorX = None
-        self.overscrollBehaviorY = None
-        self.paddingBlockEnd = None
-        self.paddingBlockStart = None
-        self.paddingInlineEnd = None
-        self.paddingInlineStart = None
-        self.page = None
-        self.pageOrientation = None
-        self.paintOrder = None
-        self.placeContent = None
-        self.placeItems = None
-        self.placeSelf = None
-        self.pointerEvents = None
-        self.r = None
-        self.rowGap = None
-        self.rubyPosition = None
-        self.rx = None
-        self.ry = None
-        self.scrollBehavior = None
-        self.scrollMargin = None
-        self.scrollMarginBlock = None
-        self.scrollMarginBlockEnd = None
-        self.scrollMarginBlockStart = None
-        self.scrollMarginBottom = None
-        self.scrollMarginInline = None
-        self.scrollMarginInlineEnd = None
-        self.scrollMarginInlineStart = None
-        self.scrollMarginLeft = None
-        self.scrollMarginRight = None
-        self.scrollMarginTop = None
-        self.scrollPadding = None
-        self.scrollPaddingBlock = None
-        self.scrollPaddingBlockEnd = None
-        self.scrollPaddingBlockStart = None
-        self.scrollPaddingBottom = None
-        self.scrollPaddingInline = None
-        self.scrollPaddingInlineEnd = None
-        self.scrollPaddingInlineStart = None
-        self.scrollPaddingLeft = None
-        self.scrollPaddingRight = None
-        self.scrollPaddingTop = None
-        self.scrollSnapAlign = None
-        self.scrollSnapStop = None
-        self.scrollSnapType = None
-        self.shapeImageThreshold = None
-        self.shapeMargin = None
-        self.shapeOutside = None
-        self.shapeRendering = None
-        self.size = None
-        self.speak = None
-        self.src = None
-        self.stopColor = None
-        self.stopOpacity = None
-        self.stroke = None
-        self.strokeDasharray = None
-        self.strokeDashoffset = None
-        self.strokeLinecap = None
-        self.strokeLinejoin = None
-        self.strokeMiterlimit = None
-        self.strokeOpacity = None
-        self.strokeWidth = None
-        self.syntax = None
-        self.textAnchor = None
-        self.textCombineUpright = None
-        self.textDecorationSkipInk = None
-        self.textOrientation = None
-        self.textRendering = None
-        self.textSizeAdjust = None
-        self.textUnderlinePosition = None
-        self.touchAction = None
-        self.transformBox = None
-        self.unicodeRange = None
-        self.userZoom = None
-        self.vectorEffect = None
-        self.willChange = None
-        self.writingMode = None
-        self.x = None
-        self.y = None
-
         self._members_checked = (
             True  # NOTE - this ALWAYS needs to be last or all props will render
         )
@@ -2144,19 +1447,23 @@ class Style:
             try:
                 result = func(value, *args, **kwargs)
             except AttributeError:
-                # ``ComputedStyleDeclaration`` deliberately skips ``Style
-                # .__init__`` (its hundreds of ``self.__<prop> = ...``
-                # assignments) because it serves every read through the
-                # cascade instead -- but these hand-written per-property
-                # getters (``def color(self): return self.__color``) still
-                # try to read that never-set private attribute directly.
-                # Route them through the CSSOM read surface the class *does*
-                # implement, so ``getComputedStyle(el).color`` works the
-                # same as ``getComputedStyle(el).getPropertyValue("color")``.
+                # The per-property private attribute was never set on this
+                # instance. Two reasons this happens by design:
+                #   * ``Style.__init__`` no longer assigns all ~380 defaults
+                #     one-by-one (it was ~430 us per ``Style()``); an unset
+                #     property resolves lazily here instead.
+                #   * ``ComputedStyleDeclaration`` skips ``Style.__init__``
+                #     entirely and serves every read through the cascade.
+                # Prefer a real declared / computed value from the CSSOM read
+                # surface (so ``getComputedStyle(el).color`` matches
+                # ``.getPropertyValue("color")``); otherwise fall back to the
+                # property's initial value, exactly what ``__init__`` used to
+                # pre-seed (``fontSize`` -> ``"medium"``, most -> ``"none"``).
                 if hasattr(self, "getPropertyValue"):
                     got = self.getPropertyValue(kebab)
-                    return got if got else "none"
-                raise
+                    if got:
+                        return got
+                return _STYLE_INITIAL_VALUES.get(func.__name__, "none")
             # a shorthand (``el.style.margin``) reflects the declaration block:
             # ``getPropertyValue`` returns an explicitly-set shorthand or
             # reconstructs one from longhands set individually
