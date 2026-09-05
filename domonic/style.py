@@ -2140,11 +2140,26 @@ class Style:
         @wraps(func)
         def style_wrapper(value=None, *args, **kwargs):
             self = value
-            result = func(value, *args, **kwargs)
+            kebab = _css_property_name(func.__name__)
+            try:
+                result = func(value, *args, **kwargs)
+            except AttributeError:
+                # ``ComputedStyleDeclaration`` deliberately skips ``Style
+                # .__init__`` (its hundreds of ``self.__<prop> = ...``
+                # assignments) because it serves every read through the
+                # cascade instead -- but these hand-written per-property
+                # getters (``def color(self): return self.__color``) still
+                # try to read that never-set private attribute directly.
+                # Route them through the CSSOM read surface the class *does*
+                # implement, so ``getComputedStyle(el).color`` works the
+                # same as ``getComputedStyle(el).getPropertyValue("color")``.
+                if hasattr(self, "getPropertyValue"):
+                    got = self.getPropertyValue(kebab)
+                    return got if got else "none"
+                raise
             # a shorthand (``el.style.margin``) reflects the declaration block:
             # ``getPropertyValue`` returns an explicitly-set shorthand or
             # reconstructs one from longhands set individually
-            kebab = _css_property_name(func.__name__)
             if _cssom.is_shorthand(kebab) and hasattr(self, "getPropertyValue"):
                 rebuilt = self.getPropertyValue(kebab)
                 if rebuilt:

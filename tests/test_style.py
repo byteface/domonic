@@ -1064,6 +1064,17 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(Exception):
             span_computed.setProperty("color", "orange")
 
+        # the camelCase dot-access surface (``computed.color``) must return
+        # the same as ``getPropertyValue`` -- ``ComputedStyleDeclaration``
+        # skips ``Style.__init__``'s hundreds of ``self.__<prop>`` assignments
+        # (it serves reads through the cascade instead), so those inherited
+        # per-property getters used to raise ``AttributeError`` on the
+        # never-set private attribute for *every* property, from any source.
+        self.assertEqual(computed.color, "rgb(0, 0, 255)")
+        self.assertEqual(computed.fontWeight, "700")
+        self.assertEqual(computed.paddingTop, "8px")
+        self.assertEqual(span_computed.color, "rgb(0, 0, 255)")
+
     def test_selector_specificity_functional_pseudo_classes(self):
         from domonic.style import _selector_specificity as spec
 
