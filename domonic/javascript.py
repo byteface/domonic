@@ -19,6 +19,7 @@ _PyTypeError = builtins.TypeError
 
 # import chunk
 import datetime
+import functools
 import gc
 import importlib
 import importlib.util
@@ -1105,8 +1106,9 @@ class Math(Object):
 
     @staticmethod
     def _force_number(func: Callable[..., Any]) -> Callable[..., Any]:
-        """[private decorator to make Math behave like javascript and turn strings, bools and None into numbers]]"""
+        """Private decorator to make Math behave like javascript and turn strings, bools and None into numbers."""
 
+        @functools.wraps(func)
         def validation_decorator(*args: Any, **kwargs: Any) -> Any:
             params = list(args)
             for i, n in enumerate(params):
@@ -2252,8 +2254,10 @@ class Date(Object):
         outside year 1..9999 are intentionally not represented here.
 
         Args:
-            date (_type_, optional): _description_. Defaults to None.
-            formatter (str, optional): _description_. Defaults to 'python'.
+            date (Any, optional): A timestamp, date string, another Date, or the year
+                when constructing with separate year/month/day/... positional args. Defaults to None (now).
+            formatter (str, optional): "python" for toString() to render "%Y-%m-%d %H:%M:%S";
+                anything else renders the JavaScript-style ISO form. Defaults to "python".
         """
         self.formatter = formatter
 
