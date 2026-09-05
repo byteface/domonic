@@ -5720,5 +5720,99 @@ class TestDomTokenList(unittest.TestCase):
                 )
 
 
+class RenderCacheTest(unittest.TestCase):
+    """DOMConfig.RENDER_CACHE_ENABLED: opt-in str(node) caching, invalidated
+    by the same mutation tracking MutationObserver already relies on."""
+
+    def setUp(self):
+        self._previous_cache = DOMConfig.RENDER_CACHE_ENABLED
+        self._previous_autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        DOMConfig.RENDER_CACHE_ENABLED = True
+
+    def tearDown(self):
+        DOMConfig.RENDER_CACHE_ENABLED = self._previous_cache
+        DOMConfig.GLOBAL_AUTOESCAPE = self._previous_autoescape
+
+    def test_disabled_by_default_and_is_a_pure_no_op(self):
+        DOMConfig.RENDER_CACHE_ENABLED = False
+        page = div(p("hello"))
+        self.assertEqual(str(page), "<div><p>hello</p></div>")
+        self.assertNotIn("_render_cache", page.__dict__)
+
+    def test_repeated_render_of_unchanged_tree_hits_cache(self):
+        page = div(p("hello", _class="intro"))
+        first = str(page)
+        self.assertEqual(str(page), first)
+        self.assertIs(page.__dict__["_render_cache"], first)
+
+    def test_set_attribute_invalidates(self):
+        page = div(p("hello"))
+        str(page)
+        page.querySelector("p").setAttribute("id", "x")
+        self.assertIn('id="x"', str(page))
+
+    def test_plain_string_textcontent_replacement_invalidates(self):
+        # regression: textContent's mutation record used to only fire when
+        # actual Node children were removed, so replacing one plain string
+        # with another (li("one") -> "CHANGED") never invalidated anything.
+        page = div(ul(li("one"), li("two")))
+        before = str(page)
+        page.querySelector("li").textContent = "CHANGED"
+        after = str(page)
+        self.assertNotEqual(before, after)
+        self.assertIn("CHANGED", after)
+
+    def test_append_and_remove_child_invalidate(self):
+        page = ul(li("a"))
+        str(page)
+        page.appendChild(li("b"))
+        self.assertIn("<li>b</li>", str(page))
+
+        target = page.querySelectorAll("li")[0]
+        page.removeChild(target)
+        result = str(page)
+        self.assertNotIn("<li>a</li>", result)
+        self.assertIn("<li>b</li>", result)
+
+    def test_style_mutation_invalidates(self):
+        page = div("hello")
+        str(page)
+        page.style.color = "red"
+        self.assertIn("color: red", str(page))
+
+    def test_domconfig_change_invalidates_without_any_tree_mutation(self):
+        page = p("hello & world")
+        DOMConfig.GLOBAL_AUTOESCAPE = False
+        unescaped = str(page)
+        DOMConfig.GLOBAL_AUTOESCAPE = True
+        escaped = str(page)
+        self.assertNotEqual(unescaped, escaped)
+        self.assertIn("&amp;", escaped)
+
+    def test_reparenting_invalidates_both_old_and_new_ancestor_chains(self):
+        left = div(span("x"))
+        right = div(span("y"))
+        str(left)
+        str(right)
+
+        moved = left.querySelector("span")
+        right.appendChild(moved)
+
+        self.assertNotIn("x", str(left))
+        result = str(right)
+        self.assertIn("x", result)
+        self.assertIn("y", result)
+
+    def test_cached_output_matches_uncached_output(self):
+        DOMConfig.RENDER_CACHE_ENABLED = False
+        page = div(p("hello", _class="intro"), a("go", _href="/x"))
+        uncached = str(page)
+
+        DOMConfig.RENDER_CACHE_ENABLED = True
+        page2 = div(p("hello", _class="intro"), a("go", _href="/x"))
+        cached = str(page2)
+        self.assertEqual(uncached, cached)
+
+
 if __name__ == "__main__":
     unittest.main()

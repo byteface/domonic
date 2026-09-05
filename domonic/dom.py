@@ -72,6 +72,14 @@ class DOMConfig:
     # NO_REPR: bool = True  # objects always render?
     ATTRIBUTE_QUOTES: bool | str | None = '"'  # i.e. <tag="">
 
+    # Opt-in: cache str(node)'s rendered output per node, invalidated
+    # automatically by the same mutation tracking MutationObserver uses
+    # (appendChild/removeChild/setAttribute/textContent/style all already
+    # call _queue_mutation_record). Off by default -- zero behaviour or
+    # performance change unless explicitly enabled. See
+    # _invalidate_render_cache / _dom_config_render_fingerprint.
+    RENDER_CACHE_ENABLED: bool = False
+
 
 HTMX_ATTRIBUTES: frozenset[str] = frozenset(
     {
@@ -702,6 +710,38 @@ def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, A
     return normalized
 
 
+def _dom_config_render_fingerprint() -> tuple:
+    """A snapshot of every DOMConfig flag that affects str(node)'s output.
+
+    A cached render is only valid for the config state it was rendered
+    under -- rendering doesn't otherwise know when DOMConfig itself
+    changes (as opposed to the tree), so the fingerprint is stored
+    alongside the cached string and compared on every read.
+    """
+    return (
+        DOMConfig.GLOBAL_AUTOESCAPE,
+        DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS,
+        DOMConfig.RENDER_OPTIONAL_CLOSING_SLASH,
+        DOMConfig.SPACE_BEFORE_OPTIONAL_CLOSING_SLASH,
+        DOMConfig.HTMX_ENABLED,
+        DOMConfig.ALPINE_ENABLED,
+        DOMConfig.ATTRIBUTE_QUOTES,
+    )
+
+
+def _invalidate_render_cache(node: "Node | None") -> None:
+    """Mark node and every ancestor's cached str(node) stale.
+
+    Always walks to the root rather than stopping early at the first
+    already-dirty ancestor: a node's ancestor chain can change (it can be
+    moved to a new parent), so an old dirty marker doesn't guarantee the
+    *current* ancestors are already covered.
+    """
+    while node is not None:
+        node.__dict__["_render_cache_dirty"] = True
+        node = getattr(node, "parentNode", None)
+
+
 def _queue_mutation_record(
     record_type: str,
     target: "Node",
@@ -714,6 +754,8 @@ def _queue_mutation_record(
     attribute_namespace: str | None = None,
     old_value: str | None = None,
 ) -> None:
+    if DOMConfig.RENDER_CACHE_ENABLED:
+        _invalidate_render_cache(target)
     try:
         observers = list(MutationObserver._all_observers)
     except NameError:
@@ -1298,7 +1340,24 @@ class Node(EventTarget):
         # except Exception as e:
 
     def __str__(self):
-        return "".join(self.stream())
+        if not DOMConfig.RENDER_CACHE_ENABLED:
+            return "".join(self.stream())
+
+        cache = self.__dict__
+        fingerprint = _dom_config_render_fingerprint()
+        if (
+            not cache.get("_render_cache_dirty", True)
+            and cache.get("_render_cache_fingerprint") == fingerprint
+        ):
+            cached = cache.get("_render_cache")
+            if cached is not None:
+                return cached
+
+        result = "".join(self.stream())
+        cache["_render_cache"] = result
+        cache["_render_cache_dirty"] = False
+        cache["_render_cache_fingerprint"] = fingerprint
+        return result
 
     def _stream_value(self, value: Any) -> Iterator[str]:
         if callable(value) and not isinstance(value, (Node, str)):
@@ -2351,7 +2410,12 @@ class Node(EventTarget):
             self.args = (content,)
         if isinstance(self, CharacterData):
             _queue_mutation_record("characterData", self, old_value=old_value)
-        elif removed_nodes:
+        elif removed_nodes or old_value != content:
+            # removed_nodes alone misses the common case of replacing plain
+            # string content with different plain string content (no Node
+            # instances involved either side) -- MutationObserver, and
+            # DOMConfig.RENDER_CACHE_ENABLED's cache invalidation, both rely
+            # on this firing whenever the visible content actually changes.
             _queue_mutation_record("childList", self, removed_nodes=removed_nodes)
         return content
 
