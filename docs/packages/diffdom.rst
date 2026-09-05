@@ -32,6 +32,8 @@ Basic DOM Diff
 
    dd.apply(old, changes)
    assert str(old) == str(new)
+   # [{'action': 'modifyTextElement', 'route': [1, 0], 'oldValue': 'Version one', 'newValue': 'Version two'},
+   #  {'action': 'addElement', 'route': [2], 'element': {'nodeName': 'button', ...}}]
 
 Send DOM Patches Over a WebSocket
 ---------------------------------
@@ -43,16 +45,30 @@ process, a browser, or a test harness.
 
    import json
 
-   changes = dd.diff(old, new)
+   from domonic.diffdom import DiffDOM
+   from domonic.html import div, h1, p
+
+   old = div(h1("Hello"), p("Version one"))
+   new = div(h1("Hello"), p("Version two"))
+
+   changes = DiffDOM().diff(old, new)
    payload = json.dumps(changes)
 
    # websocket.send(payload)
    print(payload)
+   # [{"action": "modifyTextElement", "route": [1, 0], "oldValue": "Version one", "newValue": "Version two"}]
 
 Undo a Patch
 ------------
 
 .. code-block:: python
+
+   from domonic.diffdom import DiffDOM
+   from domonic.html import div, h1, p
+
+   old = div(h1("Hello"), p("Version one"))
+   new = div(h1("Hello"), p("Version two"))
+   dd = DiffDOM()
 
    before = str(old)
    changes = dd.diff(old, new)

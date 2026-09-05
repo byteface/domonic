@@ -22,6 +22,7 @@ MathML tags live in ``domonic.xml.mathml`` and now use the browser-style
 	expression = math_(mrow(mi("x"), mo("="), mn("1")))
 	assert isinstance(expression, MathMLElement)
 	print(expression)
+	# <math><mrow><mi>x</mi><mo>=</mo><mn>1</mn></mrow></math>
 
 RSS
 ---
@@ -43,6 +44,7 @@ Atom, Dublin Core, Media RSS, content, and syndication metadata.
 		xmlns_atom=rss.XMLNS_ATOM,
 	)
 	print(feed)
+	# <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>domonic updates</title><description>Python DOM, HTML, SVG, XML and Web API releases</description><link>https://example.com/</link><atom:link href="https://example.com/feed.xml" rel="self"></atom:link></channel></rss>
 
 Atom
 ----
@@ -61,6 +63,7 @@ constructed with Python-friendly names and are rendered with their XML names.
 		_xmlns=atom.XMLNS,
 	)
 	print(feed)
+	# <feed xmlns="http://www.w3.org/2005/Atom"><title>domonic</title><link href="https://example.com/"></link><updated>2026-08-30T00:00:00Z</updated></feed>
 
 ODF
 ---
@@ -73,12 +76,13 @@ attributes.
 
 	import domonic.xml.odf as odf
 
+	# office_document_content already declares every odf:* namespace it needs,
+	# so there's no need to pass xmlns_office / xmlns_text kwargs yourself.
 	document = odf.office_document_content(
 		odf.office_body(odf.office_text(odf.text_p("Hello ODF"))),
-		xmlns_office=odf.OFFICE,
-		xmlns_text=odf.TEXT,
 	)
 	print(document)
+	# <office:document-content xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" ...><office:body><office:text><text:p>Hello ODF</text:p></office:text></office:body></office:document-content>
 
 Namespaced Attributes
 ---------------------
@@ -98,6 +102,7 @@ Python keyword arguments cannot contain ``:`` or ``-``, so use explicit
 		}
 	)
 	print(enclosure)
+	# <enclosure url="https://example.com/audio.mp3" type="audio/mpeg" length="12345"></enclosure>
 
 Examples
 --------

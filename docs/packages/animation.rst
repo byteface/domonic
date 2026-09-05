@@ -50,7 +50,9 @@ Inspect Timing
     )
 
     print(effect.getTiming().duration)
+    # 250.0
     print(effect.getComputedTiming().endTime)
+    # 300.0  (delay + duration)
 
 .. automodule:: domonic.animation
     :members:

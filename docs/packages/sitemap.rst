@@ -89,9 +89,12 @@ domonic also has helpers for quickly creating sitemaps with default values.
 
 .. code-block :: python
 
+	from domonic.xml.sitemap import sitemap_from_urls
+
 	mypages = []
 	sm = sitemap_from_urls(mypages)
 	print(sm)
+	# <urlset></urlset>
 
 
 You will often want a little more control, so use any DOM manipulation methods you like.
@@ -104,10 +107,13 @@ Creating a sitemap from scratch
 
 .. code-block :: python
 
+	from domonic.xml.sitemap import urlset, url, loc, lastmod
+
 	sm = urlset()
 	sm += url(loc('https://abc.net/sitemap.xml'), lastmod('2020-07-08T13:12:16+00:00'))
 
 	print(sm)
+	# <urlset><url><loc>https://abc.net/sitemap.xml</loc><lastmod>2020-07-08T13:12:16+00:00</lastmod></url></urlset>
 
 
 Namespaced tags
@@ -135,7 +141,8 @@ You can also use an underscore instead of a colon.
 .. code-block :: python
 
 	from domonic.xml.sitemap import *
-	print(geo_placename())
+	print(geo_place_name())
+	# <geo:place_name></geo:place_name>
 
 
 Formatting

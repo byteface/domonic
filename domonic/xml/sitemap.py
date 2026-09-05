@@ -125,6 +125,7 @@ def sitemapindex_from_urls(urls):
     sitemap_index = sitemapindex()
     for url in urls:
         sitemap_index.append(sitemap(loc(url), lastmod(datetime.datetime.now())))
+    return sitemap_index
 
 
 def sitemap_from_urls(urls):
@@ -140,8 +141,8 @@ def sitemap_from_urls(urls):
 
     """
     sitemap = urlset()
-    for url in urls:
-        sitemap.append(url(loc(url), lastmod(datetime.datetime.now())))
+    for page_url in urls:
+        sitemap.append(url(loc(page_url), lastmod(datetime.datetime.now())))
     return sitemap
 
 
