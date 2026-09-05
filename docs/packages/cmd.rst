@@ -33,6 +33,7 @@ The wrappers return command output in a Python-friendly form where possible.
 	copy("README.md", "reports/README.txt")
 
 	print(dir("reports"))
+	# README.txt
 
 Windows-Friendly Scripts
 ------------------------
@@ -56,7 +57,9 @@ Run Arbitrary Commands
 	from domonic.cmd import Cmdcommand
 
 	print(Cmdcommand.run("echo hi"))
+	# hi
 	print(Cmdcommand.run_args(["echo", "hi"]))
+	# hi
 
 .. automodule:: domonic.cmd
     :members:

@@ -93,6 +93,7 @@ The tween engine uses a timer method that shows how long the game has been runni
 
     from domonic.lerpy import get_timer
     print(get_timer())
+    # seconds elapsed since the timer started, e.g. 0.014599084854125977
 
 
 

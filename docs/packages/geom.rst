@@ -19,9 +19,11 @@ Vectors
 	position = vec2(10, 20)
 	velocity = vec2(2, -1)
 	print(position + velocity)
+	# 12 19
 
 	point = vec3(1, 2, 3)
 	print(point.distance(vec3(3, 2, 1)))
+	# 2.8284271247461903
 
 Shapes
 ------
@@ -34,7 +36,9 @@ Shapes
 	cursor = Circle(24, 24, 10)
 
 	print(hit_area.get_bottom_right())
+	# (120, 40)
 	print(cursor.area)
+	# 314.1592653589793
 
 Particles
 ---------
@@ -48,6 +52,7 @@ Particles
 	particle.vy = -0.5
 	particle.update()
 	print(particle.x, particle.y)
+	# 10.9 19.55
 
 .. automodule:: domonic.geom
     :members:

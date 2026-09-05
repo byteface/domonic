@@ -25,6 +25,7 @@ For most pages, a plain Python function is enough.
 	    )
 
 	print(card("DOM", "Build real document trees in Python.", "/docs/dom"))
+	# <article class="card"><h2>DOM</h2><p>Build real document trees in Python.</p><a href="/docs/dom">Read more</a></article>
 
 Reusable Class Component
 ------------------------
@@ -50,6 +51,7 @@ paths.
 	        )
 
 	print(Counter(3))
+	# <div class="counter"><span class="count">3</span><button type="button">+</button></div>
 
 Server Response
 ---------------
@@ -63,6 +65,7 @@ Django, Sanic, Starlette, or any framework that accepts HTML responses.
 
 	def homepage():
 	    return str(html(body(main(h1("Hello from domonic")))))
+	# <html><body><main><h1>Hello from domonic</h1></main></body></html>
 
 
 Templates
@@ -73,6 +76,10 @@ domonic mixed with lambdas can create templates without needing to make a class.
 
 .. code-block :: python
 
+	from domonic.html import button, div
+
+	MARGIN = 10
+
 	# Create a template.
 	some_tmpl = lambda somevar: div( _style=f"display:inline;margin:{MARGIN}px;").html(
 	    button(somevar, _style="background-color:white;color:black;")
@@ -82,7 +89,8 @@ Then you can use it like this:
 
 .. code-block :: python
 
-	some_tmpl("some content")
+	print(some_tmpl("some content"))
+	# <div style="display:inline;margin:10px;"><button style="background-color:white;color:black;">some content</button></div>
 
 
 Here is a larger template that uses a class and takes content as input.
