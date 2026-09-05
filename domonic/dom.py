@@ -282,6 +282,29 @@ _HTML_RAWTEXT_ELEMENTS = frozenset({
     "plaintext",
 })
 
+# Attribute names domonic exposes with a Python-unfriendly spelling (a real
+# hyphen, or a name that collides with a Python keyword). Used by
+# Element.__attributes__, which runs once per attribute on every render --
+# a module-level constant instead of rebuilding this dict on every call.
+_ATTRIBUTE_NAME_REMAP = {
+    "accept_charset": "accept-charset",
+    "http_equiv": "http-equiv",
+    "is_": "is",
+}
+
+# HTML boolean attributes: present with no value (or value == the attribute
+# name) renders as the bare attribute name, e.g. `checked` not `checked="checked"`.
+# Also Element.__attributes__'s -- a frozenset so the per-attribute membership
+# test is O(1) instead of a linear scan, and isn't rebuilt on every render.
+_BOOLEAN_ATTRIBUTES = frozenset({
+    "async", "checked", "autofocus", "disabled", "formnovalidate", "hidden",
+    "multiple", "novalidate", "readonly", "required", "selected", "open",
+    "contenteditable", "reversed", "download", "draggable", "spellcheck",
+    "translate", "autoplay", "controls", "loop", "muted", "default",
+    "allowfullscreen", "playsinline", "attributionsrc", "toolautosubmit",
+    "value", "defer",
+})
+
 # "escape a string" -- text mode replaces & \xa0 < > ; attribute mode replaces
 # & \xa0 and the (double) quote, but never < or >.
 _FRAGMENT_TEXT_ESCAPE = {
@@ -1216,11 +1239,7 @@ class Node(EventTarget):
             if value is False:
                 value = "false"
             key = key.split("_", 1)[1]
-            key = {
-                "accept_charset": "accept-charset",
-                "http_equiv": "http-equiv",
-                "is_": "is",
-            }.get(key, key)
+            key = _ATTRIBUTE_NAME_REMAP.get(key, key)
 
             if DOMConfig.HTMX_ENABLED:
                 htmx_attribute = _normalize_htmx_attribute(key)
@@ -1245,51 +1264,7 @@ class Node(EventTarget):
                     )
 
             # lets us have boolean attributes
-            if key in [
-                "async",
-                "checked",
-                "autofocus",
-                "disabled",
-                "formnovalidate",
-                "hidden",
-                "multiple",
-                "novalidate",
-                "readonly",
-                "required",
-                "selected",
-                "open",
-                "contenteditable",
-                "reversed",
-                "download",
-                "draggable",
-                "spellcheck",
-                "translate",
-                "autoplay",  # Added
-                "controls",  # Added
-                "loop",  # Added
-                "muted",  # Added
-                "default",  # Added
-                "allowfullscreen",  # Added
-                "playsinline",  # Added
-                "attributionsrc",  # Attribution Reporting API
-                "toolautosubmit",  # WebMCP declarative forms
-                "value",  # Added
-                "defer",  # Added
-                # "compact",        # Added
-                # "ismap",          # Added
-                # "sandbox",        # Added
-                # "seamless",       # Added
-                # "selected",       # Added
-                # "sortable",       # Added
-                # "truespeed",      # Added
-                # "typemustmatch",  # Added
-                # "visible",        # Added
-                # "wrap",           # Added
-                # "novalidate",     # Added
-                # "open",           # Added
-                # "readonly",       # Added
-                # "required",       # Added
-            ]:
+            if key in _BOOLEAN_ATTRIBUTES:
                 if value == "" or value == key:
                     return f""" {key}"""
             return f""" {key}={_render_attribute_value(
@@ -1341,8 +1316,14 @@ class Node(EventTarget):
             yield from value.stream()
             return
 
-        if isinstance(value, IterableABC) and not isinstance(
-            value, (str, bytes, bytearray, dict)
+        # Check the common concrete types first: isinstance against an ABC
+        # (Iterable) goes through its __instancecheck__ machinery, which is
+        # measurably slower than a concrete-type check -- and plain str
+        # children (by far the most common leaf content) would otherwise
+        # pay that cost on every single one, just to be rejected by the
+        # "not str/bytes/bytearray/dict" half of this same condition anyway.
+        if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(
+            value, IterableABC
         ):
             for child in value:
                 yield from self._stream_value(child)
@@ -1427,8 +1408,11 @@ class Node(EventTarget):
                 stack.append(("iter", iter(value.args)))
                 continue
 
-            if isinstance(value, IterableABC) and not isinstance(
-                value, (str, bytes, bytearray, dict)
+            # See the matching check in _stream_value: concrete types first,
+            # since the ABC instancecheck is measurably slower and plain str
+            # children would otherwise always pay for it.
+            if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(
+                value, IterableABC
             ):
                 stack.append(("iter", iter(value)))
                 continue
