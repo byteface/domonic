@@ -153,11 +153,11 @@ print(changes)
 
 More focused guides:
 
-- [Examples gallery](https://domonic.readthedocs.io/en/latest/guides/examples.html)
-- [Scrape HTML with Python](https://domonic.readthedocs.io/en/latest/guides/scrape-html.html)
-- [Server-side HTML](https://domonic.readthedocs.io/en/latest/guides/server-side-html.html)
-- [Live DOM updates](https://domonic.readthedocs.io/en/latest/guides/live-dom-updates.html)
-- [Parser performance](https://domonic.readthedocs.io/en/latest/guides/parser-performance.html)
+- [Examples gallery](https://domonic.readthedocs.io/guides/examples/)
+- [Scrape HTML with Python](https://domonic.readthedocs.io/guides/scrape-html/)
+- [Server-side HTML](https://domonic.readthedocs.io/guides/server-side-html/)
+- [Live DOM updates](https://domonic.readthedocs.io/guides/live-dom-updates/)
+- [Parser performance](https://domonic.readthedocs.io/guides/parser-performance/)
 
 ---
 
@@ -308,7 +308,7 @@ The project aims to follow the real platform where practical:
 * [HTML Standard](https://html.spec.whatwg.org/)
 * [MDN Web APIs](https://developer.mozilla.org/en-US/docs/Web/API)
 
-See the [DOM documentation](https://domonic.readthedocs.io/en/latest/packages/dom.html) for the implemented API.
+See the [DOM documentation](https://domonic.readthedocs.io/packages/dom/) for the implemented API.
 
 ---
 
@@ -463,7 +463,7 @@ python -m pip install markupever lxml
 python -m pip install html5-parser lxml
 ```
 
-For parser details and installation notes, see the [parser performance guide](https://domonic.readthedocs.io/en/latest/guides/parser-performance.html).
+For parser details and installation notes, see the [parser performance guide](https://domonic.readthedocs.io/guides/parser-performance/).
 
 ---
 
@@ -499,7 +499,7 @@ print(DOMConfig.GLOBAL_AUTOESCAPE)
 print(DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS)
 ```
 
-See the [DOM documentation](https://domonic.readthedocs.io/en/latest/packages/dom.html) for all rendering options.
+See the [DOM documentation](https://domonic.readthedocs.io/packages/dom/) for all rendering options.
 
 ---
 
@@ -544,7 +544,7 @@ Other APIs include things such as:
 
 `String` · `Number` · `Promise` · `JSON` · typed arrays · timers · URL helpers · global functions
 
-See the [JavaScript documentation](https://domonic.readthedocs.io/en/latest/packages/javascript.html) for the full surface.
+See the [JavaScript documentation](https://domonic.readthedocs.io/packages/javascript/) for the full surface.
 
 ---
 
@@ -588,7 +588,7 @@ domonic implements or experiments with Python versions of APIs including:
 
 The README deliberately doesn't try to document all of them.
 
-👉 **[Browse the Web APIs](https://domonic.readthedocs.io/en/latest/packages/webapi.html)**
+👉 **[Browse the Web APIs](https://domonic.readthedocs.io/packages/webapi/)**
 
 ---
 
@@ -619,9 +619,9 @@ icon = svg(
 print(icon)
 ```
 
-There is also support for [XML, MathML, RSS, Atom and ODF](https://domonic.readthedocs.io/en/latest/packages/xml.html),
-[sitemaps](https://domonic.readthedocs.io/en/latest/packages/sitemap.html),
-[A-Frame and X3D](https://domonic.readthedocs.io/en/latest/packages/x3d.html), and custom elements.
+There is also support for [XML, MathML, RSS, Atom and ODF](https://domonic.readthedocs.io/packages/xml/),
+[sitemaps](https://domonic.readthedocs.io/packages/sitemap/),
+[A-Frame and X3D](https://domonic.readthedocs.io/packages/x3d/), and custom elements.
 
 ---
 
@@ -677,7 +677,7 @@ new_div = º('<div class="child"></div>')
 
 dQuery is useful in its own right, but it also serves as a demanding consumer of the underlying DOM implementation.
 
-See the [dQuery documentation](https://domonic.readthedocs.io/en/latest/packages/dQuery.html) for the full API.
+See the [dQuery documentation](https://domonic.readthedocs.io/packages/dQuery/) for the full API.
 
 ---
 
@@ -689,7 +689,7 @@ domonic also contains a Python port / interpretation of useful parts of the d3 e
 from domonic.d3 import *
 ```
 
-See the [d3 documentation](https://domonic.readthedocs.io/en/latest/packages/d3.html) for current coverage.
+See the [d3 documentation](https://domonic.readthedocs.io/packages/d3/) for current coverage.
 
 ---
 
@@ -699,7 +699,7 @@ domonic includes **BeautifulSlop**, a BS4-style compatibility experiment built o
 
 It exists for code that wants familiar soup-like ergonomics while still landing in the domonic world.
 
-See the [BeautifulSlop documentation](https://domonic.readthedocs.io/en/latest/packages/bs4.html) for current compatibility.
+See the [BeautifulSlop documentation](https://domonic.readthedocs.io/packages/bs4/) for current compatibility.
 
 ---
 
@@ -787,7 +787,7 @@ from domonic.terminal import command
 command.run("echo hello")
 ```
 
-Windows users can use `domonic.cmd`. See the [terminal documentation](https://domonic.readthedocs.io/en/latest/packages/terminal.html) for more.
+Windows users can use `domonic.cmd`. See the [terminal documentation](https://domonic.readthedocs.io/packages/terminal/) for more.
 
 ---
 
@@ -899,7 +899,7 @@ The repository contains examples for frameworks including:
 * Django
 * Sanic
 
-…and others. See the [servers documentation](https://domonic.readthedocs.io/en/latest/packages/servers.html) for framework-specific snippets.
+…and others. See the [servers documentation](https://domonic.readthedocs.io/packages/servers/) for framework-specific snippets.
 
 ---
 
