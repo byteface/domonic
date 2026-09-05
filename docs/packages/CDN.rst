@@ -28,10 +28,16 @@ CDN_JS
 	from domonic.CDN import CDN_JS
 	from domonic.html import script
 
-	script(_src=CDN_JS.JQUERY)
-	script(_src=CDN_JS.HTMX)
-	script(_src=CDN_JS.D3)
-	script(_src=CDN_JS.CHART_JS)
+	print(script(_src=CDN_JS.JQUERY))
+	# <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+	print(script(_src=CDN_JS.HTMX))
+	# <script src="https://unpkg.com/htmx.org@4.0.0/dist/htmx.min.js"></script>
+	print(script(_src=CDN_JS.D3))
+	# <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+	print(script(_src=CDN_JS.CHART_JS))
+	# <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+Versions shown above are whatever domonic currently pins; check ``domonic.CDN`` for the latest.
 
 
 
@@ -45,6 +51,10 @@ CDN_CSS
 
 	classless_css = link(_rel="stylesheet", _href=CDN_CSS.WATER)
 	bootstrap = link(_rel="stylesheet", _href=CDN_CSS.BOOTSTRAP)
+	print(classless_css)
+	# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2.1.1/out/water.min.css"/>
+	print(bootstrap)
+	# <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"/>
 
 Current CSS constants include:
 
@@ -94,13 +104,17 @@ CDN_IMG has a placeholder service.
 
 .. code-block :: python
 
-        # to change it. do this... 
+        # to change it. do this...
         CDN_IMG.PLACEHOLDER_SERVICE = "placebear.com/g"
 
         img(_src=CDN_IMG.PLACEHOLDER(300,100))
-        
-        # Optional separator if the site uses x instead of slash between dimensions.
-        img(_src=CDN_IMG.PLACEHOLDER(300,100,'x')) 
+        # <img src="//placebear.com/g/300/100"/>
+
+        # Optional separator (as a keyword argument) if the site uses x instead
+        # of slash between dimensions -- the third positional argument is the
+        # protocol (HTTP), not the separator.
+        img(_src=CDN_IMG.PLACEHOLDER(300, 100, separator='x'))
+        # <img src="//placebear.com/g/300x100"/>
 
 
 # there's tons to pick from. (NOT ALL ARE HTTPS):
