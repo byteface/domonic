@@ -1450,6 +1450,11 @@ class TestCase(unittest.TestCase):
         self.assertEqual(text.sub(), "<sub>Hello.World</sub>")
         self.assertEqual(text.sup(), "<sup>Hello.World</sup>")
         self.assertEqual(String.fromCodePoint(65), "A")
+        self.assertEqual(String.fromCodePoint(0x1F600).length, 2)  # surrogate pair
+        self.assertEqual(String.fromCharCode(0xD83D, 0xDE00).length, 2)
+        self.assertEqual(
+            String.fromCodePoint(0x1F600), String.fromCharCode(0xD83D, 0xDE00)
+        )
         self.assertEqual(String.toCodePoint("A"), 65)
         self.assertEqual(String.toCharCode("A"), 65)
         self.assertEqual(String.raw(r"a\b"), r"a\b")  # raw = as-is (JS)
@@ -1659,6 +1664,14 @@ class TestCase(unittest.TestCase):
         self.assertEqual(list(constructed.values()), ["second"])
         with self.assertRaises(KeyError):
             constructed.remove("missing")
+
+    def test_set_same_value_zero_matches_string_and_number_wrappers(self):
+        """String("a")/Number(5) are real str/float primitives (SameValueZero
+        says they equal a plain "a"/5.0), but True/1 must stay distinct."""
+        self.assertEqual(Set(["a", String("a")]).size, 1)
+        self.assertEqual(Set([5, Number(5)]).size, 1)
+        self.assertEqual(Set([True, 1]).size, 2)
+        self.assertEqual(Set([1, 1.0]).size, 1)
 
     def test_setTimeout(self):
         """Test the Global.setTimeout function calls the callback."""

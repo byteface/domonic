@@ -251,8 +251,9 @@ class TestCase(unittest.TestCase):
 
         self.assertIn("-", event.toDateString())
         self.assertEqual(event.toGMTString(), event.toUTCString())
-        self.assertTrue(event.toJSON().startswith('"'))
+        self.assertEqual(event.toJSON(), event.toISOString())
         self.assertIn("-", event.toISOString())
+        self.assertTrue(event.toISOString().endswith("Z"))
         self.assertIsInstance(event.toLocaleDateString(), str)
         self.assertIsInstance(event.toLocaleString(), str)
         self.assertIsInstance(event.toLocaleTimeString(), str)
@@ -274,6 +275,20 @@ class TestCase(unittest.TestCase):
         event.setMinutes(61)
         self.assertEqual(event.getHours(), 0)
         self.assertEqual(event.getMinutes(), 1)
+
+    def test_date_toISOString_includes_time_and_utc_suffix(self):
+        import datetime
+
+        event = Date()
+        event.date = datetime.datetime(2026, 9, 4, 12, 34, 56, 789000)
+        self.assertEqual(event.toISOString(), "2026-09-04T12:34:56.789Z")
+        self.assertEqual(event.toJSON(), event.toISOString())
+
+        aware = Date()
+        aware.date = datetime.datetime(
+            2026, 9, 4, 12, 34, 56, 789000, tzinfo=datetime.timezone.utc
+        )
+        self.assertEqual(aware.toISOString(), "2026-09-04T12:34:56.789Z")
 
     def setMinutes(self):
         event = Date("August 19, 1975 23:15:30")

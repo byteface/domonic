@@ -184,8 +184,11 @@ def _js_set_same_value_zero(left: Any, right: Any) -> bool:
     if isinstance(left, bool) or isinstance(right, bool):
         return type(left) is type(right) and left == right
     if _is_js_value_type(left) and _is_js_value_type(right):
-        if type(left) is not type(right):
-            return False
+        # Not an exact type match: domonic's String/Number are real str/float
+        # subclasses (so a String("a")/Number(5) result compares equal to a
+        # plain "a"/5.0, exactly as two JS primitives of the same value
+        # would), and Python's own == already returns False across genuinely
+        # unrelated value types (str vs bytes, tuple vs frozenset, ...).
         return left == right
     if _is_js_value_type(left) or _is_js_value_type(right):
         return False
@@ -2682,12 +2685,14 @@ class Date(Object):
         return self.toUTCString()
 
     def toJSON(self) -> str:
-        """Returns the date as a string, formatted as a JSON date"""
-        return json.dumps(self.date.strftime("%Y-%m-%d"))
+        """Returns the date as a string, formatted as a JSON date (same as toISOString)"""
+        return self.toISOString()
 
     def toISOString(self) -> str:
-        """Returns the date as a string, using the ISO standard"""
-        return self.date.strftime("%Y-%m-%d")
+        """Returns the date as a string, using the ISO standard:
+        YYYY-MM-DDTHH:mm:ss.sssZ, always in UTC."""
+        utc_date = self.date.astimezone(timezone.utc) if self.date.tzinfo else self.date
+        return utc_date.strftime("%Y-%m-%dT%H:%M:%S.") + f"{utc_date.microsecond // 1000:03d}Z"
 
     def toLocaleDateString(self) -> str:
         """Returns the date portion of a Date object as a string, using locale conventions"""
@@ -4480,8 +4485,16 @@ class String(str):
 
     @staticmethod
     def fromCodePoint(codePoint: int) -> str:
-        """Converts a Unicode code point into a string"""
-        return chr(codePoint)
+        """Converts a Unicode code point into a string.
+
+        For an astral code point (> 0xFFFF), JS represents the result as a
+        UTF-16 surrogate pair, so ``.length`` is 2 even though it's one
+        character -- returning a domonic ``String`` (rather than a bare
+        Python str) preserves that via its own UTF-16-aware ``.length``.
+        Python's builtin ``len()`` still reports 1, since Python strings are
+        indexed by code point, not UTF-16 code unit.
+        """
+        return String(chr(codePoint))
 
     @staticmethod
     def toCodePoint(char: str) -> int:
@@ -4664,7 +4677,7 @@ class String(str):
         import struct
 
         raw = b"".join(struct.pack("<H", int(code) & 0xFFFF) for code in codes)
-        return raw.decode("utf-16-le", errors="surrogatepass")
+        return String(raw.decode("utf-16-le", errors="surrogatepass"))
 
     @property
     def length(self) -> int:
