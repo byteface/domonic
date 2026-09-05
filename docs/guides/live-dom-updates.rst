@@ -26,6 +26,10 @@ Create a Patch
    changes = dd.diff(old, new)
 
    print(json.dumps(changes, indent=2))
+   # [
+   #   {"action": "modifyTextElement", "route": [1, 0], "oldValue": "0 messages", "newValue": "1 message"},
+   #   {"action": "addElement", "route": [2], "element": {"nodeName": "button", ...}}
+   # ]
 
 Apply a Patch
 -------------
@@ -42,6 +46,7 @@ Undo a Patch
 
    dd.undo(old, changes)
    print(old)
+   # <div><h1>Inbox</h1><p>0 messages</p></div>
 
 WebSocket Shape
 ---------------

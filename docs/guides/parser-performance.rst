@@ -52,6 +52,7 @@ Pick a Parser
 
    page = domonic.parseString("<main><h1>Hello</h1></main>", parser="html.parser")
    print(page.querySelector("h1").textContent)
+   # Hello
 
 Set a Default
 -------------
