@@ -10,8 +10,7 @@
 
 <p align="center">
 Generate HTML. Parse real pages. Query with CSS or XPath. Manipulate a browser-style DOM.<br>
-Learn real HTML, DOM and JavaScript-style APIs from Python code that uses the same names and ideas.<br>
-Then render it, serve it, scrape it, transform it, or do something strange with it.
+User and learn real HTML, DOM and JavaScript-style APIs using Python code!
 </p>
 
 <p align="center">
@@ -28,13 +27,8 @@ Then render it, serve it, scrape it, transform it, or do something strange with 
 
 ---
 
-**domonic** is a pure-Python DOM toolkit inspired by the browser platform.
+**domonic** is a pure-Python DOM.
 
-It gives you one document model for **creating, parsing, querying, traversing,
-manipulating and rendering markup**, using the browser's own names and
-patterns — `querySelectorAll()`, `appendChild()`, `textContent`, `Array.map()`,
-`Promise`, `fetch` — so the concepts carry across whichever side you're coming
-from.
 
 ```python
 from domonic.html import *
@@ -80,8 +74,6 @@ document = domonic.parseString("""
 
 print(document.querySelector("h1").textContent)
 ```
-
-**Create it. Parse it. Query it. Change it. Render it.**
 
 ---
 
@@ -161,17 +153,7 @@ More focused guides:
 
 ---
 
-## Why domonic?
-
-Python already has HTML generators, parsers and XML libraries. domonic asks a
-broader question:
-
-> **What if Python had a practical, browser-flavoured document platform?**
-
-A Python developer gets `div()`, `querySelector()`, `appendChild()`, `URL()`
-and JavaScript-style collection methods without switching mental models. A
-JavaScript developer gets a Python that already speaks selectors, events, URL
-parsing, JSON, timers, promises and fetch-style APIs.
+## Features
 
 |                             |                                                                                                           |
 | --------------------------- | --------------------------------------------------------------------------------------------------------- |
@@ -909,7 +891,15 @@ There are working examples throughout the repository:
 
 👉 **[github.com/byteface/domonic/tree/master/examples](https://github.com/byteface/domonic/tree/master/examples)**
 
-Some projects built with domonic:
+Some projects built using domonic:
+
+### [domonic-libs](https://github.com/byteface/domonic-libs/)
+
+Extends domonic to have even further capabilities!
+
+### [myjs](https://pypi.org/project/myjs/)
+
+A JavaScript interpreter in pure Python!
 
 ### [Blueberry](https://github.com/byteface/Blueberry)
 
@@ -930,10 +920,6 @@ A lightweight, low-dependency DOM-focused relative of domonic.
 ---
 
 # Documentation
-
-The README is the tour.
-
-The docs are the manual.
 
 ### 📚 [domonic.readthedocs.io](https://domonic.readthedocs.io/)
 
@@ -999,17 +985,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
 ---
 
-# Philosophy
-
-domonic started with one idea — **HTML should be easy to create from
-Python** — and grew outward from there: elements led to a DOM, a DOM led to
-selectors and events, and the rest followed naturally.
-
-If that sounds useful, give it a try:
-
-```bash
-pip install domonic
-```
 
 ⭐ If you find it useful, consider starring the project.
 
