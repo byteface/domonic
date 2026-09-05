@@ -1830,6 +1830,30 @@ class Node(EventTarget):
 
         This is called manually when ``args`` are amended because a decorator
         here would interfere with JSON serialisation in a few older helpers.
+
+        NOTE: recursing into ``el._update_parents()`` here looks redundant on
+        the surface -- a grandchild's ``parentNode`` already points at its
+        own direct parent, set when that parent was itself constructed or
+        last had its children amended, and reassigning *this* node's children
+        doesn't change any of those deeper relationships. Profiling shows the
+        recursion is genuinely expensive (a ~10k-node tree spent ~90k of its
+        ~93k calls into this method re-walking already-correct subtrees, one
+        extra redundant pass per level of nesting).
+        However: removing the recursion changes observable output for at
+        least one case -- ``with node:`` blocks (see ``__context`` /
+        ``__enter__`` above) can auto-append a node to the context as a
+        side effect of merely constructing it (``Node.__context[-1] +=
+        self``), which can leave the same node object referenced from two
+        different parents' ``args`` before a later ``_update_parents()``
+        call resolves which one "wins" as ``parentNode`` -- and thereby which
+        depth it renders at. The recursive walk here currently participates
+        in resolving that (accidentally, by re-visiting the node from
+        whichever ancestor updates last) -- see the ``with``-block duplicate-
+        insertion behaviour asserted byte-for-byte in
+        ``TestHTML.test_dialog``. Fixing this properly means fixing the
+        underlying double-insertion in the ``with`` mechanism, not leaving a
+        widely-called hot method doing O(depth) redundant work to paper over
+        it. Left recursive until that's addressed directly.
         """
         try:
             for el in self.args:
@@ -3947,12 +3971,24 @@ class Element(Node):
     def __init__(self, *args, **kwargs):
         # Attribute-backed properties (id / title / class) are resolved lazily
         # through __getattr__; ``self.kwargs`` is not populated until
-        # ``Node.__init__`` runs below, so there is nothing to reflect here.
-        self.lang = None
+        # ``Node.__init__`` runs below.
+        #
+        # ``lang`` and ``dir`` are properties whose setters call
+        # ``self.setAttribute(...)``, which reads ``self.kwargs`` -- since
+        # that doesn't exist yet at this point, ``setAttribute`` hits its
+        # ``AttributeError`` guard and returns immediately without writing
+        # anything. So ``self.lang = None`` / ``self.dir = None`` here were a
+        # no-op on every single element construction (confirmed: kwargs,
+        # hasAttribute() and getAttributeNames() are all unaffected by
+        # removing them) -- profiling a large tree build showed this pair
+        # alone accounting for ~20k wasted setAttribute calls (2 per node)
+        # and a matching AttributeError raise/catch each, for a ~30% overall
+        # construction-time cost. Left out entirely; ``getAttribute("lang"/
+        # "dir")`` already returns None for an element with no such
+        # attribute, so behaviour is unchanged.
         self.tabIndex = None
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
-        self.dir = None
         super().__init__(*args, **kwargs)
 
     @property
