@@ -278,6 +278,48 @@ server-side constraint checks.
 	# Please enter a valid value.
 
 
+Render Caching
+----------------
+
+``DOMConfig.RENDER_CACHE_ENABLED`` caches ``str(node)``'s rendered output per
+node. It is off by default -- turning it on is a pure opt-in with no other
+behaviour change.
+
+.. code-block :: python
+
+	from domonic.html import div, p
+	from domonic.dom import DOMConfig
+
+	DOMConfig.RENDER_CACHE_ENABLED = True
+
+	page = div(p("hello", _class="intro"))
+	first = str(page)   # walks the tree and renders, as normal
+	second = str(page)  # returns the cached string -- no re-render
+
+The cache is invalidated automatically by the same mutation tracking
+``MutationObserver`` already relies on, so ``appendChild()``,
+``removeChild()``, ``setAttribute()``, ``textContent`` assignment and
+``.style`` changes anywhere in the subtree all correctly force a fresh
+render on the next ``str()`` call:
+
+.. code-block :: python
+
+	page.querySelector("p").setAttribute("id", "x")
+	print(str(page))
+	# <div><p class="intro" id="x">hello</p></div>
+
+A change to a rendering-relevant ``DOMConfig`` flag (``GLOBAL_AUTOESCAPE``,
+``RENDER_OPTIONAL_CLOSING_TAGS``, ``HTMX_ENABLED``, ``ALPINE_ENABLED``,
+``ATTRIBUTE_QUOTES``, ...) also invalidates every cached render, even with no
+tree mutation at all, since it changes what the *same* tree should render as.
+
+This is a real win specifically for **read-heavy, write-light** trees --
+something rendered many times between occasional changes (a cached page, a
+dashboard, a report). It does not speed up a mutate-then-render-immediately
+pattern: any change still costs a full render on the next ``str()`` call,
+the same as with the flag off.
+
+
 DOMMatrix
 ----------------
 
