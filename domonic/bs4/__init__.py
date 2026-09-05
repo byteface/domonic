@@ -615,6 +615,7 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     token = []
     combinator: str | None = None
     bracket_depth = 0
+    paren_depth = 0
     quote: str | None = None
     pending_space = False
 
@@ -638,7 +639,17 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
                 return None
             token.append(char)
             continue
-        if bracket_depth:
+        if char == "(" and not bracket_depth:
+            paren_depth += 1
+            token.append(char)
+            continue
+        if char == ")" and not bracket_depth:
+            paren_depth -= 1
+            if paren_depth < 0:
+                return None
+            token.append(char)
+            continue
+        if bracket_depth or paren_depth:
             token.append(char)
             continue
         # ``>`` is always a combinator; ``+`` / ``~`` only when whitespace-
@@ -667,7 +678,7 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
         token.append(char)
 
     current = "".join(token).strip()
-    if not current or bracket_depth or quote:
+    if not current or bracket_depth or paren_depth or quote:
         return None
     parts.append((combinator, current))
     return parts
@@ -680,9 +691,51 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
         return selector[: -len(":first-child")], ("first-child", None)
     if selector.endswith(":last-child"):
         return selector[: -len(":last-child")], ("last-child", None)
-    match = re.search(r":nth-child\((\d+)\)$", selector)
+    for pseudo in ("checked", "disabled", "enabled"):
+        if selector.endswith(":" + pseudo):
+            return selector[: -len(":" + pseudo)], ("state", pseudo)
+    # positional pseudo-classes taking an An+B formula (or odd/even/integer)
+    match = re.search(
+        r":(nth-child|nth-last-child|nth-of-type|nth-last-of-type)\(([^()]+)\)$",
+        selector,
+    )
     if match:
-        return selector[: match.start()], ("nth-child", int(match.group(1)))
+        formula = _parse_nth_formula(match.group(2))
+        if formula is None:
+            return None  # unparseable formula -> XPath
+        return selector[: match.start()], (match.group(1), formula)
+    # :is() / :where() -- a comma-separated list of compound selectors; match if
+    # any branch matches. (:where() differs from :is() only in specificity,
+    # which isn't computed here.) A combinator inside a branch bails to XPath.
+    match = re.search(r":(?:is|where)\(([^()]*(?:\([^()]*\)[^()]*)*)\)$", selector)
+    if match:
+        branches = []
+        for raw in match.group(1).split(","):
+            branch = raw.strip()
+            if not branch or any(c in branch for c in " >+~"):
+                return None
+            parsed = Element._parse_simple_selector(branch)
+            if parsed is None:
+                return None
+            branches.append(parsed)
+        if not branches:
+            return None
+        return selector[: match.start()], ("is", branches)
+    # :has() -- a relative selector; support the descendant (default) and direct
+    # child (`> `) forms, which cover the overwhelming majority of real use.
+    match = re.search(r":has\(([^()]+)\)$", selector)
+    if match:
+        inner = match.group(1).strip()
+        combinator = None
+        if inner.startswith(">"):
+            combinator = ">"
+            inner = inner[1:].strip()
+        if not inner or any(c in inner for c in " >+~"):
+            return None
+        parsed = Element._parse_simple_selector(inner)
+        if parsed is None:
+            return None
+        return selector[: match.start()], ("has", (combinator, parsed))
     # :not(<single compound selector>) - the common form; a selector list or a
     # nested combinator inside :not() bails to the XPath engine.
     match = re.search(r":not\(([^()]+)\)$", selector)
@@ -706,6 +759,7 @@ def _split_selector_groups(selector: str) -> list[str] | None:
     groups = []
     token = []
     bracket_depth = 0
+    paren_depth = 0
     quote: str | None = None
 
     for char in selector.strip():
@@ -728,7 +782,17 @@ def _split_selector_groups(selector: str) -> list[str] | None:
                 return None
             token.append(char)
             continue
-        if char == "," and not bracket_depth:
+        if char == "(" and not bracket_depth:
+            paren_depth += 1
+            token.append(char)
+            continue
+        if char == ")" and not bracket_depth:
+            paren_depth -= 1
+            if paren_depth < 0:
+                return None
+            token.append(char)
+            continue
+        if char == "," and not bracket_depth and not paren_depth:
             group = "".join(token).strip()
             if not group:
                 return None
@@ -738,7 +802,7 @@ def _split_selector_groups(selector: str) -> list[str] | None:
         token.append(char)
 
     group = "".join(token).strip()
-    if not group or bracket_depth or quote:
+    if not group or bracket_depth or paren_depth or quote:
         return None
     groups.append(group)
     return groups
@@ -777,20 +841,74 @@ def _element_index(element: Element) -> int | None:
     return None
 
 
-def _sibling_positions(parent: Any) -> dict[int, tuple[int, int]]:
-    """Map ``id(child element) -> (1-based index, total element count)`` for one
-    parent, computed in a single pass. Callers memoise this per ``select`` so
-    ``:first-child`` / ``:nth-child`` over a wide list stay linear, not O(n^2).
+def _sibling_positions(parent: Any) -> dict[int, tuple[int, int, int, int]]:
+    """Map ``id(child element) -> (index, total, type_index, type_total)`` for
+    one parent, all 1-based, computed in a single pass. ``type_index`` /
+    ``type_total`` count only siblings sharing the child's tag name (for
+    ``:nth-of-type`` / ``:*-of-type``). Callers memoise this per ``select`` so
+    ``:nth-child`` etc. over a wide list stay linear, not O(n^2).
     """
     elements = [c for c in _iter_child_nodes(parent) if isinstance(c, Element)]
     total = len(elements)
-    return {id(el): (i + 1, total) for i, el in enumerate(elements)}
+    type_totals: dict[str, int] = {}
+    for el in elements:
+        name = el.name.lower()
+        type_totals[name] = type_totals.get(name, 0) + 1
+    positions: dict[int, tuple[int, int, int, int]] = {}
+    type_seen: dict[str, int] = {}
+    for i, el in enumerate(elements):
+        name = el.name.lower()
+        type_seen[name] = type_seen.get(name, 0) + 1
+        positions[id(el)] = (i + 1, total, type_seen[name], type_totals[name])
+    return positions
+
+
+def _parse_nth_formula(text: str) -> tuple[int, int] | None:
+    """Parse a CSS ``An+B`` micro-syntax argument into ``(a, b)`` coefficients.
+
+    Accepts ``odd``, ``even``, a bare integer, ``n``, ``An``, ``An+B``,
+    ``An-B``, ``-n+B`` and the usual whitespace variants. Returns ``None`` for
+    anything it doesn't recognise, so the caller can defer to the XPath engine.
+    """
+    value = text.strip().lower().replace(" ", "")
+    if not value:
+        return None
+    if value == "odd":
+        return (2, 1)
+    if value == "even":
+        return (2, 0)
+    if "n" not in value:
+        try:
+            return (0, int(value))
+        except ValueError:
+            return None
+    match = re.fullmatch(r"([+-]?\d*)n([+-]\d+)?", value)
+    if not match:
+        return None
+    a_raw, b_raw = match.group(1), match.group(2)
+    if a_raw in ("", "+"):
+        a = 1
+    elif a_raw == "-":
+        a = -1
+    else:
+        a = int(a_raw)
+    b = int(b_raw) if b_raw else 0
+    return (a, b)
+
+
+def _nth_matches(index: int, formula: tuple[int, int]) -> bool:
+    """Whether a 1-based ``index`` satisfies ``An+B`` for some non-negative n."""
+    a, b = formula
+    if a == 0:
+        return index == b
+    offset = index - b
+    return offset % a == 0 and offset // a >= 0
 
 
 def _match_simple_pseudo(
     element: Element,
     pseudo: tuple[str, Any] | None,
-    position_cache: dict[int, dict[int, tuple[int, int]]] | None = None,
+    position_cache: dict[int, dict[int, tuple[int, int, int, int]]] | None = None,
 ) -> bool:
     if pseudo is None:
         return True
@@ -799,6 +917,18 @@ def _match_simple_pseudo(
         return not _match_parsed_selector(element, value)
     if name == "not-pseudo":
         return not _match_simple_pseudo(element, value, position_cache)
+    if name == "state":
+        return _match_state_pseudo(element, value)
+    if name == "is":
+        return any(_match_parsed_selector(element, branch) for branch in value)
+    if name == "has":
+        combinator, parsed = value
+        scope = (
+            _element_children(element)
+            if combinator == ">"
+            else _element_descendants(element)
+        )
+        return any(_match_parsed_selector(node, parsed) for node in scope)
     parent = getattr(element, "parentNode", None)
     if parent is None:
         return False
@@ -811,13 +941,38 @@ def _match_simple_pseudo(
     entry = positions.get(id(element))
     if entry is None:
         return False
-    index, total = entry
+    index, total, type_index, type_total = entry
     if name == "first-child":
         return index == 1
     if name == "last-child":
         return index == total
     if name == "nth-child":
-        return index == value
+        return _nth_matches(index, value)
+    if name == "nth-last-child":
+        return _nth_matches(total - index + 1, value)
+    if name == "nth-of-type":
+        return _nth_matches(type_index, value)
+    if name == "nth-last-of-type":
+        return _nth_matches(type_total - type_index + 1, value)
+    return False
+
+
+def _match_state_pseudo(element: Element, state: str) -> bool:
+    _FORM_ELEMENTS = {
+        "input", "button", "select", "textarea", "optgroup", "option", "fieldset"
+    }
+    if state == "checked":
+        return (
+            _get_attribute(element, "checked") is not None
+            or _get_attribute(element, "selected") is not None
+        )
+    if state == "disabled":
+        return _get_attribute(element, "disabled") is not None
+    if state == "enabled":
+        return (
+            element.name.lower() in _FORM_ELEMENTS
+            and _get_attribute(element, "disabled") is None
+        )
     return False
 
 
@@ -932,7 +1087,7 @@ def _select_fast(
 
     contexts: list[Any] = [self]
     last_index = len(parsed_parts) - 1
-    position_cache: dict[int, dict[int, tuple[int, int]]] = {}
+    position_cache: dict[int, dict[int, tuple[int, int, int, int]]] = {}
     sibling_cache: dict[int, Any] = {}
     for index, (combinator, parsed, pseudo) in enumerate(parsed_parts):
         if combinator in (None, " ") and len(contexts) > 1:

@@ -910,6 +910,102 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(tree.querySelectorAll("#box > *")), 2)
         self.assertEqual(len(tree.querySelectorAll("#root > *")), 2)
 
+    def test_query_selector_advanced_pseudo_classes(self):
+        # These pseudo-classes used to only work when the optional ``cssselect``
+        # package was installed (it translated them to XPath); the native
+        # engine now covers them directly. cssselect stays wired in as a
+        # fallback for anything not handled here.
+        tree = ul(
+            li("a", _class="odd"),
+            li("b", _class="even"),
+            li("c", _class="odd"),
+            li("d", _class="even"),
+            li("e", _class="odd"),
+        )
+
+        def texts(q):
+            return [str(el.textContent) for el in tree.querySelectorAll(q)]
+
+        # An+B formula, odd/even, negative coefficient
+        self.assertEqual(texts("li:nth-child(odd)"), ["a", "c", "e"])
+        self.assertEqual(texts("li:nth-child(even)"), ["b", "d"])
+        self.assertEqual(texts("li:nth-child(2n+1)"), ["a", "c", "e"])
+        self.assertEqual(texts("li:nth-child(3n)"), ["c"])
+        self.assertEqual(texts("li:nth-child(-n+2)"), ["a", "b"])
+        self.assertEqual(texts("li:nth-last-child(1)"), ["e"])
+        self.assertEqual(texts("li:nth-last-child(2)"), ["d"])
+
+        # of-type
+        mixed = div(
+            p("p1"), span("s1"), p("p2"), span("s2"), p("p3"),
+        )
+        self.assertEqual(
+            [str(e.textContent) for e in mixed.querySelectorAll("p:nth-of-type(2)")],
+            ["p2"],
+        )
+        self.assertEqual(
+            [
+                str(e.textContent)
+                for e in mixed.querySelectorAll("span:nth-last-of-type(1)")
+            ],
+            ["s2"],
+        )
+
+        # :is() / :where() -- selector list, match any branch, de-duplicated
+        self.assertEqual(texts("li:is(.even, :first-child)"), ["a", "b", "d"])
+        self.assertEqual(texts("li:where(.odd)"), ["a", "c", "e"])
+
+        # :has() -- relative selector, descendant and direct-child forms
+        wrap = div(
+            div(p("has-p"), _id="with-p"),
+            div(span("only-span"), _id="with-span"),
+        )
+        self.assertEqual(
+            [e.getAttribute("id") for e in wrap.querySelectorAll("div:has(p)")],
+            ["with-p"],
+        )
+        self.assertEqual(
+            [e.getAttribute("id") for e in wrap.querySelectorAll("div:has(> span)")],
+            ["with-span"],
+        )
+
+        # form-state pseudo-classes
+        f = form(
+            input(_name="a"),
+            input(_name="b", _disabled=""),
+            input(_type="checkbox", _checked=""),
+        )
+        self.assertEqual(len(f.querySelectorAll("input:disabled")), 1)
+        self.assertEqual(len(f.querySelectorAll("input:enabled")), 2)
+        self.assertEqual(len(f.querySelectorAll("input:checked")), 1)
+
+    def test_advanced_pseudo_classes_work_without_cssselect(self):
+        # The native engine must handle these on its own -- cssselect is only a
+        # fallback. Force its import to fail and confirm nothing regresses.
+        import builtins
+
+        real_import = builtins.__import__
+
+        def blocking_import(name, *args, **kwargs):
+            if name == "cssselect" or name.startswith("cssselect."):
+                raise ImportError("blocked for test")
+            return real_import(name, *args, **kwargs)
+
+        tree = div(
+            ul(*[li(str(i), _class=("odd" if i % 2 else "even")) for i in range(1, 6)])
+        )
+        builtins.__import__ = blocking_import
+        try:
+            self.assertEqual(
+                [str(e.textContent) for e in tree.querySelectorAll("li:nth-child(2n)")],
+                ["2", "4"],
+            )
+            self.assertEqual(len(tree.querySelectorAll("li:nth-of-type(3)")), 1)
+            self.assertEqual(len(tree.querySelectorAll("li:is(.odd, :last-child)")), 3)
+            self.assertEqual(len(tree.querySelectorAll("ul:has(> li)")), 1)
+        finally:
+            builtins.__import__ = real_import
+
     def test_getElementsBySelector(self):
         dom1 = html(
             div(
