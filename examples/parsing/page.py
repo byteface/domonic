@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 
 sys.path.insert(0, "../..")
@@ -240,6 +241,8 @@ from traceback import format_exception
 
 # log_file = open("fail.log","w")
 # sys.stdout = log_file
+
+os.makedirs("tmp", exist_ok=True)
 
 for SITE in sites:
     # print("Trying::", SITE)

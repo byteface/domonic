@@ -18,8 +18,8 @@ html(
 		h4("Tools"),
 		*[button(div(_class=f"mdi {value}"), _class='tool', _title=key) for key, value in tools.items()],
 		hr(),
-		Input(_type=Input.COLOR, _name='stroke', _id='stroke', _label="<span class='mdi mdi-feather'></span>"),
+		Input(_type="color", _name='stroke', _id='stroke', _label="<span class='mdi mdi-feather'></span>"),
 		" ",
-		Input(_type=Input.COLOR, _name='fill', _id='fill', _label="<span class='mdi mdi-format-paint'></span>"),
+		Input(_type="color", _name='fill', _id='fill', _label="<span class='mdi mdi-format-paint'></span>"),
 	)
 )

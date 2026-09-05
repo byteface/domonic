@@ -100,6 +100,41 @@ class TestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             domonic._safe_eval_pyml("sys.exit()")
 
+    def test_safe_pyml_accepts_list_comprehensions(self):
+        from domonic.html import a
+
+        result = domonic._safe_eval_pyml(
+            '[str(a(url, _href=url)) for url in links]', {"links": ["one", "two"], "a": a}
+        )
+        self.assertEqual(
+            result, ['<a href="one">one</a>', '<a href="two">two</a>']
+        )
+
+    def test_safe_pyml_accepts_tuple_unpacking_comprehensions(self):
+        result = domonic._safe_eval_pyml(
+            "[f'{key}:{value}' for key, value in pairs.items()]",
+            {"pairs": {"a": 1, "b": 2}},
+        )
+        self.assertEqual(result, ["a:1", "b:2"])
+
+    def test_safe_pyml_accepts_fstrings(self):
+        self.assertEqual(
+            domonic._safe_eval_pyml('f"mdi {value}"', {"value": "brush"}),
+            "mdi brush",
+        )
+
+    def test_safe_pyml_still_rejects_dunder_escapes_in_comprehensions(self):
+        with self.assertRaises(ValueError):
+            domonic._safe_eval_pyml(
+                '[x.__class__.__bases__ for x in [1]]', {}
+            )
+        with self.assertRaises(ValueError):
+            domonic._safe_eval_pyml(
+                '[__import__("os").system(x) for x in ["echo", "nope"]]', {}
+            )
+        with self.assertRaises(ValueError):
+            domonic._safe_eval_pyml('f"{x.__class__}"', {"x": 1})
+
     def test_pyml_validation_accepts_safe_markup_fragments(self):
         self.assertEqual(domonic._is_valid_pyml("span("), (True, "span("))
         self.assertEqual(

@@ -14,6 +14,7 @@ VERSION = __version__
 
 
 import ast
+import builtins
 import logging
 import re
 import sys
@@ -55,6 +56,36 @@ except ImportError:  # pragma: no cover - optional dependency chain
     NumberUnit = None  # type: ignore[assignment,misc]
     NumberUtils = None  # type: ignore[assignment,misc]
     Utils = None  # type: ignore[assignment,misc]
+
+# A small, deliberately conservative set of builtins that PyML templates are
+# allowed to call (e.g. ``str(a(url, ...)) for url in links``). Execution runs
+# with ``__builtins__`` stripped entirely, so nothing outside this dict --
+# no ``__import__``, ``open``, ``eval``, ``getattr``, ``vars`` and the like --
+# is ever reachable from PyML, regardless of what a template writes.
+_SAFE_PYML_BUILTINS = {
+    name: getattr(builtins, name)
+    for name in (
+        "str",
+        "int",
+        "float",
+        "bool",
+        "len",
+        "list",
+        "dict",
+        "tuple",
+        "set",
+        "range",
+        "enumerate",
+        "zip",
+        "sorted",
+        "reversed",
+        "min",
+        "max",
+        "sum",
+        "abs",
+        "round",
+    )
+}
 
 
 class domonic:
@@ -309,7 +340,7 @@ class domonic:
     @staticmethod
     def _safe_eval_pyml(pyml: str, extra_context=None):
         """Evaluate PyML after rejecting expressions outside markup construction."""
-        context = {**globals(), **(extra_context or {})}
+        context = {**globals(), **_SAFE_PYML_BUILTINS, **(extra_context or {})}
         tree = ast.parse(pyml, mode="eval")
         if not domonic._is_safe_pyml_ast(tree, context):
             raise ValueError("Unsafe PyML expression")
@@ -321,7 +352,34 @@ class domonic:
         """Return True when a parsed PyML expression contains only inert markup calls."""
         context = context or globals()
         allowed_names = {name for name in context}
-        allowed_methods = {"html"}
+        # ``.html`` is domonic's own render-to-string shortcut; the rest are
+        # read-only, side-effect-free str/dict/list methods templates commonly
+        # need for iteration and formatting (e.g. ``tools.items()``). None of
+        # them provide attribute/introspection access beyond their own name,
+        # so they don't widen the sandbox escape surface.
+        allowed_methods = {
+            "html",
+            "items",
+            "keys",
+            "values",
+            "get",
+            "join",
+            "format",
+            "strip",
+            "lower",
+            "upper",
+            "split",
+            "replace",
+        }
+
+        # Comprehension loop variables (including tuple-unpacking targets, e.g.
+        # ``for key, value in tools.items()``) are locally scoped names that
+        # won't be in the caller's context, so allow them too.
+        for node in ast.walk(tree):
+            if isinstance(node, ast.comprehension):
+                for target_node in ast.walk(node.target):
+                    if isinstance(target_node, ast.Name):
+                        allowed_names.add(target_node.id)
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
@@ -353,6 +411,7 @@ class domonic:
                 (
                     ast.Expression,
                     ast.Load,
+                    ast.Store,
                     ast.Constant,
                     ast.Dict,
                     ast.Tuple,
@@ -362,6 +421,13 @@ class domonic:
                     ast.UnaryOp,
                     ast.UAdd,
                     ast.USub,
+                    ast.ListComp,
+                    ast.SetComp,
+                    ast.DictComp,
+                    ast.GeneratorExp,
+                    ast.JoinedStr,
+                    ast.FormattedValue,
+                    ast.comprehension,
                 ),
             ):
                 continue

@@ -23,7 +23,7 @@ for loop in range(1000):
     )
     spheres.append(s)
 
-_scene = scene(*spheres, sky(_color=Color.paleskyblue))
+_scene = scene(*spheres, sky(_color="skyblue"))
 
 _webpage = html(head(), body(script(_src=CDN_JS.AFRAME), str(_scene), _scripts))
 
