@@ -24,5 +24,6 @@ browser concepts visible instead of hiding them behind a Python-only abstraction
    examples
    scrape-html
    server-side-html
+   compiled-rendering
    live-dom-updates
    parser-performance

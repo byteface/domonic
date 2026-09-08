@@ -33,6 +33,10 @@ MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
 
 _NodeT = TypeVar("_NodeT", bound=dom.Node)
 
+# Bind the base allocator/setter once; these paths deliberately bypass DOM hooks.
+_new_node = object.__new__
+_set_state = object.__setattr__
+
 _HTML_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
 _HTML_CLASS_CACHE: dict[str, type] = {}
@@ -82,7 +86,6 @@ _DOCUMENT_STATE_DEFAULTS = {
 }
 
 _TEXT_STATE_DEFAULTS = {
-    "kwargs": {},
     "name": "",
     "_baseURI": "",
     "isConnected": True,
@@ -94,6 +97,19 @@ _TEXT_STATE_DEFAULTS = {
     "_escape_text_on_render": True,
     "_escape_attributes_on_render": False,
     "_html_doc": True,
+}
+
+
+_ELEMENT_STATE_DEFAULTS = {
+    **_NODE_STATE_DEFAULTS,
+    "args": (),
+    "lang": None,
+    "tabIndex": None,
+    "_Element__style": None,
+    "shadowRoot": None,
+    "dir": None,
+    "_namespaceURI": HTML_NAMESPACE,
+    "_escape_attributes_on_render": True,
 }
 
 
@@ -113,16 +129,14 @@ def _initialize_node_raw(
 def _initialize_element_raw(
     element: dom.Element, namespace_uri: str = HTML_NAMESPACE
 ) -> dom.Element:
-    _initialize_node_raw(element)
     state = element.__dict__
+    state.update(_ELEMENT_STATE_DEFAULTS)
+    state["kwargs"] = {}
+    state["name"] = getattr(element.__class__, "name", "") or ""
+    state["listeners"] = {}
+    state["_listener_options"] = {}
     state["namespaceURI"] = namespace_uri
-    state["lang"] = None
-    state["tabIndex"] = None
-    state["_Element__style"] = None
-    state["shadowRoot"] = None
-    state["dir"] = None
     state["_namespaceURI"] = namespace_uri
-    state["_escape_attributes_on_render"] = True
     return element
 
 
@@ -223,9 +237,7 @@ def _apply_document_state(element: dom.Element) -> None:
     state.setdefault("documentElement", element)
 
 
-def _create_element_raw(
-    name: str, namespace_uri: str = HTML_NAMESPACE
-) -> dom.Element:
+def _create_element_raw(name: str, namespace_uri: str = HTML_NAMESPACE) -> dom.Element:
     if namespace_uri == HTML_NAMESPACE:
         # Hot path: skip the ``str().strip().lower()`` + f-string cache key that
         # ``_element_class`` builds. Frontend parsers already emit clean
@@ -236,9 +248,7 @@ def _create_element_raw(
             _HTML_CLASS_CACHE[name] = element_class
     else:
         element_class = _element_class(name, namespace_uri)
-    element = _initialize_element_raw(
-        object.__new__(element_class), namespace_uri
-    )
+    element = _initialize_element_raw(_new_node(element_class), namespace_uri)
     if issubclass(element_class, dom.Document):
         # ``domonic.html.html`` subclasses ``HTMLDocument``; the raw element
         # init skips the document-level state those instances still expect.
@@ -247,7 +257,7 @@ def _create_element_raw(
 
 
 def _create_document_raw() -> dom.HTMLDocument:
-    document = object.__new__(dom.HTMLDocument)
+    document = _new_node(dom.HTMLDocument)
     _initialize_element_raw(document)
     _apply_document_state(document)
     return document
@@ -256,25 +266,26 @@ def _create_document_raw() -> dom.HTMLDocument:
 def _create_text_raw(data: Any) -> dom.Text:
     # Text nodes are ~half of all nodes on a real page and never take event
     # listeners, so skip the listener dicts the general node init allocates.
-    text = object.__new__(dom.Text)
-    state = text.__dict__
-    state.update(_TEXT_STATE_DEFAULTS)
+    text = _new_node(dom.Text)
+    state = _TEXT_STATE_DEFAULTS.copy()
+    state["kwargs"] = {}
     state["args"] = ("" if data is None else str(data),)
+    _set_state(text, "__dict__", state)
     return text
 
 
 def _create_comment_raw(data: Any) -> dom.Comment:
-    comment = _initialize_node_raw(object.__new__(dom.Comment))
+    comment = _initialize_node_raw(_new_node(dom.Comment))
     comment.data = "" if data is None else str(data)
     return comment
 
 
 def _create_fragment_raw() -> dom.DocumentFragment:
-    return _initialize_node_raw(object.__new__(dom.DocumentFragment))
+    return _initialize_node_raw(_new_node(dom.DocumentFragment))
 
 
 def _create_cdata_raw(data: Any) -> dom.CDATASection:
-    cdata = _initialize_node_raw(object.__new__(dom.CDATASection))
+    cdata = _initialize_node_raw(_new_node(dom.CDATASection))
     cdata.data = "" if data is None else str(data)
     return cdata
 
@@ -282,9 +293,7 @@ def _create_cdata_raw(data: Any) -> dom.CDATASection:
 def _create_processing_instruction_raw(
     target: Any, data: Any
 ) -> dom.ProcessingInstruction:
-    instruction = _initialize_node_raw(
-        object.__new__(dom.ProcessingInstruction)
-    )
+    instruction = _initialize_node_raw(_new_node(dom.ProcessingInstruction))
     instruction.target = "" if target is None else str(target)
     instruction.data = "" if data is None else str(data)
     return instruction
@@ -292,7 +301,7 @@ def _create_processing_instruction_raw(
 
 def _create_doctype_raw(serialized: str) -> dom.DocumentType:
     match = re.match(r"<!doctype\s+([^>\s]+)", serialized or "", re.I)
-    doctype = _initialize_node_raw(object.__new__(dom.DocumentType))
+    doctype = _initialize_node_raw(_new_node(dom.DocumentType))
     doctype.name = match.group(1) if match else "html"
     doctype.publicId = ""
     doctype.systemId = ""
@@ -305,7 +314,7 @@ def _create_doctype_raw(serialized: str) -> dom.DocumentType:
 def _create_doctype_parts_raw(
     name: Any, public_id: Any = "", system_id: Any = ""
 ) -> dom.DocumentType:
-    doctype = _initialize_node_raw(object.__new__(dom.DocumentType))
+    doctype = _initialize_node_raw(_new_node(dom.DocumentType))
     doctype.name = str(name) if name else "html"
     doctype.publicId = str(public_id or "")
     doctype.systemId = str(system_id or "")

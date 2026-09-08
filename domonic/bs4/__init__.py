@@ -33,6 +33,9 @@ _PARSER_ALIASES = {
     "turbohtml": "turbohtml",
     "justhtml": "justhtml",
     "expat": "expat",
+    "reliq": "reliq",
+    "tl": "tl",
+    
 }
 
 
@@ -227,11 +230,13 @@ def _indexed_candidates(
     recursive: bool = True,
     string: Any = None,
 ) -> Iterator[Any] | None:
-    parent = getattr(node, "parentNode", None)
+    # The cached index covers the entire root. A child of an HTMLDocument
+    # is still a subtree: using the root index there includes siblings and
+    # can even include the context element itself. Keep such searches local.
     if (
         string is not None
         or not recursive
-        or (parent is not None and not isinstance(parent, Document))
+        or node is not _root_for_index(node)
     ):
         return None
     index = _tag_index(node)
@@ -814,9 +819,10 @@ def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
         return False
     if parsed["id"] is not None and _get_attribute(element, "id") != parsed["id"]:
         return False
-    class_tokens = set(str(_get_attribute(element, "class") or "").split())
-    if not set(parsed["classes"]).issubset(class_tokens):
-        return False
+    if parsed["classes"]:
+        class_tokens = set(str(_get_attribute(element, "class") or "").split())
+        if not set(parsed["classes"]).issubset(class_tokens):
+            return False
     for attr, operator, value in parsed["attributes"]:
         if not Element._attribute_selector_matches(
             _get_attribute(element, attr), operator, value
@@ -1037,6 +1043,26 @@ def _select_fast(
         return None
     if len(groups) > 1:
         if limit == 1:
+            # Simple groups can stop at the first match in document order,
+            # without separately searching the whole tree for each selector.
+            parsed_groups = []
+            for group in groups:
+                parts = _split_simple_selector_chain(group)
+                if not parts or len(parts) != 1 or parts[0][0] is not None:
+                    break
+                simple = _strip_simple_pseudo(parts[0][1])
+                if simple is None or simple[1] is not None:
+                    break
+                parsed = Element._parse_simple_selector(simple[0])
+                if parsed is None:
+                    break
+                parsed_groups.append(parsed)
+            else:
+                for candidate in _element_descendants(self):
+                    for parsed in parsed_groups:
+                        if _match_parsed_selector(candidate, parsed):
+                            return [candidate]
+                return []
             # ``select_one`` on a group: the first per group, then the
             # earliest of those in document order -- walk only up to it.
             firsts: list[Element] = []

@@ -8,6 +8,11 @@ Server-Side HTML
 domonic elements are Python objects that render to HTML strings. That makes them
 easy to return from any Python web framework.
 
+For views that only need HTML, see :doc:`compiled-rendering`: ``@compiled``
+prepares a renderer at definition time, while ``compile(view)`` gives explicit
+startup control. The guide covers disk caching, trusted raw HTML, cold-render
+benchmarks, and the AST transformation that avoids per-request DOM construction.
+
 Reusable Components
 -------------------
 

@@ -148,6 +148,7 @@ More focused guides:
 - [Examples gallery](https://domonic.readthedocs.io/guides/examples/)
 - [Scrape HTML with Python](https://domonic.readthedocs.io/guides/scrape-html/)
 - [Server-side HTML](https://domonic.readthedocs.io/guides/server-side-html/)
+- [Compiled SSR: decorators, caching and internals](docs/guides/compiled-rendering.rst)
 - [Live DOM updates](https://domonic.readthedocs.io/guides/live-dom-updates/)
 - [Parser performance](https://domonic.readthedocs.io/guides/parser-performance/)
 
@@ -419,10 +420,12 @@ page = domonic.parseString("<p>Hello</p>")
 
 ### Parser choices
 
-Fastest on the bundled large-page benchmark first:
+Available parser backends:
 
 | Parser         | Why use it?                                   |
 | -------------- | --------------------------------------------- |
+| `tl`          | Optional Rust tl-parser with direct raw DOM adaptation (Python 3.12+) |
+| `reliq`       | Optional native parser with direct DOM adaptation; explicitly selected |
 | `selectolax`   | Fast native HTML parsing with direct domonic DOM adaptation |
 | `turbohtml`    | Fast native WHATWG parsing with direct domonic DOM adaptation |
 | `lxml_html`    | Very fast lxml-backed parsing and direct lxml DOM adaptation |
@@ -434,6 +437,24 @@ Fastest on the bundled large-page benchmark first:
 | `expat`        | Built into Python; useful for XML-like input  |
 
 Optional parsers require their respective packages.
+
+The Rust `tl-parser` backend is available with `python -m pip install tl-parser`
+and `domonic.parseString(markup, parser="tl")` (Python 3.12+ for the tested
+0.7.12 release). It builds raw domonic nodes directly through the public API
+and remains outside `auto`. It preserves native tl recovery behavior, which
+is not HTML5 parsing: markup-like content inside script/style elements can be
+interpreted as tags. The adapter preserves leading PUBLIC/SYSTEM doctypes
+separately because tl does not expose doctype nodes.
+
+Reliq can be tried with `python -m pip install reliq` and
+`domonic.parseString(markup, parser="reliq")`. It converts the native tree directly
+without serializing and reparsing HTML. It preserves Reliq's parsing semantics;
+malformed HTML can produce a different tree from HTML5 backends. It is not in
+the `auto` cascade. Benchmark it locally with
+`python scripts/benchmark_parsers.py --parsers reliq selectolax turbohtml`.
+The optimized native-array adapter currently targets Reliq `0.0.48`; other
+versions use the public-API adapter. For separate native parsing and conversion
+timings, run `python scripts/benchmark_reliq.py`.
 
 Install the native parser stack like this:
 
@@ -882,6 +903,36 @@ The repository contains examples for frameworks including:
 * Sanic
 
 …and others. See the [servers documentation](https://domonic.readthedocs.io/packages/servers/) for framework-specific snippets.
+
+### Compile HTML views before the first request
+
+Use `@compiled` when a view only needs to return HTML. It compiles at definition/import time; supported calls render strings without constructing a DOM on every request.
+
+```python
+from domonic import compiled
+from domonic.dom import DOMConfig
+from domonic.html import div, h1, p
+
+DOMConfig.GLOBAL_AUTOESCAPE = True
+
+@compiled
+def home(name="World"):
+    return div(h1("Hello"), p(name))
+
+print(home("Alice & Bob"))
+# <div><h1>Hello</h1><p>Alice &amp; Bob</p></div>
+```
+
+The decorator wraps the explicit `renderer = domonic.compile(view)` API. Memory-only is the default; `@compiled(strict=True, cache_dir="/tmp/domonic")` adds a private disk bytecode cache. Startup prepares the renderer, so the first request needs no compilation or warmup. Request values are evaluated afresh each time.
+
+Under the hood, `inspect` retrieves the function source and an AST pass recognizes standard domonic tag calls. Static markup becomes string literals; dynamic expressions become inserts in a generated Python renderer. `home.source` shows that code, and `home.__original__` retains the original view. Unsupported views use normal rendering unless `strict=True` requires compilation.
+
+Text escaping follows `DOMConfig.GLOBAL_AUTOESCAPE`, enabled above; attributes are escaped. Use `raw(trusted_html)` from `domonic.html` to explicitly insert trusted HTML child content. It does not sanitize input or disable attribute escaping.
+
+Try the [tiny standalone example](examples/ssr/decorated_view.py) with `python -m examples.ssr.decorated_view`, or the [FastAPI server example](examples/ssr/compiled_views.py) with `python -m examples.ssr.compiled_views`. The server compiles its views during startup before accepting requests. Run `python scripts/benchmark_ssr.py --repeats 5` to compare cold first renders.
+
+See the [compiled-rendering guide](docs/guides/compiled-rendering.rst) for supported syntax, route integration, DOM snapshots, cache behavior, benchmarks, and how the compiler works.
+
 
 ---
 

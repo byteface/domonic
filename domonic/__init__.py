@@ -6,7 +6,7 @@ Python DOM, HTML, SVG, XML, Web API, and JavaScript-like runtime toolkit.
 
 """
 
-__version__ = "1.7.0"
+__version__ = "1.7.1"
 __license__ = "MIT"
 __author__ = "@byteface"
 
@@ -56,6 +56,7 @@ except ImportError:  # pragma: no cover - optional dependency chain
     NumberUnit = None  # type: ignore[assignment,misc]
     NumberUtils = None  # type: ignore[assignment,misc]
     Utils = None  # type: ignore[assignment,misc]
+
 
 # A small, deliberately conservative set of builtins that PyML templates are
 # allowed to call (e.g. ``str(a(url, ...)) for url in links``). Execution runs
@@ -114,6 +115,8 @@ class domonic:
             "xml",
             "expat",
             "selectolax",
+            "reliq",
+            "tl",
             "markupever",
             "justhtml",
             "turbohtml",
@@ -344,7 +347,7 @@ class domonic:
         tree = ast.parse(pyml, mode="eval")
         if not domonic._is_safe_pyml_ast(tree, context):
             raise ValueError("Unsafe PyML expression")
-        code = compile(tree, "<domonic-pyml>", "eval")
+        code = builtins.compile(tree, "<domonic-pyml>", "eval")
         # Pass ``context`` as eval's *globals*, not its locals. On Python
         # <= 3.11 a comprehension body runs in its own function scope that
         # can see eval's globals but not its locals, so whitelisted builtins
@@ -1677,6 +1680,17 @@ class domonic:
             page = selectolax_parse(string, return_root=False)
             return _upgrade_custom_elements(_normalize_parsed_page(page, string))
 
+        def _parse_with_reliq():
+            from domonic.ext.reliq_ import parse as reliq_parse
+
+            page = reliq_parse(string)
+            return _upgrade_custom_elements(page)
+
+        def _parse_with_tl():
+            from domonic.ext.tl_ import parse as tl_parse
+
+            return _upgrade_custom_elements(tl_parse(string))
+
         def _parse_with_turbohtml():
             from domonic.ext.turbohtml_ import parse as turbohtml_parse
 
@@ -1711,6 +1725,8 @@ class domonic:
             "html5-parser": ("html5_parser", _parse_with_html5_parser),
             "markupever": ("markupever", _parse_with_markupever),
             "selectolax": ("selectolax", _parse_with_selectolax),
+            "reliq": ("reliq", _parse_with_reliq),
+            "tl": ("tl", _parse_with_tl),
             "turbohtml": ("turbohtml", _parse_with_turbohtml),
             "justhtml": ("justhtml", _parse_with_justhtml),
             "xml": ("expat", _parse_with_expat),
@@ -1773,3 +1789,12 @@ class domonic:
         # from xml.dom import pulldom
         # return _do_pulldom_parse(pulldom.parseString, (string,),
         # {'parser': parser})
+
+
+parseString = domonic.parseString
+parse = domonic.parse
+from domonic.html import render
+
+from domonic.ssr import compile, compiled
+domonic.compile = staticmethod(compile)
+domonic.compiled = staticmethod(compiled)

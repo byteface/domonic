@@ -673,7 +673,7 @@ def main() -> None:
     ap.add_argument("--pages", help="comma-separated fixture names")
     ap.add_argument("--iterations", type=int, default=7)
     ap.add_argument("--bs4-parser", default="html.parser")
-    ap.add_argument("--slop-parser", default="selectolax")
+    ap.add_argument("--slop-parser", default="turbohtml")
     ap.add_argument("--slop-parsers", help="comma-separated; overrides --slop-parser")
     ap.add_argument("--groups", help="comma-separated case groups to include")
     ap.add_argument("--check", action="store_true", help="parity check only, no timing")

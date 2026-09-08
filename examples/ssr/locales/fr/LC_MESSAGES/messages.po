@@ -1,0 +1,10 @@
+# Example gettext catalog. Regenerate messages.mo with msgfmt messages.po -o messages.mo
+
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\nLanguage: fr\n"
+
+msgid "Hello world"
+msgstr "Bonjour le monde"
+
+msgid "Welcome, friends & visitors!"
+msgstr "Bienvenue, amis & visiteurs !"

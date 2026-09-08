@@ -11,6 +11,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from domonic import domonic
 
 DEFAULT_PARSERS = [
+    "tl",
+    "reliq",
     "selectolax",
     "turbohtml",
     "lxml_html",
@@ -38,7 +40,9 @@ def benchmark_parser(html: str, parser_name: str, iterations: int) -> dict[str, 
             if not title_text and page is not None:
                 title = page.querySelector("title")
                 title_text = title.text if title is not None else ""
-        except ModuleNotFoundError as exc:  # pragma: no cover - benchmark reporting path
+        except (
+            ModuleNotFoundError
+        ) as exc:  # pragma: no cover - benchmark reporting path
             skipped = f"missing optional dependency: {exc.name}"
             break
         except ImportError as exc:  # pragma: no cover - benchmark reporting path
@@ -69,7 +73,7 @@ def benchmark_parser(html: str, parser_name: str, iterations: int) -> dict[str, 
 
 def print_results(results: list[dict[str, object]], page_path: Path, html: str) -> None:
     print(f"Benchmark page: {page_path}")
-    print(f"HTML size: {len(html):,} bytes")
+    print(f"HTML size: {len(html.encode('utf-8')):,} bytes")
     print("")
     print(
         f"{'parser':<14} {'status':<8} {'mean ms':>10} {'median ms':>10} {'min ms':>10} {'max ms':>10}  title"

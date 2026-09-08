@@ -24,6 +24,13 @@ from email.utils import formatdate
 from html import escape as _stdlib_escape_html
 
 
+class RawHTML(str):
+    """Explicitly trusted HTML child content; attributes still escape normally.
+
+    This is a trust marker, not a sanitizer. Never wrap untrusted input.
+    """
+
+
 def _escape_html(value: str, quote: bool = True) -> str:
     """``html.escape`` with a fast path for text that contains nothing to
     escape (the common case when serialising a parsed document)."""
@@ -383,6 +390,8 @@ def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> 
     for child in getattr(node, "args", None) or ():
         if type(child) is str:
             out.append(_fragment_text_escape(child, raw))
+        elif isinstance(child, RawHTML):
+            out.append(str(child))
         elif isinstance(child, Text):
             out.append(
                 _fragment_text_escape(child.args[0] if child.args else "", raw)
@@ -522,6 +531,9 @@ def _drain_document_fragment(fragment: "DocumentFragment") -> tuple[Any, ...]:
 
 
 def _coerce_insertion_nodes(*nodes: Any) -> tuple[Any, ...]:
+    # A single ordinary item needs neither flattening nor deduplication.
+    if len(nodes) == 1 and not isinstance(nodes[0], (DocumentFragment, list, tuple)):
+        return nodes
     prepared: list[Any] = []
     for node in nodes:
         if isinstance(node, DocumentFragment):
@@ -570,9 +582,13 @@ def _connect_inserted_node(
     if not isinstance(node, Node):
         return
     node.parentNode = parent
-    parent_document = parent.ownerDocument
-    new_document = parent_document if isinstance(parent_document, Document) else None
-    _adopt_tree(node, old_document, new_document)
+    # Connection already refreshes ownership throughout the subtree. A separate
+    # adoption pass is needed only for callbacks on a document transition.
+    if old_document is not None:
+        parent_document = parent.ownerDocument
+        new_document = parent_document if isinstance(parent_document, Document) else None
+        if old_document is not new_document:
+            _adopt_tree(node, old_document, new_document)
     _connect_tree(node)
 
 
@@ -1388,6 +1404,9 @@ class Node(EventTarget):
                 yield from self._stream_value(child)
             return
 
+        if isinstance(value, RawHTML):
+            yield str(value)
+            return
         value = str(value)
         yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
 
@@ -1476,6 +1495,9 @@ class Node(EventTarget):
                 stack.append(("iter", iter(value)))
                 continue
 
+            if isinstance(value, RawHTML):
+                yield str(value)
+                continue
             value = str(value)
             yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
 

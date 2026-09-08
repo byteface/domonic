@@ -20,10 +20,16 @@ Parser Choices
      - Use When
    * - ``selectolax``
      - ``python -m pip install selectolax``
-     - You want the fastest native parser on the bundled large-page benchmark.
+     - You want fast native HTML parsing with direct DOM adaptation.
    * - ``turbohtml``
      - ``python -m pip install turbohtml``
      - You want native WHATWG parsing adapted directly into domonic.
+   * - ``tl``
+     - ``python -m pip install tl-parser`` (Python 3.12+)
+     - You want an opt-in Rust parser with direct raw DOM adaptation.
+   * - ``reliq``
+     - ``python -m pip install reliq``
+     - You want native parsing with bulk raw DOM adaptation (explicit selection).
    * - ``lxml_html``
      - ``python -m pip install lxml``
      - You want a fast lxml-backed parser and direct lxml DOM adaptation.
@@ -42,6 +48,12 @@ Parser Choices
    * - ``expat``
      - Built into Python
      - You are parsing XML-like input.
+
+The ``tl`` adapter uses the public API of ``tl-parser`` 0.7.12 and the shared
+raw DOM constructors. It preserves tl's native recovery semantics, including
+its interpretation of markup-like text inside script/style as tags. It is not
+an HTML5 replacement and remains outside ``auto``. Leading PUBLIC/SYSTEM
+doctypes are preserved separately from the native tree.
 
 Pick a Parser
 -------------
@@ -116,11 +128,21 @@ serialization, text and attribute access:
 Add ``--check`` for a correctness-parity-only pass (exit code is non-zero on a
 real mismatch). The committed ``benchmarks/REPORT.md`` is the last full run.
 
-On the bundled large-page benchmark, the current parse-speed order is generally
-``selectolax``, ``turbohtml``, ``lxml_html``, ``html5_parser``, ``markupever``,
-``html.parser``, ``justhtml``, then ``html5lib``. ``justhtml`` and ``html5lib``
-build a domonic tree in pure Python so they trail the native parsers, but both
-adapters walk their parser's native tree directly now rather than re-parsing.
+The latest controlled large-page run (35 rounds with rotating backend order)
+measured ``tl`` at 19.8 ms, ``turbohtml`` at 20.7 ms, ``reliq`` at 22.0 ms,
+``selectolax`` at 28.8 ms, and ``lxml_html`` at 36.8 ms after shared raw DOM
+and tl hot-path improvements.
+These are local medians, not a universal ranking. Reliq's optimized adapter
+uses checked native-array layouts in version 0.0.48; unrecognized layouts
+use C conversion and other versions use the public API. It remains opt-in.
+The main ``benchmarks/REPORT.md`` contains both controlled and GC-enabled results.
+
+To isolate native parsing from DOM conversion:
+
+.. code-block:: bash
+
+   python scripts/benchmark_reliq.py --iterations 35 --interleave
+
 ``expat`` is for XML-like input and is expected to fail on many real-world HTML
 pages.
 
