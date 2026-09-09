@@ -95,10 +95,7 @@ class Shape(Point):
         """determine the width of the shape"""
         if not self.vertices:
             return self._width
-        return (
-            max(self.vertices, key=lambda v: v.x).x
-            - min(self.vertices, key=lambda v: v.x).x
-        )
+        return max(self.vertices, key=lambda v: v.x).x - min(self.vertices, key=lambda v: v.x).x
 
     @width.setter
     def width(self, value):
@@ -109,10 +106,7 @@ class Shape(Point):
         """determine the height of the shape"""
         if not self.vertices:
             return self._height
-        return (
-            max(self.vertices, key=lambda v: v.y).y
-            - min(self.vertices, key=lambda v: v.y).y
-        )
+        return max(self.vertices, key=lambda v: v.y).y - min(self.vertices, key=lambda v: v.y).y
 
     @height.setter
     def height(self, value):
@@ -449,20 +443,10 @@ class Rect(Shape):
         return f"Rect({self.x}, {self.y}, {self.width}, {self.height})"
 
     def __eq__(self, other):
-        return (
-            self.x == other.x
-            and self.y == other.y
-            and self.width == other.width
-            and self.height == other.height
-        )
+        return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
 
     def __ne__(self, other):
-        return (
-            self.x != other.x
-            or self.y != other.y
-            or self.width != other.width
-            or self.height != other.height
-        )
+        return self.x != other.x or self.y != other.y or self.width != other.width or self.height != other.height
 
     def __hash__(self):
         return hash((self.x, self.y, self.width, self.height))
@@ -503,19 +487,13 @@ class Rect(Shape):
         )
 
     def __mul__(self, other):
-        return Rect(
-            self.x * other, self.y * other, self.width * other, self.height * other
-        )
+        return Rect(self.x * other, self.y * other, self.width * other, self.height * other)
 
     def __truediv__(self, other):
-        return Rect(
-            self.x / other, self.y / other, self.width / other, self.height / other
-        )
+        return Rect(self.x / other, self.y / other, self.width / other, self.height / other)
 
     def __floordiv__(self, other):
-        return Rect(
-            self.x // other, self.y // other, self.width // other, self.height // other
-        )
+        return Rect(self.x // other, self.y // other, self.width // other, self.height // other)
 
     def __iadd__(self, other):
         self.x += other.x
@@ -579,36 +557,16 @@ class Rect(Shape):
         )
 
     def __lt__(self, other):
-        return (
-            self.x < other.x
-            and self.y < other.y
-            and self.width < other.width
-            and self.height < other.height
-        )
+        return self.x < other.x and self.y < other.y and self.width < other.width and self.height < other.height
 
     def __le__(self, other):
-        return (
-            self.x <= other.x
-            and self.y <= other.y
-            and self.width <= other.width
-            and self.height <= other.height
-        )
+        return self.x <= other.x and self.y <= other.y and self.width <= other.width and self.height <= other.height
 
     def __gt__(self, other):
-        return (
-            self.x > other.x
-            and self.y > other.y
-            and self.width > other.width
-            and self.height > other.height
-        )
+        return self.x > other.x and self.y > other.y and self.width > other.width and self.height > other.height
 
     def __ge__(self, other):
-        return (
-            self.x >= other.x
-            and self.y >= other.y
-            and self.width >= other.width
-            and self.height >= other.height
-        )
+        return self.x >= other.x and self.y >= other.y and self.width >= other.width and self.height >= other.height
 
     # def __eq__(self, other):
     #     return self.x == other.x and self.y == other.y and self.width == other.width and self.height == other.height
@@ -969,12 +927,7 @@ class Circle(Shape):
         return Circle(self.x * other, self.y * other, self.radius * other, self.color)
 
     def __eq__(self, other):
-        return (
-            isinstance(other, Circle)
-            and self.x == other.x
-            and self.y == other.y
-            and self.radius == other.radius
-        )
+        return isinstance(other, Circle) and self.x == other.x and self.y == other.y and self.radius == other.radius
 
     def __ne__(self, other):
         return not self.__eq__(other)

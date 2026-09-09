@@ -19,16 +19,55 @@ from datetime import datetime, timedelta
 from typing import Any, Callable
 
 __all__ = [
-    "timeInterval", "timeMillisecond", "timeSecond", "timeMinute", "timeHour",
-    "timeDay", "timeWeek", "timeSunday", "timeMonday", "timeTuesday",
-    "timeWednesday", "timeThursday", "timeFriday", "timeSaturday", "timeMonth",
-    "timeYear", "timeMilliseconds", "timeSeconds", "timeMinutes", "timeHours",
-    "timeDays", "timeWeeks", "timeSundays", "timeMondays", "timeTuesdays",
-    "timeWednesdays", "timeThursdays", "timeFridays", "timeSaturdays",
-    "timeMonths", "timeYears", "timeTicks", "timeTickInterval",
-    "utcMillisecond", "utcSecond", "utcMinute", "utcHour", "utcDay", "utcWeek",
-    "utcSunday", "utcMonday", "utcTuesday", "utcWednesday", "utcThursday",
-    "utcFriday", "utcSaturday", "utcMonth", "utcYear", "utcTicks",
+    "timeInterval",
+    "timeMillisecond",
+    "timeSecond",
+    "timeMinute",
+    "timeHour",
+    "timeDay",
+    "timeWeek",
+    "timeSunday",
+    "timeMonday",
+    "timeTuesday",
+    "timeWednesday",
+    "timeThursday",
+    "timeFriday",
+    "timeSaturday",
+    "timeMonth",
+    "timeYear",
+    "timeMilliseconds",
+    "timeSeconds",
+    "timeMinutes",
+    "timeHours",
+    "timeDays",
+    "timeWeeks",
+    "timeSundays",
+    "timeMondays",
+    "timeTuesdays",
+    "timeWednesdays",
+    "timeThursdays",
+    "timeFridays",
+    "timeSaturdays",
+    "timeMonths",
+    "timeYears",
+    "timeTicks",
+    "timeTickInterval",
+    "utcMillisecond",
+    "utcSecond",
+    "utcMinute",
+    "utcHour",
+    "utcDay",
+    "utcWeek",
+    "utcSunday",
+    "utcMonday",
+    "utcTuesday",
+    "utcWednesday",
+    "utcThursday",
+    "utcFriday",
+    "utcSaturday",
+    "utcMonth",
+    "utcYear",
+    "utcTicks",
     "utcTickInterval",
 ]
 
@@ -75,9 +114,7 @@ class TimeInterval:
     def offset(self, date: datetime, step: int = 1) -> datetime:
         return self._offseti(date, int(math.floor(step)))
 
-    def range(
-        self, start: datetime, stop: datetime, step: int = 1
-    ) -> list[datetime]:
+    def range(self, start: datetime, stop: datetime, step: int = 1) -> list[datetime]:
         out: list[datetime] = []
         current = self.ceil(start)
         step = int(math.floor(step))
@@ -142,6 +179,7 @@ def timeInterval(floori, offseti, count=None, field=None) -> TimeInterval:
 
 # -- fixed-duration intervals --------------------------------------
 
+
 def _fixed_interval(unit_ms: int, floor_key) -> TimeInterval:
     delta = timedelta(milliseconds=unit_ms)
 
@@ -163,15 +201,9 @@ timeMillisecond = TimeInterval(
     lambda a, b: (b - a).total_seconds() * 1000,
 )
 
-timeSecond = _fixed_interval(
-    _DURATION_SECOND, lambda d: d.replace(microsecond=0)
-)
-timeMinute = _fixed_interval(
-    _DURATION_MINUTE, lambda d: d.replace(second=0, microsecond=0)
-)
-timeHour = _fixed_interval(
-    _DURATION_HOUR, lambda d: d.replace(minute=0, second=0, microsecond=0)
-)
+timeSecond = _fixed_interval(_DURATION_SECOND, lambda d: d.replace(microsecond=0))
+timeMinute = _fixed_interval(_DURATION_MINUTE, lambda d: d.replace(second=0, microsecond=0))
+timeHour = _fixed_interval(_DURATION_HOUR, lambda d: d.replace(minute=0, second=0, microsecond=0))
 
 utcSecond = timeSecond
 utcMinute = timeMinute
@@ -180,6 +212,7 @@ utcMillisecond = timeMillisecond
 
 
 # -- calendar intervals -------------------------------------------
+
 
 def _midnight(d: datetime) -> datetime:
     return d.replace(hour=0, minute=0, second=0, microsecond=0)
@@ -248,9 +281,7 @@ def _month_count(a: datetime, b: datetime) -> float:
     return (b.year - a.year) * 12 + (b.month - a.month)
 
 
-timeMonth = TimeInterval(
-    _month_floor, _month_offset, _month_count, lambda d: d.month - 1
-)
+timeMonth = TimeInterval(_month_floor, _month_offset, _month_count, lambda d: d.month - 1)
 utcMonth = timeMonth
 
 
@@ -323,9 +354,7 @@ def _tick_interval(start: datetime, stop: datetime, count: int) -> TimeInterval:
     while i < len(_TICK_INTERVALS) and _TICK_INTERVALS[i][2] < target:
         i += 1
     if i == len(_TICK_INTERVALS):
-        step = max(1, round(tickStep(
-            start.year, stop.year, count
-        )))
+        step = max(1, round(tickStep(start.year, stop.year, count)))
         return timeYear.every(step) or timeYear
     if i == 0:
         step = max(1, round(target / _DURATION_SECOND))

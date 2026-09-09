@@ -48,9 +48,7 @@ def _set_attribute_raw(element: dom.Element, name: str, value: Any) -> None:
     element.__dict__["kwargs"][name] = value
 
 
-def _append_child_raw(
-    parent: dom.Node, child: dom.Node, children: list[Any]
-) -> None:
+def _append_child_raw(parent: dom.Node, child: dom.Node, children: list[Any]) -> None:
     children.append(child)
     child.__dict__["parentNode"] = parent
 
@@ -113,9 +111,7 @@ _ELEMENT_STATE_DEFAULTS = {
 }
 
 
-def _initialize_node_raw(
-    node: _NodeT, args: tuple[Any, ...] = ()
-) -> _NodeT:
+def _initialize_node_raw(node: _NodeT, args: tuple[Any, ...] = ()) -> _NodeT:
     state = node.__dict__
     state.update(_NODE_STATE_DEFAULTS)
     state["args"] = args
@@ -126,9 +122,7 @@ def _initialize_node_raw(
     return node
 
 
-def _initialize_element_raw(
-    element: dom.Element, namespace_uri: str = HTML_NAMESPACE
-) -> dom.Element:
+def _initialize_element_raw(element: dom.Element, namespace_uri: str = HTML_NAMESPACE) -> dom.Element:
     state = element.__dict__
     state.update(_ELEMENT_STATE_DEFAULTS)
     state["kwargs"] = {}
@@ -149,19 +143,13 @@ def _element_class(name: str, namespace_uri: str) -> type[dom.Element]:
 
     if namespace_uri == SVG_NAMESPACE:
         svg_module = importlib.import_module("domonic.svg")
-        tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(
-            normalized_name, name
-        )
+        tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(normalized_name, name)
         if tag_name in svg_module._SVG_TAG_LOOKUP:
-            element_class = getattr(
-                svg_module, svg_module._svg_class_name(tag_name)
-            )
+            element_class = getattr(svg_module, svg_module._svg_class_name(tag_name))
         else:
             element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
             if element_class is None:
-                element_class = type(
-                    "custom_tag", (dom.Element,), {"name": name}
-                )
+                element_class = type("custom_tag", (dom.Element,), {"name": name})
                 _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
         _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
         return element_class
@@ -169,16 +157,12 @@ def _element_class(name: str, namespace_uri: str) -> type[dom.Element]:
     if namespace_uri == MATHML_NAMESPACE:
         mathml = importlib.import_module("domonic.xml.mathml")
         lookup_name = "math_" if normalized_name == "math" else normalized_name
-        if normalized_name in mathml.mathml_tags and hasattr(
-            mathml, lookup_name
-        ):
+        if normalized_name in mathml.mathml_tags and hasattr(mathml, lookup_name):
             element_class = getattr(mathml, lookup_name)
         else:
             element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
             if element_class is None:
-                element_class = type(
-                    "custom_tag", (dom.MathMLElement,), {"name": name}
-                )
+                element_class = type("custom_tag", (dom.MathMLElement,), {"name": name})
                 _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
         _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
         return element_class
@@ -210,10 +194,7 @@ def _namespace_for_tag(
         return MATHML_NAMESPACE
     if parent_namespace == HTML_NAMESPACE and normalized_name in SVG_TAG_NAMES:
         return SVG_NAMESPACE
-    if (
-        parent_namespace == HTML_NAMESPACE
-        and normalized_name in MATHML_TAG_NAMES
-    ):
+    if parent_namespace == HTML_NAMESPACE and normalized_name in MATHML_TAG_NAMES:
         return MATHML_NAMESPACE
     if (
         parent_namespace == MATHML_NAMESPACE
@@ -290,9 +271,7 @@ def _create_cdata_raw(data: Any) -> dom.CDATASection:
     return cdata
 
 
-def _create_processing_instruction_raw(
-    target: Any, data: Any
-) -> dom.ProcessingInstruction:
+def _create_processing_instruction_raw(target: Any, data: Any) -> dom.ProcessingInstruction:
     instruction = _initialize_node_raw(_new_node(dom.ProcessingInstruction))
     instruction.target = "" if target is None else str(target)
     instruction.data = "" if data is None else str(data)
@@ -311,9 +290,7 @@ def _create_doctype_raw(serialized: str) -> dom.DocumentType:
     return doctype
 
 
-def _create_doctype_parts_raw(
-    name: Any, public_id: Any = "", system_id: Any = ""
-) -> dom.DocumentType:
+def _create_doctype_parts_raw(name: Any, public_id: Any = "", system_id: Any = "") -> dom.DocumentType:
     doctype = _initialize_node_raw(_new_node(dom.DocumentType))
     doctype.name = str(name) if name else "html"
     doctype.publicId = str(public_id or "")

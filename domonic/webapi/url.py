@@ -48,9 +48,7 @@ class URL:
         object.__setattr__(self, "_URL__port", port)
         object.__setattr__(self, "_URL__pathname", parsed.path)
         object.__setattr__(self, "_URL__search", parsed.query)
-        object.__setattr__(
-            self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else ""
-        )
+        object.__setattr__(self, "_URL__hash", f"#{parsed.fragment}" if parsed.fragment else "")
         object.__setattr__(
             self,
             "_searchParams",
@@ -92,9 +90,7 @@ class URL:
                     userinfo += ":" + urllib.parse.quote(self.password, safe="")
                 userinfo += "@"
             scheme = new["protocol"] + "://" if new["protocol"] else ""
-            self.url = urllib.parse.urlsplit(
-                scheme + userinfo + new["host"] + new["pathname"] + query + new["hash"]
-            )
+            self.url = urllib.parse.urlsplit(scheme + userinfo + new["host"] + new["pathname"] + query + new["hash"])
 
             self._set_href_value(self.url.geturl())
             object.__setattr__(self, "_url_state_source", self.url.geturl())
@@ -102,9 +98,7 @@ class URL:
         except Exception:  # as e:
             return
 
-    def __init__(
-        self, url: str = "", base: str | None = None, *args: Any, **kwargs: Any
-    ) -> None:
+    def __init__(self, url: str = "", base: str | None = None, *args: Any, **kwargs: Any) -> None:
         """URL
 
         builds a url
@@ -273,9 +267,7 @@ class URL:
         if value is None:
             value = ""
         self.__search = value if value == "" else value.lstrip("?")
-        self._searchParams = URLSearchParams(
-            self.__search, _update=self._search_params_changed
-        )
+        self._searchParams = URLSearchParams(self.__search, _update=self._search_params_changed)
         self.__update__()
 
     @property
@@ -357,17 +349,11 @@ class URLSearchParams:
                 paramString = paramString[1 : len(paramString)]
 
             self.params: dict[str, list[str]] = {}
-            for key, value in urllib.parse.parse_qsl(
-                paramString, keep_blank_values=True
-            ):
+            for key, value in urllib.parse.parse_qsl(paramString, keep_blank_values=True):
                 self.params.setdefault(key, []).append(value)
         elif isinstance(paramString, dict):
             self.params = {
-                str(key): (
-                    [str(item) for item in value]
-                    if isinstance(value, list)
-                    else [str(value)]
-                )
+                str(key): ([str(item) for item in value] if isinstance(value, list) else [str(value)])
                 for key, value in paramString.items()
             }
         elif hasattr(paramString, "__iter__"):

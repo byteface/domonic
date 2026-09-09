@@ -16,8 +16,8 @@ from domonic.ext._rawdom import (
     MATHML_NAMESPACE,
     SVG_NAMESPACE,
     _create_comment_raw,
-    _create_document_raw,
     _create_doctype_raw,
+    _create_document_raw,
     _create_element_raw,
     _create_text_raw,
     _set_attribute_raw,
@@ -42,9 +42,7 @@ def _adapt_node(node: Any) -> Any:
     if not isinstance(name, str) or name in ("!doctype", "#doctype"):
         return None  # doctype handled separately from the document children
 
-    namespace_uri = _NAMESPACE_URI.get(
-        getattr(node, "namespace", None) or "html", HTML_NAMESPACE
-    )
+    namespace_uri = _NAMESPACE_URI.get(getattr(node, "namespace", None) or "html", HTML_NAMESPACE)
     element = _create_element_raw(name, namespace_uri)
 
     attrs = getattr(node, "attrs", None)
@@ -67,9 +65,7 @@ def _adapt_node(node: Any) -> Any:
 def _adapt_doctype(document_node: Any) -> Any:
     for child in getattr(document_node, "children", None) or ():
         name = getattr(child, "name", None)
-        if type(child).__name__ == "Doctype" or (
-            isinstance(name, str) and name in ("!doctype", "#doctype")
-        ):
+        if type(child).__name__ == "Doctype" or (isinstance(name, str) and name in ("!doctype", "#doctype")):
             serialized = getattr(child, "to_html", lambda: "")() or "<!doctype html>"
             return _create_doctype_raw(serialized)
         if isinstance(name, str):

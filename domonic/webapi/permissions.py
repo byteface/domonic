@@ -87,10 +87,7 @@ class Permissions:
         Request all supplied permissions and return a name-to-status mapping.
         """
         descriptors = descriptors or [{"name": name} for name in self._states]
-        return {
-            _permission_name(descriptor): self.request(descriptor)
-            for descriptor in descriptors
-        }
+        return {_permission_name(descriptor): self.request(descriptor) for descriptor in descriptors}
 
     def revokeAll(self):
         """Reset all known permissions to ``prompt``."""

@@ -3,11 +3,11 @@
 import hashlib
 import marshal
 import os
-from pathlib import Path
 import stat
 import sys
 import tempfile
 import types
+from pathlib import Path
 
 _VERSION = "domonic-ssr-1"
 
@@ -24,19 +24,9 @@ def compiled_code(source, filename, mode, cache_dir=None):
     directory = Path(cache_dir)
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
     info = directory.lstat()
-    if (
-        not stat.S_ISDIR(info.st_mode)
-        or info.st_mode & 0o077
-        or (hasattr(os, "getuid") and info.st_uid != os.getuid())
-    ):
-        raise ValueError(
-            "SSR cache_dir must be a private, user-owned directory (mode 0700)"
-        )
-    key = hashlib.sha256(
-        repr(
-            (_VERSION, sys.implementation.cache_tag, sys.version, mode, source)
-        ).encode()
-    ).hexdigest()
+    if not stat.S_ISDIR(info.st_mode) or info.st_mode & 0o077 or (hasattr(os, "getuid") and info.st_uid != os.getuid()):
+        raise ValueError("SSR cache_dir must be a private, user-owned directory (mode 0700)")
+    key = hashlib.sha256(repr((_VERSION, sys.implementation.cache_tag, sys.version, mode, source)).encode()).hexdigest()
     path = directory / (key + ".bin")
     try:
         fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))

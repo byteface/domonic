@@ -39,10 +39,7 @@ class NetworkInformation(EventTarget):
         return self
 
     def __str__(self):
-        return (
-            "type: {}, downlinkMax: {}, effectiveType: {}, rtt: {}, "
-            "saveData: {}, downlink: {}"
-        ).format(
+        return ("type: {}, downlinkMax: {}, effectiveType: {}, rtt: {}, " "saveData: {}, downlink: {}").format(
             self.type,
             self.downlinkMax,
             self.effectiveType,

@@ -26,12 +26,8 @@ HTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 HTML_INTEGRATION_ENCODINGS = {"application/xhtml+xml", "text/html"}
 HTML_TAGS = frozenset(importlib.import_module("domonic.html").html_tags)
-SVG_TAGS = (
-    frozenset(importlib.import_module("domonic.svg").svg_tags) - HTML_TAGS
-)
-MATHML_TAGS = frozenset(
-    importlib.import_module("domonic.xml.mathml").mathml_tags
-)
+SVG_TAGS = frozenset(importlib.import_module("domonic.svg").svg_tags) - HTML_TAGS
+MATHML_TAGS = frozenset(importlib.import_module("domonic.xml.mathml").mathml_tags)
 SVG_TAG_NAMES = frozenset(tag.lower() for tag in SVG_TAGS)
 MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
 
@@ -87,11 +83,7 @@ def add_namespace_declarations_raw(src, dest):
         parent = src.getparent()
         if parent is not None:
             parent_namespaces = parent.nsmap or {}
-            changed = {
-                key: value
-                for key, value in changed.items()
-                if value != parent_namespaces.get(key)
-            }
+            changed = {key: value for key, value in changed.items() if value != parent_namespaces.get(key)}
         for prefix, uri in changed.items():
             attr = ("xmlns:" + prefix) if prefix else "xmlns"
             set_attribute_raw(dest, attr, uri)
@@ -137,9 +129,7 @@ def initialize_element_raw(element, namespace_uri):
 
 
 def create_text_raw(data):
-    text = initialize_node_raw(
-        object.__new__(Text), ("" if data is None else str(data),)
-    )
+    text = initialize_node_raw(object.__new__(Text), ("" if data is None else str(data),))
     text.__dict__["_escape_text_on_render"] = True
     return text
 
@@ -193,9 +183,7 @@ def html_element_class(qualified_name):
     else:
         element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
         if element_class is None:
-            element_class = type(
-                "custom_tag", (Element,), {"name": qualified_name}
-            )
+            element_class = type("custom_tag", (Element,), {"name": qualified_name})
             _UNKNOWN_ELEMENT_CLASS_CACHE[normalized_name] = element_class
 
     _HTML_ELEMENT_CLASS_CACHE[normalized_name] = element_class
@@ -210,28 +198,20 @@ def svg_element_class(qualified_name):
         return cached
 
     svg_module = importlib.import_module("domonic.svg")
-    tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(
-        normalized_name, normalized_name
-    )
+    tag_name = getattr(svg_module, "_PYTHON_NAME_TO_TAG", {}).get(normalized_name, normalized_name)
     if tag_name in svg_module._SVG_TAG_LOOKUP:
-        element_class = getattr(
-            svg_module, svg_module._svg_class_name(tag_name)
-        )
+        element_class = getattr(svg_module, svg_module._svg_class_name(tag_name))
     else:
         element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
         if element_class is None:
-            element_class = type(
-                "custom_tag", (Element,), {"name": normalized_name}
-            )
+            element_class = type("custom_tag", (Element,), {"name": normalized_name})
             _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
 
     _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class
     return element_class
 
 
-def _namespace_for_tag(
-    qualified_name, parent_namespace=None, parent_tag="", parent_encoding=""
-):
+def _namespace_for_tag(qualified_name, parent_namespace=None, parent_tag="", parent_encoding=""):
     normalized_name = str(qualified_name).split(":", 1)[-1].lower()
     if normalized_name == "svg":
         return SVG_NAMESPACE
@@ -239,10 +219,7 @@ def _namespace_for_tag(
         return MATHML_NAMESPACE
     if parent_namespace == HTML_NAMESPACE and normalized_name in SVG_TAG_NAMES:
         return SVG_NAMESPACE
-    if (
-        parent_namespace == HTML_NAMESPACE
-        and normalized_name in MATHML_TAG_NAMES
-    ):
+    if parent_namespace == HTML_NAMESPACE and normalized_name in MATHML_TAG_NAMES:
         return MATHML_NAMESPACE
     if (
         parent_namespace == MATHML_NAMESPACE
@@ -259,9 +236,7 @@ def _namespace_for_tag(
     return HTML_NAMESPACE
 
 
-def _is_mathml_html_integration_point(
-    parent_namespace, parent_tag="", parent_encoding=""
-):
+def _is_mathml_html_integration_point(parent_namespace, parent_tag="", parent_encoding=""):
     return (
         parent_namespace == MATHML_NAMESPACE
         and str(parent_tag).lower() == "annotation-xml"
@@ -274,24 +249,16 @@ def create_element_ns_raw(namespace_uri, qualified_name):
     namespace_uri = namespace_uri or _namespace_for_tag(qualified_name)
     if namespace_uri == SVG_NAMESPACE:
         element_class = svg_element_class(qualified_name)
-        return initialize_element_raw(
-            element_class.__new__(element_class), namespace_uri
-        )
+        return initialize_element_raw(element_class.__new__(element_class), namespace_uri)
     if namespace_uri == MATHML_NAMESPACE:
         element_type = _MATHML_ELEMENT_CACHE.get(local_name)
         if element_type is None:
-            element_type = type(
-                local_name, (MathMLElement,), {"name": local_name}
-            )
+            element_type = type(local_name, (MathMLElement,), {"name": local_name})
             _MATHML_ELEMENT_CACHE[local_name] = element_type
-        return initialize_element_raw(
-            element_type.__new__(element_type), namespace_uri
-        )
+        return initialize_element_raw(element_type.__new__(element_type), namespace_uri)
 
     element_class = html_element_class(qualified_name)
-    return initialize_element_raw(
-        element_class.__new__(element_class), namespace_uri
-    )
+    return initialize_element_raw(element_class.__new__(element_class), namespace_uri)
 
 
 def adapt(source_tree, return_root=True, **kw):
@@ -316,9 +283,7 @@ def adapt(source_tree, return_root=True, **kw):
         current_encoding = getattr(dest, "getAttribute")("encoding") or ""
         for child in src.iterchildren():
             if isinstance(child, _Comment):
-                dchild = create_comment_raw(
-                    (child.text or "").replace("--", "—")
-                )
+                dchild = create_comment_raw((child.text or "").replace("--", "—"))
             else:
                 child_uri, child_name = elem_name_parts(child)
                 if (
@@ -332,12 +297,8 @@ def adapt(source_tree, return_root=True, **kw):
                     # Fast path: HTML parent + ordinary HTML tag stays HTML.
                     child_uri = HTML_NAMESPACE
                 else:
-                    inferred_uri = _namespace_for_tag(
-                        child_name, parent_namespace, parent_tag, current_encoding
-                    )
-                    if _is_mathml_html_integration_point(
-                        parent_namespace, parent_tag, current_encoding
-                    ):
+                    inferred_uri = _namespace_for_tag(child_name, parent_namespace, parent_tag, current_encoding)
+                    if _is_mathml_html_integration_point(parent_namespace, parent_tag, current_encoding):
                         child_uri = inferred_uri
                     else:
                         child_uri = child_uri or inferred_uri

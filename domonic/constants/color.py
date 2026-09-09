@@ -183,9 +183,7 @@ class Color:
                 return
             if isinstance(args[0], (list, tuple)):
                 values = args[0]
-                if len(values) not in (3, 4) or not all(
-                    isinstance(c, (int, float)) for c in values
-                ):
+                if len(values) not in (3, 4) or not all(isinstance(c, (int, float)) for c in values):
                     raise ValueError(f"Unsupported color sequence: {values}")
                 self.r, self.g, self.b = values[:3]
                 if len(values) == 4:
@@ -295,9 +293,7 @@ class Color:
     def toRGBA(self) -> tuple[float, float, float, float]:
         return (self.r, self.g, self.b, self.a)
 
-    def toSVG(
-        self, shape: Literal["circle", "square"] = "circle", size: int = 10
-    ) -> str | None:
+    def toSVG(self, shape: Literal["circle", "square"] = "circle", size: int = 10) -> str | None:
         """Return a small SVG shape filled with this color.
 
         Args:
@@ -528,7 +524,6 @@ class WebColors:
     LightYellow: str = "#FFFFE0"  #:
     Ivory: str = "#FFFFF0"  #:
     White: str = "#FFFFFF"  #:
-
 
 
 class XKCDColors:
@@ -1456,4 +1451,3 @@ class XKCDColors:
     yellowtan: str = "#ffe36e"  #:
     yellowybrown: str = "#ae8b0c"  #:
     yellowygreen: str = "#bff128"  #:
-

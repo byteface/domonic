@@ -124,9 +124,7 @@ def create_element(name: str = "rss_element", *args: Any, **kwargs: Any) -> RSSE
     if tag_name in _RSS_TAG_LOOKUP:
         return globals()[xml_tag_alias(tag_name)](*args, **kwargs)
 
-    custom_rss_tag = type(
-        "rss_element", (RSSElement,), {"name": tag_name, "__module__": __name__}
-    )
+    custom_rss_tag = type("rss_element", (RSSElement,), {"name": tag_name, "__module__": __name__})
     return custom_rss_tag(*args, **kwargs)
 
 

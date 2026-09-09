@@ -49,9 +49,7 @@ class Tween(EventDispatcher):
     _timePausedAt = None
     _timePrevious = 0
 
-    def __init__(
-        self, target=None, values=None, duration=0, equations=None, delay=0, loop=False
-    ):
+    def __init__(self, target=None, values=None, duration=0, equations=None, delay=0, loop=False):
         self.target = target
         self.values = values
         self.duration = duration
@@ -158,9 +156,7 @@ class Tween(EventDispatcher):
 
         self._tweening = True
         self._paused = False
-        self._intID = window.setInterval(
-            self._update, 1000 / Tween.FPS, TweenEvent(TweenEvent.TIMER)
-        )
+        self._intID = window.setInterval(self._update, 1000 / Tween.FPS, TweenEvent(TweenEvent.TIMER))
         self.dispatchEvent(TweenEvent(TweenEvent.START, self))
 
     def stop(self):
@@ -234,9 +230,7 @@ class Tween(EventDispatcher):
                     x = e.extra
                     a = x.a if x != None else 0
                     b = x.b if x != None else 0
-                    self._target[v.prop] = e.ease(
-                        time, v.start, v.change, self._duration, a, b
-                    )
+                    self._target[v.prop] = e.ease(time, v.start, v.change, self._duration, a, b)
 
                 self.dispatchEvent(TweenEvent(TweenEvent.UPDATE_END, self))
 

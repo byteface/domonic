@@ -72,9 +72,7 @@ class XMLHttpRequest:
     def addEventListener(self, event_type: str, callback: Callable[[Any], Any]) -> None:
         self._listeners.setdefault(str(event_type), []).append(callback)
 
-    def removeEventListener(
-        self, event_type: str, callback: Callable[[Any], Any]
-    ) -> None:
+    def removeEventListener(self, event_type: str, callback: Callable[[Any], Any]) -> None:
         listeners = self._listeners.get(str(event_type), [])
         if callback in listeners:
             listeners.remove(callback)
@@ -127,9 +125,7 @@ class XMLHttpRequest:
         return self._response_headers.get(name)
 
     def getAllResponseHeaders(self) -> str:
-        return "\r\n".join(
-            f"{name}: {value}" for name, value in self._response_headers.entries()
-        )
+        return "\r\n".join(f"{name}: {value}" for name, value in self._response_headers.entries())
 
     def overrideMimeType(self, mime: str) -> None:
         self._override_mime_type = str(mime)
@@ -173,9 +169,7 @@ class XMLHttpRequest:
             return
 
         self._dispatch("loadstart")
-        timeout_seconds = (
-            self.timeout / 1000 if self.timeout else kwargs.pop("timeout", None)
-        )
+        timeout_seconds = self.timeout / 1000 if self.timeout else kwargs.pop("timeout", None)
         try:
             import requests
 
@@ -201,9 +195,7 @@ class XMLHttpRequest:
             self.response = self._coerce_response(response)
             self.responseText = self.response if isinstance(self.response, str) else ""
             loaded = len(getattr(response, "content", b"") or self.responseText)
-            self._dispatch(
-                "progress", loaded=loaded, total=loaded, lengthComputable=True
-            )
+            self._dispatch("progress", loaded=loaded, total=loaded, lengthComputable=True)
             self._set_ready_state(self.DONE)
             self._dispatch("load")
             self._dispatch("loadend")
@@ -266,19 +258,13 @@ class FormData:
     @staticmethod
     def _is_checked(control: Any) -> bool:
         getter = getattr(control, "getAttribute", None)
-        checked = (
-            getter("checked") if callable(getter) else getattr(control, "checked", None)
-        )
+        checked = getter("checked") if callable(getter) else getattr(control, "checked", None)
         return bool(checked)
 
     @staticmethod
     def _is_selected(control: Any) -> bool:
         getter = getattr(control, "getAttribute", None)
-        selected = (
-            getter("selected")
-            if callable(getter)
-            else getattr(control, "selected", None)
-        )
+        selected = getter("selected") if callable(getter) else getattr(control, "selected", None)
         return bool(selected)
 
     def _walk(self, node: Any, seen: set[int] | None = None) -> Iterable[Any]:
@@ -316,9 +302,7 @@ class FormData:
                     for file in getattr(control, "files", []) or []:
                         self.append(name, file)
                     continue
-                if control_type in ("checkbox", "radio") and not self._is_checked(
-                    control
-                ):
+                if control_type in ("checkbox", "radio") and not self._is_checked(control):
                     continue
                 if control_type in ("submit", "button", "reset", "image"):
                     continue
@@ -326,12 +310,8 @@ class FormData:
             elif node_name == "textarea":
                 self.append(name, self._control_value(control))
             elif node_name == "select":
-                multiple = getattr(control, "getAttribute", lambda key: None)(
-                    "multiple"
-                )
-                options = list(
-                    getattr(control, "getElementsByTagName", lambda key: [])("option")
-                )
+                multiple = getattr(control, "getAttribute", lambda key: None)("multiple")
+                options = list(getattr(control, "getElementsByTagName", lambda key: [])("option"))
                 selected = [option for option in options if self._is_selected(option)]
                 if multiple:
                     for option in selected:

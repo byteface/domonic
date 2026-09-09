@@ -21,8 +21,8 @@ from domonic.ext._rawdom import (
     SVG_TAG_NAMES,
     _append_child_raw,
     _create_comment_raw,
-    _create_document_raw,
     _create_doctype_raw,
+    _create_document_raw,
     _create_element_raw,
     _create_text_raw,
     _element_class,
@@ -72,11 +72,7 @@ def _adapt_node(
             comment = getattr(node, "comment_content", None)
             if comment is None:
                 html = getattr(node, "html", "") or ""
-                comment = (
-                    html[4:-3]
-                    if html.startswith("<!--") and html.endswith("-->")
-                    else ""
-                )
+                comment = html[4:-3] if html.startswith("<!--") and html.endswith("-->") else ""
             return _create_comment_raw(comment)
         if tag in ("-doctype", "!doctype"):
             return _create_doctype_raw(getattr(node, "html", ""))
@@ -93,9 +89,7 @@ def _adapt_node(
     ):
         namespace_uri = HTML_NAMESPACE
     else:
-        namespace_uri = _namespace_for_tag(
-            tag, parent_namespace, parent_tag, parent_encoding
-        )
+        namespace_uri = _namespace_for_tag(tag, parent_namespace, parent_tag, parent_encoding)
     element = _create_element_raw(tag, namespace_uri)
     attrs = node.attributes
     if attrs:

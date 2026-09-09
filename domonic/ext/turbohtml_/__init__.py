@@ -21,8 +21,10 @@ from domonic.ext._rawdom import (
     _append_child_raw,
     _create_cdata_raw,
     _create_comment_raw,
+)
+from domonic.ext._rawdom import _create_doctype_parts_raw as _create_doctype_raw
+from domonic.ext._rawdom import (
     _create_document_raw,
-    _create_doctype_parts_raw as _create_doctype_raw,
     _create_element_raw,
     _create_processing_instruction_raw,
     _create_text_raw,
@@ -41,9 +43,7 @@ class _TurboTypes:
         self.Text = turbohtml.Text
         self.Comment = turbohtml.Comment
         self.CData = getattr(turbohtml, "CData", None)
-        self.ProcessingInstruction = getattr(
-            turbohtml, "ProcessingInstruction", None
-        )
+        self.ProcessingInstruction = getattr(turbohtml, "ProcessingInstruction", None)
         self.Element = turbohtml.Element
 
 
@@ -62,7 +62,6 @@ def _set_attributes(element: dom.Element, attrs: Any) -> None:
         return
     for name, value in attrs.items():
         _set_attribute_raw(element, name, _normalize_attribute_value(value))
-
 
 
 def _adapt_node(
@@ -87,11 +86,7 @@ def _adapt_node(
             if isinstance(child, dom.Node):
                 child.parentNode = document
         html_root = next(
-            (
-                child
-                for child in children
-                if getattr(child, "tagName", "").lower() == "html"
-            ),
+            (child for child in children if getattr(child, "tagName", "").lower() == "html"),
             None,
         )
         if html_root is not None:
@@ -115,12 +110,8 @@ def _adapt_node(
     if types.CData is not None and isinstance(node, types.CData):
         return _create_cdata_raw(node.data)
 
-    if types.ProcessingInstruction is not None and isinstance(
-        node, types.ProcessingInstruction
-    ):
-        return _create_processing_instruction_raw(
-            getattr(node, "target", ""), node.data
-        )
+    if types.ProcessingInstruction is not None and isinstance(node, types.ProcessingInstruction):
+        return _create_processing_instruction_raw(getattr(node, "target", ""), node.data)
 
     if isinstance(node, types.Element):
         tag = node.tag
@@ -133,9 +124,7 @@ def _adapt_node(
         ):
             namespace_uri = HTML_NAMESPACE
         else:
-            namespace_uri = _namespace_for_tag(
-                tag, parent_namespace, parent_tag, parent_encoding
-            )
+            namespace_uri = _namespace_for_tag(tag, parent_namespace, parent_tag, parent_encoding)
         element = _create_element_raw(tag, namespace_uri)
         _set_attributes(element, node.attrs)
         child_encoding = ""
@@ -143,9 +132,7 @@ def _adapt_node(
             child_encoding = element.getAttribute("encoding") or ""
         children = []
         for child in getattr(node, "children", ()):
-            adapted = _adapt_node(
-                child, types, namespace_uri, tag, child_encoding
-            )
+            adapted = _adapt_node(child, types, namespace_uri, tag, child_encoding)
             if adapted is not None:
                 children.append(adapted)
                 adapted.__dict__["parentNode"] = element

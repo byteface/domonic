@@ -88,9 +88,7 @@ except ImportError:  # pragma: no cover - optional dependency
                 return datetime.datetime.strptime(value, fmt)
             except ValueError:
                 continue
-        raise ValueError(
-            f"Unsupported date format without python-dateutil: {date_string}"
-        )
+        raise ValueError(f"Unsupported date format without python-dateutil: {date_string}")
 
 
 from domonic.webapi.url import URL, URLSearchParams
@@ -116,9 +114,7 @@ def _own_enumerable_items(obj: Any) -> list[tuple[str, Any]]:
     if isinstance(obj, (float, int, bool, complex)):
         return []
     if hasattr(obj, "__dict__"):
-        return [
-            (key, value) for key, value in vars(obj).items() if not key.startswith("_")
-        ]
+        return [(key, value) for key, value in vars(obj).items() if not key.startswith("_")]
     return []
 
 
@@ -160,9 +156,7 @@ def _is_js_number(value: Any) -> bool:
 
 
 def _is_js_value_type(value: Any) -> bool:
-    return value is None or isinstance(
-        value, (str, bool, int, float, bytes, tuple, frozenset)
-    )
+    return value is None or isinstance(value, (str, bool, int, float, bytes, tuple, frozenset))
 
 
 def _js_same_value_zero(left: Any, right: Any) -> bool:
@@ -206,8 +200,7 @@ def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     positional = [
         param
         for param in parameters
-        if param.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     ]
     return callback(*args[: len(positional)])
 
@@ -318,12 +311,7 @@ def _decode_uri(value: Any) -> str:
 
 
 def _looks_like_regex_separator(value: str) -> bool:
-    return (
-        "\\" in value
-        or any(char in value for char in "[](){}|")
-        or value.startswith("^")
-        or value.endswith("$")
-    )
+    return "\\" in value or any(char in value for char in "[](){}|") or value.startswith("^") or value.endswith("$")
 
 
 class Boolean:
@@ -376,9 +364,7 @@ class _FrozenDict(dict):
 
 
 class Object:
-    def __init__(
-        self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any
-    ) -> None:
+    def __init__(self, obj: Any = None, *args: Mapping[str, Any], **kwargs: Any) -> None:
         """Creates a Javascript-like Object in python
 
         Args:
@@ -777,9 +763,7 @@ class Object:
     def __setitem__(self, key: str, value: Any) -> None:
         """Sets the value of the specified property."""
         state = self.__dict__
-        is_internal = isinstance(key, str) and (
-            key.startswith("_Object__") or key == "prototype"
-        )
+        is_internal = isinstance(key, str) and (key.startswith("_Object__") or key == "prototype")
         if not is_internal:
             if state.get("_Object__frozen", False):
                 raise TypeError("Cannot assign to frozen Object")
@@ -790,13 +774,9 @@ class Object:
     def __delitem__(self, key: str) -> None:
         """Deletes the specified property."""
         state = self.__dict__
-        is_internal = isinstance(key, str) and (
-            key.startswith("_Object__") or key == "prototype"
-        )
+        is_internal = isinstance(key, str) and (key.startswith("_Object__") or key == "prototype")
         if not is_internal:
-            if state.get("_Object__frozen", False) or state.get(
-                "_Object__sealed", False
-            ):
+            if state.get("_Object__frozen", False) or state.get("_Object__sealed", False):
                 raise TypeError("Cannot delete property from sealed Object")
         del self.__dict__[key]
 
@@ -871,9 +851,7 @@ class Function(Object):
         # self.constructor = False
         # self.__proto__ = None
 
-    def apply(
-        self, thisArg: Any = None, args: Sequence[Any] | None = None, **kwargs: Any
-    ) -> Any:
+    def apply(self, thisArg: Any = None, args: Sequence[Any] | None = None, **kwargs: Any) -> Any:
         """Calls a function with a given this value, and arguments provided as an array.
 
         Args:
@@ -946,9 +924,7 @@ class Function(Object):
 class Map:
     """Map holds key-value pairs and remembers the original insertion order of the keys."""
 
-    def __init__(
-        self, collection: "list[Any] | dict[str, Any] | None" = None
-    ) -> None:
+    def __init__(self, collection: "list[Any] | dict[str, Any] | None" = None) -> None:
         """Create a Map. ``collection`` may be omitted (``new Map()``), a dict,
         an iterable of ``[key, value]`` pairs (``new Map([["a", 1]])``), or --
         as a domonic convenience -- a flat list, in which each value is its own
@@ -962,11 +938,7 @@ class Map:
             entries = list(zip(collection._order, collection.values()))
         elif hasattr(collection, "__iter__"):
             for item in collection:
-                if (
-                    isinstance(item, (list, tuple))
-                    and not isinstance(item, str)
-                    and len(item) == 2
-                ):
+                if isinstance(item, (list, tuple)) and not isinstance(item, str) and len(item) == 2:
                     entries.append((item[0], item[1]))
                 else:
                     entries.append((item, item))
@@ -1061,9 +1033,7 @@ class Map:
         for each element in the Map object in insertion order."""
         return [(x, self._dict[x]) for x in self._order]
 
-    def forEach(
-        self, callbackFn: Callable[[Any, Any, "Map"], Any], thisArg: Any = None
-    ) -> None:
+    def forEach(self, callbackFn: Callable[[Any, Any, "Map"], Any], thisArg: Any = None) -> None:
         """Call callbackFn once for each key/value pair in insertion order."""
         for key in list(self._order):
             _invoke_js_callback(callbackFn, self._dict[key], key, self)
@@ -1605,9 +1575,7 @@ class Global:
                 return "-Infinity"
             return repr(x) if not x.is_integer() else str(int(x))
         if isinstance(x, (list, tuple)):
-            return ",".join(
-                "" if item is None else Global.String(item) for item in x
-            )
+            return ",".join("" if item is None else Global.String(item) for item in x)
         if isinstance(x, dict):
             return "[object Object]"
         return str(x)
@@ -1647,9 +1615,7 @@ class Global:
         return importlib.import_module(module_name)
 
     @staticmethod
-    def setTimeout(
-        callback: str | Callable[..., Any], t: int | float, *args: Any, **kwargs: Any
-    ) -> int:
+    def setTimeout(callback: str | Callable[..., Any], t: int | float, *args: Any, **kwargs: Any) -> int:
         """sets a timer which executes a function or evaluates an expression after a specified delay
 
         Args:
@@ -1659,9 +1625,7 @@ class Global:
         Returns:
             str: an identifier for the timer
         """
-        fn: Callable[..., Any] = (
-            eval(callback) if isinstance(callback, str) else callback  # nosec B307
-        )
+        fn: Callable[..., Any] = eval(callback) if isinstance(callback, str) else callback  # nosec B307
 
         timer = threading.Timer(t / 1000, fn, args=args, kwargs=kwargs)
         timer_id = id(timer)
@@ -1742,9 +1706,7 @@ class Performance:
         PerformanceObserver._notify_entry(entry)
         return entry
 
-    def measure(
-        self, name: str, startMark: str | None = None, endMark: str | None = None
-    ) -> Any:
+    def measure(self, name: str, startMark: str | None = None, endMark: str | None = None) -> Any:
         from domonic.dom import PerformanceMeasure, PerformanceObserver
 
         end = self.now() if endMark is None else self._marks.get(endMark, self.now())
@@ -1758,58 +1720,34 @@ class Performance:
         return list(self._entries)
 
     def getEntriesByType(self, entryType: str) -> list[Any]:
-        return [
-            entry
-            for entry in self._entries
-            if getattr(entry, "entryType", None) == entryType
-        ]
+        return [entry for entry in self._entries if getattr(entry, "entryType", None) == entryType]
 
     def getEntriesByName(self, name: str, entryType: str | None = None) -> list[Any]:
-        entries = [
-            entry for entry in self._entries if getattr(entry, "name", None) == name
-        ]
+        entries = [entry for entry in self._entries if getattr(entry, "name", None) == name]
         if entryType is not None:
-            entries = [
-                entry
-                for entry in entries
-                if getattr(entry, "entryType", None) == entryType
-            ]
+            entries = [entry for entry in entries if getattr(entry, "entryType", None) == entryType]
         return entries
 
     def clearMarks(self, name: str | None = None) -> None:
         if name is None:
             self._marks.clear()
-            self._entries = [
-                entry
-                for entry in self._entries
-                if getattr(entry, "entryType", None) != "mark"
-            ]
+            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "mark"]
             return
         self._marks.pop(name, None)
         self._entries = [
             entry
             for entry in self._entries
-            if not (
-                getattr(entry, "entryType", None) == "mark"
-                and getattr(entry, "name", None) == name
-            )
+            if not (getattr(entry, "entryType", None) == "mark" and getattr(entry, "name", None) == name)
         ]
 
     def clearMeasures(self, name: str | None = None) -> None:
         if name is None:
-            self._entries = [
-                entry
-                for entry in self._entries
-                if getattr(entry, "entryType", None) != "measure"
-            ]
+            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "measure"]
             return
         self._entries = [
             entry
             for entry in self._entries
-            if not (
-                getattr(entry, "entryType", None) == "measure"
-                and getattr(entry, "name", None) == name
-            )
+            if not (getattr(entry, "entryType", None) == "measure" and getattr(entry, "name", None) == name)
         ]
 
     # def reset(self):
@@ -1971,13 +1909,9 @@ class Intl:
         canonical = []
         for locale in locales:
             if locale.find("-") != -1:
-                locale = (
-                    locale.split("-")[0].lower() + "-" + locale.split("-")[1].upper()
-                )
+                locale = locale.split("-")[0].lower() + "-" + locale.split("-")[1].upper()
             elif locale.find("_") != -1:
-                locale = (
-                    locale.split("_")[0].lower() + "_" + locale.split("_")[1].upper()
-                )
+                locale = locale.split("_")[0].lower() + "_" + locale.split("_")[1].upper()
             else:
                 locale = locale.lower()
             canonical.append(locale)
@@ -2077,11 +2011,7 @@ class Intl:
 
         @staticmethod
         def _numeric_key(value: str) -> list[Any]:
-            return [
-                int(part) if part.isdigit() else part
-                for part in re.split(r"(\d+)", value)
-                if part != ""
-            ]
+            return [int(part) if part.isdigit() else part for part in re.split(r"(\d+)", value) if part != ""]
 
     Collator = _Collator
 
@@ -2175,12 +2105,8 @@ class Intl:
             self.currencyDisplay = options.get("currencyDisplay", "symbol")
             self.useGrouping = options.get("useGrouping", True)
             default_fraction_digits = 2 if self.style == "currency" else 0
-            self.minimumFractionDigits = int(
-                options.get("minimumFractionDigits", default_fraction_digits)
-            )
-            self.maximumFractionDigits = int(
-                options.get("maximumFractionDigits", self.minimumFractionDigits)
-            )
+            self.minimumFractionDigits = int(options.get("minimumFractionDigits", default_fraction_digits))
+            self.maximumFractionDigits = int(options.get("maximumFractionDigits", self.minimumFractionDigits))
             if self.maximumFractionDigits < self.minimumFractionDigits:
                 self.maximumFractionDigits = self.minimumFractionDigits
 
@@ -2252,9 +2178,7 @@ class Date(Object):
         d.parse_date(str(date_string))
         return int(d.date.timestamp() * 1000)
 
-    def __init__(
-        self, date: Any = None, *args: Any, formatter: str = "python", **kwargs: Any
-    ) -> None:
+    def __init__(self, date: Any = None, *args: Any, formatter: str = "python", **kwargs: Any) -> None:
         """A date object that tries to behave like the Javascript one.
 
         Python's datetime range is narrower than JavaScript Date, so dates
@@ -2270,9 +2194,7 @@ class Date(Object):
 
         # new Date(year, monthIndex, day?, hours?, minutes?, seconds?, ms?)
         # -- monthIndex is 0-based, and each field overflows into the next
-        if args and isinstance(date, (int, float)) and all(
-            isinstance(a, (int, float)) for a in args
-        ):
+        if args and isinstance(date, (int, float)) and all(isinstance(a, (int, float)) for a in args):
             parts = [int(date)] + [int(a) for a in args]
             year = parts[0]
             if year < 100:  # JS maps 0..99 to 1900..1999
@@ -2300,9 +2222,7 @@ class Date(Object):
 
         # anything else -- fall back to string parsing
         if args:
-            date = " ".join(
-                str(p) for p in ([date] if date is not None else []) + list(args)
-            ).strip() or None
+            date = " ".join(str(p) for p in ([date] if date is not None else []) + list(args)).strip() or None
         if isinstance(date, int):
             self.date = datetime.datetime.fromtimestamp(date)
             return
@@ -2587,15 +2507,11 @@ class Date(Object):
             # as there's 29 days in February that year.
             # in python it will error as the new month has less days.
             # so we need to change it first.
-            next_month_total_days = calendar.monthrange(self.date.year, monthValue + 1)[
-                1
-            ]
+            next_month_total_days = calendar.monthrange(self.date.year, monthValue + 1)[1]
             leftovers = next_month_total_days - self.getDate()
             if leftovers < 0:
                 leftovers = abs(leftovers)
-                self.date = self.date.replace(
-                    day=int(leftovers)
-                )  # reset the day for now to not error
+                self.date = self.date.replace(day=int(leftovers))  # reset the day for now to not error
                 self.date = self.date.replace(month=int(monthValue + 1))
                 self.date = self.date.replace(day=leftovers)
             else:
@@ -2859,14 +2775,10 @@ class SetInterval:
     def signal_handler(self, signum: int, frame: Any) -> None:
         raise ProgramKilled
 
-    def __init__(
-        self, function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any
-    ) -> None:
+    def __init__(self, function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any) -> None:
         signal.signal(signal.SIGTERM, self.signal_handler)
         signal.signal(signal.SIGINT, self.signal_handler)
-        self.job = Job(
-            datetime.timedelta(microseconds=time * 1000), function, *args, **kwargs
-        )
+        self.job = Job(datetime.timedelta(microseconds=time * 1000), function, *args, **kwargs)
         self.job.start()
 
     # def stop(self):
@@ -2897,9 +2809,7 @@ class Promise:
     # undocumented - warning. use at own risk
     def __init__(
         self,
-        func: (
-            Callable[[Callable[[Any], Promise], Callable[[Any], Promise]], Any] | None
-        ) = None,
+        func: Callable[[Callable[[Any], Promise], Callable[[Any], Promise]], Any] | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -3004,11 +2914,7 @@ class Promise:
         for item in iterable:
             item = item if isinstance(item, Promise) else Promise.resolve(item)
             if item.state != "pending":
-                return (
-                    p._settle_rejected(item.data)
-                    if item.state == "rejected"
-                    else p._settle_fulfilled(item.data)
-                )
+                return p._settle_rejected(item.data) if item.state == "rejected" else p._settle_fulfilled(item.data)
         return p
 
     @staticmethod
@@ -3022,9 +2928,7 @@ class Promise:
                 return Promise()._settle_fulfilled(item.data)
             if item.state == "rejected":
                 errors.append(item.data)
-        return Promise()._settle_rejected(
-            AggregateError(errors, "All promises were rejected")
-        )
+        return Promise()._settle_rejected(AggregateError(errors, "All promises were rejected"))
 
     def _run_then(self, func: Callable[[Any], Any]) -> None:
         try:
@@ -3046,9 +2950,7 @@ class FetchedSet:  # not a promise
     def __getitem__(self, index: int) -> Any:
         return self.results[index]
 
-    def oncomplete(
-        self, func: Callable[[list[Any]], Any]
-    ) -> None:  # runs once all results are back
+    def oncomplete(self, func: Callable[[list[Any]], Any]) -> None:  # runs once all results are back
         func(self.results)
         return
 
@@ -3095,9 +2997,7 @@ class Window:
         job.stop()
 
     @staticmethod
-    def setInterval(
-        function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any
-    ) -> Job:
+    def setInterval(function: Callable[..., Any], time: int | float, *args: Any, **kwargs: Any) -> Job:
         interval_ID = SetInterval(function, time, *args, **kwargs)
         return interval_ID.job
 
@@ -3137,9 +3037,7 @@ class Window:
         # undocumented - warning. use at own risk
         # note - kinda pointless atm. just use requests directly and you wont have to muck about with a Promise
         if type(url) is not str:
-            raise ValueError(
-                "fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled"
-            )
+            raise ValueError("fetch takes a single url string. use fetch_set, fetch_threaded or fetch_pooled")
         f = Promise()
         r = window._do_request(url, f, **kwargs)
         return f.resolve(r)
@@ -3189,9 +3087,7 @@ class Window:
         f = FetchedSet()
         jobs = []
         for url in urls:
-            thread = threading.Thread(
-                target=lambda url=url: window._do_request(url, f, **kwargs)
-            )
+            thread = threading.Thread(target=lambda url=url: window._do_request(url, f, **kwargs))
             thread.daemon = True
             jobs.append(thread)
         for job in jobs:
@@ -3466,9 +3362,7 @@ class Array:
         mapped = [it(v, i, self.args) for i, v in enumerate(self.args)]
         return Array(*Array(mapped).flat(1))
 
-    def fill(
-        self, value: Any = None, start: int | None = None, end: int | None = None
-    ) -> list[Any]:
+    def fill(self, value: Any = None, start: int | None = None, end: int | None = None) -> list[Any]:
         """Fills elements of an array from a start index to an end index with a static value"""
         length = len(self.args)
         start = _clamp_js_index(0 if start is None else int(start), length)
@@ -3596,9 +3490,7 @@ class Array:
         self.args = self.args[::-1]
         return self.args
 
-    def slice(
-        self, start: int = 0, stop: int | None = None, step: int = 1
-    ) -> list[Any]:
+    def slice(self, start: int = 0, stop: int | None = None, step: int = 1) -> list[Any]:
         """Selects a part of an array, and returns the new array.
 
         Args:
@@ -3613,9 +3505,7 @@ class Array:
             stop = len(self.args)
         return self.args[slice(start, stop, step)]
 
-    def splice(
-        self, start: int, delete_count: int | None = None, *items: Any
-    ) -> list[Any]:
+    def splice(self, start: int, delete_count: int | None = None, *items: Any) -> list[Any]:
         """Selects a part of an array, and returns the new array"""
         length = len(self.args)
         start = _clamp_js_index(int(start), length)
@@ -3694,9 +3584,7 @@ class Array:
             return Array._new(sorted(self.args, key=cmp_to_key(func)))
         return Array._new(sorted(self.args, key=str))
 
-    def toSpliced(
-        self, start: int, deleteCount: int | None = None, *items: Any
-    ) -> "Array":
+    def toSpliced(self, start: int, deleteCount: int | None = None, *items: Any) -> "Array":
         """A copy with a splice applied (the original is unchanged) -- ES2023."""
         copy = list(self.args)
         if deleteCount is None:
@@ -3741,9 +3629,7 @@ class Array:
                 acc = callback(acc)
         return acc
 
-    def reduceRight(
-        self, callback: Callable[..., Any] | None = None, initialValue: Any = None
-    ) -> Any:
+    def reduceRight(self, callback: Callable[..., Any] | None = None, initialValue: Any = None) -> Any:
         """Reduces the array to a single value (going right-to-left)
         callback recieve theses parameters: previousValue, currentValue, currentIndex, array
         """
@@ -3811,9 +3697,7 @@ class Array:
         """Returns a new array iterator object that yields each element's value."""
         yield from list(self.args)
 
-    def copyWithin(
-        self, target: int, start: int = 0, end: int | None = None
-    ) -> list[Any]:
+    def copyWithin(self, target: int, start: int = 0, end: int | None = None) -> list[Any]:
         """Shallow-copy the ``[start, end)`` slice to ``target`` within the same
         array (indices may be negative), and return the array."""
         length = len(self.args)
@@ -3960,9 +3844,7 @@ class Set:
         return iter([[value, value] for value in self.args])
         # This is similar to the Map object, so that each entry's key is the same as its value for a Set.
 
-    def forEach(
-        self, callbackFn: Callable[[Any, Any], Any], thisArg: Any = None
-    ) -> None:
+    def forEach(self, callbackFn: Callable[[Any, Any], Any], thisArg: Any = None) -> None:
         """Calls callbackFn once for each value present in the Set object, in insertion order.
         If a thisArg parameter is provided, it will be used as the this value for each invocation of callbackFn.
         """
@@ -3980,12 +3862,8 @@ class Number(float):
     MAX_VALUE = list(sys.float_info)[0]
     MIN_VALUE = 5e-324  # CHANGE no longer >  list(sys.float_info)[3]
 
-    NEGATIVE_INFINITY = float(
-        "-inf"
-    )  #: Represents negative infinity (returned on overflow) Number
-    POSITIVE_INFINITY = float(
-        "inf"
-    )  #: Represents infinity (returned on overflow)  Number
+    NEGATIVE_INFINITY = float("-inf")  #: Represents negative infinity (returned on overflow) Number
+    POSITIVE_INFINITY = float("inf")  #: Represents infinity (returned on overflow)  Number
     MAX_SAFE_INTEGER: int = 2**53 - 1
     MIN_SAFE_INTEGER: int = -(2**53 - 1)
     EPSILON: float = 2.0**-52
@@ -4179,11 +4057,7 @@ class Number(float):
             value = value.x
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             return False
-        return (
-            math.isfinite(value)
-            and float(value).is_integer()
-            and -(2**53 - 1) <= value <= 2**53 - 1
-        )
+        return math.isfinite(value) and float(value).is_integer() and -(2**53 - 1) <= value <= 2**53 - 1
 
     def toExponential(self, num: int | None = None) -> str:
         """Converts a number into an exponential notation"""
@@ -4223,7 +4097,7 @@ class Number(float):
             return "NaN"
         if value in (float("inf"), float("-inf")):
             return str(value)
-        from decimal import Decimal, ROUND_FLOOR
+        from decimal import ROUND_FLOOR, Decimal
 
         # ECMAScript toFixed: pick the representable value closest to the actual
         # stored double, ties going to the larger value (toward +Infinity) -- so
@@ -4303,21 +4177,14 @@ def _js_replacer(fn: "Callable[..., Any]") -> "Callable[[Any], str]":
     except (_PyTypeError, ValueError):
         return fn
     positional = [
-        p
-        for p in params
-        if p.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        p for p in params if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     ]
-    has_varargs = any(
-        p.kind is inspect.Parameter.VAR_POSITIONAL for p in params
-    )
+    has_varargs = any(p.kind is inspect.Parameter.VAR_POSITIONAL for p in params)
     if not has_varargs and len(positional) <= 1:
         return fn
 
     def js_style(match: Any) -> str:
-        result = fn(
-            match.group(0), *match.groups(), match.start(), match.string
-        )
+        result = fn(match.group(0), *match.groups(), match.start(), match.string)
         return "" if result is None else str(result)
 
     return js_style
@@ -4354,15 +4221,13 @@ def _js_replacement_template(replacement: str, group_count: int) -> str:
         elif nxt == "&":
             out.append(r"\g<0>")
             i += 2
-        elif nxt == "<" and ">" in replacement[i + 2:]:
+        elif nxt == "<" and ">" in replacement[i + 2 :]:
             end = replacement.index(">", i + 2)
-            out.append(r"\g<%s>" % replacement[i + 2:end])
+            out.append(r"\g<%s>" % replacement[i + 2 : end])
             i = end + 1
         elif nxt.isdigit():
-            digits = replacement[i + 1:i + 3]
-            if len(digits) == 2 and (
-                not digits.isdigit() or int(digits) > group_count
-            ):
+            digits = replacement[i + 1 : i + 3]
+            if len(digits) == 2 and (not digits.isdigit() or int(digits) > group_count):
                 digits = digits[0]
             number = int(digits)
             if number == 0 or number > group_count:
@@ -4402,17 +4267,17 @@ def _expand_js_replacement(replacement: str, m: "re.Match[str]") -> str:
             out.append(m.string[: m.start()])
             i += 2
         elif nxt == "'":
-            out.append(m.string[m.end():])
+            out.append(m.string[m.end() :])
             i += 2
-        elif nxt == "<" and ">" in replacement[i + 2:]:
+        elif nxt == "<" and ">" in replacement[i + 2 :]:
             end = replacement.index(">", i + 2)
             try:
-                out.append(m.group(replacement[i + 2:end]) or "")
+                out.append(m.group(replacement[i + 2 : end]) or "")
             except (IndexError, re.error):  # nosec B110 - unknown $<name> group expands to empty, per JS
                 pass
             i = end + 1
         elif nxt.isdigit():
-            two = replacement[i + 1:i + 3]
+            two = replacement[i + 1 : i + 3]
             if len(two) == 2 and two.isdigit() and 0 < int(two) <= len(groups):
                 out.append(groups[int(two) - 1] or "")
                 i += 3
@@ -4428,14 +4293,10 @@ def _expand_js_replacement(replacement: str, m: "re.Match[str]") -> str:
     return "".join(out)
 
 
-def _js_sub(
-    compiled: "re.Pattern[str]", replacement: str, text: str, count: int
-) -> str:
+def _js_sub(compiled: "re.Pattern[str]", replacement: str, text: str, count: int) -> str:
     """``re.sub`` with JavaScript ``$``-pattern semantics."""
     if "$`" in replacement or "$'" in replacement:
-        return compiled.sub(
-            lambda m: _expand_js_replacement(replacement, m), text, count=count
-        )
+        return compiled.sub(lambda m: _expand_js_replacement(replacement, m), text, count=count)
     template = _js_replacement_template(replacement, compiled.groups)
     return compiled.sub(template, text, count=count)
 
@@ -4580,11 +4441,7 @@ class String(str):
         astral character."""
         cache = self._u16_cache
         if cache is None:
-            cache = (
-                _utf16_units(self.x)
-                if self._has_astral
-                else [ord(ch) for ch in self.x]
-            )
+            cache = _utf16_units(self.x) if self._has_astral else [ord(ch) for ch in self.x]
             self._u16_cache = cache
         return cache
 
@@ -5047,18 +4904,14 @@ class String(str):
         """
         searchValue = str(searchValue)
         if not self._has_astral:
-            frm = len(self.x) if fromIndex is None else min(
-                max(int(fromIndex), 0), len(self.x)
-            )
+            frm = len(self.x) if fromIndex is None else min(max(int(fromIndex), 0), len(self.x))
             if searchValue == "":
                 return frm
             return self.x.rfind(searchValue, 0, frm + len(searchValue))
         if fromIndex is None:
             cp_from = len(self.x)
         else:
-            cp_from = _unit_index_to_cp(
-                self.x, min(max(int(fromIndex), 0), self.length)
-            )
+            cp_from = _unit_index_to_cp(self.x, min(max(int(fromIndex), 0), self.length))
         if searchValue == "":
             return _cp_index_to_unit(self.x, cp_from)
         pos = self.x.rfind(searchValue, 0, cp_from + len(searchValue))
@@ -5228,46 +5081,86 @@ import functools as _functools
 import sys as _sys
 import unicodedata as _unicodedata
 
-
 # long Unicode-property names -> the general-category code re can be built from
 _UNICODE_PROPERTY_ALIASES = {
-    "letter": "L", "l": "L",
-    "uppercase_letter": "Lu", "lu": "Lu",
-    "lowercase_letter": "Ll", "ll": "Ll",
-    "titlecase_letter": "Lt", "lt": "Lt",
-    "modifier_letter": "Lm", "lm": "Lm",
-    "other_letter": "Lo", "lo": "Lo",
-    "mark": "M", "m": "M", "combining_mark": "M",
-    "nonspacing_mark": "Mn", "mn": "Mn",
-    "spacing_combining_mark": "Mc", "mc": "Mc",
-    "enclosing_mark": "Me", "me": "Me",
-    "number": "N", "n": "N",
-    "decimal_number": "Nd", "nd": "Nd", "digit": "Nd",
-    "letter_number": "Nl", "nl": "Nl",
-    "other_number": "No", "no": "No",
-    "punctuation": "P", "p": "P", "punct": "P",
-    "dash_punctuation": "Pd", "pd": "Pd",
-    "open_punctuation": "Ps", "ps": "Ps",
-    "close_punctuation": "Pe", "pe": "Pe",
-    "initial_punctuation": "Pi", "pi": "Pi",
-    "final_punctuation": "Pf", "pf": "Pf",
-    "connector_punctuation": "Pc", "pc": "Pc",
-    "other_punctuation": "Po", "po": "Po",
-    "symbol": "S", "s": "S",
-    "math_symbol": "Sm", "sm": "Sm",
-    "currency_symbol": "Sc", "sc_symbol": "Sc",
-    "modifier_symbol": "Sk", "sk": "Sk",
-    "other_symbol": "So", "so": "So",
-    "separator": "Z", "z": "Z",
-    "space_separator": "Zs", "zs": "Zs",
-    "line_separator": "Zl", "zl": "Zl",
-    "paragraph_separator": "Zp", "zp": "Zp",
-    "other": "C", "c": "C",
-    "control": "Cc", "cc": "Cc", "cntrl": "Cc",
-    "format": "Cf", "cf": "Cf",
-    "surrogate": "Cs", "cs": "Cs",
-    "private_use": "Co", "co": "Co",
-    "unassigned": "Cn", "cn": "Cn",
+    "letter": "L",
+    "l": "L",
+    "uppercase_letter": "Lu",
+    "lu": "Lu",
+    "lowercase_letter": "Ll",
+    "ll": "Ll",
+    "titlecase_letter": "Lt",
+    "lt": "Lt",
+    "modifier_letter": "Lm",
+    "lm": "Lm",
+    "other_letter": "Lo",
+    "lo": "Lo",
+    "mark": "M",
+    "m": "M",
+    "combining_mark": "M",
+    "nonspacing_mark": "Mn",
+    "mn": "Mn",
+    "spacing_combining_mark": "Mc",
+    "mc": "Mc",
+    "enclosing_mark": "Me",
+    "me": "Me",
+    "number": "N",
+    "n": "N",
+    "decimal_number": "Nd",
+    "nd": "Nd",
+    "digit": "Nd",
+    "letter_number": "Nl",
+    "nl": "Nl",
+    "other_number": "No",
+    "no": "No",
+    "punctuation": "P",
+    "p": "P",
+    "punct": "P",
+    "dash_punctuation": "Pd",
+    "pd": "Pd",
+    "open_punctuation": "Ps",
+    "ps": "Ps",
+    "close_punctuation": "Pe",
+    "pe": "Pe",
+    "initial_punctuation": "Pi",
+    "pi": "Pi",
+    "final_punctuation": "Pf",
+    "pf": "Pf",
+    "connector_punctuation": "Pc",
+    "pc": "Pc",
+    "other_punctuation": "Po",
+    "po": "Po",
+    "symbol": "S",
+    "s": "S",
+    "math_symbol": "Sm",
+    "sm": "Sm",
+    "currency_symbol": "Sc",
+    "sc_symbol": "Sc",
+    "modifier_symbol": "Sk",
+    "sk": "Sk",
+    "other_symbol": "So",
+    "so": "So",
+    "separator": "Z",
+    "z": "Z",
+    "space_separator": "Zs",
+    "zs": "Zs",
+    "line_separator": "Zl",
+    "zl": "Zl",
+    "paragraph_separator": "Zp",
+    "zp": "Zp",
+    "other": "C",
+    "c": "C",
+    "control": "Cc",
+    "cc": "Cc",
+    "cntrl": "Cc",
+    "format": "Cf",
+    "cf": "Cf",
+    "surrogate": "Cs",
+    "cs": "Cs",
+    "private_use": "Co",
+    "co": "Co",
+    "unassigned": "Cn",
+    "cn": "Cn",
 }
 
 # a small set of common scripts, approximated by their principal Unicode blocks
@@ -5375,9 +5268,7 @@ def _translate_js_regex(pattern: str) -> str:
     # The leading group soaks up any run of *paired* backslashes so ``\\[^]``
     # (an escaped backslash, then the class) is still rewritten.
     if "[^]" in pattern:
-        pattern = re.sub(
-            r"(?<!\\)((?:\\\\)*)\[\^\](?!\])", r"\1[\\s\\S]", pattern
-        )
+        pattern = re.sub(r"(?<!\\)((?:\\\\)*)\[\^\](?!\])", r"\1[\\s\\S]", pattern)
 
     # JS ``\u{1F600}`` (braced code-point escape, u/v flags) -> Python ``\Uxxxxxxxx``
     if "\\u{" in pattern:
@@ -5409,7 +5300,7 @@ def _translate_js_regex(pattern: str) -> str:
                     out.append("[" + body + "]")
                 i = m.end()
                 continue
-            out.append(pattern[i:i + 2])
+            out.append(pattern[i : i + 2])
             i += 2
             continue
         if ch == "[" and not in_class:
@@ -5603,9 +5494,7 @@ class RegExp:
             flags |= re.DOTALL
         return flags
 
-    def compile(
-        self, expression: str | "RegExp" | None = None, flags: str | None = None
-    ) -> "RegExp":
+    def compile(self, expression: str | "RegExp" | None = None, flags: str | None = None) -> "RegExp":
         """(Re-)compiles a regular expression during execution of a script."""
         new_expression = self.expression
         new_flags = self._flags
@@ -5683,11 +5572,7 @@ class RegExp:
         pattern = self._compiled()
         stateful = self.global_ or self.sticky
         start = self.lastIndex if stateful else 0
-        m = (
-            pattern.match(str(s), start)
-            if self.sticky
-            else pattern.search(str(s), start)
-        )
+        m = pattern.match(str(s), start) if self.sticky else pattern.search(str(s), start)
         if m and stateful:
             self.lastIndex = m.end() if m.end() > m.start() else m.end() + 1
         elif stateful:
@@ -5773,14 +5658,8 @@ class ArrayBuffer:
         chunk = [self.buffer[index + offset] for offset in range(size)]
         return list(reversed(chunk)) if littleEndian and size > 1 else chunk
 
-    def _write(
-        self, index: int, values: Sequence[int], littleEndian: bool = False
-    ) -> None:
-        chunk = (
-            list(reversed(list(values)))
-            if littleEndian and len(values) > 1
-            else list(values)
-        )
+    def _write(self, index: int, values: Sequence[int], littleEndian: bool = False) -> None:
+        chunk = list(reversed(list(values))) if littleEndian and len(values) > 1 else list(values)
         for offset, value in enumerate(chunk):
             self.buffer[index + offset] = value
 
@@ -5835,16 +5714,12 @@ class ArrayBuffer:
 
 class DataView(ArrayBuffer):
     # ?? is this right. don't look lt
-    def __init__(
-        self, buffer: Any, byteOffset: int = 0, byteLength: int | None = None
-    ) -> None:
+    def __init__(self, buffer: Any, byteOffset: int = 0, byteLength: int | None = None) -> None:
         super().__init__(0 if byteLength is None else byteLength)
         self.isView = True
         self.buffer = buffer
         self.byteOffset = byteOffset
-        self._viewByteLength = (
-            buffer.byteLength - byteOffset if byteLength is None else byteLength
-        )
+        self._viewByteLength = buffer.byteLength - byteOffset if byteLength is None else byteLength
 
     @property
     def byteLength(self) -> int:
@@ -5911,15 +5786,15 @@ class TypedArray:
     _unpack: Callable[..., int]
 
     def __init__(self, *args: Any) -> None:
-        """ creates a new Int8Array
-            can take the following forms:
-                Int8Array()
-                Int8Array(length)
-                Int8Array(typedArray)
-                Int8Array(object)
-                Int8Array(buffer)
-                Int8Array(buffer, byteOffset)
-                Int8Array(buffer, byteOffset, length)
+        """creates a new Int8Array
+        can take the following forms:
+            Int8Array()
+            Int8Array(length)
+            Int8Array(typedArray)
+            Int8Array(object)
+            Int8Array(buffer)
+            Int8Array(buffer, byteOffset)
+            Int8Array(buffer, byteOffset, length)
         """
         self.name = "Int8Array"
         self.byteOffset = 0
@@ -5961,18 +5836,14 @@ class TypedArray:
             # }
             if self.byteOffset % self.BYTES_PER_ELEMENT:
                 # raise RangeError("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
-                raise Exception(
-                    "ArrayBuffer length minus the byteOffset is not a multiple of the element size."
-                )
+                raise Exception("ArrayBuffer length minus the byteOffset is not a multiple of the element size.")
 
             if len(args) < 3:
                 self.byteLength = self.buffer.byteLength - self.byteOffset
 
                 if self.byteLength % self.BYTES_PER_ELEMENT:
                     # raise RangeError("length of buffer minus byteOffset not a multiple of the element size");
-                    raise Exception(
-                        "length of buffer minus byteOffset not a multiple of the element size"
-                    )
+                    raise Exception("length of buffer minus byteOffset not a multiple of the element size")
 
                 self.length = self.byteLength // self.BYTES_PER_ELEMENT
             else:
@@ -5980,9 +5851,7 @@ class TypedArray:
                 self.byteLength = self.length * self.BYTES_PER_ELEMENT
             if (self.byteOffset + self.byteLength) > self.buffer.byteLength:
                 # raise RangeError("byteOffset and length reference an area beyond the end of the buffer");
-                raise Exception(
-                    "byteOffset and length reference an area beyond the end of the buffer"
-                )
+                raise Exception("byteOffset and length reference an area beyond the end of the buffer")
 
             return
         # elif isinstance(arg, array.array):
@@ -6013,9 +5882,7 @@ class TypedArray:
             # // Constructor(unsigned long length)
             self.length = ToInt32(args[0])
             if self.length < 0:
-                raise Exception(
-                    "ArrayBufferView size is not a small enough positive integer"
-                )
+                raise Exception("ArrayBufferView size is not a small enough positive integer")
 
             self.byteLength = self.length * self.BYTES_PER_ELEMENT
             self.buffer = ArrayBuffer(self.byteLength)
@@ -6121,9 +5988,7 @@ class TypedArray:
 
         if isinstance(index, TypedArray):
             sequence = [index[i] for i in range(index.length)]
-        elif isinstance(index, Sequence) and not isinstance(
-            index, (str, bytes, bytearray)
-        ):
+        elif isinstance(index, Sequence) and not isinstance(index, (str, bytes, bytearray)):
             sequence = list(index)
         else:
             raise TypeError("Unexpected argument type(s)")
@@ -6161,9 +6026,7 @@ class TypedArray:
         if nlen < 0:
             nlen = 0
 
-        return self.__class__(
-            self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen
-        )
+        return self.__class__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
 
 
 def as_signed(value: int, bits: int) -> int:
@@ -6235,9 +6098,7 @@ class __byteutils__:
         # return struct.pack('>I', n)
 
     def unpackU32(self, bytes: list[int]) -> int:
-        return as_unsigned(
-            bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32
-        )
+        return as_unsigned(bytes[0] << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3], 32)
         # return struct.unpack('>I', bytes)[0]
 
     def packIEEE754(self, v: float, ebits: int, fbits: int) -> list[Any]:
@@ -6245,23 +6106,15 @@ class __byteutils__:
             return list(struct.pack(">f", v))
         if (ebits, fbits) == (11, 52):
             return list(struct.pack(">d", v))
-        raise NotImplementedError(
-            f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}"
-        )
+        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
 
     def unpackIEEE754(self, bytes: list[int], ebits: int, fbits: int) -> Any:
-        data = (
-            bytes
-            if isinstance(bytes, (builtins.bytes, bytearray))
-            else builtins.bytes(bytes)
-        )
+        data = bytes if isinstance(bytes, (builtins.bytes, bytearray)) else builtins.bytes(bytes)
         if (ebits, fbits) == (8, 23):
             return struct.unpack(">f", data)[0]
         if (ebits, fbits) == (11, 52):
             return struct.unpack(">d", data)[0]
-        raise NotImplementedError(
-            f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}"
-        )
+        raise NotImplementedError(f"Unsupported IEEE754 layout: ebits={ebits}, fbits={fbits}")
 
     def unpackF64(self, b: list[int]) -> Any:
         return struct.unpack(">d", bytes(b))[0]
@@ -6283,13 +6136,11 @@ class Int8Array(TypedArray):
     _unpack = __byteutils__.unpackI8
 
 
-
 class Uint8Array(TypedArray):
     name = "Uint8Array"
     BYTES_PER_ELEMENT = 1
     _pack = __byteutils__.packU8
     _unpack = __byteutils__.unpackU8
-
 
 
 class Uint8ClampedArray(TypedArray):
@@ -6299,13 +6150,11 @@ class Uint8ClampedArray(TypedArray):
     _unpack = __byteutils__.unpackU8
 
 
-
 class Int16Array(TypedArray):
     name = "Int16Array"
     BYTES_PER_ELEMENT = 2
     _pack = __byteutils__.packI16
     _unpack = __byteutils__.unpackI16
-
 
 
 class Uint16Array(TypedArray):
@@ -6315,13 +6164,11 @@ class Uint16Array(TypedArray):
     _unpack = __byteutils__.unpackU16
 
 
-
 class Int32Array(TypedArray):
     name = "Int32Array"
     BYTES_PER_ELEMENT = 4
     _pack = __byteutils__.packI32
     _unpack = __byteutils__.unpackI32
-
 
 
 class Uint32Array(TypedArray):
@@ -6331,7 +6178,6 @@ class Uint32Array(TypedArray):
     _unpack = __byteutils__.unpackU32
 
 
-
 class Float32Array(TypedArray):
     name = "Float32Array"
     BYTES_PER_ELEMENT = 4
@@ -6339,13 +6185,11 @@ class Float32Array(TypedArray):
     _unpack = __byteutils__.unpackF32
 
 
-
 class Float64Array(TypedArray):
     name = "Float64Array"
     BYTES_PER_ELEMENT = 8
     _pack = __byteutils__.packF64
     _unpack = __byteutils__.unpackF64
-
 
 
 # BigInt64Array = type('BigInt64Array',
@@ -6413,9 +6257,7 @@ class AggregateError(Error):
 
     name = "AggregateError"
 
-    def __init__(
-        self, errors: Any = (), message: Any = "", *args: Any, **kwargs: Any
-    ) -> None:
+    def __init__(self, errors: Any = (), message: Any = "", *args: Any, **kwargs: Any) -> None:
         self.errors = list(errors) if errors is not None else []
         super().__init__(message, *args, **kwargs)
 
@@ -6436,17 +6278,13 @@ class Reflect:
         return Object.getOwnPropertyNames(target)
 
     @staticmethod
-    def apply(
-        target: Callable[..., Any], thisArgument: Any, argumentsList: Sequence[Any]
-    ) -> Any:
+    def apply(target: Callable[..., Any], thisArgument: Any, argumentsList: Sequence[Any]) -> Any:
         """Calls a target function with arguments as specified by the argumentsList parameter.
         See also Function.prototype.apply()."""
         return target(*argumentsList)
 
     @staticmethod
-    def construct(
-        target: Any, argumentsList: Sequence[Any], newTarget: Any = None
-    ) -> Any:
+    def construct(target: Any, argumentsList: Sequence[Any], newTarget: Any = None) -> Any:
         """The new operator as a function. Equivalent to calling new target(...argumentsList).
         Also provides the option to specify a different prototype."""
         constructor = newTarget or target
@@ -6457,9 +6295,7 @@ class Reflect:
         """Similar to Object.defineProperty().
         Returns a Boolean that is true if the property was successfully defined."""
         try:
-            value = (
-                attributes.get("value") if isinstance(attributes, dict) else attributes
-            )
+            value = attributes.get("value") if isinstance(attributes, dict) else attributes
             if isinstance(target, dict):
                 target[propertyKey] = value
             else:
@@ -6740,9 +6576,7 @@ class JSON:
         return _revive({"": result}, "")
 
     @staticmethod
-    def stringify(
-        value: Any, replacer: Any = None, space: Any = None
-    ) -> "str | None":
+    def stringify(value: Any, replacer: Any = None, space: Any = None) -> "str | None":
         import importlib
 
         if callable(replacer):
@@ -6758,19 +6592,14 @@ class JSON:
                             out[k] = rv
                     return out
                 if isinstance(val, (list, tuple)):
-                    return [
-                        None if (rv := _replace(i, v)) is _omit else rv
-                        for i, v in enumerate(val)
-                    ]
+                    return [None if (rv := _replace(i, v)) is _omit else rv for i, v in enumerate(val)]
                 return _omit if val is None else val
 
             value = _replace("", value)
             if value is _omit:
                 return None
         elif isinstance(replacer, (list, tuple, Array)):
-            allow = {
-                str(k) for k in (replacer.args if isinstance(replacer, Array) else replacer)
-            }
+            allow = {str(k) for k in (replacer.args if isinstance(replacer, Array) else replacer)}
 
             def _filter(val: Any) -> Any:
                 if isinstance(val, dict):
@@ -6820,11 +6649,7 @@ setattr(Array, "with", Array.with_)
 # ``assertRaises`` in code that never asked for the JS versions). They stay
 # importable by name -- ``from domonic.javascript import TypeError``.
 _STAR_HIDDEN = {"TypeError", "SyntaxError", "AggregateError", "_STAR_HIDDEN"}
-__all__ = [
-    _n
-    for _n in dir()
-    if not _n.startswith("_") and _n not in _STAR_HIDDEN
-]
+__all__ = [_n for _n in dir() if not _n.startswith("_") and _n not in _STAR_HIDDEN]
 
 
 '''

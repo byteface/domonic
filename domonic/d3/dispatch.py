@@ -57,9 +57,7 @@ class Dispatch:
             raise Exception("invalid callback: " + callback)
         for tn in T:
             if tn["type"] is not None:
-                _[tn["type"]] = self.set(
-                    _[tn["type"]], tn["name"], callback
-                )
+                _[tn["type"]] = self.set(_[tn["type"]], tn["name"], callback)
             elif callback == None:
                 for t in _:
                     _[t] = self.set(_[t], tn["name"], None)

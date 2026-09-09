@@ -12,8 +12,8 @@ from domonic.ext._rawdom import (
     MATHML_TAG_NAMES,
     SVG_TAG_NAMES,
     _create_comment_raw,
-    _create_document_raw,
     _create_doctype_raw,
+    _create_document_raw,
     _create_element_raw,
     _create_text_raw,
     _namespace_for_tag,
@@ -28,8 +28,7 @@ _RAW_TEXT = {"script", "style", "xmp", "iframe", "noembed", "noframes", "plainte
 # doctype triggers catastrophic backtracking (ReDoS). ``(?:(?!-->)[\s\S])*``
 # cannot cross a ``-->`` and keeps the match linear.
 _DOCTYPE = re.compile(
-    r"""\A\s*(?:<!--(?:(?!-->)[\s\S])*-->\s*)*"""
-    r"""(<!doctype\s+(?:[^>"']|"[^"]*"|'[^']*')*>)""",
+    r"""\A\s*(?:<!--(?:(?!-->)[\s\S])*-->\s*)*""" r"""(<!doctype\s+(?:[^>"']|"[^"]*"|'[^']*')*>)""",
     re.IGNORECASE | re.DOTALL,
 )
 
@@ -100,9 +99,7 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
             if namespace == HTML_NAMESPACE and ordinary_html:
                 child_namespace = HTML_NAMESPACE
             else:
-                child_namespace = _namespace_for_tag(
-                    normalized, namespace, parent_tag, encoding
-                )
+                child_namespace = _namespace_for_tag(normalized, namespace, parent_tag, encoding)
             if child_namespace == HTML_NAMESPACE:
                 tag = normalized
             if child_namespace == HTML_NAMESPACE:
@@ -129,29 +126,19 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
                 state["_listener_options"] = {}
                 _set_state(converted, "__dict__", state)
             attrs = converted.__dict__["kwargs"]
-            attribute_names = (
-                html_attribute_names
-                if child_namespace == HTML_NAMESPACE
-                else foreign_attribute_names
-            )
+            attribute_names = html_attribute_names if child_namespace == HTML_NAMESPACE else foreign_attribute_names
             for name, value in node.attributes().items():
                 key = attribute_names.get(name)
                 if key is None:
                     key = name.lower() if child_namespace == HTML_NAMESPACE else name
                     key = key if key.startswith("_") else "_" + key
                     attribute_names[name] = key
-                attrs[key] = (
-                    unescape(value) if value and "&" in value else (value or "")
-                )
-            child_encoding = (
-                attrs.get("_encoding", "") if normalized == "annotation-xml" else ""
-            )
+                attrs[key] = unescape(value) if value and "&" in value else (value or "")
+            child_encoding = attrs.get("_encoding", "") if normalized == "annotation-xml" else ""
             native_children = node.children()
             if len(native_children) == 1 and native_children[0].node_type() == "text":
                 text = native_children[0].inner_text()
-                if "&" in text and not (
-                    child_namespace == HTML_NAMESPACE and normalized in _RAW_TEXT
-                ):
+                if "&" in text and not (child_namespace == HTML_NAMESPACE and normalized in _RAW_TEXT):
                     text = unescape(text)
                 child = _create_text_raw(text)
                 child.__dict__["parentNode"] = converted
@@ -171,15 +158,11 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
                 document.documentElement = converted
         elif kind == "comment":
             text = node.outer_html()
-            converted = _create_comment_raw(
-                text[4:-3] if text.startswith("<!--") and text.endswith("-->") else text
-            )
+            converted = _create_comment_raw(text[4:-3] if text.startswith("<!--") and text.endswith("-->") else text)
         else:
             # Only read a text leaf, never aggregated inner_text on an element.
             text = node.inner_text()
-            if "&" in text and not (
-                namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT
-            ):
+            if "&" in text and not (namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT):
                 text = unescape(text)
             converted = _create_text_raw(text)
         converted.__dict__["parentNode"] = parent

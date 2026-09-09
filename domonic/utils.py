@@ -19,9 +19,7 @@ from domonic.decorators import deprecated
 T = TypeVar("T")
 D = TypeVar("D")
 _random = random.SystemRandom()
-_NUMBER_UNIT_RE = re.compile(
-    r"^\s*([+-]?(?:\d[\d,_]*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*([a-zA-Z%]*)\s*$"
-)
+_NUMBER_UNIT_RE = re.compile(r"^\s*([+-]?(?:\d[\d,_]*(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*([a-zA-Z%]*)\s*$")
 
 
 @dataclass(frozen=True)
@@ -123,12 +121,8 @@ class NumberUtils:
     def clamp(value: Any, min_value: Any = None, max_value: Any = None) -> int | float:
         """Clamp ``value`` between optional minimum and maximum bounds."""
         number = NumberUtils._as_float(value)
-        minimum = (
-            None if min_value is None else NumberUtils._as_float(min_value, "min_value")
-        )
-        maximum = (
-            None if max_value is None else NumberUtils._as_float(max_value, "max_value")
-        )
+        minimum = None if min_value is None else NumberUtils._as_float(min_value, "min_value")
+        maximum = None if max_value is None else NumberUtils._as_float(max_value, "max_value")
 
         if minimum is not None and maximum is not None and minimum > maximum:
             raise ValueError("min_value cannot be greater than max_value")
@@ -139,9 +133,7 @@ class NumberUtils:
         return NumberUtils._coerce_number(number)
 
     @staticmethod
-    def normalize(
-        value: Any, min_value: Any, max_value: Any, clamp_result: bool = False
-    ) -> float:
+    def normalize(value: Any, min_value: Any, max_value: Any, clamp_result: bool = False) -> float:
         """Map ``value`` from the given range to a ratio between ``0`` and ``1``."""
         number = NumberUtils._as_float(value)
         minimum = NumberUtils._as_float(min_value, "min_value")
@@ -159,9 +151,7 @@ class NumberUtils:
         start_number = NumberUtils._as_float(start, "start")
         end_number = NumberUtils._as_float(end, "end")
         amount_number = NumberUtils._as_float(amount, "amount")
-        return NumberUtils._coerce_number(
-            start_number + (end_number - start_number) * amount_number
-        )
+        return NumberUtils._coerce_number(start_number + (end_number - start_number) * amount_number)
 
     @staticmethod
     def remap(
@@ -183,9 +173,7 @@ class NumberUtils:
         total_number = NumberUtils._as_float(total, "total")
         if total_number == 0:
             raise ValueError("total cannot be zero")
-        result = (NumberUtils._as_float(value) / total_number) * NumberUtils._as_float(
-            scale, "scale"
-        )
+        result = (NumberUtils._as_float(value) / total_number) * NumberUtils._as_float(scale, "scale")
         return NumberUtils._coerce_number(result)
 
     @staticmethod
@@ -193,9 +181,7 @@ class NumberUtils:
         """Resolve a percentage string against ``total``; plain numbers pass through unchanged."""
         parsed = NumberUtils.parse_unit(value)
         if parsed.unit == "%":
-            return NumberUtils._coerce_number(
-                (parsed.value / 100.0) * NumberUtils._as_float(total, "total")
-            )
+            return NumberUtils._coerce_number((parsed.value / 100.0) * NumberUtils._as_float(total, "total"))
         if parsed.unit:
             raise ValueError("percentage values may only use the '%' unit")
         return parsed.number
@@ -217,11 +203,7 @@ class NumberUtils:
 
         number = NumberUtils._as_float(value)
         base = 1024 if binary else 1000
-        units = (
-            ["B", "KiB", "MiB", "GiB", "TiB", "PiB"]
-            if binary
-            else ["B", "KB", "MB", "GB", "TB", "PB"]
-        )
+        units = ["B", "KiB", "MiB", "GiB", "TiB", "PiB"] if binary else ["B", "KB", "MB", "GB", "TB", "PB"]
         sign = "-" if number < 0 else ""
         number = abs(number)
         index = 0
@@ -242,9 +224,7 @@ class NumberUtils:
         return NumberUtils.to_port(value, allow_zero=allow_zero) is not None
 
     @staticmethod
-    def to_port(
-        value: Any, default: D | None = None, allow_zero: bool = True
-    ) -> int | D | None:
+    def to_port(value: Any, default: D | None = None, allow_zero: bool = True) -> int | D | None:
         """Convert ``value`` to a port number, returning ``default`` when invalid."""
         if isinstance(value, bool):
             return default
@@ -270,11 +250,7 @@ class Utils:
     @staticmethod
     def case_snake(s: str) -> str:
         """Convert a camelCase or kebab-case string to snake_case."""
-        return "_".join(
-            sub(
-                "([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))
-            ).split()
-        ).lower()
+        return "_".join(sub("([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))).split()).lower()
 
     @staticmethod
     def case_kebab(s: str) -> str:
@@ -548,9 +524,7 @@ class Utils:
         return s
 
     @staticmethod
-    def replace_between(
-        content: str, match: str, replacement: str, start: int = 0, end: int = 0
-    ):
+    def replace_between(content: str, match: str, replacement: str, start: int = 0, end: int = 0):
         """Replace text only inside a selected slice of a string.
 
         Args:

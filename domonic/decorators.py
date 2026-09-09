@@ -16,9 +16,7 @@ def _invoke_before(before, function):
     result = before()
     params = list(inspect.signature(function).parameters.values())
     can_receive_value = any(
-        param.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
-        for param in params
+        param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD) for param in params
     ) or any(param.kind == inspect.Parameter.VAR_POSITIONAL for param in params)
     return result, can_receive_value
 
@@ -120,9 +118,7 @@ iife = called  # pass None for an iife
 def accepts(*types):
     def check_accepts(f):
         if len(types) != f.__code__.co_argcount:
-            raise AssertionError(
-                "accepts decorator argument count must match function argument count"
-            )
+            raise AssertionError("accepts decorator argument count must match function argument count")
 
         def new_f(*args, **kwds):
             for a, t in zip(args, types):

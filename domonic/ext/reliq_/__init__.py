@@ -16,8 +16,8 @@ from domonic.ext._rawdom import (
     MATHML_TAG_NAMES,
     SVG_TAG_NAMES,
     _create_comment_raw,
-    _create_document_raw,
     _create_doctype_raw,
+    _create_document_raw,
     _create_element_raw,
     _create_text_raw,
     _namespace_for_tag,
@@ -34,9 +34,7 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
     parsed = reliq("" if html is None else html)
     document = (
         _parse_native(parsed)
-        if _native_api() is not None
-        and parsed.single is None
-        and parsed.compressed is None
+        if _native_api() is not None and parsed.single is None and parsed.compressed is None
         else _parse_public(parsed)
     )
     children = document.__dict__["args"]
@@ -57,11 +55,7 @@ def _parse_public(parsed):
             element = _create_element_raw(tag, child_namespace)
             for name, value in node.attrib.items():
                 _set_attribute_raw(element, name, unescape(value or ""))
-            child_encoding = (
-                element.getAttribute("encoding") or ""
-                if tag == "annotation-xml"
-                else ""
-            )
+            child_encoding = element.getAttribute("encoding") or "" if tag == "annotation-xml" else ""
             children = []
             for child in node.children(gen=True, type=None):
                 converted = adapt(child, child_namespace, tag, child_encoding)
@@ -77,11 +71,7 @@ def _parse_public(parsed):
                 return None
             return _create_comment_raw(node.insides or "")
         text = str(node)
-        return _create_text_raw(
-            text
-            if namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT
-            else unescape(text)
-        )
+        return _create_text_raw(text if namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT else unescape(text))
 
     children = []
     for node in parsed.self(gen=True, type=None):
@@ -135,9 +125,7 @@ def _parse_native(parsed):
 
     packed = _packed_layout()
     if packed:
-        records = _PACKED_NODE.iter_unpack(
-            string_at(source.nodes, source.nodesl * node_size)
-        )
+        records = _PACKED_NODE.iter_unpack(string_at(source.nodes, source.nodesl * node_size))
         sentinel = (0, 0, 0, source.attribsl, 0, 0, 0)
         following = next(records, sentinel)
         attributes = string_at(source.attribs, source.attribsl * attribute_size)
@@ -184,16 +172,12 @@ def _parse_native(parsed):
             ):
                 child_namespace = HTML_NAMESPACE
             else:
-                child_namespace = _namespace_for_tag(
-                    tag, namespace, parent_tag, encoding
-                )
+                child_namespace = _namespace_for_tag(tag, namespace, parent_tag, encoding)
             converted = _create_element_raw(tag, child_namespace)
             attrs = converted.__dict__["kwargs"]
             for attr_index in range(attr_start, attr_end):
                 if packed:
-                    key_start, value_bits, key_length = unpack_attribute(
-                        attributes, attr_index * attribute_size
-                    )
+                    key_start, value_bits, key_length = unpack_attribute(attributes, attr_index * attribute_size)
                     value_length = value_bits & 0xFFFFFF
                     value_start = key_start + key_length + (value_bits >> 24)
                 else:
@@ -220,14 +204,10 @@ def _parse_native(parsed):
             # Match Reliq's duplicate-attribute concatenation before decoding
             # entities or applying domonic's underscore attribute convention.
             converted.__dict__["kwargs"] = attrs = {
-                key if key.startswith("_") else "_" + key: (
-                    unescape(value) if "&" in value else value
-                )
+                key if key.startswith("_") else "_" + key: (unescape(value) if "&" in value else value)
                 for key, value in attrs.items()
             }
-            child_encoding = (
-                attrs.get("_encoding", "") if tag == "annotation-xml" else ""
-            )
+            child_encoding = attrs.get("_encoding", "") if tag == "annotation-xml" else ""
             stack.append((depth, converted, [], child_namespace, tag, child_encoding))
             if parent is document and tag == "html":
                 document.documentElement = converted
@@ -242,14 +222,10 @@ def _parse_native(parsed):
             else:
                 comment_length = node.insides.s
                 comment_start = node.insides.b - data_start if comment_length else 0
-            converted = _create_comment_raw(
-                data[comment_start : comment_start + comment_length].decode()
-            )
+            converted = _create_comment_raw(data[comment_start : comment_start + comment_length].decode())
         else:
             text = data[start : start + length].decode()
-            if "&" in text and not (
-                namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT
-            ):
+            if "&" in text and not (namespace == HTML_NAMESPACE and parent_tag in _RAW_TEXT):
                 text = unescape(text)
             converted = _create_text_raw(text)
         converted.__dict__["parentNode"] = parent
@@ -272,24 +248,12 @@ def _packed_layout():
     from ctypes import string_at
 
     api = _native_api()
-    if (
-        api is None
-        or sys.byteorder != "little"
-        or (api.chnode_sz, api.cattrib_sz) != (32, 9)
-    ):
+    if api is None or sys.byteorder != "little" or (api.chnode_sz, api.cattrib_sz) != (32, 9):
         return False
     # Check field offsets as well as sizes before reading actual input. The
     # fallback uses Reliq's own conversion functions, including on other ABIs.
     probe = api.reliq('<p x="one">text</p>')
     source = probe.struct.struct
-    nodes = list(
-        _PACKED_NODE.iter_unpack(string_at(source.nodes, source.nodesl * api.chnode_sz))
-    )
-    attrs = list(
-        _PACKED_ATTRIBUTE.iter_unpack(
-            string_at(source.attribs, source.attribsl * api.cattrib_sz)
-        )
-    )
-    return nodes == [(0, 19, 13, 0, 0, 1, 1), (11, 4, 0, 1, 1, 0, 0)] and attrs == [
-        (3, (2 << 24) | 3, 1)
-    ]
+    nodes = list(_PACKED_NODE.iter_unpack(string_at(source.nodes, source.nodesl * api.chnode_sz)))
+    attrs = list(_PACKED_ATTRIBUTE.iter_unpack(string_at(source.attribs, source.attribsl * api.cattrib_sz)))
+    return nodes == [(0, 19, 13, 0, 0, 1, 1), (11, 4, 0, 1, 1, 0, 0)] and attrs == [(3, (2 << 24) | 3, 1)]

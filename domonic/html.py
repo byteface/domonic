@@ -12,7 +12,6 @@ import json
 import re
 from typing import Any
 
-from domonic.dom import RawHTML as raw
 from domonic.dom import Document  # HTMLOptionsCollection,
 from domonic.dom import (
     Comment,
@@ -95,6 +94,9 @@ from domonic.dom import (
     HTMLUnknownElement,
     HTMLVideoElement,
     Node,
+)
+from domonic.dom import RawHTML as raw
+from domonic.dom import (
     Text,
 )
 from domonic.webapi.url import URL
@@ -560,9 +562,7 @@ def render(inp: Node, outp: str = "", to: str | None = None) -> str:
     return str(inp)
 
 
-def _json_script(
-    type_value: str, payload: Any, *, indent: int | None = None, **kwargs: Any
-) -> HTMLScriptElement:
+def _json_script(type_value: str, payload: Any, *, indent: int | None = None, **kwargs: Any) -> HTMLScriptElement:
     if isinstance(payload, str):
         content = payload
     else:
@@ -575,9 +575,7 @@ def _json_script(
     return script(content, **kwargs)
 
 
-def importmap(
-    mapping: Any, *, indent: int | None = None, **kwargs: Any
-) -> HTMLScriptElement:
+def importmap(mapping: Any, *, indent: int | None = None, **kwargs: Any) -> HTMLScriptElement:
     """
     Create a <script type="importmap"> block from JSON import map data.
 
@@ -592,9 +590,7 @@ def importmap(
     return _json_script("importmap", mapping, indent=indent, **kwargs)
 
 
-def speculationrules(
-    rules: Any, *, indent: int | None = None, **kwargs: Any
-) -> HTMLScriptElement:
+def speculationrules(rules: Any, *, indent: int | None = None, **kwargs: Any) -> HTMLScriptElement:
     """
     Create a <script type="speculationrules"> block from JSON rules.
 
@@ -690,9 +686,7 @@ def _html_tag_init(self, *args, _doctype=None, **kwargs):
         self.doctype = _resolve_doctype(_doctype)
 
 
-html = type(
-    "html", (HTMLDocument,), {"name": "html", "__init__": _html_tag_init}
-)
+html = type("html", (HTMLDocument,), {"name": "html", "__init__": _html_tag_init})
 body = type("body", (HTMLBodyElement,), {"name": "body"})
 head = type("head", (HTMLHeadElement,), {"name": "head"})
 hx_partial = type("hx-partial", (Element,), {"name": "hx-partial"})
@@ -809,18 +803,14 @@ canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
 caption = type("caption", (HTMLTableCaptionElement,), {"name": "caption"})
 colgroup = type("colgroup", (Element,), {"name": "colgroup"})
 tbody = type("tbody", (HTMLTableSectionElement,), {"name": "tbody"})
-thead = type(
-    "thead", (Element,), {"name": "thead"}
-)  # Note - also should extend HTMLTableSectionElement
+thead = type("thead", (Element,), {"name": "thead"})  # Note - also should extend HTMLTableSectionElement
 tfoot = type("tfoot", (Element,), {"name": "tfoot"})
 th = type("th", (HTMLTableHeaderCellElement,), {"name": "th"})
 fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})
 legend = type("legend", (HTMLLegendElement,), {"name": "legend"})
 button = type("button", (HTMLButtonElement,), {"name": "button"})
 select = type("select", (HTMLSelectElement,), {"name": "select"})
-selectedcontent = type(
-    "selectedcontent", (HTMLSelectedContentElement,), {"name": "selectedcontent"}
-)
+selectedcontent = type("selectedcontent", (HTMLSelectedContentElement,), {"name": "selectedcontent"})
 datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
 optgroup = type("optgroup", (HTMLOptGroupElement,), {"name": "optgroup"})
 option = type("option", (HTMLOptionElement,), {"name": "option"})

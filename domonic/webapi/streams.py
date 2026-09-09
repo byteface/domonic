@@ -22,9 +22,7 @@ def _normalize_format(format: str) -> str:
     normalized = str(format).lower()
     if normalized not in _FORMAT_WBITS:
         supported = ", ".join(sorted(_FORMAT_WBITS))
-        raise TypeError(
-            f"Unsupported compression format: {format!r}. Expected one of: {supported}"
-        )
+        raise TypeError(f"Unsupported compression format: {format!r}. Expected one of: {supported}")
     return normalized
 
 
@@ -110,9 +108,7 @@ def _high_water_mark_from_options(options, keyword) -> float:
     elif options is not None:
         hwm = options
     if hwm is None:
-        raise TypeError(
-            "Failed to construct queuing strategy: required member highWaterMark is undefined"
-        )
+        raise TypeError("Failed to construct queuing strategy: required member highWaterMark is undefined")
     return hwm
 
 
@@ -178,9 +174,7 @@ def _looks_like_underlying_source(obj) -> bool:
         return bool({"start", "pull", "cancel", "type"} & set(obj))
     if callable(obj):
         return False
-    return any(
-        callable(getattr(obj, name, None)) for name in ("start", "pull", "cancel")
-    )
+    return any(callable(getattr(obj, name, None)) for name in ("start", "pull", "cancel"))
 
 
 # ---------------------------------------------------------------------------
@@ -365,9 +359,7 @@ class ReadableStream:
         if isinstance(reason, BaseException):
             self._stored_error = reason
         else:
-            self._stored_error = RuntimeError(
-                str(reason) if reason is not None else "The stream errored"
-            )
+            self._stored_error = RuntimeError(str(reason) if reason is not None else "The stream errored")
         self._queue.clear()
         self._queue_total_size = 0
 
@@ -413,10 +405,7 @@ class ReadableStream:
         if self._legacy:
             return
         guard = 0
-        while (
-            self._state == "readable"
-            and (self._high_water_mark - self._queue_total_size) > 0
-        ):
+        while self._state == "readable" and (self._high_water_mark - self._queue_total_size) > 0:
             before = len(self._queue)
             self._call_source("pull", self._controller)
             guard += 1

@@ -99,9 +99,7 @@ class CanvasGradient:
     def addColorStop(self, offset: float, color: str) -> None:
         offset = float(offset)
         if offset < 0 or offset > 1:
-            raise DOMException(
-                DOMException.INDEX_SIZE_ERR, "Color stop is out of range"
-            )
+            raise DOMException(DOMException.INDEX_SIZE_ERR, "Color stop is out of range")
         self.colorStops.append((offset, str(color)))
 
 
@@ -174,7 +172,12 @@ class CanvasRenderingContext2D:
         self._line_dash: list[float] = []
         self._state_stack: list[dict[str, Any]] = []
         self._transform: tuple[float, float, float, float, float, float] = (
-            1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+            1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
         )
 
     @property
@@ -272,14 +275,10 @@ class CanvasRenderingContext2D:
     def strokeRect(self, x: float, y: float, width: float, height: float) -> None:
         self._record("strokeRect", x, y, width, height)
 
-    def fillText(
-        self, text: str, x: float, y: float, maxWidth: float | None = None
-    ) -> None:
+    def fillText(self, text: str, x: float, y: float, maxWidth: float | None = None) -> None:
         self._record("fillText", text, x, y, maxWidth)
 
-    def strokeText(
-        self, text: str, x: float, y: float, maxWidth: float | None = None
-    ) -> None:
+    def strokeText(self, text: str, x: float, y: float, maxWidth: float | None = None) -> None:
         self._record("strokeText", text, x, y, maxWidth)
 
     def measureText(self, text: str) -> TextMetrics:
@@ -300,17 +299,13 @@ class CanvasRenderingContext2D:
     def putImageData(self, imageData: ImageData, dx: int, dy: int, *dirty: Any) -> None:
         self._record("putImageData", imageData, dx, dy, *dirty)
 
-    def createLinearGradient(
-        self, x0: float, y0: float, x1: float, y1: float
-    ) -> CanvasGradient:
+    def createLinearGradient(self, x0: float, y0: float, x1: float, y1: float) -> CanvasGradient:
         return CanvasGradient("linear", (x0, y0, x1, y1))
 
     def createRadialGradient(self, *args: Any) -> CanvasGradient:
         return CanvasGradient("radial", tuple(args))
 
-    def createConicGradient(
-        self, startAngle: float, x: float, y: float
-    ) -> CanvasGradient:
+    def createConicGradient(self, startAngle: float, x: float, y: float) -> CanvasGradient:
         return CanvasGradient("conic", (startAngle, x, y))
 
     def createPattern(self, image: Any, repetition: str = "repeat") -> CanvasPattern:
@@ -345,9 +340,7 @@ class CanvasRenderingContext2D:
         )
         self._record("rotate", angle)
 
-    def transform(
-        self, a: float, b: float, c: float, d: float, e: float, f: float
-    ) -> None:
+    def transform(self, a: float, b: float, c: float, d: float, e: float, f: float) -> None:
         self._transform = (a, b, c, d, e, f)
         self._record("transform", a, b, c, d, e, f)
 
@@ -533,14 +526,8 @@ class WebGLRenderingContext:
 
     def linkProgram(self, program: WebGLProgram) -> None:
         shader_types = {shader.type for shader in program.shaders if shader.compiled}
-        program.linked = (
-            self.VERTEX_SHADER in shader_types and self.FRAGMENT_SHADER in shader_types
-        )
-        program.infoLog = (
-            ""
-            if program.linked
-            else "Program requires compiled vertex and fragment shaders"
-        )
+        program.linked = self.VERTEX_SHADER in shader_types and self.FRAGMENT_SHADER in shader_types
+        program.infoLog = "" if program.linked else "Program requires compiled vertex and fragment shaders"
         self._record("linkProgram", program)
 
     def getProgramParameter(self, program: WebGLProgram, pname: int) -> Any:
@@ -587,17 +574,13 @@ class OffscreenCanvas:
 
     def convertToBlob(self, options: dict[str, Any] | None = None):
         options = dict(options or {})
-        return _create_promise().resolve(
-            canvas_to_blob(self, options.get("type", "image/png"))
-        )
+        return _create_promise().resolve(canvas_to_blob(self, options.get("type", "image/png")))
 
     def toDataURL(self, type: str = "image/png", quality: Any | None = None) -> str:
         return canvas_to_data_url(self, type, quality)
 
 
-def get_canvas_context(
-    canvas: Any, contextId: str, options: dict[str, Any] | None = None
-) -> Any:
+def get_canvas_context(canvas: Any, contextId: str, options: dict[str, Any] | None = None) -> Any:
     kind = str(contextId or "").lower()
     existing_kind = getattr(canvas, "_context_type", None)
     existing = getattr(canvas, "_context", None)
@@ -625,9 +608,7 @@ def get_canvas_context(
     return context
 
 
-def canvas_to_data_url(
-    canvas: Any, type: str = "image/png", quality: Any | None = None
-) -> str:
+def canvas_to_data_url(canvas: Any, type: str = "image/png", quality: Any | None = None) -> str:
     mime_type = str(type or "image/png")
     payload = {
         "width": _canvas_dimension(canvas, "width", 300),

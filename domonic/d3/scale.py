@@ -18,19 +18,33 @@ import math
 from datetime import datetime
 from typing import Any, Callable, Sequence
 
-from domonic.d3.array import bisect, quantile, quantileSorted, ticks, tickIncrement
+from domonic.d3.array import bisect, quantile, quantileSorted, tickIncrement, ticks
+from domonic.d3.interpolate import interpolate as interpolateValue
 from domonic.d3.interpolate import (
-    interpolate as interpolateValue,
     interpolateNumber,
     interpolateRound,
 )
 
 __all__ = [
-    "scaleLinear", "scaleIdentity", "scaleRadial", "scalePow", "scaleSqrt",
-    "scaleLog", "scaleSymlog", "scaleQuantize", "scaleQuantile",
-    "scaleThreshold", "scaleOrdinal", "scaleBand", "scalePoint",
-    "scaleSequential", "scaleDiverging", "scaleImplicit", "tickFormat",
-    "scaleTime", "scaleUtc",
+    "scaleLinear",
+    "scaleIdentity",
+    "scaleRadial",
+    "scalePow",
+    "scaleSqrt",
+    "scaleLog",
+    "scaleSymlog",
+    "scaleQuantize",
+    "scaleQuantile",
+    "scaleThreshold",
+    "scaleOrdinal",
+    "scaleBand",
+    "scalePoint",
+    "scaleSequential",
+    "scaleDiverging",
+    "scaleImplicit",
+    "tickFormat",
+    "scaleTime",
+    "scaleUtc",
 ]
 
 
@@ -89,6 +103,7 @@ def _polymap(domain, range_, interpolate):
 
 
 # -- continuous ------------------------------------------------------
+
 
 class ContinuousScale:
     def __init__(self, transform=_identity, untransform=_identity):
@@ -237,6 +252,7 @@ def _init_range_domain(scale, args):
 
 # -- identity / radial ---------------------------------------------
 
+
 class IdentityScale(LinearishScale):
     def __call__(self, x: Any) -> Any:
         if x is None:
@@ -316,6 +332,7 @@ def scaleRadial(*args) -> RadialScale:
 
 # -- power / sqrt -------------------------------------------------
 
+
 class PowScale(LinearishScale):
     def __init__(self, *a, **k):
         self._exponent = 1.0
@@ -330,10 +347,8 @@ class PowScale(LinearishScale):
             self._transform = self._transform_sqrt
             self._untransform = self._untransform_sqrt
         else:
-            self._transform = lambda x: -((-x) ** e) if x < 0 else x ** e
-            self._untransform = (
-                lambda x: -((-x) ** (1 / e)) if x < 0 else x ** (1 / e)
-            )
+            self._transform = lambda x: -((-x) ** e) if x < 0 else x**e
+            self._untransform = lambda x: -((-x) ** (1 / e)) if x < 0 else x ** (1 / e)
         self._output = self._input = None
 
     @staticmethod
@@ -369,6 +384,7 @@ def scaleSqrt(*args) -> PowScale:
 
 # -- log ---------------------------------------------------------
 
+
 class LogScale(ContinuousScale):
     def __init__(self, *a, **k):
         self._base = 10.0
@@ -383,14 +399,14 @@ class LogScale(ContinuousScale):
             self._transform, self._untransform = math.log, math.exp
         elif b == 10:
             self._transform = math.log10
-            self._untransform = lambda x: 10 ** x
+            self._untransform = lambda x: 10**x
         elif b == 2:
             self._transform = math.log2
-            self._untransform = lambda x: 2 ** x
+            self._untransform = lambda x: 2**x
         else:
             lb = math.log(b)
             self._transform = lambda x: math.log(x) / lb
-            self._untransform = lambda x: b ** x
+            self._untransform = lambda x: b**x
         # handle negative domains by reflecting
         if self._domain and self._domain[0] < 0:
             t, u = self._transform, self._untransform
@@ -416,7 +432,7 @@ class LogScale(ContinuousScale):
         return math.log(abs(x)) / math.log(self._base)
 
     def _pows(self, x: float) -> float:
-        return self._base ** x
+        return self._base**x
 
     def ticks(self, count: int | None = None) -> list:
         d = self._domain
@@ -499,6 +515,7 @@ def scaleLog(*args) -> LogScale:
 
 # -- symlog ----------------------------------------------------
 
+
 class SymlogScale(LinearishScale):
     def __init__(self, *a, **k):
         self._C = 1.0
@@ -527,6 +544,7 @@ def scaleSymlog(*args) -> SymlogScale:
 
 # -- quantize -------------------------------------------------
 
+
 class QuantizeScale:
     def __init__(self):
         self._x0 = 0.0
@@ -537,9 +555,7 @@ class QuantizeScale:
 
     def _rescale(self):
         n = len(self._range) - 1
-        self._thresholds = [
-            self._x0 + (i + 1) * (self._x1 - self._x0) / (n + 1) for i in range(n)
-        ]
+        self._thresholds = [self._x0 + (i + 1) * (self._x1 - self._x0) / (n + 1) for i in range(n)]
         return self
 
     def __call__(self, x: Any) -> Any:
@@ -606,6 +622,7 @@ def scaleQuantize(*args) -> QuantizeScale:
 
 # -- quantile -------------------------------------------------
 
+
 class QuantileScale:
     def __init__(self):
         self._domain: list = []
@@ -615,9 +632,7 @@ class QuantileScale:
 
     def _rescale(self):
         n = max(1, len(self._range))
-        self._thresholds = [
-            quantileSorted(self._domain, (i + 1) / n) for i in range(n - 1)
-        ] if self._domain else []
+        self._thresholds = [quantileSorted(self._domain, (i + 1) / n) for i in range(n - 1)] if self._domain else []
         return self
 
     def __call__(self, x: Any) -> Any:
@@ -640,9 +655,7 @@ class QuantileScale:
     def domain(self, values: Sequence | None = None):
         if values is None:
             return list(self._domain)
-        self._domain = sorted(
-            float(v) for v in values if v is not None and float(v) == float(v)
-        )
+        self._domain = sorted(float(v) for v in values if v is not None and float(v) == float(v))
         return self._rescale()
 
     def range(self, values: Sequence | None = None):
@@ -674,6 +687,7 @@ def scaleQuantile(*args) -> QuantileScale:
 
 
 # -- threshold -----------------------------------------------
+
 
 class ThresholdScale:
     def __init__(self):
@@ -808,14 +822,10 @@ class BandScale:
             return self
         reverse = self._r1 < self._r0
         start, stop = (self._r1, self._r0) if reverse else (self._r0, self._r1)
-        step = (stop - start) / max(
-            1, n - self._padding_inner + self._padding_outer * 2
-        )
+        step = (stop - start) / max(1, n - self._padding_inner + self._padding_outer * 2)
         if self._round:
             step = math.floor(step)
-        start += (
-            stop - start - step * (n - self._padding_inner)
-        ) * self._align
+        start += (stop - start - step * (n - self._padding_inner)) * self._align
         bandwidth = step * (1 - self._padding_inner)
         if self._round:
             start = round(start)
@@ -948,6 +958,7 @@ def scalePoint(*args) -> PointScale:
 
 # -- sequential / diverging -------------------------------
 
+
 class SequentialScale:
     def __init__(self, interpolator: Callable[[float], Any] = _identity):
         self._x0 = 0.0
@@ -1048,13 +1059,9 @@ class DivergingScale:
         if xf != xf:
             return self._unknown
         if xf < self._x1:
-            t = 0.5 * (
-                (xf - self._x0) / (self._x1 - self._x0) if self._x1 != self._x0 else 0
-            )
+            t = 0.5 * ((xf - self._x0) / (self._x1 - self._x0) if self._x1 != self._x0 else 0)
         else:
-            t = 0.5 + 0.5 * (
-                (xf - self._x1) / (self._x2 - self._x1) if self._x2 != self._x1 else 0
-            )
+            t = 0.5 + 0.5 * ((xf - self._x1) / (self._x2 - self._x1) if self._x2 != self._x1 else 0)
         if self._clamp:
             t = max(0.0, min(1.0, t))
         return self._interpolator(t)
@@ -1100,12 +1107,16 @@ def scaleDiverging(*args) -> DivergingScale:
 
 # -- time ---------------------------------------------------------
 
+
 def _multiscale_time_format(date) -> str:
     """A compact d3-style multi-scale date format via ``strftime``."""
-    from domonic.d3.time import (
-        timeSecond as _tS, timeMinute as _tMi, timeHour as _tH,
-        timeDay as _tD, timeWeek as _tW, timeMonth as _tMo, timeYear as _tY,
-    )
+    from domonic.d3.time import timeDay as _tD
+    from domonic.d3.time import timeHour as _tH
+    from domonic.d3.time import timeMinute as _tMi
+    from domonic.d3.time import timeMonth as _tMo
+    from domonic.d3.time import timeSecond as _tS
+    from domonic.d3.time import timeWeek as _tW
+    from domonic.d3.time import timeYear as _tY
 
     if _tS(date) < date:
         return date.strftime(".%f")[:4]
@@ -1148,7 +1159,8 @@ class TimeScale(LinearishScale):
         return self._to_date(super().invert(y))
 
     def ticks(self, count: int | None = None):
-        from domonic.d3.time import timeTicks as _tt, utcTicks as _ut
+        from domonic.d3.time import timeTicks as _tt
+        from domonic.d3.time import utcTicks as _ut
 
         d = self.domain()
         fn = _ut if self._utc else _tt
@@ -1156,22 +1168,21 @@ class TimeScale(LinearishScale):
 
     def tickFormat(self, count=None, specifier=None):
         if specifier is not None:
+
             def strf(date):
                 return date.strftime(specifier)
+
             return strf
         return _multiscale_time_format
 
     def nice(self, count: int | None = None):
-        from domonic.d3.time import (
-            timeTickInterval as _tti, utcTickInterval as _uti,
-        )
+        from domonic.d3.time import timeTickInterval as _tti
+        from domonic.d3.time import utcTickInterval as _uti
 
         d = self.domain()
         interval: Any = count
         if not hasattr(interval, "range"):
-            interval = (_uti if self._utc else _tti)(
-                d[0], d[-1], 10 if count is None else count
-            )
+            interval = (_uti if self._utc else _tti)(d[0], d[-1], 10 if count is None else count)
         if interval is not None:
             self.domain([interval.floor(d[0]), interval.ceil(d[-1])])
         return self
@@ -1210,6 +1221,7 @@ def _DEFAULT_TIME_DOMAIN() -> list:
 
 
 # -- tick format ---------------------------------------------
+
 
 def tickFormat(start: float, stop: float, count: int, specifier: Any = None):
     """Return a function that formats a tick value.

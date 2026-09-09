@@ -41,11 +41,7 @@ class DataTransfer:
             self.data.pop(type, None)
         if type in self.types:
             self.types.remove(type)
-        self.items[:] = [
-            item
-            for item in self.items
-            if not (item.kind == "string" and item.type == type)
-        ]
+        self.items[:] = [item for item in self.items if not (item.kind == "string" and item.type == type)]
 
     def getData(self, type):
         return self.data.get(type, "")
@@ -108,9 +104,7 @@ class DataTransferItemList(list):
         return len(self)
 
     def add(self, data, type: str | None = None):
-        item = (
-            data if isinstance(data, DataTransferItem) else DataTransferItem(data, type)
-        )
+        item = data if isinstance(data, DataTransferItem) else DataTransferItem(data, type)
         self.append(item)
         if item.kind == "file":
             self._owner.files.append(item.getAsFile())
@@ -139,9 +133,7 @@ class DataTransferItemList(list):
         except (IndexError, TypeError, ValueError):
             return None
         if item.kind == "file":
-            self._owner.files = FileList(
-                file for file in self._owner.files if file is not item.getAsFile()
-            )
+            self._owner.files = FileList(file for file in self._owner.files if file is not item.getAsFile())
             self._owner._sync_files_type()
         elif item.type in self._owner.data:
             self._owner.data.pop(item.type, None)

@@ -50,10 +50,7 @@ def _dom_attribute_name(name: str) -> str:
 
 
 def _attributes(node: Element) -> dict[str, Any]:
-    return {
-        _public_attribute_name(name): deepcopy(value)
-        for name, value in getattr(node, "kwargs", {}).items()
-    }
+    return {_public_attribute_name(name): deepcopy(value) for name, value in getattr(node, "kwargs", {}).items()}
 
 
 def _node_name(node: Any) -> str | None:
@@ -269,9 +266,7 @@ class DiffDOM:
             child = source_children[index]
             changes.append(
                 {
-                    "action": (
-                        "removeTextElement" if _is_text_node(child) else "removeElement"
-                    ),
+                    "action": ("removeTextElement" if _is_text_node(child) else "removeElement"),
                     "route": route + [index],
                     "oldValue": nodeToObj(child),
                 }
@@ -281,9 +276,7 @@ class DiffDOM:
             child = target_children[index]
             changes.append(
                 {
-                    "action": (
-                        "addTextElement" if _is_text_node(child) else "addElement"
-                    ),
+                    "action": ("addTextElement" if _is_text_node(child) else "addElement"),
                     "route": route + [index],
                     "element": nodeToObj(child),
                 }
@@ -333,9 +326,7 @@ class DiffDOM:
         route = list(change.get("route", ()))
 
         if action in {"addAttribute", "modifyAttribute"}:
-            _get_from_route(tree, route).setAttribute(
-                change["name"], change.get("value", change.get("newValue"))
-            )
+            _get_from_route(tree, route).setAttribute(change["name"], change.get("value", change.get("newValue")))
             return
         if action == "removeAttribute":
             _get_from_route(tree, route).removeAttribute(change["name"])
@@ -393,14 +384,10 @@ class DiffDOM:
                 change.get("oldValue"),
             )
         elif action in {"addElement", "addTextElement"}:
-            inverse["action"] = (
-                "removeTextElement" if action == "addTextElement" else "removeElement"
-            )
+            inverse["action"] = "removeTextElement" if action == "addTextElement" else "removeElement"
             inverse["oldValue"] = change.get("element")
         elif action in {"removeElement", "removeTextElement"}:
-            inverse["action"] = (
-                "addTextElement" if action == "removeTextElement" else "addElement"
-            )
+            inverse["action"] = "addTextElement" if action == "removeTextElement" else "addElement"
             inverse["element"] = change.get("oldValue")
         elif action == "replaceElement":
             inverse["oldValue"], inverse["newValue"] = (

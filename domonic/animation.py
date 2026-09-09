@@ -143,9 +143,7 @@ class ComputedEffectTiming(EffectTiming):
 class AnimationPlaybackEvent(Event):
     """Event carrying playback timing information for animation lifecycle hooks."""
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.currentTime = options.get("currentTime")
         self.timelineTime = options.get("timelineTime")
@@ -161,23 +159,17 @@ class AnimationEffect:
     def getTiming(self) -> EffectTiming:
         return EffectTiming(**self._timing.to_dict())
 
-    def updateTiming(
-        self, options: EffectTiming | dict[str, Any] | None = None
-    ) -> None:
+    def updateTiming(self, options: EffectTiming | dict[str, Any] | None = None) -> None:
         if options is None:
             return
         updated = self._timing.to_dict()
         updated.update(_coerce_timing_options(options))
         self._timing = EffectTiming(**updated)
 
-    def getComputedTiming(
-        self, local_time: float | None = None
-    ) -> ComputedEffectTiming:
+    def getComputedTiming(self, local_time: float | None = None) -> ComputedEffectTiming:
         timing = self.getTiming()
         iterations = timing.iterations
-        active_duration = (
-            math.inf if math.isinf(iterations) else timing.duration * iterations
-        )
+        active_duration = math.inf if math.isinf(iterations) else timing.duration * iterations
         end_time = timing.delay + active_duration + timing.endDelay
         progress = None
         current_iteration = None
@@ -190,29 +182,21 @@ class AnimationEffect:
                     current_iteration = 0
             elif math.isinf(active_duration) or active_time < active_duration:
                 duration = timing.duration if timing.duration > 0 else 1.0
-                current_iteration = (
-                    int(active_time // duration) if timing.duration > 0 else 0
-                )
-                simple_progress = (
-                    1.0 if timing.duration == 0 else (active_time % duration) / duration
-                )
+                current_iteration = int(active_time // duration) if timing.duration > 0 else 0
+                simple_progress = 1.0 if timing.duration == 0 else (active_time % duration) / duration
                 progress = self._directed_progress(simple_progress, current_iteration)
             elif active_duration == 0 or active_time == active_duration:
                 progress = self._directed_progress(
                     1.0,
                     max(0, int(iterations) - 1 if not math.isinf(iterations) else 0),
                 )
-                current_iteration = (
-                    None if math.isinf(iterations) else max(0, int(iterations) - 1)
-                )
+                current_iteration = None if math.isinf(iterations) else max(0, int(iterations) - 1)
             elif timing.fill in {"forwards", "both"}:
                 progress = self._directed_progress(
                     1.0,
                     max(0, int(iterations) - 1 if not math.isinf(iterations) else 0),
                 )
-                current_iteration = (
-                    None if math.isinf(iterations) else max(0, int(iterations) - 1)
-                )
+                current_iteration = None if math.isinf(iterations) else max(0, int(iterations) - 1)
 
         return ComputedEffectTiming(
             timing,
@@ -253,10 +237,7 @@ class KeyframeEffect(AnimationEffect):
     def _normalize_keyframes(
         keyframes: list[dict[str, Any]] | dict[str, Any],
     ) -> list[dict[str, Any]]:
-        frames = [
-            dict(frame)
-            for frame in (keyframes if isinstance(keyframes, list) else [keyframes])
-        ]
+        frames = [dict(frame) for frame in (keyframes if isinstance(keyframes, list) else [keyframes])]
         if not frames:
             return [{"offset": 0.0}, {"offset": 1.0}]
 
@@ -271,21 +252,13 @@ class KeyframeEffect(AnimationEffect):
     def getKeyframes(self) -> list[dict[str, Any]]:
         return [dict(frame) for frame in self._keyframes]
 
-    def _interpolate_value(
-        self, prop: str, start: Any, end: Any, progress: float
-    ) -> Any:
+    def _interpolate_value(self, prop: str, start: Any, end: Any, progress: float) -> Any:
         easing_fn = _resolve_easing(self._timing.easing)
         eased = easing_fn(progress, 0, 1, 1, 0, 0)
         start_value = _parse_interpolable(start)
         end_value = _parse_interpolable(end)
-        if (
-            start_value is not None
-            and end_value is not None
-            and start_value[1] == end_value[1]
-        ):
-            return _format_interpolated(
-                lerp(start_value[0], end_value[0], eased), start_value[1]
-            )
+        if start_value is not None and end_value is not None and start_value[1] == end_value[1]:
+            return _format_interpolated(lerp(start_value[0], end_value[0], eased), start_value[1])
         return end if eased >= 0.5 else start
 
     def _apply_property(self, prop: str, value: Any) -> None:
@@ -324,9 +297,7 @@ class KeyframeEffect(AnimationEffect):
         for prop in properties:
             start_value = before.get(prop, after.get(prop))
             end_value = after.get(prop, before.get(prop))
-            value = self._interpolate_value(
-                prop, start_value, end_value, local_progress
-            )
+            value = self._interpolate_value(prop, start_value, end_value, local_progress)
             self._apply_property(prop, value)
 
 
@@ -349,14 +320,8 @@ class Animation(EventTarget):
 
     @property
     def currentTime(self) -> float | None:
-        if (
-            self.playState == "running"
-            and self.startTime is not None
-            and self.timeline is not None
-        ):
-            self._currentTime = (
-                self.timeline.currentTime - self.startTime
-            ) * self.playbackRate
+        if self.playState == "running" and self.startTime is not None and self.timeline is not None:
+            self._currentTime = (self.timeline.currentTime - self.startTime) * self.playbackRate
         return self._currentTime
 
     @currentTime.setter

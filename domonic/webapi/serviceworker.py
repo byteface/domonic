@@ -129,9 +129,7 @@ class ServiceWorkerContainer(EventTarget):
             for scope, candidate in self._registrations.items():
                 absolute_client = urljoin(self._baseURL, clientURL)
                 absolute_scope = urljoin(self._baseURL, scope)
-                if clientURL.startswith(scope) or absolute_client.startswith(
-                    absolute_scope
-                ):
+                if clientURL.startswith(scope) or absolute_client.startswith(absolute_scope):
                     registration = candidate
                     break
         return _create_promise().resolve(registration)

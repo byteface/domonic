@@ -10,9 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-
-HELLO_BLACKSHEEP: str = (
-    """
+HELLO_BLACKSHEEP: str = """
 import uvicorn
 from blacksheep import Application, get, html as html_response
 from domonic.ext.lander import page
@@ -27,10 +25,8 @@ async def home():
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_FAST_API: str = (
-    """
+HELLO_FAST_API: str = """
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -46,10 +42,8 @@ async def read_root():
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_FASTHTML: str = (
-    """
+HELLO_FASTHTML: str = """
 from fasthtml.common import FastHTML, serve
 from domonic.ext.lander import page
 
@@ -63,10 +57,8 @@ def home():
 if __name__ == "__main__":
     serve(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_STARLETTE: str = (
-    """
+HELLO_STARLETTE: str = """
 import uvicorn
 from starlette.applications import Starlette
 from starlette.responses import HTMLResponse
@@ -82,10 +74,8 @@ app = Starlette(routes=[Route("/", homepage)])
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_SANIC: str = (
-    """
+HELLO_SANIC: str = """
 from sanic import Sanic
 from sanic import response
 from domonic.ext.lander import page
@@ -100,10 +90,8 @@ async def index(request):
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_FLASK: str = (
-    """
+HELLO_FLASK: str = """
 from flask import Flask
 from domonic.ext.lander import page
 
@@ -117,10 +105,8 @@ def index():
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_API_FLASK: str = (
-    """
+HELLO_API_FLASK: str = """
 from apiflask import APIFlask
 from flask import Response
 from domonic.ext.lander import page
@@ -135,10 +121,8 @@ def index():
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_CHERRYPY: str = (
-    """
+HELLO_CHERRYPY: str = """
 import cherrypy
 from domonic.ext.lander import page
 
@@ -154,11 +138,9 @@ if __name__ == "__main__":
     cherrypy.config.update({"server.socket_host": "127.0.0.1", "server.socket_port": 8000})
     cherrypy.quickstart(HelloWorld())
 """
-)
 
 
-HELLO_BOTTLE: str = (
-    """
+HELLO_BOTTLE: str = """
 from bottle import route, run
 from domonic.ext.lander import page
 
@@ -170,10 +152,8 @@ def index():
 if __name__ == "__main__":
     run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_DJANGO: str = (
-    """
+HELLO_DJANGO: str = """
 import django
 from django.conf import settings
 from django.core.management import execute_from_command_line
@@ -201,10 +181,8 @@ if not settings.configured:
 if __name__ == "__main__":
     execute_from_command_line(["app.py", "runserver", "127.0.0.1:8000"])
 """
-)
 
-HELLO_DJANGO_NINJA: str = (
-    """
+HELLO_DJANGO_NINJA: str = """
 import django
 from django.conf import settings
 from django.core.management import execute_from_command_line
@@ -243,10 +221,8 @@ urlpatterns = [
 if __name__ == "__main__":
     execute_from_command_line(["app.py", "runserver", "127.0.0.1:8000"])
 """
-)
 
-HELLO_PYRAMID: str = (
-    """
+HELLO_PYRAMID: str = """
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import Response
@@ -264,10 +240,8 @@ if __name__ == "__main__":
     server = make_server("127.0.0.1", 6543, app)
     server.serve_forever()
 """
-)
 
-HELLO_AIOHTTP: str = (
-    """
+HELLO_AIOHTTP: str = """
 from aiohttp import web
 from domonic.ext.lander import page
 
@@ -281,10 +255,8 @@ app.add_routes([web.get("/", handle)])
 if __name__ == "__main__":
     web.run_app(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_TORNADO: str = (
-    """
+HELLO_TORNADO: str = """
 import tornado.ioloop
 import tornado.web
 from domonic.ext.lander import page
@@ -305,10 +277,8 @@ if __name__ == "__main__":
     app.listen(8000, address="127.0.0.1")
     tornado.ioloop.IOLoop.current().start()
 """
-)
 
-HELLO_WERKZEUG: str = (
-    """
+HELLO_WERKZEUG: str = """
 from werkzeug.wrappers import Request, Response
 from domonic.ext.lander import page
 
@@ -321,10 +291,8 @@ if __name__ == "__main__":
     from werkzeug.serving import run_simple
     run_simple("127.0.0.1", 8000, application)
 """
-)
 
-HELLO_FALCON: str = (
-    """
+HELLO_FALCON: str = """
 import falcon
 from wsgiref.simple_server import make_server
 from domonic.ext.lander import page
@@ -343,10 +311,8 @@ if __name__ == "__main__":
     server = make_server("127.0.0.1", 8000, app)
     server.serve_forever()
 """
-)
 
-HELLO_QUART: str = (
-    """
+HELLO_QUART: str = """
 from quart import Quart
 from domonic.ext.lander import page
 
@@ -360,10 +326,8 @@ async def index():
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_MUFFIN: str = (
-    """
+HELLO_MUFFIN: str = """
 import muffin
 import uvicorn
 from domonic.ext.lander import page
@@ -378,10 +342,8 @@ async def index(request):
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_BAIZE: str = (
-    """
+HELLO_BAIZE: str = """
 import uvicorn
 from baize.asgi import HTMLResponse, request_response
 from domonic.ext.lander import page
@@ -394,10 +356,8 @@ async def app(request):
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_ESMERALD: str = (
-    """
+HELLO_ESMERALD: str = """
 import uvicorn
 from esmerald import Esmerald, EsmeraldSettings, Gateway, Response, get
 from esmerald.conf import monkay
@@ -418,10 +378,8 @@ app = Esmerald(routes=[Gateway("/", handler=homepage)], settings_module=DomonicS
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_GRANIAN: str = (
-    """
+HELLO_GRANIAN: str = """
 from granian import Granian
 from domonic.ext.lander import page
 
@@ -456,10 +414,8 @@ async def app(scope, receive, send):
 if __name__ == "__main__":
     Granian("app:app", interface="asgi", host="127.0.0.1", port=8000).serve()
 """
-)
 
-HELLO_EMMETT: str = (
-    """
+HELLO_EMMETT: str = """
 from emmett import App
 from domonic.ext.lander import page
 
@@ -473,10 +429,8 @@ async def index():
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_LITESTAR: str = (
-    """
+HELLO_LITESTAR: str = """
 import uvicorn
 from litestar import Litestar, MediaType, get
 from domonic.ext.lander import page
@@ -491,10 +445,8 @@ app = Litestar(route_handlers=[index])
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_ROBYN: str = (
-    """
+HELLO_ROBYN: str = """
 from robyn import Robyn
 from domonic.ext.lander import page
 
@@ -508,10 +460,8 @@ async def index(request):
 if __name__ == "__main__":
     app.start(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_EVE: str = (
-    """
+HELLO_EVE: str = """
 from eve import Eve
 from domonic.ext.lander import page
 
@@ -526,10 +476,8 @@ def index():
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=8000)
 """
-)
 
-HELLO_KLEIN: str = (
-    """
+HELLO_KLEIN: str = """
 from klein import Klein
 from domonic.ext.lander import page
 
@@ -544,7 +492,6 @@ def index(request):
 if __name__ == "__main__":
     app.run("127.0.0.1", 8000)
 """
-)
 
 
 SERVER_SCAFFOLDS: dict[str, dict[str, Any]] = {

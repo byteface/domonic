@@ -79,9 +79,7 @@ class Headers:
 
         if isinstance(init, Mapping):
             for name, value in init.items():
-                if isinstance(value, Sequence) and not isinstance(
-                    value, (str, bytes, bytearray)
-                ):
+                if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
                     for item in value:
                         self.append(name, item)
                 else:
@@ -123,9 +121,7 @@ class Headers:
         return [(name, ", ".join(values)) for name, values in self.headers.items()]
 
     def raw_items(self) -> list[tuple[str, str]]:
-        return [
-            (name, value) for name, values in self.headers.items() for value in values
-        ]
+        return [(name, value) for name, values in self.headers.items() for value in values]
 
     def forEach(self, callback: Callable[..., Any], thisArg: Any = None) -> None:
         for name, value in self.entries():
@@ -135,11 +131,7 @@ class Headers:
         return [callback(value, name, self) for name, value in self.entries()]
 
     def filter(self, callback: Callable[..., Any], thisArg: Any = None) -> list[Any]:
-        return [
-            (name, value)
-            for name, value in self.entries()
-            if callback(value, name, self)
-        ]
+        return [(name, value) for name, value in self.entries() if callback(value, name, self)]
 
     def reduce(self, callback: Callable[..., Any], initialValue: Any) -> Any:
         result = initialValue
@@ -238,16 +230,12 @@ class _BodyMixin:
             text = body.text()
             return {
                 key: values[0] if len(values) == 1 else values
-                for key, values in urllib.parse.parse_qs(
-                    text, keep_blank_values=True
-                ).items()
+                for key, values in urllib.parse.parse_qs(text, keep_blank_values=True).items()
             }
         text = self.text()
         return {
             key: values[0] if len(values) == 1 else values
-            for key, values in urllib.parse.parse_qs(
-                text, keep_blank_values=True
-            ).items()
+            for key, values in urllib.parse.parse_qs(text, keep_blank_values=True).items()
         }
 
     def json(self) -> Any:
@@ -349,9 +337,7 @@ class Response(_BodyMixin):
 
     @classmethod
     def error(cls) -> Response:
-        return cls(
-            url="", status=0, statusText="", headers=None, body=None, type="error"
-        )
+        return cls(url="", status=0, statusText="", headers=None, body=None, type="error")
 
     @classmethod
     def redirect(cls, url: str, status: int = 302) -> Response:
@@ -368,9 +354,7 @@ class Response(_BodyMixin):
         )
 
     @classmethod
-    def _json_response(
-        cls, data: Any, init: Mapping[str, Any] | None = None
-    ) -> Response:
+    def _json_response(cls, data: Any, init: Mapping[str, Any] | None = None) -> Response:
         init = dict(init or {})
         headers = Headers(init.pop("headers", None))
         if not headers.has("content-type"):
@@ -459,21 +443,11 @@ class Request(_BodyMixin):
             method = None
         init = dict(init or {})
 
-        self.url = (
-            original.url
-            if original is not None
-            else str(init.pop("url", "" if url is None else url))
-        )
-        self.method = str(
-            init.pop("method", method or (original.method if original else "GET"))
-        ).upper()
-        headers = init.pop(
-            "headers", headers or (original.headers if original else None)
-        )
+        self.url = original.url if original is not None else str(init.pop("url", "" if url is None else url))
+        self.method = str(init.pop("method", method or (original.method if original else "GET"))).upper()
+        headers = init.pop("headers", headers or (original.headers if original else None))
         json_body = init.pop("json", _MISSING)
-        body = init.pop(
-            "body", body if body is not None else (original.body if original else None)
-        )
+        body = init.pop("body", body if body is not None else (original.body if original else None))
         self.headers = Headers(headers)
         if json_body is not _MISSING and body is None:
             body = jsonlib.dumps(json_body)
@@ -485,37 +459,19 @@ class Request(_BodyMixin):
             "credentials",
             credentials or (original.credentials if original else "same-origin"),
         )
-        self.cache = init.pop(
-            "cache", cache or (original.cache if original else "default")
-        )
-        self.redirect = init.pop(
-            "redirect", redirect or (original.redirect if original else "follow")
-        )
-        self.referrer = init.pop(
-            "referrer", referrer or (original.referrer if original else "about:client")
-        )
+        self.cache = init.pop("cache", cache or (original.cache if original else "default"))
+        self.redirect = init.pop("redirect", redirect or (original.redirect if original else "follow"))
+        self.referrer = init.pop("referrer", referrer or (original.referrer if original else "about:client"))
         self.referrerPolicy = init.pop(
             "referrerPolicy",
             referrerPolicy or (original.referrerPolicy if original else ""),
         )
-        self.integrity = init.pop(
-            "integrity", integrity or (original.integrity if original else "")
-        )
-        self.keepalive = bool(
-            init.pop("keepalive", keepalive if keepalive is not None else False)
-        )
-        self.signal = init.pop(
-            "signal", signal or (original.signal if original else None)
-        )
-        self.destination = init.pop(
-            "destination", destination or (original.destination if original else "")
-        )
-        self.priority = init.pop(
-            "priority", priority or (original.priority if original else "auto")
-        )
-        self.duplex = init.pop(
-            "duplex", duplex or (original.duplex if original else None)
-        )
+        self.integrity = init.pop("integrity", integrity or (original.integrity if original else ""))
+        self.keepalive = bool(init.pop("keepalive", keepalive if keepalive is not None else False))
+        self.signal = init.pop("signal", signal or (original.signal if original else None))
+        self.destination = init.pop("destination", destination or (original.destination if original else ""))
+        self.priority = init.pop("priority", priority or (original.priority if original else "auto"))
+        self.duplex = init.pop("duplex", duplex or (original.duplex if original else None))
 
         if self.method in ("GET", "HEAD") and body is not None:
             raise TypeError("Request with GET/HEAD method cannot have a body")
@@ -579,9 +535,7 @@ def _response_from_requests(response: Any) -> Response:
     )
 
 
-def fetch(
-    input: str | Request, init: Mapping[str, Any] | None = None, **kwargs: Any
-) -> Promise:
+def fetch(input: str | Request, init: Mapping[str, Any] | None = None, **kwargs: Any) -> Promise:
     """Fetch a resource and return a domonic ``Promise`` fulfilled with ``Response``."""
     promise = Promise()
     request = input if isinstance(input, Request) else Request(input, init=init)
@@ -625,9 +579,7 @@ def fetch(
     try:
         import requests
 
-        response = requests.request(
-            request.method, request.url, **_requests_kwargs(request, kwargs)
-        )
+        response = requests.request(request.method, request.url, **_requests_kwargs(request, kwargs))
         if request.redirect == "error" and 300 <= response.status_code <= 399:
             return promise.reject(RuntimeError("Fetch redirect blocked"))
         return promise.resolve(_response_from_requests(response))
@@ -658,11 +610,7 @@ def fetch_set(
     """Fetch a set of URLs sequentially and return their results."""
     fetched = FetchedSet()
     for url in _normalize_urls(urls):
-        fetched.append(
-            _resolve_fetch_result(
-                fetch(url, **kwargs), callback_function, error_handler
-            )
-        )
+        fetched.append(_resolve_fetch_result(fetch(url, **kwargs), callback_function, error_handler))
     return fetched
 
 
@@ -677,14 +625,9 @@ def fetch_threaded(
     results: list[Any] = [None] * len(url_list)
 
     def worker(index: int, url: str) -> None:
-        results[index] = _resolve_fetch_result(
-            fetch(url, **kwargs), callback_function, error_handler
-        )
+        results[index] = _resolve_fetch_result(fetch(url, **kwargs), callback_function, error_handler)
 
-    jobs = [
-        threading.Thread(target=worker, args=(index, url), daemon=True)
-        for index, url in enumerate(url_list)
-    ]
+    jobs = [threading.Thread(target=worker, args=(index, url), daemon=True) for index, url in enumerate(url_list)]
     for job in jobs:
         job.start()
     for job in jobs:
@@ -702,9 +645,7 @@ def fetch_pooled(
     url_list = _normalize_urls(urls)
 
     def worker(url: str) -> Any:
-        return _resolve_fetch_result(
-            fetch(url, **kwargs), callback_function, error_handler
-        )
+        return _resolve_fetch_result(fetch(url, **kwargs), callback_function, error_handler)
 
     pool = Pool()
     try:

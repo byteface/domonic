@@ -76,9 +76,7 @@ def _resolve_command_name(name: str) -> str:
 class CmdException(Exception):
     """raised if cmd throws an exception"""
 
-    def __init__(
-        self, error=None, message: str = "An error message was received from cmd"
-    ):
+    def __init__(self, error=None, message: str = "An error message was received from cmd"):
         self.error = error
         self.output = _decode_output(message)
         self.returncode = getattr(error, "returncode", None)
@@ -139,9 +137,7 @@ class Cmdcommand:
 
         completed.stdout = _decode_output(completed.stdout, encoding)
         if check and completed.returncode != 0:
-            error = subprocess.CalledProcessError(
-                completed.returncode, cmd, output=completed.stdout
-            )
+            error = subprocess.CalledProcessError(completed.returncode, cmd, output=completed.stdout)
             raise CmdException(error, completed.stdout) from error
         return completed
 
@@ -271,9 +267,7 @@ class cd(Cmdcommand):
 
 
 # tested --
-dir = type(
-    "dir", (Cmdcommand,), {"name": "dir", "iterable": True}
-)  #: list directory content
+dir = type("dir", (Cmdcommand,), {"name": "dir", "iterable": True})  #: list directory content
 erase = type("erase", (Cmdcommand,), {"name": "erase"})
 # del = type('del', (command,), {'name': 'del'})
 mkdir = type("mkdir", (Cmdcommand,), {"name": "mkdir"})  #: create a new directory
@@ -283,9 +277,7 @@ md = mkdir  #: Windows alias for mkdir
 rd = rmdir  #: Windows alias for rmdir
 
 fsutil = type("fsutil", (Cmdcommand,), {"name": "fsutil"})
-fc = type(
-    "fc", (Cmdcommand,), {"name": "fc"}
-)  # compare files and display the differences
+fc = type("fc", (Cmdcommand,), {"name": "fc"})  # compare files and display the differences
 
 
 class touch(Cmdcommand):
@@ -298,9 +290,7 @@ class touch(Cmdcommand):
 
 
 getmac = type("getmac", (Cmdcommand,), {"name": "getmac"})  #: display MAC address
-ipconfig = type(
-    "ipconfig", (Cmdcommand,), {"name": "ipconfig"}
-)  #: display IP network settings
+ipconfig = type("ipconfig", (Cmdcommand,), {"name": "ipconfig"})  #: display IP network settings
 shutdown = type(
     "shutdown", (Cmdcommand,), {"name": "shutdown"}
 )  #: shutdown the computer. (/s), triggers a restart (/r), or logs the user out (/l).
@@ -328,12 +318,8 @@ chkdsk = type("chkdsk", (Cmdcommand,), {"name": "chkdsk"})  #: check volumes
 driverquery = type(
     "driverquery", (Cmdcommand,), {"name": "driverquery"}
 )  #: display installed devices and their properties
-vol = type(
-    "vol", (Cmdcommand,), {"name": "vol"}
-)  #: show volume description and serial numbers of the HDDs
-gpresult = type(
-    "gpresult", (Cmdcommand,), {"name": "gpresult"}
-)  #: display group policies
+vol = type("vol", (Cmdcommand,), {"name": "vol"})  #: show volume description and serial numbers of the HDDs
+gpresult = type("gpresult", (Cmdcommand,), {"name": "gpresult"})  #: display group policies
 
 # ssh = type('ssh', (Cmdcommand,), {'name': 'ssh'})
 
@@ -345,24 +331,14 @@ class chdir(cd):
 # clip = type('clip', (Cmdcommand,), {'name': 'clip'})  # : Forwards the result of a command to the clipboard
 
 # find = type('find', (Cmdcommand,), {'name': 'find'})
-whoami = type(
-    "whoami", (Cmdcommand,), {"name": "whoami"}
-)  #: information about the current user. /GROUP parameter
+whoami = type("whoami", (Cmdcommand,), {"name": "whoami"})  #: information about the current user. /GROUP parameter
 
-logoff = type(
-    "logoff", (Cmdcommand,), {"name": "logoff"}
-)  #: Logs the user out of Windows.
-mrinfo = type(
-    "mrinfo", (Cmdcommand,), {"name": "mrinfo"}
-)  #: Provides information on the router
-tasklist = type(
-    "tasklist", (Cmdcommand,), {"name": "tasklist"}
-)  #: Lists all running processes
+logoff = type("logoff", (Cmdcommand,), {"name": "logoff"})  #: Logs the user out of Windows.
+mrinfo = type("mrinfo", (Cmdcommand,), {"name": "mrinfo"})  #: Provides information on the router
+tasklist = type("tasklist", (Cmdcommand,), {"name": "tasklist"})  #: Lists all running processes
 
 # cmd = type('cmd', (Cmdcommand,), {'name': 'cmd'})  #: start command prompt - NOTE hangs
-title = type(
-    "title", (Cmdcommand,), {"name": "title"}
-)  #: Changes the title of the command prompt
+title = type("title", (Cmdcommand,), {"name": "title"})  #: Changes the title of the command prompt
 tzutil = type(
     "tzutil", (Cmdcommand,), {"name": "tzutil"}
 )  #: Displays the currently set time zone (/g) or changes it (/s)

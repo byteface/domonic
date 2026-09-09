@@ -43,13 +43,9 @@ class XPathEvaluator:
         """Creates an evaluator with optional namespace prefix mappings."""
         self.namespaces = dict(namespaces or {})
 
-    def createExpression(
-        self, expression: str, resolver: Any = None
-    ) -> XPathExpression:
+    def createExpression(self, expression: str, resolver: Any = None) -> XPathExpression:
         """Compiles an XPath expression for later evaluation."""
-        return XPathExpression(
-            expression, self.namespaces if resolver is None else resolver
-        )
+        return XPathExpression(expression, self.namespaces if resolver is None else resolver)
 
     def createNSResolver(self, nodeResolver: Any) -> "XPathNSResolver":
         """Creates a namespace resolver from a node, mapping, or callable."""
@@ -64,9 +60,7 @@ class XPathEvaluator:
         result: Any = None,
     ) -> "XPathResult":
         """Evaluates an XPath expression against a context node."""
-        return self.createExpression(expression, resolver).evaluate(
-            contextNode, type, result
-        )
+        return self.createExpression(expression, resolver).evaluate(contextNode, type, result)
 
 
 class XPathException(Exception):
@@ -100,14 +94,10 @@ class XPathExpression:
         elementpath = _get_elementpath()
         try:
             self.selector = (
-                elementpath.Selector(expr, namespaces=self.namespaces or None)
-                if elementpath is not None
-                else None
+                elementpath.Selector(expr, namespaces=self.namespaces or None) if elementpath is not None else None
             )
         except Exception as exc:
-            raise XPathException(
-                str(exc), XPathException.INVALID_EXPRESSION_ERR
-            ) from exc
+            raise XPathException(str(exc), XPathException.INVALID_EXPRESSION_ERR) from exc
 
     @staticmethod
     def _expression_prefixes(expr: str) -> set[str]:
@@ -292,9 +282,7 @@ class XPathExpression:
         return str(getattr(node, "localName", None) or getattr(node, "name", ""))
 
     @staticmethod
-    def _predicate_matches(
-        node: Any, predicate: str, index: int, nodes: list[Any]
-    ) -> bool:
+    def _predicate_matches(node: Any, predicate: str, index: int, nodes: list[Any]) -> bool:
         from domonic.dom import Text
 
         if predicate.isdigit():
@@ -378,30 +366,19 @@ class XPathExpression:
             if predicates:
                 filtered = []
                 for idx, candidate in enumerate(candidates):
-                    if all(
-                        self._predicate_matches(candidate, predicate, idx, candidates)
-                        for predicate in predicates
-                    ):
+                    if all(self._predicate_matches(candidate, predicate, idx, candidates) for predicate in predicates):
                         filtered.append(candidate)
                 candidates = filtered
             nodes = candidates
         return nodes
 
-    def evaluate(
-        self, node: Any, type: int = 6, result: Any = None
-    ):  # XPathResult.ANY_TYPE):
+    def evaluate(self, node: Any, type: int = 6, result: Any = None):  # XPathResult.ANY_TYPE):
         # note: otherwise would fail on regular text?
         node = XPathExpression._upgrade_dom(node)
         try:
-            value = (
-                self.selector.select(node)
-                if self.selector is not None
-                else self._fallback_select(node)
-            )
+            value = self.selector.select(node) if self.selector is not None else self._fallback_select(node)
         except Exception as exc:
-            raise XPathException(
-                str(exc), XPathException.INVALID_EXPRESSION_ERR
-            ) from exc
+            raise XPathException(str(exc), XPathException.INVALID_EXPRESSION_ERR) from exc
         xpath_result = XPathResult(value, type)
         if isinstance(result, XPathResult):
             result.__dict__.clear()
@@ -411,9 +388,7 @@ class XPathExpression:
 
 
 class XPathNSResolver:
-    def __init__(
-        self, nodeResolver: Any = None, namespaces: Mapping[str, str] | None = None
-    ) -> None:
+    def __init__(self, nodeResolver: Any = None, namespaces: Mapping[str, str] | None = None) -> None:
         """Creates a namespace resolver from a node, mapping, or callable."""
         from domonic.constants import namespaces as default_namespaces
 
@@ -421,9 +396,7 @@ class XPathNSResolver:
         self.namespaces = dict(default_namespaces)
         self.namespaces.update(namespaces or {})
         if isinstance(nodeResolver, Mapping):
-            self.namespaces.update(
-                {str(prefix): str(uri) for prefix, uri in nodeResolver.items()}
-            )
+            self.namespaces.update({str(prefix): str(uri) for prefix, uri in nodeResolver.items()})
 
     def lookupNamespaceURI(self, prefix: str | None) -> str | None:
         """Returns the namespace URI for a prefix."""
@@ -511,10 +484,7 @@ class XPathResult:
                 self.booleanValue = bool(value)
             else:
                 self.booleanValue = bool(value)
-        elif (
-            _type == self.ANY_UNORDERED_NODE_TYPE
-            or _type == self.FIRST_ORDERED_NODE_TYPE
-        ):
+        elif _type == self.ANY_UNORDERED_NODE_TYPE or _type == self.FIRST_ORDERED_NODE_TYPE:
             self.singleNodeValue = self._first(value)  # .first()
         else:
             self.nodes = self._nodes(value)  # .list()

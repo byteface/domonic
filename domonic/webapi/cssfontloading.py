@@ -62,11 +62,7 @@ class FontFace(EventTarget):
         return self._loaded
 
     def toCSS(self) -> str:
-        source = (
-            self.source.decode("utf-8", "replace")
-            if isinstance(self.source, bytes)
-            else str(self.source)
-        )
+        source = self.source.decode("utf-8", "replace") if isinstance(self.source, bytes) else str(self.source)
         lines = [
             "@font-face {",
             f"  font-family: {self.family};",
@@ -155,9 +151,7 @@ class FontFaceSet(EventTarget):
             else:
                 errors.append(face)
         if errors:
-            self.dispatchEvent(
-                FontFaceSetLoadEvent("loadingerror", {"fontfaces": errors})
-            )
+            self.dispatchEvent(FontFaceSetLoadEvent("loadingerror", {"fontfaces": errors}))
         self.dispatchEvent(FontFaceSetLoadEvent("loadingdone", {"fontfaces": loaded}))
         return _create_promise().resolve(loaded)
 
@@ -179,11 +173,7 @@ class FontFaceSet(EventTarget):
 
     def _matching(self, font: str) -> list[FontFace]:
         text = str(font or "").lower()
-        return [
-            face
-            for face in self._fonts
-            if face.family.lower() in text or f'"{face.family.lower()}"' in text
-        ]
+        return [face for face in self._fonts if face.family.lower() in text or f'"{face.family.lower()}"' in text]
 
     def __contains__(self, font: object) -> bool:
         return font in self._fonts

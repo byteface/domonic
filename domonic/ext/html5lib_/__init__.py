@@ -40,8 +40,8 @@ from html5lib.constants import namespaces
 from html5lib.treebuilders import base
 
 from domonic.dom import DOMImplementation, Node
+from domonic.ext._rawdom import HTML_NAMESPACE as _HTML_NS
 from domonic.ext._rawdom import (
-    HTML_NAMESPACE as _HTML_NS,
     _create_comment_raw,
     _create_element_raw,
     _create_text_raw,
@@ -68,9 +68,7 @@ def _raw_append(parent, child):
 def _raw_insert_before(parent, child, ref):
     _raw_detach(child)
     args = parent.__dict__.get("args") or ()
-    index = next(
-        (i for i, node in enumerate(args) if node is ref), len(args)
-    )
+    index = next((i for i, node in enumerate(args) if node is ref), len(args))
     parent.__dict__["args"] = args[:index] + (child,) + args[index:]
     child.__dict__["parentNode"] = parent
 
@@ -79,6 +77,7 @@ def _raw_remove(parent, child):
     args = parent.__dict__.get("args") or ()
     parent.__dict__["args"] = tuple(node for node in args if node is not child)
     child.__dict__["parentNode"] = None
+
 
 HTML_TAGS = frozenset(import_module("domonic.html").html_tags)
 SVG_TAGS = frozenset(import_module("domonic.svg").svg_tags) - HTML_TAGS
@@ -197,9 +196,7 @@ def getDomBuilder(ignore: object):
             kwargs = self.element.__dict__["kwargs"]
             for name, value in attributes.items():
                 if isinstance(name, tuple):
-                    qualified = (
-                        name[1] if name[0] is None else name[0] + ":" + name[1]
-                    )
+                    qualified = name[1] if name[0] is None else name[0] + ":" + name[1]
                     self.element.setAttributeNS(name[2], qualified, value)
                 else:
                     key = name if name[:1] == "_" else "_" + name
@@ -249,9 +246,7 @@ def getDomBuilder(ignore: object):
         def appendChild(self, node):
             from domonic.dom import HTMLDocument
 
-            if isinstance(self.dom, HTMLDocument) and isinstance(
-                node.element, HTMLDocument
-            ):
+            if isinstance(self.dom, HTMLDocument) and isinstance(node.element, HTMLDocument):
                 # TODO - this can't be the final solution as a nested html would replace the outer
                 self.dom = node.element
                 # transfer all props from node.element to self.dom
@@ -300,10 +295,7 @@ def getDomBuilder(ignore: object):
                     if element.publicId or element.systemId:
                         publicId = element.publicId or ""
                         systemId = element.systemId or ""
-                        rv.append(
-                            """|%s<!DOCTYPE %s "%s" "%s">"""
-                            % (" " * indent, element.name, publicId, systemId)
-                        )
+                        rv.append("""|%s<!DOCTYPE %s "%s" "%s">""" % (" " * indent, element.name, publicId, systemId))
                     else:
                         rv.append("|%s<!DOCTYPE %s>" % (" " * indent, element.name))
                 else:
@@ -317,10 +309,7 @@ def getDomBuilder(ignore: object):
             elif element.nodeType == Node.TEXT_NODE:
                 rv.append('|%s"%s"' % (" " * indent, element.nodeValue))
             else:
-                if (
-                    hasattr(element, "namespaceURI")
-                    and element.namespaceURI is not None
-                ):
+                if hasattr(element, "namespaceURI") and element.namespaceURI is not None:
                     name = "%s %s" % (
                         constants.prefixes[element.namespaceURI],
                         element.nodeName,

@@ -67,9 +67,7 @@ class EventSource(EventTarget):
             "withCredentials",
         }
         self._requests_kwargs = {
-            key: value
-            for key, value in eventSourceInitDict.items()
-            if key not in reserved_options
+            key: value for key, value in eventSourceInitDict.items() if key not in reserved_options
         }
 
         self._onmessage = eventSourceInitDict.get("onmessage", None)
@@ -77,9 +75,7 @@ class EventSource(EventTarget):
         self._onopen = eventSourceInitDict.get("onopen", None)
         self._onreadystatechange = eventSourceInitDict.get("onreadystatechange", None)
 
-        auto_start = eventSourceInitDict.get(
-            "autoStart", eventSourceInitDict.get("auto_start", True)
-        )
+        auto_start = eventSourceInitDict.get("autoStart", eventSourceInitDict.get("auto_start", True))
         if auto_start:
             self.start(blocking=eventSourceInitDict.get("blocking", False))
 
@@ -176,10 +172,7 @@ class EventSource(EventTarget):
         if callable(close):
             close()
         self._set_ready_state(EventSource.CLOSED)
-        if (
-            getattr(self, "_thread", None) is not None
-            and self._thread is not threading.current_thread()
-        ):
+        if getattr(self, "_thread", None) is not None and self._thread is not threading.current_thread():
             self._thread.join(timeout=1)
             self._thread = None
 

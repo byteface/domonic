@@ -93,9 +93,7 @@ class tile:
     def translate(self, value=None):
         if value is None:
             return self._translate
-        self._translate = (
-            value if callable(value) else constant([float(value[0]), float(value[1])])
-        )
+        self._translate = value if callable(value) else constant([float(value[0]), float(value[1])])
         return self
 
     def zoomDelta(self, value=None):

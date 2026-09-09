@@ -66,7 +66,7 @@ def _split_top_level(text: str, separator: str) -> list[str]:
             depth += 1
         elif char == ")":
             depth = max(depth - 1, 0)
-        elif depth == 0 and text[i:i + step] == separator:
+        elif depth == 0 and text[i : i + step] == separator:
             parts.append(text[start:i].strip())
             start = i + step
             i += step
@@ -106,7 +106,11 @@ class MediaQueryList(EventTarget):
     }
 
     def __init__(
-        self, media: str, *, width: int, height: int,
+        self,
+        media: str,
+        *,
+        width: int,
+        height: int,
         features: "dict[str, str] | None" = None,
         resolution: float = 1.0,
     ) -> None:
@@ -115,8 +119,11 @@ class MediaQueryList(EventTarget):
         self._features = features if features is not None else dict(self.DEFAULT_FEATURES)
         self._resolution = resolution
         self.matches = self._evaluate(
-            media, width=width, height=height,
-            features=self._features, resolution=resolution,
+            media,
+            width=width,
+            height=height,
+            features=self._features,
+            resolution=resolution,
         )
         self.onchange: Callable[[Event], Any] | None = None
 
@@ -130,8 +137,13 @@ class MediaQueryList(EventTarget):
 
     @classmethod
     def _evaluate(
-        cls, media: str, *, width: int, height: int,
-        features: "dict[str, str] | None" = None, resolution: float = 1.0,
+        cls,
+        media: str,
+        *,
+        width: int,
+        height: int,
+        features: "dict[str, str] | None" = None,
+        resolution: float = 1.0,
     ) -> bool:
         if not media:
             return False
@@ -139,20 +151,21 @@ class MediaQueryList(EventTarget):
         text = media.strip().lower()
         if "," in text:
             return any(
-                cls._evaluate(part, width=width, height=height,
-                              features=features, resolution=resolution)
+                cls._evaluate(part, width=width, height=height, features=features, resolution=resolution)
                 for part in _split_top_level(text, ",")
             )
         if " and " in text:
             return all(
-                cls._evaluate(part, width=width, height=height,
-                              features=features, resolution=resolution)
+                cls._evaluate(part, width=width, height=height, features=features, resolution=resolution)
                 for part in _split_top_level(text, " and ")
             )
         if text.startswith("not "):
             return not cls._evaluate(
-                text[4:].strip(), width=width, height=height,
-                features=features, resolution=resolution,
+                text[4:].strip(),
+                width=width,
+                height=height,
+                features=features,
+                resolution=resolution,
             )
         if text.startswith("only "):
             text = text[5:].strip()
@@ -162,9 +175,7 @@ class MediaQueryList(EventTarget):
             return False
 
         # (orientation: portrait|landscape)
-        orientation_match = re.search(
-            r"\(\s*orientation\s*:\s*(portrait|landscape)\s*\)", text
-        )
+        orientation_match = re.search(r"\(\s*orientation\s*:\s*(portrait|landscape)\s*\)", text)
         if orientation_match:
             orientation = "landscape" if width >= height else "portrait"
             return orientation == orientation_match.group(1)
@@ -218,8 +229,7 @@ class MediaQueryList(EventTarget):
                     checks.append(axis == target)
             # double-ended range: (400px <= width <= 900px)
             for m in re.finditer(
-                rf"\(\s*([\d.]+)([a-z%]*)\s*(<=?|>=?)\s*{axis_name}\s*"
-                rf"(<=?|>=?)\s*([\d.]+)([a-z%]*)\s*\)",
+                rf"\(\s*([\d.]+)([a-z%]*)\s*(<=?|>=?)\s*{axis_name}\s*" rf"(<=?|>=?)\s*([\d.]+)([a-z%]*)\s*\)",
                 text,
             ):
                 lo, lounit, locmp, hicmp, hi, hiunit = m.groups()
@@ -234,8 +244,11 @@ class MediaQueryList(EventTarget):
     def _set_viewport(self, *, width: int, height: int) -> None:
         previous = self.matches
         self.matches = self._evaluate(
-            self.media, width=width, height=height,
-            features=self._features, resolution=self._resolution,
+            self.media,
+            width=width,
+            height=height,
+            features=self._features,
+            resolution=self._resolution,
         )
         if self.matches != previous:
             event = Event("change", {"bubbles": False, "cancelable": False})
@@ -278,9 +291,7 @@ class CustomElementRegistry:
     def _validate_name(name: str) -> str:
         normalized = str(name).strip().lower()
         if not normalized or "-" not in normalized:
-            raise ValueError(
-                "Invalid custom element name. Must contain hyphen: " + str(name)
-            )
+            raise ValueError("Invalid custom element name. Must contain hyphen: " + str(name))
         if not re.fullmatch(r"[a-z][.0-9_a-z-]*-[.0-9_a-z-]*", normalized):
             raise ValueError("Invalid custom element name: " + str(name))
         if normalized in {
@@ -324,10 +335,7 @@ class CustomElementRegistry:
         if normalized in self.store:
             raise ValueError("Custom element already defined: " + normalized)
         if constructor in self._constructors:
-            raise ValueError(
-                "Custom element constructor already defined: "
-                + self._constructors[constructor]
-            )
+            raise ValueError("Custom element constructor already defined: " + self._constructors[constructor])
 
         element_class = self._coerce_constructor(normalized, constructor, options)
         if options is not None and "extends" in options:
@@ -354,11 +362,7 @@ class CustomElementRegistry:
         return self._constructors.get(constructor)
 
     def _upgrade_element(self, element: Element) -> Element:
-        name = (
-            str(getattr(element, "tagName", getattr(element, "name", "")))
-            .strip()
-            .lower()
-        )
+        name = str(getattr(element, "tagName", getattr(element, "name", ""))).strip().lower()
         constructor = self.store.get(name)
         if constructor is None:
             # Customized built-in: <button is="fancy-button"> upgrades to the
@@ -367,29 +371,19 @@ class CustomElementRegistry:
             is_name = (getter("is") or "").strip().lower() if callable(getter) else ""
             if is_name:
                 candidate = self.store.get(is_name)
-                if candidate is not None and str(
-                    getattr(candidate, "extends", "")
-                ).strip().lower() == name:
+                if candidate is not None and str(getattr(candidate, "extends", "")).strip().lower() == name:
                     constructor = candidate
         if constructor is None or isinstance(element, constructor):
             return element
-        old_document = (
-            element.ownerDocument
-            if isinstance(element.ownerDocument, Document)
-            else None
-        )
+        old_document = element.ownerDocument if isinstance(element.ownerDocument, Document) else None
         element.__class__ = constructor
         element.name = name
         element._custom_element_name = name
         if hasattr(constructor, "observedAttributes"):
             element.observedAttributes = getattr(constructor, "observedAttributes")
-        if isinstance(old_document, Document) and getattr(
-            element, "isConnected", False
-        ):
+        if isinstance(old_document, Document) and getattr(element, "isConnected", False):
             callback = getattr(element, "connectedCallback", None)
-            if callable(callback) and not getattr(
-                element, "_custom_element_connected", False
-            ):
+            if callable(callback) and not getattr(element, "_custom_element_connected", False):
                 element._custom_element_connected = True
                 callback()
         return element
@@ -588,9 +582,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._status: str = ""
         self._opener = opener
         self._parent = parent if parent is not None else self
-        self._top = (
-            getattr(self._parent, "top", self._parent) if parent is not None else self
-        )
+        self._top = getattr(self._parent, "top", self._parent) if parent is not None else self
         self._outer_width = self._screen.width
         self._outer_height = self._screen.height
         self._scroll_x = 0
@@ -704,9 +696,7 @@ class Window(JavaScriptWindow, EventTarget):
     @property
     def isSecureContext(self) -> bool:
         href = self.location.href or ""
-        return href.startswith(("https:", "wss:", "file:")) or href.startswith(
-            ("http://localhost", "http://127.0.0.1")
-        )
+        return href.startswith(("https:", "wss:", "file:")) or href.startswith(("http://localhost", "http://127.0.0.1"))
 
     @property
     def localStorage(self) -> Storage:  # type: ignore[override]
@@ -739,13 +729,8 @@ class Window(JavaScriptWindow, EventTarget):
         self._location = Location(href)
         self._document.URL = href
         self._document.referrer = previous_href or ""
-        if (
-            previous_href != href
-            and previous_href.split("#", 1)[0] == href.split("#", 1)[0]
-        ):
-            self.dispatchEvent(
-                HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href})
-            )
+        if previous_href != href and previous_href.split("#", 1)[0] == href.split("#", 1)[0]:
+            self.dispatchEvent(HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href}))
 
         loaded_document = self._fetch_document(href)
         if loaded_document is not None:
@@ -753,11 +738,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def blur(self):
         self._focused = False
-        self.dispatchEvent(
-            FocusEvent(
-                "blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}
-            )
-        )
+        self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
 
     @property
@@ -811,11 +792,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def focus(self):
         self._focused = True
-        self.dispatchEvent(
-            FocusEvent(
-                "focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}
-            )
-        )
+        self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
 
     def frameElement(self):
@@ -930,9 +907,7 @@ class Window(JavaScriptWindow, EventTarget):
     def pageYOffset(self):
         return self.scrollY
 
-    def postMessage(
-        self, message: Any, targetOrigin: str = "*", transfer: list[Any] | None = None
-    ):
+    def postMessage(self, message: Any, targetOrigin: str = "*", transfer: list[Any] | None = None):
         if targetOrigin not in ("*", "/") and targetOrigin != self.origin:
             return None
         event = MessageEvent(
@@ -950,9 +925,7 @@ class Window(JavaScriptWindow, EventTarget):
         return None
 
     def print(self):
-        self.dispatchEvent(
-            Event("beforeprint", {"bubbles": False, "cancelable": False})
-        )
+        self.dispatchEvent(Event("beforeprint", {"bubbles": False, "cancelable": False}))
         self.dispatchEvent(Event("afterprint", {"bubbles": False, "cancelable": False}))
         return None
 
@@ -970,9 +943,7 @@ class Window(JavaScriptWindow, EventTarget):
             self._running_microtasks = False
         return None
 
-    def requestAnimationFrame(  # type: ignore[override]
-        self, callback: Callable[[float], Any]
-    ) -> int:
+    def requestAnimationFrame(self, callback: Callable[[float], Any]) -> int:  # type: ignore[override]
         if not callable(callback):
             raise TypeError("requestAnimationFrame callback must be callable")
         request_id = self._next_animation_frame_id
@@ -1085,9 +1056,7 @@ class Window(JavaScriptWindow, EventTarget):
         self._scroll_y = y
         if changed:
             self.dispatchEvent(Event("scroll", {"bubbles": False, "cancelable": False}))
-            self.dispatchEvent(
-                Event("scrollend", {"bubbles": False, "cancelable": False})
-            )
+            self.dispatchEvent(Event("scrollend", {"bubbles": False, "cancelable": False}))
         return None
 
     @property

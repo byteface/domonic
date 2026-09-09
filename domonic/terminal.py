@@ -15,9 +15,7 @@ from typing import Any, Iterable, Sequence
 class TerminalException(Exception):
     """raised if the terminal throws an exception"""
 
-    def __init__(
-        self, error=None, message="An error message was received from terminal"
-    ):
+    def __init__(self, error=None, message="An error message was received from terminal"):
         self.error = error
         self.output = _decode_output(message)
         self.returncode = getattr(error, "returncode", None)
@@ -104,9 +102,7 @@ class command:
 
         completed.stdout = _decode_output(completed.stdout, encoding)
         if check and completed.returncode != 0:
-            error = subprocess.CalledProcessError(
-                completed.returncode, cmd, output=completed.stdout
-            )
+            error = subprocess.CalledProcessError(completed.returncode, cmd, output=completed.stdout)
             raise TerminalException(error, completed.stdout) from error
         return completed
 

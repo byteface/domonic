@@ -66,8 +66,7 @@ def _call_worker_entry(
     parameters = signature.parameters.values()
     accepts_scope = any(
         parameter.kind == inspect.Parameter.VAR_POSITIONAL
-        or parameter.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        or parameter.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         for parameter in parameters
     )
     if accepts_scope:
@@ -167,9 +166,7 @@ class WorkerGlobalScope(EventTarget):
         self._globals = runpy.run_path(str(path), init_globals=initial_globals)
         self._sync_handlers_from_globals()
 
-    def postMessage(
-        self, message: Any, transfer: list[Any] | dict[str, Any] | None = None
-    ) -> None:
+    def postMessage(self, message: Any, transfer: list[Any] | dict[str, Any] | None = None) -> None:
         """Send a message to the owner context.
 
         ``WorkerGlobalScope`` itself has no owner channel. Dedicated workers
@@ -205,9 +202,7 @@ class WorkerGlobalScope(EventTarget):
 class DedicatedWorkerGlobalScope(WorkerGlobalScope):
     """Global scope for a dedicated ``Worker``."""
 
-    def postMessage(
-        self, message: Any, transfer: list[Any] | dict[str, Any] | None = None
-    ) -> None:
+    def postMessage(self, message: Any, transfer: list[Any] | dict[str, Any] | None = None) -> None:
         """Send a message from the worker to its owner ``Worker`` object."""
         if self._worker is None:
             return None
@@ -263,9 +258,7 @@ class Worker(EventTarget):
             name=self.name,
             base_path=base_path,
         )
-        thread_name = self.name or (
-            self._script_path.stem if self._script_path is not None else "callable"
-        )
+        thread_name = self.name or (self._script_path.stem if self._script_path is not None else "callable")
         self._thread = threading.Thread(
             target=self._run,
             name=f"Worker-{thread_name}",
@@ -345,9 +338,7 @@ class Worker(EventTarget):
         )
         self._safe_dispatch(event)
 
-    def _dispatch_scope_messageerror(
-        self, message: Any, error: Exception, source: Any, ports: list[Any]
-    ) -> None:
+    def _dispatch_scope_messageerror(self, message: Any, error: Exception, source: Any, ports: list[Any]) -> None:
         event = MessageEvent(
             "messageerror",
             {
@@ -363,9 +354,7 @@ class Worker(EventTarget):
         event.error = error
         self._inbound.put(event)
 
-    def _dispatch_parent_messageerror(
-        self, message: Any, error: Exception, source: Any, ports: list[Any]
-    ) -> None:
+    def _dispatch_parent_messageerror(self, message: Any, error: Exception, source: Any, ports: list[Any]) -> None:
         event = MessageEvent(
             "messageerror",
             {
@@ -381,9 +370,7 @@ class Worker(EventTarget):
         event.error = error
         self._safe_dispatch(event)
 
-    def _post_from_scope(
-        self, message: Any, transfer: list[Any] | dict[str, Any] | None = None
-    ) -> None:
+    def _post_from_scope(self, message: Any, transfer: list[Any] | dict[str, Any] | None = None) -> None:
         if self.closed or self.terminated:
             return None
         ports = _transfer_list(transfer)
@@ -413,9 +400,7 @@ class Worker(EventTarget):
         self._inbound.put(_STOP)
         return None
 
-    def postMessage(
-        self, message: Any, transfer: list[Any] | dict[str, Any] | None = None
-    ) -> None:
+    def postMessage(self, message: Any, transfer: list[Any] | dict[str, Any] | None = None) -> None:
         """Send a message to the worker's inner scope."""
         if self.closed or self.terminated:
             return None

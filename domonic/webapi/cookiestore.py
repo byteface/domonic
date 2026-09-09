@@ -81,9 +81,7 @@ class CookieStore(EventTarget):
             self.dispatchEvent(CookieChangeEvent("change", {"deleted": deleted}))
         return _create_promise().resolve(None)
 
-    def _coerce_item(
-        self, name_or_options: str | dict[str, Any], value: str | None
-    ) -> CookieListItem:
+    def _coerce_item(self, name_or_options: str | dict[str, Any], value: str | None) -> CookieListItem:
         if isinstance(name_or_options, dict):
             data = dict(name_or_options)
             name = data.pop("name")

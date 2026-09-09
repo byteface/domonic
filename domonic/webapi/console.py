@@ -285,15 +285,13 @@ class Console:
             return cls._write("(empty)")
 
         widths = [
-            max(len(str(header)), *(len(str(row[index])) for row in rows))
-            for index, header in enumerate(headers)
+            max(len(str(header)), *(len(str(row[index])) for row in rows)) for index, header in enumerate(headers)
         ]
         border = "+" + "+".join("-" * (width + 2) for width in widths) + "+"
 
         def make_row(values: Sequence[Any]) -> str:
             cells = [
-                " " + str(value).replace("\n", "\\n").ljust(widths[index]) + " "
-                for index, value in enumerate(values)
+                " " + str(value).replace("\n", "\\n").ljust(widths[index]) + " " for index, value in enumerate(values)
             ]
             return "|" + "|".join(cells) + "|"
 
@@ -304,17 +302,13 @@ class Console:
         return cls._write(rendered)
 
     @classmethod
-    def _normalize_table(
-        cls, data: Any, columns: Sequence[str] | None = None
-    ) -> tuple[list[str], list[list[str]]]:
+    def _normalize_table(cls, data: Any, columns: Sequence[str] | None = None) -> tuple[list[str], list[list[str]]]:
         rows: list[dict[str, Any]] = []
         requested = [str(column) for column in columns] if columns else None
 
         if isinstance(data, Mapping):
             iterable = list(data.items())
-        elif isinstance(data, Sequence) and not isinstance(
-            data, (str, bytes, bytearray)
-        ):
+        elif isinstance(data, Sequence) and not isinstance(data, (str, bytes, bytearray)):
             iterable = list(enumerate(data))
         else:
             iterable = [(0, data)]
@@ -324,9 +318,7 @@ class Console:
             row: dict[str, Any] = {"(index)": index}
             if isinstance(value, Mapping):
                 row.update(value)
-            elif isinstance(value, Sequence) and not isinstance(
-                value, (str, bytes, bytearray)
-            ):
+            elif isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
                 row.update({str(i): item for i, item in enumerate(value)})
             else:
                 row["Value"] = value
@@ -342,9 +334,7 @@ class Console:
         else:
             headers = keys
 
-        rendered_rows = [
-            [cls._stringify(row.get(header, "")) for header in headers] for row in rows
-        ]
+        rendered_rows = [[cls._stringify(row.get(header, "")) for header in headers] for row in rows]
         return headers, rendered_rows
 
     @classmethod

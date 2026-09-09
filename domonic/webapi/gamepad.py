@@ -21,9 +21,7 @@ def _create_promise():
 class GamepadButton:
     """State for a single gamepad button."""
 
-    def __init__(
-        self, value: float = 0.0, pressed: bool = False, touched: bool = False
-    ) -> None:
+    def __init__(self, value: float = 0.0, pressed: bool = False, touched: bool = False) -> None:
         self.value = float(value)
         self.pressed = bool(pressed)
         self.touched = bool(touched)
@@ -71,9 +69,7 @@ class Gamepad:
         *,
         index: int = 0,
         axes: list[float] | tuple[float, ...] | None = None,
-        buttons: (
-            list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None
-        ) = None,
+        buttons: list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None = None,
         mapping: str = "",
         connected: bool = False,
     ) -> None:
@@ -102,9 +98,7 @@ class Gamepad:
         self,
         *,
         axes: list[float] | tuple[float, ...] | None = None,
-        buttons: (
-            list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None
-        ) = None,
+        buttons: list[GamepadButton | dict[str, Any] | float] | tuple[Any, ...] | None = None,
     ) -> "Gamepad":
         if axes is not None:
             self.axes = [float(axis) for axis in axes]

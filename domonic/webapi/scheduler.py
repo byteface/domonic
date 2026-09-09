@@ -59,9 +59,7 @@ class TaskSignal(AbortSignal):
         if previous == priority:
             return None
         self.priority = priority
-        self.dispatchEvent(
-            TaskPriorityChangeEvent("prioritychange", {"previousPriority": previous})
-        )
+        self.dispatchEvent(TaskPriorityChangeEvent("prioritychange", {"previousPriority": previous}))
         return None
 
 
@@ -113,9 +111,7 @@ class Scheduler:
         self._counter = itertools.count()
         self._lock = threading.RLock()
 
-    def postTask(
-        self, callback: Callable[[], Any], options: dict[str, Any] | None = None
-    ) -> Any:
+    def postTask(self, callback: Callable[[], Any], options: dict[str, Any] | None = None) -> Any:
         """Post a task and return a ``Promise`` for its result."""
         if not callable(callback):
             raise TypeError("Scheduler.postTask() callback must be callable")
@@ -125,9 +121,7 @@ class Scheduler:
 
         mutable_priority = "priority" not in options and isinstance(signal, TaskSignal)
         priority = _normalize_priority(
-            getattr(signal, "priority", None)
-            if mutable_priority
-            else options.get("priority")
+            getattr(signal, "priority", None) if mutable_priority else options.get("priority")
         )
 
         promise = _create_promise()
@@ -144,9 +138,7 @@ class Scheduler:
             return self._reject_aborted(task)
 
         if signal is not None and hasattr(signal, "addEventListener"):
-            signal.addEventListener(
-                "abort", lambda event: self._reject_aborted(task), {"once": True}
-            )
+            signal.addEventListener("abort", lambda event: self._reject_aborted(task), {"once": True})
 
         if delay > 0:
             task.timer = threading.Timer(delay / 1000, self._run_task, args=(task,))

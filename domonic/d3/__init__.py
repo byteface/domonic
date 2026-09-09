@@ -14,6 +14,7 @@ from domonic.d3.color import *
 from domonic.d3.dispatch import *
 from domonic.d3.format import *
 from domonic.d3.hierarchy import *  # hierarchy's own Node (its internal
+
 # tree-node helper, not part of d3.js's public API) is superseded below by
 # the DOM Node class, via d3.selection / domonic.html -- nothing imports
 # Node from domonic.d3 today, but that's the one that wins, matching every

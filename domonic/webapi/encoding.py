@@ -337,13 +337,9 @@ def _buffer_to_bytes(buffer):
     if isinstance(buffer, ReadableStream) and hasattr(buffer, "read"):
         return _buffer_to_bytes(buffer.read())
     if isinstance(buffer, DataView):
-        return _bytes_from_array_buffer(
-            buffer.buffer, buffer.byteOffset, buffer.byteLength
-        )
+        return _bytes_from_array_buffer(buffer.buffer, buffer.byteOffset, buffer.byteLength)
     if isinstance(buffer, _BUFFER_VIEW_TYPES):
-        return _bytes_from_array_buffer(
-            buffer.buffer, buffer.byteOffset, buffer.byteLength
-        )
+        return _bytes_from_array_buffer(buffer.buffer, buffer.byteOffset, buffer.byteLength)
     if isinstance(buffer, ArrayBuffer):
         return _bytes_from_array_buffer(buffer)
     if isinstance(buffer, array.array):
@@ -358,9 +354,7 @@ def _buffer_to_bytes(buffer):
 
 
 def _decode_x_user_defined(data):
-    return "".join(
-        chr(byte) if byte < 0x80 else chr(0xF780 + byte - 0x80) for byte in data
-    )
+    return "".join(chr(byte) if byte < 0x80 else chr(0xF780 + byte - 0x80) for byte in data)
 
 
 def _decode_replacement(data):
@@ -467,10 +461,7 @@ class TextDecoder:
         return self._apply_bom(data.decode(self._codec, errors=errors))
 
     def __repr__(self):
-        return (
-            f"<TextDecoder encoding={self.encoding} "
-            f"fatal={self.fatal} ignoreBOM={self.ignoreBOM}>"
-        )
+        return f"<TextDecoder encoding={self.encoding} " f"fatal={self.fatal} ignoreBOM={self.ignoreBOM}>"
 
 
 class TextEncoder:

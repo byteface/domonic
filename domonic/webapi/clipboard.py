@@ -95,9 +95,7 @@ class Clipboard:
                 elif isinstance(item, dict):
                     merged.update(item)
                 else:
-                    raise TypeError(
-                        "Clipboard.write() expects ClipboardItem or dict items"
-                    )
+                    raise TypeError("Clipboard.write() expects ClipboardItem or dict items")
             self._data.clear()
             self._data.update(deepcopy(merged))
             return data

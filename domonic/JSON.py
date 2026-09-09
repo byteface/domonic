@@ -131,10 +131,7 @@ def table2json(node) -> list[dict[str, str]]:
     for row in rows[1:]:
         cells = row.getElementsByTagName("td")
         items.append(
-            {
-                heading: cells[index].textContent if index < len(cells) else ""
-                for index, heading in enumerate(headings)
-            }
+            {heading: cells[index].textContent if index < len(cells) else "" for index, heading in enumerate(headings)}
         )
     return items
 

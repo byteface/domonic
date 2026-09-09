@@ -324,15 +324,11 @@ def clean_junk(page):
     page = page.replace(', "\n)', "\n)")
 
     # page = page.replace(',",', ',') < VALID
-    page = page.replace(
-        ",  ,", ","
-    )  # < new bug. due to single attributes having big space in front for some reason
+    page = page.replace(",  ,", ",")  # < new bug. due to single attributes having big space in front for some reason
     page = page.replace(', ",', ",")
     page = page.replace(",,", ",")
     page = page.replace(", ,", ",")
-    page = page.replace(
-        ',"",', ","
-    )  # careul. new and covers up somethings else. solo attributes still not done well
+    page = page.replace(',"",', ",")  # careul. new and covers up somethings else. solo attributes still not done well
 
     page = page.replace("( ,*", "(*")
     page = page.replace("( , *", "(*")
@@ -347,9 +343,7 @@ def clean_junk(page):
     page = page.replace('),\n"\n),', "),\n),")
     page = page.replace('},\n"\n),', "}\n),")
 
-    page = page.replace(
-        '"_, _', '"_'
-    )  # when solo hyphenated custom attribute is first on a line.
+    page = page.replace('"_, _', '"_')  # when solo hyphenated custom attribute is first on a line.
 
     # page = page.replace('),\n",\n', '(')  # < break things but is also valid. text sentences can start with a comma
     # 2 issues. this also turns a closer into an opener. when catching a true case

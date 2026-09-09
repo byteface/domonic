@@ -74,9 +74,7 @@ class URLPattern:
         }
 
     @classmethod
-    def _pattern_to_parts(
-        cls, pattern: str | dict[str, Any], baseURL: str | None = None
-    ) -> dict[str, str]:
+    def _pattern_to_parts(cls, pattern: str | dict[str, Any], baseURL: str | None = None) -> dict[str, str]:
         parts = cls._empty_parts()
         if isinstance(pattern, dict):
             base = pattern.get("baseURL", baseURL)
@@ -158,9 +156,7 @@ class URLPattern:
         return ".+"
 
     @classmethod
-    def _compile_component(
-        cls, pattern: str, component: str
-    ) -> tuple[re.Pattern[str], list[str], bool]:
+    def _compile_component(cls, pattern: str, component: str) -> tuple[re.Pattern[str], list[str], bool]:
         if pattern == "*":
             return re.compile(r"^(.*)$"), ["0"], False
 
@@ -191,11 +187,7 @@ class URLPattern:
                 if index < len(pattern) and pattern[index] == "(":
                     regex, index = cls._read_regex(pattern, index + 1)
                     has_regex = True
-                modifier = (
-                    pattern[index]
-                    if index < len(pattern) and pattern[index] in "?+*"
-                    else ""
-                )
+                modifier = pattern[index] if index < len(pattern) and pattern[index] in "?+*" else ""
                 if modifier:
                     index += 1
                 regex = regex or cls._default_group_pattern(component, modifier)
@@ -225,16 +217,10 @@ class URLPattern:
         return re.compile("^" + "".join(output) + "$", flags), groups, has_regex
 
     @classmethod
-    def _input_to_parts(
-        cls, input: str | dict[str, Any], baseURL: str | None = None
-    ) -> dict[str, str]:
+    def _input_to_parts(cls, input: str | dict[str, Any], baseURL: str | None = None) -> dict[str, str]:
         if isinstance(input, dict):
             base = input.get("baseURL", baseURL)
-            parts = (
-                cls._url_to_parts(str(base))
-                if base
-                else {component: "" for component in cls._components}
-            )
+            parts = cls._url_to_parts(str(base)) if base else {component: "" for component in cls._components}
             for component in cls._components:
                 if component in input:
                     value = str(input[component])
@@ -250,17 +236,13 @@ class URLPattern:
             return {}
         return cls._url_to_parts(str(input), baseURL)
 
-    def exec_(
-        self, input: str | dict[str, Any], baseURL: str | None = None
-    ) -> dict[str, Any] | None:
+    def exec_(self, input: str | dict[str, Any], baseURL: str | None = None) -> dict[str, Any] | None:
         """Return matched URL parts and groups, or ``None`` if there is no match."""
         parts = self._input_to_parts(input, baseURL)
         if not parts:
             return None
 
-        result: dict[str, Any] = {
-            "inputs": [input] if baseURL is None else [input, baseURL]
-        }
+        result: dict[str, Any] = {"inputs": [input] if baseURL is None else [input, baseURL]}
         for component in self._components:
             value = parts.get(component, "")
             match = self._regexes[component].match(value)
@@ -269,10 +251,7 @@ class URLPattern:
             names = self._group_names[component]
             result[component] = {
                 "input": value,
-                "groups": {
-                    name: match.group(index + 1) or ""
-                    for index, name in enumerate(names)
-                },
+                "groups": {name: match.group(index + 1) or "" for index, name in enumerate(names)},
             }
         return result
 

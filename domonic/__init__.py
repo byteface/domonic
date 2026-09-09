@@ -256,10 +256,7 @@ class domonic:
         except Exception as e:
             fragments = domonic._split_top_level_pyml(pyml)
             if len(fragments) > 1:
-                return tuple(
-                    domonic.domonify(fragment, *args, **kwargs)
-                    for fragment in fragments
-                )
+                return tuple(domonic.domonify(fragment, *args, **kwargs) for fragment in fragments)
             pyml = "".join(pyml.splitlines()).strip(",")  # try again on a single line
             s = domonic.evaluate(pyml, *args, **kwargs)
             p = domonic._safe_eval_pyml(s, kwargs)
@@ -316,9 +313,7 @@ class domonic:
                     domonic.LAST_ERR = str(e)
                 # return
                 """
-                num = int(
-                    Utils.digits(str(e))
-                )  # go backwards from this line. to the one before it opened
+                num = int(Utils.digits(str(e)))  # go backwards from this line. to the one before it opened
                 pyml_lines = pyml.splitlines()
 
                 # NOTE - working backwards from the error line. we try to wrap any content.
@@ -331,9 +326,7 @@ class domonic:
                     line = pyml_lines[num - countback]
                     if "html" not in line:
                         start_line = line
-                pyml_lines[num - countback] = (
-                    start_line + ").html("
-                )  # need to know when to close tag comma vs wrap
+                pyml_lines[num - countback] = start_line + ").html("  # need to know when to close tag comma vs wrap
 
                 # pyml[num - 2] = pyml[num - 2] + ").html(" + str(num)   # need to know when to close tag comma vs wrap
                 pyml = "\n".join(pyml_lines)
@@ -755,20 +748,13 @@ class domonic:
             if char == "(":
                 open_count += 1
                 flag = open_count > 0
-                tag = (
-                    page[index - 4]
-                    + page[index - 3]
-                    + page[index - 2]
-                    + page[index - 1]
-                )
+                tag = page[index - 4] + page[index - 3] + page[index - 2] + page[index - 1]
                 last_tag = tag
             if char == ")":
                 open_count -= 1
                 flag = open_count > 0
             if char == ">":  # and flag is True:
-                if (
-                    "meta" in tag or "link" in tag or "hr" in tag
-                ):  # ??... dont think this is catching anymore
+                if "meta" in tag or "link" in tag or "hr" in tag:  # ??... dont think this is catching anymore
                     page = f"{page[:index]}\n),\n{page[index+1:]}"
                     increase_index += 3
                     open_count -= 1
@@ -936,27 +922,21 @@ class domonic:
 
                 val = val.replace("-", "$HYPHEN$")
 
-                if (
-                    "_" in key
-                ):  # or '_' not in key: # skip as its a single attribute with multiple key:values
+                if "_" in key:  # or '_' not in key: # skip as its a single attribute with multiple key:values
                     if "-" not in key:
                         newparam = f"{key}={val}"
                         params[count] = newparam
                         continue
 
                 if "-" in key:
-                    key = key.lstrip(
-                        "_"
-                    )  # if already has an underscore remove it as we add it below
+                    key = key.lstrip("_")  # if already has an underscore remove it as we add it below
                     END = ""
                     if len(line) - (line.find(val) + len(val)) < 3:
                         END = ","
 
                     newparam = f'**\u007b"_{key}":{val}\u007d{END}'
                     params[count] = newparam
-                elif (
-                    "_" not in key and "-" not in key
-                ):  # i dont think much gets to here then anymore?
+                elif "_" not in key and "-" not in key:  # i dont think much gets to here then anymore?
                     newparam = f", _{key}={val}"
                     params[count] = newparam
 
@@ -992,11 +972,7 @@ class domonic:
                     cursor += 1
 
                 key_start = cursor
-                while (
-                    cursor < length
-                    and not line[cursor].isspace()
-                    and line[cursor] not in "=>"
-                ):
+                while cursor < length and not line[cursor].isspace() and line[cursor] not in "=>":
                     cursor += 1
 
                 if cursor == key_start:
@@ -1049,11 +1025,7 @@ class domonic:
                 while scan < length:
                     if line[scan].isspace() or line[scan] == ">":
                         break
-                    if (
-                        line[scan] == "/"
-                        and scan + 1 < length
-                        and line[scan + 1] == ">"
-                    ):
+                    if line[scan] == "/" and scan + 1 < length and line[scan + 1] == ">":
                         break
                     scan += 1
 
@@ -1076,9 +1048,7 @@ class domonic:
                 cursor += 1
                 token_start = cursor
 
-                if cursor >= length or not (
-                    line[cursor].isalpha() or line[cursor] == "_"
-                ):
+                if cursor >= length or not (line[cursor].isalpha() or line[cursor] == "_"):
                     continue
 
                 saw_hyphen = False
@@ -1143,9 +1113,7 @@ class domonic:
                     except Exception as e:
                         has_right_quote = False
 
-                    val = val.replace(
-                        '"', "&quot;"
-                    )  # they don't always get caught by encode
+                    val = val.replace('"', "&quot;")  # they don't always get caught by encode
                     val = val.replace(",", "&#44;")
                     # val = val.replace(';',' &#59;')
 
@@ -1158,9 +1126,7 @@ class domonic:
                         continue
 
                     if "font-size" in key:
-                        line = line.replace(
-                            "font-size", key
-                        )  # update to prepended underscore
+                        line = line.replace("font-size", key)  # update to prepended underscore
                         continue  # these keys are transformed later
 
                     # val = val.replace("\n", "") # remove newlines in atttribute content as causes EOL when parsing
@@ -1298,11 +1264,7 @@ class domonic:
                 solo_token = line.rstrip(",")
                 if solo_token in solo_attributes:
                     line = f"_{solo_token}=True,"
-                elif (
-                    "-" in solo_token
-                    and " " not in solo_token
-                    and not solo_token.startswith(('"', "'"))
-                ):
+                elif "-" in solo_token and " " not in solo_token and not solo_token.startswith(('"', "'")):
                     line = f'**\u007b"_{solo_token}":{True}\u007d,'
 
             if "(" not in line[0:10]:
@@ -1318,9 +1280,7 @@ class domonic:
                             line = f'"{line}"'
 
             is_multiline_string = False
-            if (
-                line.count('"') % 2 == 1
-            ):  # find opening quotes to multilines (odd number)
+            if line.count('"') % 2 == 1:  # find opening quotes to multilines (odd number)
 
                 if count < len(lines) - 1:
                     next_line = lines[count + 1]
@@ -1330,9 +1290,7 @@ class domonic:
                 # if its just a class and not content. bring them up onto the same line
                 if "_class" in line:
                     if "(" not in next_line:  # and '"' not in next_line:
-                        line = line + lines.pop(
-                            count + 1
-                        )  # merge the next line to this one
+                        line = line + lines.pop(count + 1)  # merge the next line to this one
                         line = line.replace("\n", "")
                         line = line.replace("  ", " ")
                         if line.count('"') % 2 == 1:  # if still odd
@@ -1367,9 +1325,7 @@ class domonic:
             if "_" in line:  # normal text can have underscores. this will break
                 line = fix_hyphen_tags(line)
 
-            if (
-                len(line) < 5 and '"' in line
-            ):  # need to stop making these in first place
+            if len(line) < 5 and '"' in line:  # need to stop making these in first place
                 if line == '",",':
                     continue
 
@@ -1410,9 +1366,7 @@ class domonic:
             page = page.replace('),\n"\n),', "),\n),")
             page = page.replace('},\n"\n),', "}\n),")
 
-            page = page.replace(
-                '"_, _', '"_'
-            )  # when solo hyphenated custom attribute is first on a line.
+            page = page.replace('"_, _', '"_')  # when solo hyphenated custom attribute is first on a line.
 
             # page = page.replace('),\n",\n', '(')  # < break things but is also valid. text sentences can start with a comma
             # 2 issues. this also turns a closer into an opener. when catching a true case
@@ -1437,9 +1391,7 @@ class domonic:
         page = page.replace("$SEMICOLON$", ";")
 
         for count, att in enumerate(attributes):
-            page = page.replace(
-                "$DoMo" + str(count) + "NiC$", att
-            )  # undo encoding that saves attr content
+            page = page.replace("$DoMo" + str(count) + "NiC$", att)  # undo encoding that saves attr content
 
         if remove_broken_lines:
             print("attempting to remove broken lines")
@@ -1519,12 +1471,7 @@ class domonic:
 
         def _looks_like_full_html_document(source: str) -> bool:
             probe = source.lstrip().lower()
-            return (
-                document
-                or probe.startswith("<!doctype html")
-                or probe.startswith("<html")
-                or "<html" in probe[:512]
-            )
+            return document or probe.startswith("<!doctype html") or probe.startswith("<html") or "<html" in probe[:512]
 
         def _doctype_from_source(source: str):
             match = re.match(
@@ -1555,11 +1502,7 @@ class domonic:
         def _extract_child_doctype(page):
             for child in getattr(page, "childNodes", []) or []:
                 if isinstance(child, dom.DocumentType):
-                    page.__dict__["args"] = tuple(
-                        item
-                        for item in getattr(page, "args", ())
-                        if item is not child
-                    )
+                    page.__dict__["args"] = tuple(item for item in getattr(page, "args", ()) if item is not child)
                     child.parentNode = None
                     return child
             return None
@@ -1576,11 +1519,7 @@ class domonic:
 
         def _normalize_parsed_page(page, source: str):
             is_full_document = _looks_like_full_html_document(source)
-            doctype = (
-                getattr(page, "_doctype", None)
-                or _extract_child_doctype(page)
-                or _doctype_from_source(source)
-            )
+            doctype = getattr(page, "_doctype", None) or _extract_child_doctype(page) or _doctype_from_source(source)
 
             html_root = None
             if getattr(page, "tagName", "").lower() == "html":
@@ -1614,9 +1553,7 @@ class domonic:
                     html_root.parentNode = None
                     html_root.documentElement = html_root
                     return html_root
-                if isinstance(page, dom.Document) and not isinstance(
-                    page, dom.DocumentFragment
-                ):
+                if isinstance(page, dom.Document) and not isinstance(page, dom.DocumentFragment):
                     if doctype is not None:
                         page.doctype = doctype
                     page.documentElement = html_root
@@ -1633,11 +1570,7 @@ class domonic:
                 document.documentElement = html_root
                 return document
 
-            body = (
-                html_root.querySelector("body")
-                if hasattr(html_root, "querySelector")
-                else None
-            )
+            body = html_root.querySelector("body") if hasattr(html_root, "querySelector") else None
             container = body if body is not None else html_root
             children = list(getattr(container, "childNodes", []) or [])
             if len(children) == 1:
@@ -1646,9 +1579,7 @@ class domonic:
                     child.parentNode = None
                 return _ensure_owner_document(child)
             if len(children) > 1:
-                return _ensure_owner_document(
-                    dom.Document.createDocumentFragment(*children)
-                )
+                return _ensure_owner_document(dom.Document.createDocumentFragment(*children))
             return _ensure_owner_document(dom.Document.createDocumentFragment())
 
         def _parse_with_html5lib():
@@ -1790,9 +1721,7 @@ class domonic:
             dodgycharIndex = int(Utils.digits(str(e).split(",")[1]))
             # string[int(dodgycharIndex)-1] = Utils.escape(string[int(dodgycharIndex)-1])
             dodgyChar = string[int(dodgycharIndex) - 1]
-            string = Utils.replace_between(
-                string, dodgyChar, "", dodgycharIndex - 2, dodgycharIndex + 2
-            )
+            string = Utils.replace_between(string, dodgyChar, "", dodgycharIndex - 2, dodgycharIndex + 2)
             if domonic.parseString_prev_error != dodgycharIndex:
                 domonic.parseString_prev_error = dodgycharIndex
                 return domonic.parseString(string, parser="expat", debug=debug)

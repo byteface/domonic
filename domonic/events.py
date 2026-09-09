@@ -75,9 +75,7 @@ class EventTarget:
         return bool(self.listeners.get(eventType))
 
     @staticmethod
-    def _normalize_listener_options(
-        options: bool | dict[str, Any] | None = None, **kwargs: Any
-    ) -> dict[str, Any]:
+    def _normalize_listener_options(options: bool | dict[str, Any] | None = None, **kwargs: Any) -> dict[str, Any]:
         normalized: dict[str, Any] = {
             "capture": False,
             "once": False,
@@ -111,10 +109,7 @@ class EventTarget:
         while current is not None and id(current) not in seen:
             path.append(current)
             seen.add(id(current))
-            if (
-                hasattr(current, "parentNode")
-                and getattr(current, "parentNode", None) is not None
-            ):
+            if hasattr(current, "parentNode") and getattr(current, "parentNode", None) is not None:
                 current = current.parentNode
                 continue
             owner_document = getattr(current, "ownerDocument", None)
@@ -128,13 +123,9 @@ class EventTarget:
             break
         return path
 
-    def _invoke_listeners(
-        self, current_target: Any, event: "Event", capture: bool
-    ) -> None:
+    def _invoke_listeners(self, current_target: Any, event: "Event", capture: bool) -> None:
         event_type = event.type
-        listeners = list(
-            getattr(current_target, "_listener_options", {}).get(event_type, [])
-        )
+        listeners = list(getattr(current_target, "_listener_options", {}).get(event_type, []))
         event.currentTarget = current_target
         event.srcElement = event.target
         event.eventPhase = (
@@ -158,9 +149,7 @@ class EventTarget:
             finally:
                 event._in_passive_listener = False
                 if listener["once"]:
-                    current_target.removeEventListener(
-                        event_type, callback, listener["capture"]
-                    )
+                    current_target.removeEventListener(event_type, callback, listener["capture"])
             if event._immediate_propagation_stopped:
                 return
 
@@ -201,15 +190,10 @@ class EventTarget:
             if getattr(signal, "aborted", False):
                 return
         for listener in self._listener_options[eventType]:
-            if (
-                listener["callback"] is callback
-                and listener["capture"] == listener_options["capture"]
-            ):
+            if listener["callback"] is callback and listener["capture"] == listener_options["capture"]:
                 return
         self.listeners[eventType].append(callback)
-        self._listener_options[eventType].append(
-            {"callback": callback, **listener_options}
-        )
+        self._listener_options[eventType].append({"callback": callback, **listener_options})
         if signal is not None and hasattr(signal, "addEventListener"):
 
             def _remove_on_abort(
@@ -342,9 +326,7 @@ class EventTarget:
         event._in_passive_listener = False
         event._dispatching = True
 
-        async def call_listener(
-            callback: Callable[..., Any], current_target: Any, capture: bool
-        ) -> Any:
+        async def call_listener(callback: Callable[..., Any], current_target: Any, capture: bool) -> Any:
             event.currentTarget = current_target
             event.srcElement = event.target
             event.eventPhase = (
@@ -361,25 +343,19 @@ class EventTarget:
             return result
 
         async def invoke(current_target: Any, capture: bool) -> None:
-            listeners = list(
-                getattr(current_target, "_listener_options", {}).get(event.type, [])
-            )
+            listeners = list(getattr(current_target, "_listener_options", {}).get(event.type, []))
             for listener in listeners:
                 if listener["capture"] != capture:
                     continue
                 event._in_passive_listener = listener["passive"]
                 try:
-                    result = await call_listener(
-                        listener["callback"], current_target, capture
-                    )
+                    result = await call_listener(listener["callback"], current_target, capture)
                     if result is False:
                         event.preventDefault()
                 finally:
                     event._in_passive_listener = False
                     if listener["once"]:
-                        current_target.removeEventListener(
-                            event.type, listener["callback"], listener["capture"]
-                        )
+                        current_target.removeEventListener(event.type, listener["callback"], listener["capture"])
                 if event._immediate_propagation_stopped:
                     return
             if capture is False:
@@ -387,11 +363,7 @@ class EventTarget:
                 if callable(handler):
                     event.currentTarget = current_target
                     event.srcElement = event.target
-                    event.eventPhase = (
-                        Event.AT_TARGET
-                        if current_target is event.target
-                        else Event.BUBBLING_PHASE
-                    )
+                    event.eventPhase = Event.AT_TARGET if current_target is event.target else Event.BUBBLING_PHASE
                     result = handler(event)
                     if inspect.isawaitable(result):
                         result = await result
@@ -550,9 +522,7 @@ class Event:
     def __str__(self) -> str:
         return self.type + ":" + str(self.timeStamp)
 
-    def __init__(
-        self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str = "", options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         """Create an event from an event type and optional initializer values.
 
         ``options`` accepts the common DOM ``EventInit`` fields such as
@@ -568,9 +538,7 @@ class Event:
         self.currentTarget: object = options.get("currentTarget", None)
         self.defaultPrevented: bool = bool(options.get("defaultPrevented", False))
         self.eventPhase: int = options.get("eventPhase", Event.NONE)
-        self.explicitOriginalTarget: object = options.get(
-            "explicitOriginalTarget", None
-        )
+        self.explicitOriginalTarget: object = options.get("explicitOriginalTarget", None)
         self.isTrusted: bool = options.get("isTrusted", False)
         self.originalTarget: object = options.get("originalTarget", None)
         self._returnValue: bool = not self.defaultPrevented
@@ -698,9 +666,7 @@ class AbortSignal(EventTarget):
 
     def throwIfAborted(self) -> None:
         if self.aborted:
-            raise RuntimeError(
-                self.reason if self.reason is not None else "Signal already aborted"
-            )
+            raise RuntimeError(self.reason if self.reason is not None else "Signal already aborted")
 
 
 class AbortController:
@@ -716,9 +682,7 @@ class AbortController:
 class UIEvent(Event):
     """Event carrying view, detail, and UI coordinate context."""
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         """Create a UI event from an event type and UI initializer values.
 
         Args:
@@ -735,9 +699,7 @@ class UIEvent(Event):
         self.sourceCapabilities = options.get("sourceCapabilities", None)
         super().__init__(_type, options, *args, **kwargs)
 
-    def initUIEvent(
-        self, _type: str, canBubble: bool, cancelable: bool, view, detail
-    ) -> "UIEvent":
+    def initUIEvent(self, _type: str, canBubble: bool, cancelable: bool, view, detail) -> "UIEvent":
         """
         Initialize a UIEvent with specific parameters.
 
@@ -772,9 +734,7 @@ class MouseEvent(UIEvent):
     MOUSEOUT: str = "mouseout"  #:
     MOUSEUP: str = "mouseup"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         """Create a mouse event from standard mouse initializer values."""
         options = options or kwargs
         self.canBubble = options.get("canBubble", None)
@@ -956,12 +916,8 @@ def _infer_code_from_key_and_location(key: str, location: int) -> str:
         Key.ARROW_RIGHT: Code.ARROW_RIGHT,
         Key.ARROW_UP: Code.ARROW_UP,
         Key.ARROW_DOWN: Code.ARROW_DOWN,
-        Key.SHIFT: (
-            Code.SHIFT_RIGHT if location == KeyLocation.RIGHT else Code.SHIFT_LEFT
-        ),
-        Key.CONTROL: (
-            Code.CONTROL_RIGHT if location == KeyLocation.RIGHT else Code.CONTROL_LEFT
-        ),
+        Key.SHIFT: (Code.SHIFT_RIGHT if location == KeyLocation.RIGHT else Code.SHIFT_LEFT),
+        Key.CONTROL: (Code.CONTROL_RIGHT if location == KeyLocation.RIGHT else Code.CONTROL_LEFT),
         Key.ALT: Code.ALT_RIGHT if location == KeyLocation.RIGHT else Code.ALT_LEFT,
         Key.META: Code.META_RIGHT if location == KeyLocation.RIGHT else Code.META_LEFT,
         Key.CAPS_LOCK: Code.CAPS_LOCK,
@@ -989,9 +945,7 @@ class KeyboardEvent(UIEvent):
     DOM_KEY_LOCATION_RIGHT: int = KeyLocation.RIGHT  #:
     DOM_KEY_LOCATION_NUMPAD: int = KeyLocation.NUMPAD  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         """Create a keyboard event from standard keyboard initializer values."""
         options = options or kwargs  # if options is none use kwargs
         self.canBubble = options.get("canBubble", None)
@@ -1024,11 +978,7 @@ class KeyboardEvent(UIEvent):
             or (KeyCode.to_code(raw_key_code) if raw_key_code is not None else "")
             or _infer_code_from_key_and_location(self.key, self.location)
         )
-        self.keyCode = (
-            int(raw_key_code)
-            if raw_key_code not in (None, "")
-            else _infer_legacy_keycode(self.key)
-        )
+        self.keyCode = int(raw_key_code) if raw_key_code not in (None, "") else _infer_legacy_keycode(self.key)
         self.charCode = int(options.get("charCode", _infer_char_code(self.key)))
 
         super().__init__(_type, options, *args, **kwargs)
@@ -1056,11 +1006,7 @@ class KeyboardEvent(UIEvent):
         self.location = locationArg
         self.locationArg = locationArg
         self.modifiersListArg = modifiersListArg
-        modifiers = {
-            modifier.strip().lower()
-            for modifier in str(modifiersListArg).split()
-            if modifier
-        }
+        modifiers = {modifier.strip().lower() for modifier in str(modifiersListArg).split() if modifier}
         self._altKey = "alt" in modifiers
         self._ctrlKey = "control" in modifiers or "ctrl" in modifiers
         self._metaKey = "meta" in modifiers
@@ -1110,9 +1056,7 @@ class CompositionEvent(UIEvent):
     END: str = "compositionend"
     UPDATE: str = "compositionupdate"
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.data = options.get("data", None)
         self.locale = options.get("locale", None)
@@ -1127,9 +1071,7 @@ class FocusEvent(UIEvent):
     FOCUSIN: str = "focusin"  #:
     FOCUSOUT: str = "focusout"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.relatedTarget = options.get("relatedTarget", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1143,9 +1085,7 @@ class TouchEvent(UIEvent):
     TOUCHMOVE: str = "touchmove"  #:
     TOUCHSTART: str = "touchstart"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.shiftKey = options.get("shiftKey", False)
         self.altKey = options.get("altKey", False)
@@ -1178,9 +1118,7 @@ class WheelEvent(UIEvent):
     MOUSEWHEEL: str = "mousewheel"  # DEPRECATED - USE WHEEL  #:
     WHEEL: str = "wheel"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.deltaX = options.get("deltaX", 0)
         self.deltaY = options.get("deltaY", 0)
@@ -1196,9 +1134,7 @@ class AnimationEvent(Event):
     ANIMATIONITERATION: str = "animationiteration"  #:
     ANIMATIONSTART: str = "animationstart"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.animationName = options.get("animationName", None)
         # Name of the animation that fired the event.
@@ -1216,9 +1152,7 @@ class ClipboardEvent(Event):
     CUT: str = "cut"  #:
     PASTE: str = "paste"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.clipboardData = options.get("clipboardData", None)
         # Data affected by the clipboard operation.
@@ -1230,9 +1164,7 @@ class ErrorEvent(Event):
 
     ERROR: str = "error"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.message: str = options.get("message", "")
         self.filename = options.get("filename", None)
@@ -1247,9 +1179,7 @@ class CloseEvent(Event):
 
     CLOSE: str = "close"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.code = options.get("code", 0)
         self.reason = options.get("reason", "")
@@ -1262,9 +1192,7 @@ class SubmitEvent(Event):
 
     SUBMIT: str = "submit"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.submitter = options.get("submitter", None)
         self.agentInvoked = bool(options.get("agentInvoked", False))
@@ -1284,9 +1212,7 @@ class ToolEvent(Event):
     TOOLCANCEL: str = Event.TOOLCANCEL  #:
     TOOLCHANGE: str = Event.TOOLCHANGE  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.toolName = options.get("toolName", "")
         super().__init__(_type, options, *args, **kwargs)
@@ -1305,9 +1231,7 @@ class PointerEvent(MouseEvent):
     POINTEROVER: str = "pointerover"  #:
     POINTERUP: str = "pointerup"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.pointerId: float = options.get("pointerId", 0)
         self.width: float = options.get("width", 1)
@@ -1340,9 +1264,7 @@ class BeforeUnloadEvent(Event):
 
     BEFOREUNLOAD: str = Event.BEFOREUNLOAD  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self._beforeunload_return_value = options.get("returnValue", "")
         super().__init__(_type, options, *args, **kwargs)
@@ -1370,9 +1292,7 @@ class SVGEvent(Event):
     UNLOAD: str = "unload"  #:
     ERROR: str = "error"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1383,9 +1303,7 @@ class TimerEvent(Event):
     TIMER: str = "timer"  #:
     TIMER_COMPLETE: str = "timercomplete"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         super().__init__(_type, options, *args, **kwargs)
 
@@ -1408,9 +1326,7 @@ class DragEvent(MouseEvent):
     START: str = "dragstart"  #:
     DROP: str = "drop"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.dataTransfer = options.get("dataTransfer", None)
         # Data transfer object associated with the drag operation.
@@ -1422,9 +1338,7 @@ class HashChangeEvent(Event):
 
     CHANGE: str = "hashchange"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.newURL = options.get("newURL", "")
         self.oldURL = options.get("oldURL", "")
@@ -1438,9 +1352,7 @@ class InputEvent(UIEvent):
     SELECT: str = "select"  #:
     INPUT: str = "input"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.data = options.get("data", None)
         # Inserted characters, if any.
@@ -1462,9 +1374,7 @@ class InputEvent(UIEvent):
             if hasattr(target, "getSelection"):
                 selection = target.getSelection()
                 if selection is not None:
-                    return [
-                        selection.getRangeAt(i) for i in range(selection.rangeCount)
-                    ]
+                    return [selection.getRangeAt(i) for i in range(selection.rangeCount)]
         return []
 
 
@@ -1474,9 +1384,7 @@ class PageTransitionEvent(Event):
     PAGEHIDE: str = "pagehide"  #:
     PAGESHOW: str = "pageshow"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.persisted = options.get("persisted", None)
         # Whether the page was restored from a page cache.
@@ -1488,9 +1396,7 @@ class PopStateEvent(Event):
 
     POPSTATE: str = "popstate"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.state = options.get("state", None)
         # State object associated with the history entry.
@@ -1502,9 +1408,7 @@ class StorageEvent(Event):
 
     STORAGE: str = "storage"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.key = options.get("key", None)
         # Key of the changed storage item.
@@ -1524,9 +1428,7 @@ class TransitionEvent(Event):
 
     TRANSITIONEND: str = "transitionend"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.propertyName = options.get("propertyName", None)
         # Name of the CSS property that transitioned.
@@ -1549,9 +1451,7 @@ class ProgressEvent(Event):
     LOADEND: str = "loadend"  #:
     TIMEOUT: str = "timeout"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.lengthComputable: bool = options.get("lengthComputable", False)
         self.loaded: int = options.get("loaded", 0)
@@ -1562,9 +1462,7 @@ class ProgressEvent(Event):
 class CustomEvent(Event):
     """Custom application event carrying arbitrary detail data."""
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.detail = options.get("detail", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1587,9 +1485,7 @@ class ToggleEvent(Event):
     BEFORETOGGLE: str = "beforetoggle"  #:
     TOGGLE: str = "toggle"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.oldState = options.get("oldState", "")
         self.newState = options.get("newState", "")
@@ -1602,9 +1498,7 @@ class CommandEvent(Event):
 
     COMMAND: str = "command"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.command = options.get("command", "")
         self.source = options.get("source", None)
@@ -1617,9 +1511,7 @@ class GamePadEvent(Event):
     START: str = "gamepadconnected"  #:
     STOP: str = "gamepaddisconnected"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.gamepad = options.get("gamepad", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1630,9 +1522,7 @@ class FormDataEvent(Event):
 
     FORMDATA: str = "formdata"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.formData = options.get("formData", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1644,9 +1534,7 @@ class TrackEvent(Event):
     ADDTRACK: str = "addtrack"  #:
     REMOVETRACK: str = "removetrack"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.track = options.get("track", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1657,9 +1545,7 @@ class BlobEvent(Event):
 
     DATAAVAILABLE: str = "dataavailable"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.data = options.get("data", None)
         self.timecode = options.get("timecode", 0)
@@ -1671,14 +1557,10 @@ class DeviceMotionEvent(Event):
 
     DEVICEMOTION: str = "devicemotion"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.acceleration = options.get("acceleration", None)
-        self.accelerationIncludingGravity = options.get(
-            "accelerationIncludingGravity", None
-        )
+        self.accelerationIncludingGravity = options.get("accelerationIncludingGravity", None)
         self.rotationRate = options.get("rotationRate", None)
         self.interval = options.get("interval", 0)
         super().__init__(_type, options, *args, **kwargs)
@@ -1690,9 +1572,7 @@ class DeviceOrientationEvent(Event):
     DEVICEORIENTATION: str = "deviceorientation"  #:
     DEVICEORIENTATIONABSOLUTE: str = "deviceorientationabsolute"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.absolute = bool(options.get("absolute", False))
         self.alpha = options.get("alpha", None)
@@ -1706,9 +1586,7 @@ class DeviceLightEvent(Event):
 
     DEVICELIGHT: str = "devicelight"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.value = options.get("value", None)
         super().__init__(_type, options, *args, **kwargs)
@@ -1719,9 +1597,7 @@ class DeviceProximityEvent(Event):
 
     DEVICEPROXIMITY: str = "deviceproximity"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.value = options.get("value", None)
         self.min = options.get("min", None)
@@ -1736,9 +1612,7 @@ class WebGLContextEvent(Event):
     WEBGLCONTEXTRESTORED: str = "webglcontextrestored"  #:
     WEBGLCONTEXTCREATIONERROR: str = "webglcontextcreationerror"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs
         self.statusMessage = options.get("statusMessage", "")
         super().__init__(_type, options, *args, **kwargs)
@@ -1749,9 +1623,7 @@ class FetchEvent(Event):
 
     FETCH: str = "fetch"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.clientId = options.get("clientId", None)
         # Client ID associated with the fetch request.
@@ -1765,9 +1637,7 @@ class FetchEvent(Event):
     def isReload(self) -> bool:
         if self.request is None:
             return False
-        return getattr(self.request, "url", None) == getattr(
-            self.request, "referrer", object()
-        )
+        return getattr(self.request, "url", None) == getattr(self.request, "referrer", object())
 
     @property
     def replacesClientId(self) -> bool:
@@ -1779,11 +1649,7 @@ class FetchEvent(Event):
     def resultingClientId(self) -> Any:
         if self.request is None:
             return self.clientId
-        return (
-            self.clientId
-            if self.replacesClientId
-            else getattr(self.request, "clientId", None)
-        )
+        return self.clientId if self.replacesClientId else getattr(self.request, "clientId", None)
 
     def respondWith(self, response: Any) -> Any:
         """Store and return the response object supplied for this fetch."""
@@ -1799,9 +1665,7 @@ class FetchEvent(Event):
 class ExtendableEvent(Event):
     """Event that can track caller-supplied work before completion."""
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.extendable = options.get("extendable", True)
         # Whether the event accepts work through waitUntil().
@@ -1819,9 +1683,7 @@ class SyncEvent(ExtendableEvent):
 
     SYNC: str = "sync"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.tag = options.get("tag", None)
         # Sync registration tag.
@@ -1835,9 +1697,7 @@ class SecurityPolicyViolationEvent(Event):
 
     SECURITY_POLICY_VIOLATION: str = "securitypolicyviolation"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.documentURI = options.get("documentURI", None)
         # URI of the protected document.
@@ -1877,9 +1737,7 @@ class DOMContentLoadedEvent(Event):
 
     DOMCONTENTLOADED: str = "DOMContentLoaded"  #:
 
-    def __init__(
-        self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs
-    ) -> None:
+    def __init__(self, _type: str, options: dict[str, Any] | None = None, *args, **kwargs) -> None:
         options = options or kwargs  # if options is none use kwargs
         self.document = options.get("document", None)
         # Document that finished parsing.
@@ -2214,8 +2072,16 @@ _install_default_event_handlers(GlobalEventHandler, WindowEventHandler)
 # (``'onclick' in element`` is ``true``), so domonic advertises the same set.
 EVENT_HANDLER_NAMES: frozenset[str] = frozenset(
     GlobalEventHandler._handler_names + WindowEventHandler._handler_names
-) | frozenset({
-    "onbeforetoggle", "oncommand", "oncontextlost", "oncontextrestored",
-    "oncopy", "oncut", "onpaste", "onscrollend", "ontoggle",
-})
-
+) | frozenset(
+    {
+        "onbeforetoggle",
+        "oncommand",
+        "oncontextlost",
+        "oncontextrestored",
+        "oncopy",
+        "oncut",
+        "onpaste",
+        "onscrollend",
+        "ontoggle",
+    }
+)

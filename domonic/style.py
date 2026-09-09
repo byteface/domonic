@@ -256,18 +256,51 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
 #: <length>-valued properties where a bare ``0`` is serialised as ``0px`` (the
 #: CSSOM normalises unit-optional zero). ``line-height`` is excluded -- a
 #: unitless number there is a multiplier, not a length.
-_ZERO_LENGTH_PROPERTIES = frozenset({
-    "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
-    "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
-    "inset", "top", "right", "bottom", "left",
-    "width", "height", "min-width", "min-height", "max-width", "max-height",
-    "border-width", "border-top-width", "border-right-width",
-    "border-bottom-width", "border-left-width", "outline-width",
-    "column-rule-width", "column-width", "column-gap", "row-gap", "gap",
-    "letter-spacing", "word-spacing", "text-indent", "outline-offset",
-    "border-radius", "border-top-left-radius", "border-top-right-radius",
-    "border-bottom-right-radius", "border-bottom-left-radius",
-})
+_ZERO_LENGTH_PROPERTIES = frozenset(
+    {
+        "margin",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left",
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+        "inset",
+        "top",
+        "right",
+        "bottom",
+        "left",
+        "width",
+        "height",
+        "min-width",
+        "min-height",
+        "max-width",
+        "max-height",
+        "border-width",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
+        "outline-width",
+        "column-rule-width",
+        "column-width",
+        "column-gap",
+        "row-gap",
+        "gap",
+        "letter-spacing",
+        "word-spacing",
+        "text-indent",
+        "outline-offset",
+        "border-radius",
+        "border-top-left-radius",
+        "border-top-right-radius",
+        "border-bottom-right-radius",
+        "border-bottom-left-radius",
+    }
+)
 _BARE_ZERO_RE = re.compile(r"(?<![\w.#])0(?![\w.%])")
 
 # The non-``None`` per-property defaults that ``Style.__init__`` used to assign
@@ -363,17 +396,11 @@ def _set_css_declaration(
     return next_entries
 
 
-def _serialize_css_declarations(
-    entries: list[tuple[str, str, str]], compact: bool = False
-) -> str:
+def _serialize_css_declarations(entries: list[tuple[str, str, str]], compact: bool = False) -> str:
     separator = ":" if compact else ": "
     joiner = "" if compact else " "
     declarations = [
-        (
-            f"{name}{separator}{value}{joiner}!important;"
-            if priority == "important"
-            else f"{name}{separator}{value};"
-        )
+        (f"{name}{separator}{value}{joiner}!important;" if priority == "important" else f"{name}{separator}{value};")
         for name, value, priority in entries
     ]
     return "".join(declarations) if compact else " ".join(declarations)
@@ -644,9 +671,7 @@ class CSSImportRule(CSSRule):
         if self.layerName is not None:
             layer = " layer" if self.layerName == "" else f" layer({self.layerName})"
         supports = f" supports({self.supportsText})" if self.supportsText else ""
-        media = (
-            f" {self.media.mediaText}" if self.media and self.media.mediaText else ""
-        )
+        media = f" {self.media.mediaText}" if self.media and self.media.mediaText else ""
         return f"@import {self.href}{layer}{supports}{media};"
 
     # @property
@@ -804,9 +829,7 @@ class CSSKeyframeRule(CSSRule):
 
     @property
     def cssText(self):
-        return (
-            f"{self.keyText} {{{self.style.cssText if self.style is not None else ''}}}"
-        )
+        return f"{self.keyText} {{{self.style.cssText if self.style is not None else ''}}}"
 
     # @property
     # def cssRules(self):
@@ -896,9 +919,7 @@ class CSSFontFeatureValuesRule(CSSRule):
 
     @property
     def cssText(self):
-        return (
-            f"@font-feature-values {{{' '.join(str(rule) for rule in self.cssRules)}}}"
-        )
+        return f"@font-feature-values {{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
     # @property
     # def cssRules(self):
@@ -934,9 +955,7 @@ class CSSGroupingRule(CSSRule):
         if len(rules) == 0:
             raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Invalid CSS rule.")
         if len(rules) > 1:
-            raise DOMException(
-                DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed."
-            )
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed.")
         if index is None:
             index = len(self.cssRules)
         if index < 0 or index > len(self.cssRules):
@@ -1060,13 +1079,9 @@ class CSSContainerRule(CSSConditionRule):
 
     @property
     def cssText(self):
-        condition = self.conditionText or _serialize_container_conditions(
-            self.conditions
-        )
+        condition = self.conditionText or _serialize_container_conditions(self.conditions)
         prelude = f" {condition}" if condition else ""
-        return (
-            f"@container{prelude} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
-        )
+        return f"@container{prelude} {{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
 
 class CSSScopeRule(CSSGroupingRule):
@@ -1185,9 +1200,7 @@ class MediaList(list):
 
     @mediaText.setter
     def mediaText(self, value: Any) -> None:
-        self[:] = [
-            part.strip() for part in str(value or "").split(",") if part.strip()
-        ]
+        self[:] = [part.strip() for part in str(value or "").split(",") if part.strip()]
 
     def item(self, index: int) -> str | None:
         """Returns the media at the given index in the MediaList."""
@@ -1239,10 +1252,7 @@ class CSSStyleSheet(StyleSheet):
         if isinstance(options, dict):
             if options.get("media") is not None:
                 media = options["media"]
-                self.media = (
-                    media if isinstance(media, MediaList)
-                    else MediaList(str(media).split(","))
-                )
+                self.media = media if isinstance(media, MediaList) else MediaList(str(media).split(","))
             self.disabled = bool(options.get("disabled", False))
             if options.get("baseURL") is not None:
                 self.href = str(options["baseURL"])
@@ -1278,9 +1288,7 @@ class CSSStyleSheet(StyleSheet):
         if len(rules) == 0:
             raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Invalid CSS rule.")
         if len(rules) > 1:
-            raise DOMException(
-                DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed."
-            )
+            raise DOMException(DOMException.HIERARCHY_REQUEST_ERR, "Only one rule is allowed.")
         if index is None:
             index = len(self.cssRules)
         if index < 0 or index > len(self.cssRules):
@@ -1336,9 +1344,7 @@ class Style:
 
         self._parent_node = parent_node  # so I can update a tags returned style attributes if a style gets set
 
-        self._members_checked = (
-            True  # NOTE - this ALWAYS needs to be last or all props will render
-        )
+        self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
 
     def __setattr__(self, name: str, value: Any) -> None:
         descriptor = getattr(type(self), name, None)
@@ -1360,9 +1366,7 @@ class Style:
             return False
         return getattr(self, "_parent_node", None) is not None
 
-    def _set_parent_style_property(
-        self, name: str, value: Any, priority: str = ""
-    ) -> None:
+    def _set_parent_style_property(self, name: str, value: Any, priority: str = "") -> None:
         if self._parent_node is None:
             return
         property_name = _css_property_name(name)
@@ -1404,9 +1408,7 @@ class Style:
             if value is None:
                 value = "none"
             elif _css_property_name(func.__name__) in _ZERO_LENGTH_PROPERTIES:
-                normalized = _normalize_zero_lengths(
-                    _css_property_name(func.__name__), str(value)
-                )
+                normalized = _normalize_zero_lengths(_css_property_name(func.__name__), str(value))
                 if normalized != str(value):
                     value = normalized
                     args = (value,) + tuple(args[1:])
@@ -1424,11 +1426,7 @@ class Style:
             # must expand to its longhands, exactly like ``setProperty`` -- so
             # route it there when available (CSSStyleDeclaration).
             kebab = _css_property_name(func.__name__)
-            if (
-                _cssom.is_shorthand(kebab)
-                and hasattr(self, "setProperty")
-                and str(value) not in ("", "none")
-            ):
+            if _cssom.is_shorthand(kebab) and hasattr(self, "setProperty") and str(value) not in ("", "none"):
                 self.setProperty(kebab, value)
                 return
 
@@ -5139,9 +5137,7 @@ class CSSStyleDeclaration(Style):
         # self.__cssText = None
         self.parentRule = None
         self.cssText = (
-            parentNode.getAttribute("style")
-            if parentNode is not None and parentNode.getAttribute("style")
-            else ""
+            parentNode.getAttribute("style") if parentNode is not None and parentNode.getAttribute("style") else ""
         )
 
     @staticmethod
@@ -5176,11 +5172,7 @@ class CSSStyleDeclaration(Style):
         order: list[str] = []
         seen: dict[str, tuple[str, str]] = {}
         for name, value, priority in self._property_entries():
-            expanded = (
-                _cssom.expand_shorthand(name, value)
-                if _cssom.is_shorthand(name)
-                else None
-            )
+            expanded = _cssom.expand_shorthand(name, value) if _cssom.is_shorthand(name) else None
             pairs = expanded if expanded else [(name, value)]
             for long_name, long_value in pairs:
                 if long_name not in seen:
@@ -5207,16 +5199,13 @@ class CSSStyleDeclaration(Style):
     def cssText(self, value):
         raw = "" if value is None else str(value).strip()
         parsed_entries = [
-            (name, _normalize_zero_lengths(name, val), priority)
-            for name, val, priority in _parse_css_declarations(raw)
+            (name, _normalize_zero_lengths(name, val), priority) for name, val, priority in _parse_css_declarations(raw)
         ]
         entries = self._collapse_box_shorthands(parsed_entries)
         # CSSOM: the getter always returns the *serialised* declaration block,
         # regardless of the input text -- so normalise here.
         text = _serialize_css_declarations(entries)
-        next_declared_properties = {
-            self._to_camel(name) for name, _, _ in entries if not name.startswith("--")
-        }
+        next_declared_properties = {self._to_camel(name) for name, _, _ in entries if not name.startswith("--")}
         previous_declared_properties = set(getattr(self, "_declared_properties", set()))
         object.__setattr__(self, "_css_text", text)
         if (
@@ -5228,9 +5217,7 @@ class CSSStyleDeclaration(Style):
 
         object.__setattr__(self, "_suspend_style_sync", True)
         try:
-            for attribute_name in (
-                previous_declared_properties - next_declared_properties
-            ):
+            for attribute_name in previous_declared_properties - next_declared_properties:
                 try:
                     setattr(self, attribute_name, "")
                 except Exception:
@@ -5351,9 +5338,7 @@ class CSSStyleDeclaration(Style):
             # removing a longhand covered by a stored shorthand: expand the
             # shorthand first so the other longhands survive, like a browser
             for shorthand in _cssom.LONGHAND_TO_SHORTHANDS.get(target, ()):
-                shorthand_entry = next(
-                    (e for e in entries if e[0] == shorthand), None
-                )
+                shorthand_entry = next((e for e in entries if e[0] == shorthand), None)
                 if shorthand_entry is None:
                     continue
                 expanded = _cssom.expand_shorthand(shorthand, shorthand_entry[1])
@@ -5361,11 +5346,7 @@ class CSSStyleDeclaration(Style):
                     continue
                 idx = entries.index(shorthand_entry)
                 prio = shorthand_entry[2]
-                entries = (
-                    entries[:idx]
-                    + [(ln, lv, prio) for ln, lv in expanded]
-                    + entries[idx + 1:]
-                )
+                entries = entries[:idx] + [(ln, lv, prio) for ln, lv in expanded] + entries[idx + 1 :]
         entries = [entry for entry in entries if entry[0] != target]
         entries = self._collapse_shorthands(entries)
         self._sync_css_text(entries)
@@ -5403,9 +5384,7 @@ class CSSStyleDeclaration(Style):
             entries.append((target, value, priority))
         else:
             for shorthand in _cssom.LONGHAND_TO_SHORTHANDS.get(target, ()):
-                shorthand_entry = next(
-                    (e for e in entries if e[0] == shorthand), None
-                )
+                shorthand_entry = next((e for e in entries if e[0] == shorthand), None)
                 if shorthand_entry is None:
                     continue
                 expanded = _cssom.expand_shorthand(shorthand, shorthand_entry[1])
@@ -5413,11 +5392,7 @@ class CSSStyleDeclaration(Style):
                     continue
                 idx = entries.index(shorthand_entry)
                 prio = shorthand_entry[2]
-                entries = (
-                    entries[:idx]
-                    + [(ln, lv, prio) for ln, lv in expanded]
-                    + entries[idx + 1:]
-                )
+                entries = entries[:idx] + [(ln, lv, prio) for ln, lv in expanded] + entries[idx + 1 :]
             entries = _set_css_declaration(entries, target, value, priority)
 
         entries = self._collapse_box_shorthands(entries)
@@ -5443,13 +5418,27 @@ class CSSStyleDeclaration(Style):
     #: value, so re-forming them here would emit shorthands a browser would not.
     _COLLAPSE_ORDER = (
         "border",
-        "border-width", "border-style", "border-color",
-        "border-top", "border-right", "border-bottom", "border-left",
+        "border-width",
+        "border-style",
+        "border-color",
+        "border-top",
+        "border-right",
+        "border-bottom",
+        "border-left",
         "border-radius",
-        "margin", "padding", "inset",
-        "outline", "column-rule",
-        "overflow", "gap", "place-content", "place-items", "place-self",
-        "columns", "flex-flow", "flex",
+        "margin",
+        "padding",
+        "inset",
+        "outline",
+        "column-rule",
+        "overflow",
+        "gap",
+        "place-content",
+        "place-items",
+        "place-self",
+        "columns",
+        "flex-flow",
+        "flex",
     )
 
     @classmethod
@@ -5465,9 +5454,7 @@ class CSSStyleDeclaration(Style):
             priorities = {by_name[ln][1] for ln in longs}
             if len(priorities) != 1:
                 continue
-            collapsed = _cssom.build_shorthand(
-                shorthand, lambda ln: by_name.get(ln, ("", ""))[0]
-            )
+            collapsed = _cssom.build_shorthand(shorthand, lambda ln: by_name.get(ln, ("", ""))[0])
             if not collapsed:
                 continue
             priority = priorities.pop()
@@ -5483,9 +5470,7 @@ class CSSStyleDeclaration(Style):
             prios = {by_name[t][1] for t in trio}
             vals = [by_name[t][0] for t in trio]
             if len(prios) == 1 and all(v and " " not in v for v in vals):
-                merged = " ".join(
-                    v for v in vals if v not in ("medium", "currentcolor")
-                ) or vals[1]
+                merged = " ".join(v for v in vals if v not in ("medium", "currentcolor")) or vals[1]
                 first_idx = min(i for i, e in enumerate(entries) if e[0] in trio)
                 entries = [e for e in entries if e[0] not in trio]
                 entries.insert(first_idx, ("border", merged, prios.pop()))
@@ -5504,9 +5489,7 @@ class CSSStyleDeclaration(Style):
 _SPECIFICITY_ID = re.compile(r"#[-\w]+")
 _SPECIFICITY_CLASS = re.compile(r"\.[-\w]+|\[[^\]]+\]|(?<!:):[-\w]+")
 _SPECIFICITY_TYPE = re.compile(r"(?:^|[\s>+~|])(-?[_a-zA-Z][-\w]*|\*)")
-_SPECIFICITY_PSEUDO_EL = re.compile(
-    r"::[-\w]+|:(?:before|after|first-line|first-letter)\b"
-)
+_SPECIFICITY_PSEUDO_EL = re.compile(r"::[-\w]+|:(?:before|after|first-line|first-letter)\b")
 # Functional pseudo-classes whose specificity is that of their most specific
 # argument (:where() contributes nothing and is handled separately).
 _SPECIFICITY_MATCHES_ANY = ("is", "matches", "not", "has")
@@ -5594,9 +5577,7 @@ def _selector_specificity(selector: str) -> tuple[int, int, int]:
     scan = _SPECIFICITY_PSEUDO_EL.sub(" ", sel)
     ids += len(_SPECIFICITY_ID.findall(scan))
     classes += len(_SPECIFICITY_CLASS.findall(scan))
-    types += len(
-        [t for t in _SPECIFICITY_TYPE.findall(scan) if t != "*"]
-    )
+    types += len([t for t in _SPECIFICITY_TYPE.findall(scan) if t != "*"])
     return ids, classes, types + pseudo_els
 
 
@@ -5640,9 +5621,7 @@ def _build_rule_index(sheet_list, viewport):
     order = 0
     layers: dict[int, int] = {}  # id(CSSLayerBlockRule) -> layer number
     for sheet in sheet_list:
-        for rule, layer in _iter_style_rules(
-            getattr(sheet, "cssRules", None), viewport=viewport, layers=layers
-        ):
+        for rule, layer in _iter_style_rules(getattr(sheet, "cssRules", None), viewport=viewport, layers=layers):
             entries = tuple(rule.style._property_entries())
             if not entries:
                 continue
@@ -5679,21 +5658,15 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
         if isinstance(rule, CSSLayerBlockRule):
             layer_name = (rule.name or "").strip() or f"\x00anon{id(rule)}"
             child_layer = layers.setdefault(layer_name, len(layers) + 1)
-            yield from _iter_style_rules(
-                inner, viewport=viewport, layers=layers, layer=child_layer
-            )
+            yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=child_layer)
             continue
-        condition = getattr(rule, "conditionText", None) or getattr(
-            rule, "media", None
-        )
+        condition = getattr(rule, "conditionText", None) or getattr(rule, "media", None)
         if condition is not None and hasattr(condition, "matches"):
             matches = condition.matches
         else:
             matches = True
         if matches:
-            yield from _iter_style_rules(
-                inner, viewport=viewport, layers=layers, layer=layer
-            )
+            yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=layer)
 
 
 class ComputedStyleDeclaration(CSSStyleDeclaration):
@@ -5732,9 +5705,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     # -- cascade ---------------------------------------------------------
     def _collect_author_declarations(self):
         element = self._element
-        document = getattr(element, "ownerDocument", None) or getattr(
-            element, "rootNode", None
-        )
+        document = getattr(element, "ownerDocument", None) or getattr(element, "rootNode", None)
         sheets = None
         for attr in ("styleSheets", "stylesheets"):
             sheets = getattr(document, attr, None) if document is not None else None
@@ -5830,18 +5801,14 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         for name, value, priority in _parse_css_declarations(inline):
             if priority != "important":
                 covering = _cssom.LONGHAND_TO_SHORTHANDS.get(name, ())
-                if name in important_author or any(
-                    shorthand in important_author for shorthand in covering
-                ):
+                if name in important_author or any(shorthand in important_author for shorthand in covering):
                     continue
             resolved[name] = value
 
         # expand shorthands so longhand lookups work
         for name in list(resolved):
             if _cssom.is_shorthand(name):
-                for long_name, long_value in (
-                    _cssom.expand_shorthand(name, resolved[name]) or []
-                ):
+                for long_name, long_value in _cssom.expand_shorthand(name, resolved[name]) or []:
                     resolved.setdefault(long_name, long_value)
 
         # 3: inherited values from the parent's computed style
@@ -5851,9 +5818,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             cache = self._chain_cache
             parent_computed = cache.get(id(parent))
             if parent_computed is None:
-                parent_computed = ComputedStyleDeclaration(
-                    parent, None, _chain_cache=cache
-                )
+                parent_computed = ComputedStyleDeclaration(parent, None, _chain_cache=cache)
                 cache[id(parent)] = parent_computed
         return _ResolvedView(resolved, parent_computed)
 
@@ -5865,25 +5830,25 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
         # a shorthand is rebuilt from its (already used-value-resolved) longhands
-        if _cssom.is_shorthand(target) and _cssom.expand_shorthand(
-            target, self._resolved.get(target) or ""
-        ) is not None:
+        if (
+            _cssom.is_shorthand(target)
+            and _cssom.expand_shorthand(target, self._resolved.get(target) or "") is not None
+        ):
             built = _cssom.build_shorthand(target, self.getPropertyValue)
             if built:
                 return built
         value = self._resolved.get(target)
         if value:
             if not target.startswith("--") and "var(" in value:
-                value = _expand_var_references(
-                    value, self._custom_property
-                ).strip()
+                value = _expand_var_references(value, self._custom_property).strip()
             if target in _USED_LENGTH_PROPERTIES:
                 return self._to_used_length(target, value)
             if target in _COLOR_PROPERTIES or target.endswith("color"):
                 return self._to_used_color(target, value)
             if target == "transform":
                 composed = _transform_to_matrix(
-                    value, em_px=self._font_size_px(),
+                    value,
+                    em_px=self._font_size_px(),
                     rem_px=self._root_font_size_px(),
                 )
                 return composed if composed is not None else value
@@ -5916,12 +5881,12 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         parent_px = parent._font_size_px() if parent is not None else 16.0
         raw = str(self._resolved.get("font-size") or "medium").strip()
         if "calc(" in raw.lower():
-            px = _eval_calc_to_px(
-                raw, em_px=parent_px, rem_px=self._root_font_size_px()
-            )
+            px = _eval_calc_to_px(raw, em_px=parent_px, rem_px=self._root_font_size_px())
         else:
             px = _length_string_to_px(
-                raw, em_px=parent_px, rem_px=self._root_font_size_px(),
+                raw,
+                em_px=parent_px,
+                rem_px=self._root_font_size_px(),
                 percent_px=parent_px,
             )
         if px is None:
@@ -5966,9 +5931,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         font_px = self._font_size_px()
 
         if "calc(" in value.lower():
-            evaluated = _eval_calc_to_px(
-                value, em_px=font_px, rem_px=self._root_font_size_px()
-            )
+            evaluated = _eval_calc_to_px(value, em_px=font_px, rem_px=self._root_font_size_px())
             return _px_str(evaluated) if evaluated is not None else value
 
         if target == "line-height":
@@ -6002,17 +5965,27 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     #: two-value ``display`` syntax -> the legacy single keyword a browser
     #: reports (CSS Display 3 "computed value" column)
     _DISPLAY_TWO_VALUE = {
-        "block flow": "block", "inline flow": "inline",
-        "block flow-root": "flow-root", "inline flow-root": "inline-block",
-        "block flex": "flex", "inline flex": "inline-flex",
-        "block grid": "grid", "inline grid": "inline-grid",
-        "block table": "table", "inline table": "inline-table",
-        "block list-item": "list-item", "flow list-item": "list-item",
+        "block flow": "block",
+        "inline flow": "inline",
+        "block flow-root": "flow-root",
+        "inline flow-root": "inline-block",
+        "block flex": "flex",
+        "inline flex": "inline-flex",
+        "block grid": "grid",
+        "inline grid": "inline-grid",
+        "block table": "table",
+        "inline table": "inline-table",
+        "block list-item": "list-item",
+        "flow list-item": "list-item",
         "block flow list-item": "list-item",
     }
     _DISPLAY_BLOCKIFY = {
-        "inline": "block", "inline-block": "block", "run-in": "block",
-        "inline-table": "table", "inline-flex": "flex", "inline-grid": "grid",
+        "inline": "block",
+        "inline-block": "block",
+        "run-in": "block",
+        "inline-table": "table",
+        "inline-flex": "flex",
+        "inline-grid": "grid",
         "-webkit-inline-box": "-webkit-box",
     }
 
@@ -6038,13 +6011,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         node = getattr(self._element, "parentNode", None)
         cache = self._chain_cache
         while node is not None and getattr(node, "nodeType", None) == 1:
-            declared = _parse_css_declarations(
-                getattr(node, "getAttribute", lambda *_: "")("style") or ""
-            )
+            declared = _parse_css_declarations(getattr(node, "getAttribute", lambda *_: "")("style") or "")
             for name, val, _ in declared:
                 if name == prop:
                     px = _length_string_to_px(
-                        val.strip(), em_px=16.0, rem_px=self._root_font_size_px(),
+                        val.strip(),
+                        em_px=16.0,
+                        rem_px=self._root_font_size_px(),
                         percent_px=None,
                     )
                     if px is not None:
@@ -6057,9 +6030,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             window = getattr(document, "defaultView", None) if document else None
             cache["__window__"] = window
         if window is not None:
-            return float(
-                getattr(window, "innerHeight" if vertical else "innerWidth", 0) or 0
-            ) or None
+            return float(getattr(window, "innerHeight" if vertical else "innerWidth", 0) or 0) or None
         return None
 
     def _property_entries(self):
@@ -6090,31 +6061,56 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         raise Exception("NoModificationAllowedError: getComputedStyle is read-only")
 
     def setProperty(self, *_a, **_k):
-        raise Exception(
-            "NoModificationAllowedError: getComputedStyle is read-only"
-        )
+        raise Exception("NoModificationAllowedError: getComputedStyle is read-only")
 
     def removeProperty(self, *_a, **_k):
-        raise Exception(
-            "NoModificationAllowedError: getComputedStyle is read-only"
-        )
+        raise Exception("NoModificationAllowedError: getComputedStyle is read-only")
 
 
 #: properties whose computed value getComputedStyle reports as a used <length>
 #: in px. ``%`` / ``auto`` / ``calc()`` / keywords are left untouched (they need
 #: layout); only font-relative and absolute units are resolved.
-_USED_LENGTH_PROPERTIES = frozenset({
-    "font-size", "line-height", "letter-spacing", "word-spacing", "text-indent",
-    "margin-top", "margin-right", "margin-bottom", "margin-left",
-    "padding-top", "padding-right", "padding-bottom", "padding-left",
-    "border-top-width", "border-right-width", "border-bottom-width",
-    "border-left-width", "outline-width", "column-rule-width", "column-width",
-    "column-gap", "row-gap", "border-spacing",
-    "width", "height", "min-width", "min-height", "max-width", "max-height",
-    "top", "right", "bottom", "left",
-    "border-top-left-radius", "border-top-right-radius",
-    "border-bottom-right-radius", "border-bottom-left-radius",
-})
+_USED_LENGTH_PROPERTIES = frozenset(
+    {
+        "font-size",
+        "line-height",
+        "letter-spacing",
+        "word-spacing",
+        "text-indent",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
+        "outline-width",
+        "column-rule-width",
+        "column-width",
+        "column-gap",
+        "row-gap",
+        "border-spacing",
+        "width",
+        "height",
+        "min-width",
+        "min-height",
+        "max-width",
+        "max-height",
+        "top",
+        "right",
+        "bottom",
+        "left",
+        "border-top-left-radius",
+        "border-top-right-radius",
+        "border-bottom-right-radius",
+        "border-bottom-left-radius",
+    }
+)
 
 #: enumerated computed values a browser reports in a canonical form
 _COMPUTED_KEYWORD_MAP: dict[str, dict[str, str]] = {
@@ -6123,23 +6119,47 @@ _COMPUTED_KEYWORD_MAP: dict[str, dict[str, str]] = {
 
 #: properties whose computed value getComputedStyle reports as ``rgb()`` /
 #: ``rgba()`` (also everything matching ``*color`` -- see getPropertyValue)
-_COLOR_PROPERTIES = frozenset({
-    "color", "background-color", "border-top-color", "border-right-color",
-    "border-bottom-color", "border-left-color", "outline-color",
-    "column-rule-color", "text-decoration-color", "caret-color",
-    "text-emphasis-color", "fill", "stroke", "stop-color", "flood-color",
-    "lighting-color",
-})
+_COLOR_PROPERTIES = frozenset(
+    {
+        "color",
+        "background-color",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
+        "outline-color",
+        "column-rule-color",
+        "text-decoration-color",
+        "caret-color",
+        "text-emphasis-color",
+        "fill",
+        "stroke",
+        "stop-color",
+        "flood-color",
+        "lighting-color",
+    }
+)
 
 _ABSOLUTE_FONT_SIZE_KEYWORDS = {
-    "xx-small": 9.6, "x-small": 12.0, "small": 13.333, "medium": 16.0,
-    "large": 18.667, "x-large": 24.0, "xx-large": 32.0, "xxx-large": 48.0,
+    "xx-small": 9.6,
+    "x-small": 12.0,
+    "small": 13.333,
+    "medium": 16.0,
+    "large": 18.667,
+    "x-large": 24.0,
+    "xx-large": 32.0,
+    "xxx-large": 48.0,
 }
 
 #: absolute length unit -> px (CSS reference pixel: 1in == 96px)
 _ABSOLUTE_LENGTH_UNITS = {
-    "px": 1.0, "in": 96.0, "cm": 96.0 / 2.54, "mm": 96.0 / 25.4,
-    "q": 96.0 / 25.4 / 4, "pt": 96.0 / 72.0, "pc": 16.0,
+    "px": 1.0,
+    "in": 96.0,
+    "cm": 96.0 / 2.54,
+    "mm": 96.0 / 25.4,
+    "q": 96.0 / 25.4 / 4,
+    "pt": 96.0 / 72.0,
+    "pc": 16.0,
 }
 _LENGTH_TOKEN_RE = re.compile(r"^([+-]?(?:\d+\.?\d*|\.\d+))([a-z%]*)$", re.I)
 
@@ -6165,9 +6185,7 @@ def _angle_to_deg(token: str) -> "float | None":
     }[unit]
 
 
-def _transform_to_matrix(
-    value: str, *, em_px: float, rem_px: float
-) -> "str | None":
+def _transform_to_matrix(value: str, *, em_px: float, rem_px: float) -> "str | None":
     """Compose a CSS ``transform`` list into ``matrix(...)`` / ``matrix3d(...)``
     the way ``getComputedStyle`` reports it, or ``None`` to keep it verbatim
     (a percentage length, or an unsupported function)."""
@@ -6198,9 +6216,9 @@ def _transform_to_matrix(
                 xs = args + ["0", "0", "0"]
                 tx = length(xs[0]) if fn != "translatey" else 0.0
                 ty = (
-                    length(xs[0]) if fn == "translatey"
-                    else length(xs[1]) if fn in ("translate", "translate3d")
-                    else 0.0
+                    length(xs[0])
+                    if fn == "translatey"
+                    else length(xs[1]) if fn in ("translate", "translate3d") else 0.0
                 )
                 if tx is None or ty is None:
                     return None
@@ -6239,9 +6257,9 @@ def _transform_to_matrix(
             elif fn in ("skew", "skewx", "skewy"):
                 ax = _angle_to_deg(args[0]) if fn != "skewy" else 0.0
                 ay = (
-                    _angle_to_deg(args[0]) if fn == "skewy"
-                    else _angle_to_deg(args[1]) if fn == "skew" and len(args) > 1
-                    else 0.0
+                    _angle_to_deg(args[0])
+                    if fn == "skewy"
+                    else _angle_to_deg(args[1]) if fn == "skew" and len(args) > 1 else 0.0
                 )
                 if ax is None or ay is None:
                     return None
@@ -6262,9 +6280,7 @@ def _transform_to_matrix(
     return result.toString()
 
 
-def _length_string_to_px(
-    token: str, *, em_px: float, rem_px: float, percent_px: "float | None"
-) -> "float | None":
+def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px: "float | None") -> "float | None":
     """Convert a single length token to px, or ``None`` if it is not a plain
     length this resolver handles (``auto``, ``calc(...)``, a bare keyword, or a
     ``%`` with no base)."""
@@ -6272,7 +6288,7 @@ def _length_string_to_px(
     if not match:
         return None
     number, unit = float(match.group(1)), match.group(2).lower()
-    if unit in ("", ) and number == 0:
+    if unit in ("",) and number == 0:
         return 0.0
     if unit == "%":
         return None if percent_px is None else number / 100.0 * percent_px
@@ -6283,30 +6299,23 @@ def _length_string_to_px(
     return None if unit not in _ABSOLUTE_LENGTH_UNITS else number * _ABSOLUTE_LENGTH_UNITS[unit]
 
 
-_CALC_LENGTH_TERM_RE = re.compile(
-    r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|in|cm|mm|q|pt|pc)\b", re.I
-)
+_CALC_LENGTH_TERM_RE = re.compile(r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|in|cm|mm|q|pt|pc)\b", re.I)
 
 
-def _eval_calc_to_px(
-    expr: str, *, em_px: float, rem_px: float
-) -> "float | None":
+def _eval_calc_to_px(expr: str, *, em_px: float, rem_px: float) -> "float | None":
     """Evaluate a ``calc(...)`` body to px, or ``None`` if it mixes in a
     percentage / viewport / other unit that needs layout."""
     body = expr.strip()
     if body.lower().startswith("calc(") and body.endswith(")"):
         body = body[5:-1]
     # any unit we cannot resolve to px -> bail (keep the calc() verbatim)
-    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)"
-                 r"(%|vw|vh|vmin|vmax|ch|ex|fr|svh|lvh|dvh)\b", body, re.I):
+    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)" r"(%|vw|vh|vmin|vmax|ch|ex|fr|svh|lvh|dvh)\b", body, re.I):
         return None
     if "calc(" in body.lower():
         return None  # nested calc -- keep it simple
 
     def _sub(match: "re.Match[str]") -> str:
-        px = _length_string_to_px(
-            match.group(0), em_px=em_px, rem_px=rem_px, percent_px=None
-        )
+        px = _length_string_to_px(match.group(0), em_px=em_px, rem_px=rem_px, percent_px=None)
         return repr(px) if px is not None else match.group(0)
 
     numeric = _CALC_LENGTH_TERM_RE.sub(_sub, body)
@@ -6327,9 +6336,7 @@ def _eval_calc_to_px(
         if isinstance(n, ast.UnaryOp) and isinstance(n.op, (ast.UAdd, ast.USub)):
             v = _ev(n.operand)
             return v if isinstance(n.op, ast.UAdd) else -v
-        if isinstance(n, ast.BinOp) and isinstance(
-            n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)
-        ):
+        if isinstance(n, ast.BinOp) and isinstance(n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)):
             a, b = _ev(n.left), _ev(n.right)
             if isinstance(n.op, ast.Add):
                 return a + b
@@ -6418,11 +6425,7 @@ class _ResolvedView:
             if low == "initial":
                 return _cssom.initial_value(name)
             if low in ("unset", "revert", "revert-layer"):
-                return (
-                    self._inherited(name)
-                    if _cssom.inherits(name)
-                    else _cssom.initial_value(name)
-                )
+                return self._inherited(name) if _cssom.inherits(name) else _cssom.initial_value(name)
             return value
         if _cssom.inherits(name) and self._parent is not None:
             inherited = self._parent.getPropertyValue(name)
@@ -6551,10 +6554,9 @@ class CSSStyleValue:
 
     @staticmethod
     def parseAll(property_name: str, css_text: str) -> "list[CSSStyleValue]":
-        return [
-            _parse_css_style_value(part)
-            for part in _split_top_level_commas(str(css_text))
-        ] or [_parse_css_style_value(str(css_text))]
+        return [_parse_css_style_value(part) for part in _split_top_level_commas(str(css_text))] or [
+            _parse_css_style_value(str(css_text))
+        ]
 
 
 class CSSKeywordValue(CSSStyleValue):
@@ -6629,17 +6631,27 @@ class CSSUnitValue(CSSStyleValue):
 
 #: canonical-unit factors for CSSUnitValue.to() within a compatible group
 _CSS_UNIT_CANONICAL = {
-    "px": 1.0, "in": 96.0, "cm": 96.0 / 2.54, "mm": 96.0 / 25.4,
-    "q": 96.0 / 25.4 / 4, "pt": 96.0 / 72.0, "pc": 16.0,
-    "deg": 1.0, "grad": 0.9, "rad": 180.0 / math.pi, "turn": 360.0,
-    "s": 1.0, "ms": 0.001,
-    "hz": 1.0, "khz": 1000.0,
-    "dppx": 1.0, "dpi": 1.0 / 96.0, "dpcm": 2.54 / 96.0,
+    "px": 1.0,
+    "in": 96.0,
+    "cm": 96.0 / 2.54,
+    "mm": 96.0 / 25.4,
+    "q": 96.0 / 25.4 / 4,
+    "pt": 96.0 / 72.0,
+    "pc": 16.0,
+    "deg": 1.0,
+    "grad": 0.9,
+    "rad": 180.0 / math.pi,
+    "turn": 360.0,
+    "s": 1.0,
+    "ms": 0.001,
+    "hz": 1.0,
+    "khz": 1000.0,
+    "dppx": 1.0,
+    "dpi": 1.0 / 96.0,
+    "dpcm": 2.54 / 96.0,
 }
 
-_CSS_TYPED_OM_UNIT_RE = re.compile(
-    r"^\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)\s*([a-z%]*)\s*$", re.I
-)
+_CSS_TYPED_OM_UNIT_RE = re.compile(r"^\s*([+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)\s*([a-z%]*)\s*$", re.I)
 
 
 def _parse_css_style_value(css_text: str) -> CSSStyleValue:
@@ -6674,10 +6686,9 @@ class StylePropertyMap:
         value = self._decl.getPropertyValue(property_name)
         if not value:
             return []
-        return [
-            _parse_css_style_value(part)
-            for part in _split_top_level_commas(value)
-        ] or [_parse_css_style_value(value)]
+        return [_parse_css_style_value(part) for part in _split_top_level_commas(value)] or [
+            _parse_css_style_value(value)
+        ]
 
     def has(self, property_name: str) -> bool:
         return self._decl.getPropertyValue(property_name) != ""
@@ -6792,17 +6803,13 @@ class CSS:
         if not name.startswith("--") or len(name) < 3:
             raise SyntaxError(f"registerProperty: invalid custom property name {name!r}")
         if _cssom.registered_property(name) is not None:
-            raise Exception(
-                f"InvalidModificationError: {name} has already been registered"
-            )
+            raise Exception(f"InvalidModificationError: {name} has already been registered")
         syntax = str(definition.get("syntax", "*")).strip().strip("\"'") or "*"
         initial_value = definition.get("initialValue")
         if initial_value is not None:
             initial_value = str(initial_value)
         if syntax != "*" and initial_value is None:
-            raise SyntaxError(
-                "registerProperty: initialValue is required when syntax is not '*'"
-            )
+            raise SyntaxError("registerProperty: initialValue is required when syntax is not '*'")
         _cssom.register_property(
             name,
             syntax=syntax,
@@ -6812,9 +6819,7 @@ class CSS:
 
 
 def _normalize_declaration_text(css_text: str) -> str:
-    text = " ".join(
-        line.strip() for line in (css_text or "").strip().splitlines() if line.strip()
-    )
+    text = " ".join(line.strip() for line in (css_text or "").strip().splitlines() if line.strip())
     text = re.sub(r"\s+", " ", text)
     entries = _parse_css_declarations(text)
     if not entries:
@@ -6957,9 +6962,7 @@ def _extract_style_block_parts(block: str) -> tuple[str, list[tuple[str, str, st
             else:
                 declarations.append(block[open_index:])
             break
-        nested_parts.append(
-            ("rule", nested_prelude, block[open_index + 1 : close_index])
-        )
+        nested_parts.append(("rule", nested_prelude, block[open_index + 1 : close_index]))
         seen_nested_rule = True
         cursor = close_index + 1
     return "".join(declarations), nested_parts
@@ -6983,10 +6986,7 @@ def _parse_container_conditions(prelude: str) -> list[dict[str, str]]:
     value = prelude.replace("@container", "", 1).strip()
     if not value:
         return []
-    return [
-        _parse_single_container_condition(item)
-        for item in _split_top_level_commas(value)
-    ]
+    return [_parse_single_container_condition(item) for item in _split_top_level_commas(value)]
 
 
 def _serialize_container_conditions(conditions: list[dict[str, str]]) -> str:
@@ -7065,11 +7065,7 @@ def _parse_statement_at_rule(
     # rule is rebound to a different CSSRule subclass per branch.
     rule: Any
     lower = prelude.lower()
-    if (
-        not lower.startswith("@")
-        and parentRule is not None
-        and _parse_css_declarations(prelude)
-    ):
+    if not lower.startswith("@") and parentRule is not None and _parse_css_declarations(prelude):
         rule = CSSNestedDeclarations()
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
@@ -7083,14 +7079,10 @@ def _parse_statement_at_rule(
         href_match = re.match(r"(url\([^)]+\)|\"[^\"]+\"|'[^']+')\s*(.*)$", rest)
         if href_match:
             rule.href = href_match.group(1)
-            layer_name, supports_text, media_text = _parse_import_tail(
-                href_match.group(2).strip()
-            )
+            layer_name, supports_text, media_text = _parse_import_tail(href_match.group(2).strip())
             rule.layerName = layer_name
             rule.supportsText = supports_text
-            rule.media = MediaList(
-                [item for item in _split_top_level_commas(media_text) if item]
-            )
+            rule.media = MediaList([item for item in _split_top_level_commas(media_text) if item])
         else:
             rule.href = rest
             rule.media = MediaList()
@@ -7111,18 +7103,12 @@ def _parse_statement_at_rule(
         rule = CSSLayerStatementRule()
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
-        rule.nameList = [
-            name
-            for name in _split_top_level_commas(prelude[len("@layer") :].strip())
-            if name
-        ]
+        rule.nameList = [name for name in _split_top_level_commas(prelude[len("@layer") :].strip()) if name]
         return rule
     rule = CSSRule()
     rule.parentStyleSheet = parentStyleSheet
     rule.parentRule = parentRule
-    rule.type = (
-        CSSRule.CHARSET_RULE if lower.startswith("@charset") else CSSRule.UNKNOWN_RULE
-    )
+    rule.type = CSSRule.CHARSET_RULE if lower.startswith("@charset") else CSSRule.UNKNOWN_RULE
     rule._cssText = f"{prelude};"
     return rule
 
@@ -7174,9 +7160,7 @@ def _parse_style_rule(
             continue
         if not nested_prelude:
             continue
-        rule.cssRules.append(
-            _parse_block_rule(parentStyleSheet, rule, nested_prelude, nested_block)
-        )
+        rule.cssRules.append(_parse_block_rule(parentStyleSheet, rule, nested_prelude, nested_block))
     return rule
 
 
@@ -7231,9 +7215,7 @@ def _parse_block_rule(
         rule = CSSContainerRule()
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
-        rule.containerName, rule.containerQuery, rule.conditions = (
-            _parse_container_prelude(prelude)
-        )
+        rule.containerName, rule.containerQuery, rule.conditions = _parse_container_prelude(prelude)
         rule.conditionText = _serialize_container_conditions(rule.conditions)
         rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
         return rule
@@ -7253,9 +7235,7 @@ def _parse_block_rule(
         return rule
     if lower.startswith("@keyframes") or lower.startswith("@-webkit-keyframes"):
         rule = CSSKeyframesRule()
-        rule.name = (
-            prelude.split(None, 1)[1].strip() if len(prelude.split(None, 1)) > 1 else ""
-        )
+        rule.name = prelude.split(None, 1)[1].strip() if len(prelude.split(None, 1)) > 1 else ""
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
         rule.cssRules = _parse_keyframe_rules(parentStyleSheet, rule, block)

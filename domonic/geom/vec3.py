@@ -208,9 +208,7 @@ class vec3:
 
     def distanceSquared(self, other):
         """Returns the squared distance between this point and another vector3."""
-        return (
-            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
-        )
+        return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
 
     squareDistance = distanceSquared
 

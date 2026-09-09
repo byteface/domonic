@@ -72,14 +72,7 @@ class Path:
         self._x1 = x
         self._y1 = y
         self._ += (
-            "Q"
-            + _format_number(x1)
-            + ","
-            + _format_number(y1)
-            + ","
-            + _format_number(x)
-            + ","
-            + _format_number(y)
+            "Q" + _format_number(x1) + "," + _format_number(y1) + "," + _format_number(x) + "," + _format_number(y)
         )
 
     def bezierCurveTo(self, x1, y1, x2, y2, x, y):
@@ -147,19 +140,12 @@ class Path:
         l20_2 = x20 * x20 + y20 * y20
         l21 = Math.sqrt(l21_2)
         l01 = Math.sqrt(l01_2)
-        l = r * Math.tan(
-            (pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2
-        )
+        l = r * Math.tan((pi - Math.acos((l21_2 + l01_2 - l20_2) / (2 * l21 * l01))) / 2)
         t01 = l / l01
         t21 = l / l21
 
         if Math.abs(t01 - 1) > epsilon:
-            self._ += (
-                "L"
-                + _format_number(x1 + t01 * x01)
-                + ","
-                + _format_number(y1 + t01 * y01)
-            )
+            self._ += "L" + _format_number(x1 + t01 * x01) + "," + _format_number(y1 + t01 * y01)
 
         self._x1 = x1 + t21 * x21
         self._y1 = y1 + t21 * y21

@@ -37,9 +37,7 @@ def namespace(name):
     if i >= 0 and prefix != "xmlns":
         name = String(name).slice(i + 1)
     return (
-        {"space": namespaces[prefix], "local": name}
-        if Object(namespaces).hasOwnProperty(prefix)
-        else name
+        {"space": namespaces[prefix], "local": name} if Object(namespaces).hasOwnProperty(prefix) else name
     )  # eslint-disable-line no-prototype-builtins
 
 
@@ -62,9 +60,7 @@ def creatorFixed(fullname):
     # return lambda this: this.ownerDocument.createElementNS(fullname['space'], fullname['local'])
     from domonic.dom import document  # bring in the global document
 
-    return lambda *args: document.ownerDocument.createElementNS(
-        fullname["space"], fullname["local"]
-    )
+    return lambda *args: document.ownerDocument.createElementNS(fullname["space"], fullname["local"])
 
 
 def creator(name):
@@ -78,9 +74,7 @@ def none():
 
 
 def selector(selector):
-    return (
-        None if selector == None else lambda this, *args: this.querySelector(selector)
-    )
+    return None if selector == None else lambda this, *args: this.querySelector(selector)
 
 
 # // Given something array like (or null), returns something that is strictly an
@@ -96,11 +90,7 @@ def array(x):
 
 # export {default as window} from "./window.js";
 def window(node):
-    return (
-        (node.ownerDocument and node.ownerDocument.defaultView)
-        or (node.document and node)
-        or node.defaultView
-    )
+    return (node.ownerDocument and node.ownerDocument.defaultView) or (node.document and node) or node.defaultView
 
 
 defaultView = window
@@ -110,9 +100,7 @@ defaultView = window
 
 # import selection_style from "./style.js";
 def styleValue(node, name):
-    return node.style.getPropertyValue(name) or defaultView(node).getComputedStyle(
-        node, None
-    ).getPropertyValue(name)
+    return node.style.getPropertyValue(name) or defaultView(node).getComputedStyle(node, None).getPropertyValue(name)
 
 
 def sparse(self, update):
@@ -203,8 +191,7 @@ def _invoke_callback(callback, *args):
     positional = [
         param
         for param in parameters
-        if param.kind
-        in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     ]
     return callback(*args[: len(positional)])
 
@@ -349,9 +336,7 @@ class Selection:
         def find_child(node, *args):
             children = _children_of(node)
             for i, child in enumerate(children):
-                if _invoke_callback(
-                    match, child, getattr(child, "__data__", None), i, children
-                ):
+                if _invoke_callback(match, child, getattr(child, "__data__", None), i, children):
                     return child
             return None
 
@@ -382,9 +367,7 @@ class Selection:
             return [
                 child
                 for i, child in enumerate(children)
-                if _invoke_callback(
-                    match, child, getattr(child, "__data__", None), i, children
-                )
+                if _invoke_callback(match, child, getattr(child, "__data__", None), i, children)
             ]
 
         return filter_children
@@ -392,9 +375,7 @@ class Selection:
     def selectChildren(self, match=None):
         if match is None:
             return self.selectAll(self.children)
-        return self.selectAll(
-            self.childrenFilter(match if callable(match) else childMatcher(match))
-        )
+        return self.selectAll(self.childrenFilter(match if callable(match) else childMatcher(match)))
 
     # import selection_filter from "./filter.js";
     # def filter: selection_filter,
@@ -428,11 +409,7 @@ class Selection:
         for j, group in enumerate(self._groups):
             parent = self._parents[j] if j < len(self._parents) else None
             parent_data = getattr(parent, "__data__", None)
-            values = (
-                _invoke_callback(value, parent_data, j, self._parents)
-                if callable(value)
-                else value
-            )
+            values = _invoke_callback(value, parent_data, j, self._parents) if callable(value) else value
             data_values = array(values)
             update, enter, exit_ = bind(parent, group, data_values, key)
             update_groups.append(update)
@@ -477,9 +454,7 @@ class Selection:
         for i, node in enumerate(group):
             if node is None:
                 continue
-            node_key = str(
-                _invoke_callback(key, getattr(node, "__data__", None), i, group)
-            )
+            node_key = str(_invoke_callback(key, getattr(node, "__data__", None), i, group))
             if node_key in node_by_key:
                 exit_.append(node)
             else:
@@ -595,10 +570,7 @@ class Selection:
                     continue
                 if next_node is not None:
                     position = node.compareDocumentPosition(next_node)
-                    if (
-                        position != Node.DOCUMENT_POSITION_FOLLOWING
-                        and next_node.parentNode is not None
-                    ):
+                    if position != Node.DOCUMENT_POSITION_FOLLOWING and next_node.parentNode is not None:
                         next_node.parentNode.insertBefore(node, next_node)
                 next_node = node
                 i -= 1
@@ -613,9 +585,7 @@ class Selection:
 
         def compareNode(a, b):
             if a and b:
-                result = _invoke_callback(
-                    compare, getattr(a, "__data__", None), getattr(b, "__data__", None)
-                )
+                result = _invoke_callback(compare, getattr(a, "__data__", None), getattr(b, "__data__", None))
                 return 0 if result is None else result
             if not a and not b:
                 return 0
@@ -1052,9 +1022,7 @@ class Selection:
         return parent.insertBefore(clone, node.nextSibling) if parent else clone
 
     def clone(self, deep=True):
-        return self.select(
-            self.selection_cloneDeep if deep else self.selection_cloneShallow
-        )
+        return self.select(self.selection_cloneDeep if deep else self.selection_cloneShallow)
 
     # import selection_datum from "./datum.js";
     def datum(self, value=_MISSING, *args):
@@ -1088,14 +1056,10 @@ class Selection:
 
             kept = []
             for listener in listeners:
-                matches_type = (
-                    not typename["type"] or listener["type"] == typename["type"]
-                )
+                matches_type = not typename["type"] or listener["type"] == typename["type"]
                 matches_name = listener["name"] == typename["name"]
                 if matches_type and matches_name:
-                    this.removeEventListener(
-                        listener["type"], listener["listener"], listener["options"]
-                    )
+                    this.removeEventListener(listener["type"], listener["listener"], listener["options"])
                 else:
                     kept.append(listener)
 
@@ -1115,10 +1079,7 @@ class Selection:
             listeners = list(getattr(this, "__on", []))
 
             for existing in listeners:
-                if (
-                    existing["type"] == typename["type"]
-                    and existing["name"] == typename["name"]
-                ):
+                if existing["type"] == typename["type"] and existing["name"] == typename["name"]:
                     this.removeEventListener(
                         existing["type"],
                         existing["listener"],
@@ -1159,19 +1120,12 @@ class Selection:
             listeners = getattr(node, "__on", [])
             for listener in listeners:
                 for parsed in typenames:
-                    if (
-                        listener["type"] == parsed["type"]
-                        and listener["name"] == parsed["name"]
-                    ):
+                    if listener["type"] == parsed["type"] and listener["name"] == parsed["name"]:
                         return listener["value"]
             return None
 
         for parsed in typenames:
-            callback = (
-                self.onRemove(parsed)
-                if value is None
-                else self.onAdd(parsed, value, options)
-            )
+            callback = self.onRemove(parsed) if value is None else self.onAdd(parsed, value, options)
             self.each(callback)
         return self
 
@@ -1220,9 +1174,7 @@ def select(selector):
     from domonic.dom import document  # bring in the global document
 
     if isinstance(selector, str):
-        return Selection(
-            [[document.querySelector(selector)]], [document.documentElement]
-        )
+        return Selection([[document.querySelector(selector)]], [document.documentElement])
     else:
         return Selection([[selector]], root)
 
@@ -1329,17 +1281,11 @@ def selectAll(selector):
     from domonic.dom import document  # bring in the global document
 
     if isinstance(selector, str):
-        return Selection(
-            [document.querySelectorAll(selector)], [document.documentElement]
-        )
+        return Selection([document.querySelectorAll(selector)], [document.documentElement])
         # return Selection([document.getElementsBySelector(selector, document)], [document.documentElement])
     else:
         return Selection([array(selector)], root)
 
 
 def selectorAll(selector):
-    return (
-        empty
-        if selector == None
-        else lambda this, *args: this.querySelectorAll(selector)
-    )
+    return empty if selector == None else lambda this, *args: this.querySelectorAll(selector)

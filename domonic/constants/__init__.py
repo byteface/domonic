@@ -134,9 +134,7 @@ class HTTPStatus(IntEnum):
     NETWORK_AUTHENTICATION_REQUIRED = 511
 
 
-http_response_status_codes: Final[dict[int, str]] = {
-    status.value: _status_text(status) for status in HTTPStatus
-}
+http_response_status_codes: Final[dict[int, str]] = {status.value: _status_text(status) for status in HTTPStatus}
 
 
 def get_namespace(prefix: str, default: str | None = None) -> str | None:

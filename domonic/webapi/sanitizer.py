@@ -146,9 +146,7 @@ def _normalize_attribute_rules(rules: Any, key: str) -> dict[str, set[str]] | No
     return normalized
 
 
-def _attribute_rule_applies(
-    rules: dict[str, set[str]] | None, attribute: str, element: str
-) -> bool:
+def _attribute_rule_applies(rules: dict[str, set[str]] | None, attribute: str, element: str) -> bool:
     if rules is None:
         return False
     for key in (attribute, "*"):
@@ -235,9 +233,7 @@ class Sanitizer:
         if isinstance(config, Sanitizer):
             self._allow_elements = copy.deepcopy(config._allow_elements)
             self._remove_elements = copy.deepcopy(config._remove_elements)
-            self._replace_with_children_elements = copy.deepcopy(
-                config._replace_with_children_elements
-            )
+            self._replace_with_children_elements = copy.deepcopy(config._replace_with_children_elements)
             self._allow_attributes = copy.deepcopy(config._allow_attributes)
             self._remove_attributes = copy.deepcopy(config._remove_attributes)
             self.comments = config.comments
@@ -321,18 +317,12 @@ class Sanitizer:
 
     def _apply_config(self, config: dict[str, Any]) -> None:
         if "elements" in config and "removeElements" in config:
-            raise TypeError(
-                "Sanitizer config cannot contain both elements and removeElements"
-            )
+            raise TypeError("Sanitizer config cannot contain both elements and removeElements")
         if "attributes" in config and "removeAttributes" in config:
-            raise TypeError(
-                "Sanitizer config cannot contain both attributes and removeAttributes"
-            )
+            raise TypeError("Sanitizer config cannot contain both attributes and removeAttributes")
 
         self._allow_elements = (
-            _normalise_unique_strings(config["elements"], "elements")
-            if "elements" in config
-            else None
+            _normalise_unique_strings(config["elements"], "elements") if "elements" in config else None
         )
         self._remove_elements = (
             _normalise_unique_strings(config["removeElements"], "removeElements")
@@ -355,15 +345,8 @@ class Sanitizer:
             self._remove_elements,
         )
 
-        self._allow_attributes = _normalize_attribute_rules(
-            config.get("attributes"), "attributes"
-        )
-        self._remove_attributes = (
-            _normalize_attribute_rules(
-                config.get("removeAttributes"), "removeAttributes"
-            )
-            or {}
-        )
+        self._allow_attributes = _normalize_attribute_rules(config.get("attributes"), "attributes")
+        self._remove_attributes = _normalize_attribute_rules(config.get("removeAttributes"), "removeAttributes") or {}
         self.comments = bool(config.get("comments", False))
         self.dataAttributes = bool(config.get("dataAttributes", False))
         self.allowCustomElements = bool(config.get("allowCustomElements", True))
@@ -387,9 +370,7 @@ class Sanitizer:
             for attribute in _normalize_attribute_rules(attributes, "attributes") or {}:
                 self.allowAttribute(attribute, [element])
         if removeAttributes is not None:
-            for attribute in (
-                _normalize_attribute_rules(removeAttributes, "removeAttributes") or {}
-            ):
+            for attribute in _normalize_attribute_rules(removeAttributes, "removeAttributes") or {}:
                 self.removeAttribute(attribute, [element])
         return self
 
@@ -419,9 +400,7 @@ class Sanitizer:
         """Allow an attribute globally or on selected elements."""
         if self._allow_attributes is None:
             self._allow_attributes = {}
-        rules = (
-            _normalize_attribute_rules({name: elements or ["*"]}, "attributes") or {}
-        )
+        rules = _normalize_attribute_rules({name: elements or ["*"]}, "attributes") or {}
         for attribute, targets in rules.items():
             self._allow_attributes.setdefault(attribute, set()).update(targets)
             if self._remove_attributes is not None:
@@ -436,10 +415,7 @@ class Sanitizer:
         """Remove an attribute globally or on selected elements."""
         if self._remove_attributes is None:
             self._remove_attributes = {}
-        rules = (
-            _normalize_attribute_rules({name: elements or ["*"]}, "removeAttributes")
-            or {}
-        )
+        rules = _normalize_attribute_rules({name: elements or ["*"]}, "removeAttributes") or {}
         for attribute, targets in rules.items():
             self._remove_attributes.setdefault(attribute, set()).update(targets)
             if self._allow_attributes is not None:
@@ -528,9 +504,7 @@ class _SanitizerHTMLParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.sanitizer = sanitizer
         self.fragment = DocumentFragment()
-        self._stack: list[tuple[str, Node | None, str]] = [
-            ("#document-fragment", self.fragment, "keep")
-        ]
+        self._stack: list[tuple[str, Node | None, str]] = [("#document-fragment", self.fragment, "keep")]
 
     @property
     def _dropping(self) -> bool:
@@ -635,17 +609,13 @@ def _coerce_sanitizer(options: Any = None, *, safe: bool = True) -> Sanitizer | 
     return sanitizer
 
 
-def sanitize_html_fragment(
-    input: Any, options: Any = None, *, safe: bool = True
-) -> DocumentFragment:
+def sanitize_html_fragment(input: Any, options: Any = None, *, safe: bool = True) -> DocumentFragment:
     """Sanitize or parse an HTML fragment using Sanitizer-style options."""
     sanitizer = _coerce_sanitizer(options, safe=safe)
     return sanitizer.sanitize(input) if sanitizer is not None else DocumentFragment()
 
 
-def parse_html_document(
-    input: Any, options: Any = None, *, safe: bool = True
-) -> Document:
+def parse_html_document(input: Any, options: Any = None, *, safe: bool = True) -> Document:
     """Parse a sanitized HTML fragment into a domonic HTMLDocument."""
     from domonic.dom import HTMLDocument
     from domonic.html import body, head

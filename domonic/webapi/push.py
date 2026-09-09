@@ -31,9 +31,7 @@ def _coerce_key(value: Any) -> bytes | None:
 class PushSubscriptionOptions:
     """Options used to create a push subscription."""
 
-    def __init__(
-        self, userVisibleOnly: bool = False, applicationServerKey: Any = None
-    ) -> None:
+    def __init__(self, userVisibleOnly: bool = False, applicationServerKey: Any = None) -> None:
         self.userVisibleOnly = bool(userVisibleOnly)
         self.applicationServerKey = _coerce_key(applicationServerKey)
 
@@ -52,13 +50,10 @@ class PushSubscription:
         self.endpoint = str(endpoint)
         self.expirationTime = expirationTime
         self.options = (
-            options
-            if isinstance(options, PushSubscriptionOptions)
-            else PushSubscriptionOptions(**(options or {}))
+            options if isinstance(options, PushSubscriptionOptions) else PushSubscriptionOptions(**(options or {}))
         )
         self._keys = {
-            "p256dh": _coerce_key((keys or {}).get("p256dh"))
-            or secrets.token_bytes(65),
+            "p256dh": _coerce_key((keys or {}).get("p256dh")) or secrets.token_bytes(65),
             "auth": _coerce_key((keys or {}).get("auth")) or secrets.token_bytes(16),
         }
         self._manager = manager

@@ -45,11 +45,7 @@ odf_namespaces = {
 }
 
 DEFAULT_NAMESPACES = {
-    **{
-        f"xmlns:{prefix}": uri
-        for prefix, uri in odf_namespaces.items()
-        if prefix != "manifest"
-    },
+    **{f"xmlns:{prefix}": uri for prefix, uri in odf_namespaces.items() if prefix != "manifest"},
     "office:version": ODF_VERSION,
 }
 
@@ -152,11 +148,7 @@ odf_attributes = [
 ]
 
 _ODF_ATTRIBUTE_ALIASES = xml_attribute_aliases(odf_attributes)
-_ODF_DEFAULTS = {
-    tag_name: DEFAULT_NAMESPACES
-    for tag_name in odf_tags
-    if tag_name.startswith("office:document")
-}
+_ODF_DEFAULTS = {tag_name: DEFAULT_NAMESPACES for tag_name in odf_tags if tag_name.startswith("office:document")}
 _ODF_DEFAULTS["manifest:manifest"] = {
     "xmlns:manifest": MANIFEST,
     "manifest:version": ODF_VERSION,
@@ -189,9 +181,7 @@ def create_element(name: str = "odf_element", *args: Any, **kwargs: Any) -> ODFE
     if tag_name in _ODF_TAG_LOOKUP:
         return globals()[xml_tag_alias(tag_name)](*args, **kwargs)
 
-    custom_odf_tag = type(
-        "odf_element", (ODFElement,), {"name": tag_name, "__module__": __name__}
-    )
+    custom_odf_tag = type("odf_element", (ODFElement,), {"name": tag_name, "__module__": __name__})
     return custom_odf_tag(*args, **kwargs)
 
 

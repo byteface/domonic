@@ -14,9 +14,22 @@ import random as _random
 from typing import Any, Callable, Iterable
 
 __all__ = [
-    "hierarchy", "Node", "stratify", "tree", "cluster", "partition", "treemap",
-    "pack", "packSiblings", "packEnclose", "treemapBinary", "treemapDice",
-    "treemapSlice", "treemapSliceDice", "treemapSquarify", "treemapResquarify",
+    "hierarchy",
+    "Node",
+    "stratify",
+    "tree",
+    "cluster",
+    "partition",
+    "treemap",
+    "pack",
+    "packSiblings",
+    "packEnclose",
+    "treemapBinary",
+    "treemapDice",
+    "treemapSlice",
+    "treemapSliceDice",
+    "treemapSquarify",
+    "treemapResquarify",
 ]
 
 
@@ -82,7 +95,7 @@ class Node:
     def sum(self, value: Callable[[Any], float]) -> "Node":
         def visit(node: Node, *_a):
             total = float(value(node.data) or 0)
-            for child in (node.children or []):
+            for child in node.children or []:
                 total += child.value or 0
             node.value = total
 
@@ -97,9 +110,7 @@ class Node:
 
         def visit(node: Node, *_a):
             if node.children:
-                node.children.sort(
-                    key=functools.cmp_to_key(lambda a, b: _cmp(compare(a, b)))
-                )
+                node.children.sort(key=functools.cmp_to_key(lambda a, b: _cmp(compare(a, b))))
 
         return self.eachBefore(visit)
 
@@ -139,11 +150,7 @@ class Node:
     def links(self) -> list[dict]:
         root = self
         out: list[dict] = []
-        root.each(
-            lambda node, *_: out.append({"source": node.parent, "target": node})
-            if node is not root
-            else None
-        )
+        root.each(lambda node, *_: out.append({"source": node.parent, "target": node}) if node is not root else None)
         return out
 
     def copy(self) -> "Node":
@@ -160,7 +167,7 @@ def _count_children(node: Node, *_a) -> None:
     if not i:
         total = 1
     else:
-        for child in (children or []):
+        for child in children or []:
             total += child.value or 0
     node.value = total
 
@@ -231,10 +238,9 @@ def hierarchy(data: Any, children: Callable[[Any], Any] | None = None) -> Node:
 
 # -- stratify ---------------------------------------------------
 
+
 def stratify():
-    id_accessor: Callable[[Any], Any] = lambda d: (
-        d.get("id") if isinstance(d, dict) else getattr(d, "id", None)
-    )
+    id_accessor: Callable[[Any], Any] = lambda d: (d.get("id") if isinstance(d, dict) else getattr(d, "id", None))
     parent_id_accessor: Callable[[Any], Any] = lambda d: (
         d.get("parentId") if isinstance(d, dict) else getattr(d, "parentId", None)
     )
@@ -301,6 +307,7 @@ def stratify():
 
 # -- tree / cluster (tidy tree) ----------------------------------
 
+
 def _tidy_layout(is_tree: bool):
     separation: Callable = lambda a, b: 1 if a.parent is b.parent else 2
     dx = 1.0
@@ -329,21 +336,21 @@ def _tidy_layout(is_tree: bool):
         # resolve subtree overlaps with a left-to-right contour sweep
         if is_tree:
             _resolve_overlaps(root, separation)
+
             # re-center parents over their (possibly shifted) children
             def recenter(node):
                 if node.children:
                     for c in node.children:
                         recenter(c)
                     node.x = (node.children[0].x + node.children[-1].x) / 2
+
             recenter(root)
 
         nodes = root.descendants()
         left = min(n.x for n in nodes)
         right = max(n.x for n in nodes)
         max_depth = max(n.depth for n in nodes) or 1
-        max_leaf_depth = max(
-            (n.depth for n in nodes if not n.children), default=max_depth
-        )
+        max_leaf_depth = max((n.depth for n in nodes if not n.children), default=max_depth)
         span = right - left or 1
         for n in nodes:
             if node_size:
@@ -386,20 +393,20 @@ def _tidy_layout(is_tree: bool):
 def _left_contour(node, depth, acc):
     acc.setdefault(depth, node.x)
     acc[depth] = min(acc[depth], node.x)
-    for c in (node.children or []):
+    for c in node.children or []:
         _left_contour(c, depth + 1, acc)
 
 
 def _right_contour(node, depth, acc):
     acc.setdefault(depth, node.x)
     acc[depth] = max(acc[depth], node.x)
-    for c in (node.children or []):
+    for c in node.children or []:
         _right_contour(c, depth + 1, acc)
 
 
 def _shift(node, dx):
     node.x += dx
-    for c in (node.children or []):
+    for c in node.children or []:
         _shift(c, dx)
 
 
@@ -496,6 +503,7 @@ def cluster():
 
 # -- partition -------------------------------------------------
 
+
 def partition():
     dx = 1.0
     dy = 1.0
@@ -511,8 +519,7 @@ def partition():
 
         def position_node(node: Node):
             if node.children:
-                _dice(node, node.x0, dy * (node.depth + 1) / n, node.x1,
-                      dy * (node.depth + 2) / n)
+                _dice(node, node.x0, dy * (node.depth + 1) / n, node.x1, dy * (node.depth + 2) / n)
 
         root.eachBefore(lambda node, *_: position_node(node))
         if round_:
@@ -565,6 +572,7 @@ def _round_node(node: Node, *_a) -> None:
 
 
 # -- treemap --------------------------------------------------
+
 
 def treemapDice(parent: Node, x0, y0, x1, y1) -> None:
     nodes = parent.children or []
@@ -780,6 +788,7 @@ def treemap():
 
 # -- pack -----------------------------------------------------
 
+
 def _place(b, a, c):
     dx = b["x"] - a["x"]
     dy = b["y"] - a["y"]
@@ -810,11 +819,7 @@ def _intersects(a, b):
 
 
 def packSiblings(circles: list) -> list:
-    circ = [
-        {"x": 0.0, "y": 0.0, "r": float(c["r"] if isinstance(c, dict) else c.r),
-         "_": c}
-        for c in circles
-    ]
+    circ = [{"x": 0.0, "y": 0.0, "r": float(c["r"] if isinstance(c, dict) else c.r), "_": c} for c in circles]
     if not circ:
         return []
     n = len(circ)
@@ -862,9 +867,11 @@ def _write_back(circles, circ):
 
 def packEnclose(circles: list) -> dict:
     pts = [
-        {"x": (c["x"] if isinstance(c, dict) else c.x),
-         "y": (c["y"] if isinstance(c, dict) else c.y),
-         "r": (c["r"] if isinstance(c, dict) else c.r)}
+        {
+            "x": (c["x"] if isinstance(c, dict) else c.x),
+            "y": (c["y"] if isinstance(c, dict) else c.y),
+            "r": (c["r"] if isinstance(c, dict) else c.r),
+        }
         for c in circles
     ]
     if not pts:

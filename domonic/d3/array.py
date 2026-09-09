@@ -22,22 +22,79 @@ _builtin_min = builtins.min
 _builtin_max = builtins.max
 
 __all__ = [
-    "ascending", "descending", "bisector", "bisect", "bisectLeft",
-    "bisectRight", "bisectCenter", "Adder", "fsum", "fcumsum", "min", "minIndex",
-    "max", "maxIndex", "extent", "sum", "mean", "median", "medianIndex",
-    "cumsum", "mode", "variance", "deviation", "quantile", "quantileSorted",
-    "quantileIndex", "range", "ticks", "tickIncrement", "tickStep", "nice",
-    "quickselect", "least", "leastIndex", "greatest", "greatestIndex", "group",
-    "groups", "index", "indexes", "rollup", "rollups", "flatGroup",
-    "flatRollup", "groupSort", "count", "cross", "merge", "pairs", "permute",
-    "shuffle", "shuffler", "transpose", "zip", "rank", "difference", "disjoint",
-    "intersection", "subset", "superset", "union", "every", "some", "bin",
-    "histogram", "thresholdSturges", "thresholdScott",
+    "ascending",
+    "descending",
+    "bisector",
+    "bisect",
+    "bisectLeft",
+    "bisectRight",
+    "bisectCenter",
+    "Adder",
+    "fsum",
+    "fcumsum",
+    "min",
+    "minIndex",
+    "max",
+    "maxIndex",
+    "extent",
+    "sum",
+    "mean",
+    "median",
+    "medianIndex",
+    "cumsum",
+    "mode",
+    "variance",
+    "deviation",
+    "quantile",
+    "quantileSorted",
+    "quantileIndex",
+    "range",
+    "ticks",
+    "tickIncrement",
+    "tickStep",
+    "nice",
+    "quickselect",
+    "least",
+    "leastIndex",
+    "greatest",
+    "greatestIndex",
+    "group",
+    "groups",
+    "index",
+    "indexes",
+    "rollup",
+    "rollups",
+    "flatGroup",
+    "flatRollup",
+    "groupSort",
+    "count",
+    "cross",
+    "merge",
+    "pairs",
+    "permute",
+    "shuffle",
+    "shuffler",
+    "transpose",
+    "zip",
+    "rank",
+    "difference",
+    "disjoint",
+    "intersection",
+    "subset",
+    "superset",
+    "union",
+    "every",
+    "some",
+    "bin",
+    "histogram",
+    "thresholdSturges",
+    "thresholdScott",
     "thresholdFreedmanDiaconis",
 ]
 
 
 # -- comparators -----------------------------------------------------------
+
 
 def ascending(a: Any, b: Any) -> float:
     if a is None or b is None:
@@ -109,6 +166,7 @@ def _numbers(values: Iterable, valueof: Callable | None):
 
 # -- bisect --------------------------------------------------------------
 
+
 def bisector(f: Callable):
     """Return an object exposing ``left``, ``right`` and ``center`` bisection
     methods. ``f`` may be an accessor ``f(d)`` or a comparator ``f(d, x)``."""
@@ -117,9 +175,7 @@ def bisector(f: Callable):
         compare2 = f
         delta = lambda d, x: f(d, x)  # noqa: E731
     else:
-        compare1 = ascending if f is ascending or f is descending else (
-            lambda a, b: ascending(f(a), b)
-        )
+        compare1 = ascending if f is ascending or f is descending else (lambda a, b: ascending(f(a), b))
         compare2 = lambda d, x: ascending(f(d), x)  # noqa: E731
         delta = lambda d, x: ascending(f(d), x)  # noqa: E731
         if f is ascending or f is descending:
@@ -163,8 +219,7 @@ def bisector(f: Callable):
         return i
 
     return type(
-        "Bisector", (), {"left": staticmethod(left), "right": staticmethod(right),
-                         "center": staticmethod(center)}
+        "Bisector", (), {"left": staticmethod(left), "right": staticmethod(right), "center": staticmethod(center)}
     )
 
 
@@ -180,6 +235,7 @@ def bisect(a: Sequence, x: Any, lo: int = 0, hi: int | None = None) -> int:
 
 
 # -- neumaier summation --------------------------------------------------
+
 
 class Adder:
     """Full-precision (Shewchuk / Neumaier) summation, matching d3's ``Adder``."""
@@ -222,9 +278,7 @@ class Adder:
                 lo = y - (hi - x)
                 if lo:
                     break
-            if n > 0 and (
-                (lo < 0 and p[n - 1] < 0) or (lo > 0 and p[n - 1] > 0)
-            ):
+            if n > 0 and ((lo < 0 and p[n - 1] < 0) or (lo > 0 and p[n - 1] > 0)):
                 y = lo * 2
                 x = hi + y
                 if y == x - hi:
@@ -260,6 +314,7 @@ def fcumsum(values: Iterable, valueof: Callable | None = None) -> list[float]:
 
 
 # -- statistics --------------------------------------------------------
+
 
 def min(values: Iterable, valueof: Callable | None = None):
     result = None
@@ -381,16 +436,12 @@ def deviation(values: Iterable, valueof: Callable | None = None):
     return math.sqrt(v) if v is not None else None
 
 
-def quantileSorted(
-    values: Sequence, p: float, valueof: Callable | None = None
-) -> float | None:
+def quantileSorted(values: Sequence, p: float, valueof: Callable | None = None) -> float | None:
     n = len(values)
     p = _number(p)
     if not n or p != p:
         return None
-    vof = (lambda v, i, a: _number(v)) if valueof is None else (
-        lambda v, i, a: _number(valueof(v, i, a))
-    )
+    vof = (lambda v, i, a: _number(v)) if valueof is None else (lambda v, i, a: _number(valueof(v, i, a)))
     if p <= 0 or n < 2:
         return vof(values[0], 0, values)
     if p >= 1:
@@ -402,9 +453,7 @@ def quantileSorted(
     return value0 + (value1 - value0) * (i - i0)
 
 
-def quantile(
-    values: Iterable, p: float, valueof: Callable | None = None
-) -> float | None:
+def quantile(values: Iterable, p: float, valueof: Callable | None = None) -> float | None:
     numbers = sorted(_numbers(values, valueof))
     if not numbers:
         return None
@@ -421,10 +470,7 @@ def quantile(
 
 
 def quantileIndex(values: Sequence, p: float, valueof: Callable | None = None):
-    numbered = [
-        (_number(v if valueof is None else valueof(v, i, values)), i)
-        for i, v in enumerate(values)
-    ]
+    numbered = [(_number(v if valueof is None else valueof(v, i, values)), i) for i, v in enumerate(values)]
     numbered = [pair for pair in numbered if pair[0] == pair[0]]
     if not numbered:
         return -1
@@ -475,6 +521,7 @@ def count(values: Iterable, valueof: Callable | None = None) -> int:
 
 # -- range, ticks, nice ----------------------------------------------------
 
+
 def range(*args: float) -> list:
     start: Any
     stop: Any
@@ -506,7 +553,7 @@ def tickIncrement(start: float, stop: float, count: int) -> float:
     if step <= 0 or not math.isfinite(step):
         return step if step else 0.0
     power = math.floor(math.log10(step))
-    error = step / (10 ** power)
+    error = step / (10**power)
     if error >= _E10:
         factor = 10
     elif error >= _E5:
@@ -516,8 +563,8 @@ def tickIncrement(start: float, stop: float, count: int) -> float:
     else:
         factor = 1
     if power >= 0:
-        return factor * (10 ** power)
-    return -(10 ** -power) / factor
+        return factor * (10**power)
+    return -(10**-power) / factor
 
 
 def tickStep(start: float, stop: float, count: int) -> float:
@@ -583,6 +630,7 @@ def nice(start: float, stop: float, count: int):
 
 # -- quickselect --------------------------------------------------------
 
+
 def quickselect(
     array: list,
     k: int,
@@ -634,6 +682,7 @@ def _cmp(compare: Callable, a: Any, b: Any) -> float:
 
 
 # -- least / greatest --------------------------------------------------
+
 
 def least(values: Iterable, compare: Callable = ascending):
     min_v = None
@@ -713,6 +762,7 @@ def greatestIndex(values: Iterable, compare: Callable = ascending) -> int:
 
 # -- group / rollup ----------------------------------------------------
 
+
 def _nest(values, mapper, reducer, keys):
     def regroup(values, i):
         if i >= len(keys):
@@ -783,9 +833,7 @@ def flatRollup(values: Iterable, reduce: Callable, *keys: Callable) -> list:
     return list(_flatten(g, keys)) if keys else []
 
 
-def groupSort(
-    values: Iterable, comparator_or_accessor: Callable, key: Callable
-) -> list:
+def groupSort(values: Iterable, comparator_or_accessor: Callable, key: Callable) -> list:
     reduced = list(rollup(values, comparator_or_accessor, key).items())
     if _arity(comparator_or_accessor) == 1:
         reduced.sort(key=_functools_cmp(lambda a, b: ascending(a[1], b[1])))
@@ -795,6 +843,7 @@ def groupSort(
 
 
 # -- combinations ----------------------------------------------------------
+
 
 def cross(*args) -> list:
     reduce = None
@@ -876,9 +925,7 @@ def rank(values: Iterable, comparator: Callable | None = None) -> list:
         keyed = list(enumerate(values))
         keyed.sort(key=lambda p: (comparator(p[1]) is None, comparator(p[1])))
     else:
-        keyed = sorted(enumerate(values), key=_functools_cmp(
-            lambda a, b: comparator(a[1], b[1])
-        ))
+        keyed = sorted(enumerate(values), key=_functools_cmp(lambda a, b: comparator(a[1], b[1])))
     out = [math.nan] * len(values)
     r = 0
     prev = object()
@@ -894,6 +941,7 @@ def rank(values: Iterable, comparator: Callable | None = None) -> list:
 
 
 # -- sets ----------------------------------------------------------------
+
 
 def difference(values: Iterable, *others: Iterable) -> set:
     result = set(values)
@@ -937,6 +985,7 @@ def union(*iterables: Iterable) -> set:
 
 # -- iterables ---------------------------------------------------------
 
+
 def every(values: Iterable, test: Callable) -> bool:
     for index, value in enumerate(values):
         if not test(value, index, values):
@@ -952,6 +1001,7 @@ def some(values: Iterable, test: Callable) -> bool:
 
 
 # -- histogram (bin) -----------------------------------------------------
+
 
 class Bin(list):
     x0: Any = None
@@ -1081,6 +1131,7 @@ histogram = bin  # d3 v5 name
 
 
 # -- small helpers -----------------------------------------------------
+
 
 def _functools_cmp(cmp):
     return functools.cmp_to_key(lambda x, y: int(_cmp(cmp, x, y)))

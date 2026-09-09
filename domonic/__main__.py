@@ -149,14 +149,8 @@ def project(name, server_choice: str | None = None):
 
     server_opt = get_supported_servers()
 
-    if (
-        server_choice is not None
-        and server_choice not in server_opt
-        and server_choice != "none"
-    ):
-        raise ValueError(
-            f"Unsupported server '{server_choice}'. Supported servers: {', '.join(server_opt)}"
-        )
+    if server_choice is not None and server_choice not in server_opt and server_choice != "none":
+        raise ValueError(f"Unsupported server '{server_choice}'. Supported servers: {', '.join(server_opt)}")
 
     def write_requirements(server: str) -> list[str]:
         requirements = ["domonic", "requests", *get_server_requirements(server)]
@@ -381,21 +375,15 @@ def parse_args():
         type=str,
         default=None,
     )
-    parser.add_argument(
-        "--text", help="print text content instead of node markup", action="store_true"
-    )
+    parser.add_argument("--text", help="print text content instead of node markup", action="store_true")
     parser.add_argument(
         "--attr",
         help="print a specific attribute from each result",
         type=str,
         default=None,
     )
-    parser.add_argument(
-        "--count", help="print only the number of matches", action="store_true"
-    )
-    parser.add_argument(
-        "--first", help="print only the first match", action="store_true"
-    )
+    parser.add_argument("--count", help="print only the number of matches", action="store_true")
+    parser.add_argument("--first", help="print only the first match", action="store_true")
     parser.add_argument(
         "--parser",
         help="parser backend for CLI HTML input, e.g. selectolax, turbohtml, lxml_html, html.parser",
@@ -507,11 +495,7 @@ def do_things(arguments):
         print(result)
         return result
 
-    if (
-        arguments.xpath is not None
-        or arguments.xpath_file is not None
-        or arguments.xpath_stdin is not None
-    ):
+    if arguments.xpath is not None or arguments.xpath_file is not None or arguments.xpath_stdin is not None:
         from domonic import domonic
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
@@ -519,18 +503,14 @@ def do_things(arguments):
         xpath: str
         use_stdin = False
         if arguments.xpath is not None:
-            source, xpath, use_stdin = _resolve_source_and_expression(
-                arguments.xpath, "xpath"
-            )
+            source, xpath, use_stdin = _resolve_source_and_expression(arguments.xpath, "xpath")
         elif arguments.xpath_file is not None:
             source, xpath = arguments.xpath_file
         else:
             xpath = arguments.xpath_stdin
             use_stdin = True
 
-        page = domonic.parseString(
-            _read_source(source, use_stdin), parser=arguments.parser
-        )
+        page = domonic.parseString(_read_source(source, use_stdin), parser=arguments.parser)
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpath)
         result = expression.evaluate(page, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
@@ -542,35 +522,23 @@ def do_things(arguments):
             first_only=arguments.first,
         )
 
-    if (
-        arguments.query is not None
-        or arguments.query_file is not None
-        or arguments.query_stdin is not None
-    ):
+    if arguments.query is not None or arguments.query_file is not None or arguments.query_stdin is not None:
         query: str
         if arguments.query is not None:
-            source, query, use_stdin = _resolve_source_and_expression(
-                arguments.query, "query"
-            )
+            source, query, use_stdin = _resolve_source_and_expression(arguments.query, "query")
             from domonic import domonic
 
-            page = domonic.parseString(
-                _read_source(source, use_stdin), parser=arguments.parser
-            )
+            page = domonic.parseString(_read_source(source, use_stdin), parser=arguments.parser)
             results = page.querySelectorAll(query)
         else:
             from domonic import domonic
 
             if arguments.query_file is not None:
                 source, query = arguments.query_file
-                page = domonic.parseString(
-                    _read_source(source), parser=arguments.parser
-                )
+                page = domonic.parseString(_read_source(source), parser=arguments.parser)
             else:
                 query = arguments.query_stdin
-                page = domonic.parseString(
-                    _read_source(None, True), parser=arguments.parser
-                )
+                page = domonic.parseString(_read_source(None, True), parser=arguments.parser)
             results = page.querySelectorAll(query)
 
         return _emit_results(

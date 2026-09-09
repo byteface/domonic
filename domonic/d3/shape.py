@@ -20,18 +20,55 @@ from typing import Any, Callable, Sequence
 from domonic.d3.path import Path
 
 __all__ = [
-    "line", "lineRadial", "area", "areaRadial", "arc", "pie", "symbol",
-    "symbolCircle", "symbolCross", "symbolDiamond", "symbolSquare",
-    "symbolStar", "symbolTriangle", "symbolWye", "symbolsFill", "symbolsStroke",
-    "symbols", "pointRadial", "link", "linkHorizontal", "linkVertical",
-    "linkRadial", "stack", "curveLinear", "curveLinearClosed", "curveStep",
-    "curveStepBefore", "curveStepAfter", "curveBasis", "curveBasisClosed",
-    "curveBasisOpen", "curveCardinal", "curveCatmullRom", "curveNatural",
-    "curveMonotoneX", "curveMonotoneY", "curveBumpX", "curveBumpY",
-    "stackOffsetNone", "stackOffsetExpand", "stackOffsetDiverging",
-    "stackOffsetSilhouette", "stackOffsetWiggle", "stackOrderNone",
-    "stackOrderAscending", "stackOrderDescending", "stackOrderInsideOut",
-    "stackOrderReverse", "stackOrderAppearance",
+    "line",
+    "lineRadial",
+    "area",
+    "areaRadial",
+    "arc",
+    "pie",
+    "symbol",
+    "symbolCircle",
+    "symbolCross",
+    "symbolDiamond",
+    "symbolSquare",
+    "symbolStar",
+    "symbolTriangle",
+    "symbolWye",
+    "symbolsFill",
+    "symbolsStroke",
+    "symbols",
+    "pointRadial",
+    "link",
+    "linkHorizontal",
+    "linkVertical",
+    "linkRadial",
+    "stack",
+    "curveLinear",
+    "curveLinearClosed",
+    "curveStep",
+    "curveStepBefore",
+    "curveStepAfter",
+    "curveBasis",
+    "curveBasisClosed",
+    "curveBasisOpen",
+    "curveCardinal",
+    "curveCatmullRom",
+    "curveNatural",
+    "curveMonotoneX",
+    "curveMonotoneY",
+    "curveBumpX",
+    "curveBumpY",
+    "stackOffsetNone",
+    "stackOffsetExpand",
+    "stackOffsetDiverging",
+    "stackOffsetSilhouette",
+    "stackOffsetWiggle",
+    "stackOrderNone",
+    "stackOrderAscending",
+    "stackOrderDescending",
+    "stackOrderInsideOut",
+    "stackOrderReverse",
+    "stackOrderAppearance",
 ]
 
 _TAU = math.tau
@@ -62,14 +99,10 @@ def _accessor(value: Any) -> Callable[..., Any]:
     npos = sum(
         1
         for p in params
-        if p.kind in (inspect.Parameter.POSITIONAL_ONLY,
-                      inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
         and p.default is inspect.Parameter.empty
     ) or sum(
-        1
-        for p in params
-        if p.kind in (inspect.Parameter.POSITIONAL_ONLY,
-                      inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        1 for p in params if p.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD)
     )
 
     def tolerant(*args: Any) -> Any:
@@ -96,6 +129,7 @@ def pointRadial(angle: float, radius: float) -> list[float]:
 
 
 # -- curves --------------------------------------------------------
+
 
 class _Linear:
     def __init__(self, context):
@@ -266,9 +300,7 @@ class _Basis:
             self._point = 2
         elif p == 2:
             self._point = 3
-            self._context.lineTo(
-                (5 * self._x0 + self._x1) / 6, (5 * self._y0 + self._y1) / 6
-            )
+            self._context.lineTo((5 * self._x0 + self._x1) / 6, (5 * self._y0 + self._y1) / 6)
             self._curve(x, y)
         else:
             self._curve(x, y)
@@ -312,8 +344,7 @@ class _BasisClosed(_Basis):
         elif p == 2:
             self._point = 3
             self._x4, self._y4 = x, y
-            self._context.moveTo((self._x0 + 4 * self._x1 + x) / 6,
-                                 (self._y0 + 4 * self._y1 + y) / 6)
+            self._context.moveTo((self._x0 + 4 * self._x1 + x) / 6, (self._y0 + 4 * self._y1 + y) / 6)
         else:
             self._curve(x, y)
         self._x0, self._x1 = self._x1, x
@@ -388,7 +419,8 @@ class _Cardinal:
             self._y1 + self._k * (self._y2 - self._y0),
             self._x2 + self._k * (self._x1 - x),
             self._y2 + self._k * (self._y1 - y),
-            self._x2, self._y2,
+            self._x2,
+            self._y2,
         )
 
     def point(self, x, y):
@@ -514,9 +546,7 @@ class _Natural:
                 px = _control_points(xs)
                 py = _control_points(ys)
                 for i0, i1 in enumerate(range(1, n)):
-                    self._context.bezierCurveTo(
-                        px[0][i0], py[0][i0], px[1][i0], py[1][i0], xs[i1], ys[i1]
-                    )
+                    self._context.bezierCurveTo(px[0][i0], py[0][i0], px[1][i0], py[1][i0], xs[i1], ys[i1])
         if self._line or (self._line != 0 and self._point == 1):
             self._context.closePath()
         self._line = 1 - self._line
@@ -597,9 +627,7 @@ class _Monotone:
         x0, y0 = self._x0, self._y0
         x1, y1 = self._x1, self._y1
         dx = (x1 - x0) / 3
-        self._context.bezierCurveTo(
-            x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1
-        )
+        self._context.bezierCurveTo(x0 + dx, y0 + dx * t0, x1 - dx, y1 - dx * t1, x1, y1)
 
     def point(self, x, y):
         x, y = float(x), float(y)
@@ -703,6 +731,7 @@ def curveBumpY(context):
 
 
 # -- line / area --------------------------------------------------
+
 
 class Line:
     def __init__(self, x=None, y=None):
@@ -934,6 +963,7 @@ def areaRadial(*args) -> Area:
 
 # -- arc ---------------------------------------------------------
 
+
 def _field(name: str, default: Any = None) -> Callable[..., Any]:
     """d3's default accessor: read ``name`` off the datum (dict or object)."""
 
@@ -1002,9 +1032,7 @@ class Arc:
 
     def centroid(self, *args) -> list[float]:
         r = (float(self._innerRadius(*args) or 0) + float(self._outerRadius(*args) or 0)) / 2
-        a = (
-            float(self._startAngle(*args) or 0) + float(self._endAngle(*args) or 0)
-        ) / 2 - _HALF_PI
+        a = (float(self._startAngle(*args) or 0) + float(self._endAngle(*args) or 0)) / 2 - _HALF_PI
         return [math.cos(a) * r, math.sin(a) * r]
 
     def _acc(self, name, value):
@@ -1044,6 +1072,7 @@ def arc() -> Arc:
 
 
 # -- pie --------------------------------------------------------
+
 
 def pie():
     value: Callable = _identity
@@ -1166,9 +1195,19 @@ def _draw_circle(context, size):
 def _draw_cross(context, size):
     r = math.sqrt(size / 5) / 2
     context.moveTo(-3 * r, -r)
-    for x, y in [(-r, -r), (-r, -3 * r), (r, -3 * r), (r, -r), (3 * r, -r),
-                 (3 * r, r), (r, r), (r, 3 * r), (-r, 3 * r), (-r, r),
-                 (-3 * r, r)]:
+    for x, y in [
+        (-r, -r),
+        (-r, -3 * r),
+        (r, -3 * r),
+        (r, -r),
+        (3 * r, -r),
+        (3 * r, r),
+        (r, r),
+        (r, 3 * r),
+        (-r, 3 * r),
+        (-r, r),
+        (-3 * r, r),
+    ]:
         context.lineTo(x, y)
     context.closePath()
 
@@ -1225,6 +1264,8 @@ symbolDiamond = _SymbolType(_draw_diamond)
 symbolSquare = _SymbolType(_draw_square)
 symbolStar = _SymbolType(_draw_star)
 symbolTriangle = _SymbolType(_draw_triangle)
+
+
 def _draw_wye_shape(context, size):
     # three-armed "Y": arm half-width w, arm length reaching radius r
     r = math.sqrt(size / (3 * _SQRT3))
@@ -1247,10 +1288,8 @@ def _draw_wye_shape(context, size):
 
 symbolWye = _SymbolType(_draw_wye_shape)
 
-symbolsFill = [symbolCircle, symbolCross, symbolDiamond, symbolSquare,
-               symbolStar, symbolTriangle, symbolWye]
-symbolsStroke = [symbolCircle, symbolSquare, symbolDiamond, symbolTriangle,
-                 symbolWye]
+symbolsFill = [symbolCircle, symbolCross, symbolDiamond, symbolSquare, symbolStar, symbolTriangle, symbolWye]
+symbolsStroke = [symbolCircle, symbolSquare, symbolDiamond, symbolTriangle, symbolWye]
 symbols = symbolsFill
 
 
@@ -1293,6 +1332,7 @@ def symbol(type_=symbolCircle, size=64) -> Symbol:
 
 
 # -- link ------------------------------------------------------
+
 
 def link(curve):
     source: Callable = lambda d: d["source"] if isinstance(d, dict) else d[0]
@@ -1370,6 +1410,7 @@ def linkRadial():
 
 
 # -- stack ----------------------------------------------------
+
 
 def stackOrderNone(series):
     return list(range(len(series)))
@@ -1477,9 +1518,7 @@ def stackOffsetSilhouette(series, order):
             series[order[0]][j][0] = shift
     stackOffsetNone(series, order)
     for j in range(n):
-        total = sum(
-            (series[i][j][1] - series[i][j][0]) for i in order
-        )
+        total = sum((series[i][j][1] - series[i][j][0]) for i in order)
         shift = -total / 2
         for i in order:
             series[i][j][0] += shift
@@ -1497,10 +1536,7 @@ def stackOffsetWiggle(series, order):
         for oi, i in enumerate(order):
             dy = series[i][j][1] - series[i][j][0]
             dy_prev = series[i][j - 1][1] - series[i][j - 1][0]
-            contrib = sum(
-                (series[order[k]][j][1] - series[order[k]][j][0])
-                for k in range(oi)
-            )
+            contrib = sum((series[order[k]][j][1] - series[order[k]][j][0]) for k in range(oi))
             s1 += (contrib + dy / 2) * (dy - dy_prev)
             s2 += dy
         move = -s1 / s2 if s2 else 0
@@ -1511,9 +1547,7 @@ def stackOffsetWiggle(series, order):
 
 def stack():
     keys: Callable = _constant([])
-    value: Callable = lambda d, key, i, data: (
-        d.get(key, 0) if isinstance(d, dict) else 0
-    )
+    value: Callable = lambda d, key, i, data: (d.get(key, 0) if isinstance(d, dict) else 0)
     order: Callable = stackOrderNone
     offset: Callable = stackOffsetNone
 

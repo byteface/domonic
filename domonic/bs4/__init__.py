@@ -35,7 +35,6 @@ _PARSER_ALIASES = {
     "expat": "expat",
     "reliq": "reliq",
     "tl": "tl",
-    
 }
 
 
@@ -161,18 +160,14 @@ def _sibling_view(
     return None if idx is None else (kids, idx)
 
 
-def _following_element_siblings(
-    node: Any, cache: dict[int, Any] | None = None
-) -> Iterator[Element]:
+def _following_element_siblings(node: Any, cache: dict[int, Any] | None = None) -> Iterator[Element]:
     view = _sibling_view(node, cache)
     if view is not None:
         kids, idx = view
-        yield from kids[idx + 1:]
+        yield from kids[idx + 1 :]
 
 
-def _next_element_sibling(
-    node: Any, cache: dict[int, Any] | None = None
-) -> Element | None:
+def _next_element_sibling(node: Any, cache: dict[int, Any] | None = None) -> Element | None:
     view = _sibling_view(node, cache)
     if view is None:
         return None
@@ -185,11 +180,7 @@ def _find_element_by_id(
     element_id: str,
     include_self: bool = False,
 ) -> Element | None:
-    if (
-        include_self
-        and isinstance(node, Element)
-        and _get_attribute(node, "id") == element_id
-    ):
+    if include_self and isinstance(node, Element) and _get_attribute(node, "id") == element_id:
         return node
     for child in _element_descendants(node):
         if _get_attribute(child, "id") == element_id:
@@ -233,22 +224,14 @@ def _indexed_candidates(
     # The cached index covers the entire root. A child of an HTMLDocument
     # is still a subtree: using the root index there includes siblings and
     # can even include the context element itself. Keep such searches local.
-    if (
-        string is not None
-        or not recursive
-        or node is not _root_for_index(node)
-    ):
+    if string is not None or not recursive or node is not _root_for_index(node):
         return None
     index = _tag_index(node)
     if name is None:
         return iter(index.get("*", ()))
-    if isinstance(name, (list, tuple, set)) and all(
-        isinstance(item, str) for item in name
-    ):
+    if isinstance(name, (list, tuple, set)) and all(isinstance(item, str) for item in name):
         names = {item.lower() for item in name}
-        return (
-            element for element in index.get("*", ()) if element.name.lower() in names
-        )
+        return (element for element in index.get("*", ()) if element.name.lower() in names)
     if not isinstance(name, str):
         return None
     return iter(index.get(name.lower(), ()))
@@ -273,10 +256,7 @@ def _get_attribute(node: Any, name: str) -> Any:
 def _attribute_dict(node: Any) -> dict[str, Any]:
     if not isinstance(node, Element):
         return {}
-    return {
-        key[1:] if key.startswith("_") else key: value
-        for key, value in getattr(node, "kwargs", {}).items()
-    }
+    return {key[1:] if key.startswith("_") else key: value for key, value in getattr(node, "kwargs", {}).items()}
 
 
 def _filter_matches(value: Any, candidate: Any, node: Any | None = None) -> bool:
@@ -310,9 +290,7 @@ def _class_filter_matches(value: Any, candidate: Any, node: Any | None = None) -
     if isinstance(value, (list, tuple, set)):
         return any(_class_filter_matches(item, candidate, node) for item in value)
     if hasattr(value, "search"):
-        return value.search(class_value) is not None or any(
-            value.search(token) is not None for token in tokens
-        )
+        return value.search(class_value) is not None or any(value.search(token) is not None for token in tokens)
     if callable(value):
         for arg in (class_value, *tokens, node):
             try:
@@ -347,9 +325,7 @@ def _name_matches(name: Any, node: Any) -> bool:
     return candidate == str(name)
 
 
-def _merge_attrs(
-    attrs: dict[str, Any] | None, kwargs: dict[str, Any]
-) -> dict[str, Any]:
+def _merge_attrs(attrs: dict[str, Any] | None, kwargs: dict[str, Any]) -> dict[str, Any]:
     merged = dict(attrs or {})
     for key, value in kwargs.items():
         merged[_attribute_name(key)] = value
@@ -411,14 +387,8 @@ def _matches(
     if name is None and not attrs and string is not None:
         # Beautiful Soup's ``string=`` filter matches any NavigableString,
         # which includes comment text.
-        return isinstance(node, (str, Text, Comment)) and _string_matches(
-            string, node
-        )
-    return (
-        _name_matches(name, node)
-        and _attributes_match(node, attrs)
-        and _string_matches(string, node)
-    )
+        return isinstance(node, (str, Text, Comment)) and _string_matches(string, node)
+    return _name_matches(name, node) and _attributes_match(node, attrs) and _string_matches(string, node)
 
 
 def _can_use_css(name: Any, attrs: dict[str, Any] | None, string: Any) -> bool:
@@ -428,10 +398,7 @@ def _can_use_css(name: Any, attrs: dict[str, Any] | None, string: Any) -> bool:
         return False
     if not attrs:
         return True
-    return all(
-        value is not None and isinstance(value, _SIMPLE_FILTER_TYPES)
-        for value in attrs.values()
-    )
+    return all(value is not None and isinstance(value, _SIMPLE_FILTER_TYPES) for value in attrs.values())
 
 
 def _css_escape_value(value: Any) -> str:
@@ -550,17 +517,10 @@ def _find_all(
     if string is None and not merged_attrs and (name is True or name is None):
         # ``find_all(True)`` / ``find_all()`` -- every tag, no filtering
         return _limit(
-            _element_descendants(self)
-            if recursive
-            else _element_children(self),
+            _element_descendants(self) if recursive else _element_children(self),
             limit,
         )
-    if (
-        recursive
-        and string is None
-        and not merged_attrs
-        and isinstance(name, (str, type(None)))
-    ):
+    if recursive and string is None and not merged_attrs and isinstance(name, (str, type(None))):
         candidates = _indexed_candidates(self, name, recursive, string)
         if candidates is None:
             candidates = _candidate_nodes(self, name, recursive, string)
@@ -824,9 +784,7 @@ def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
         if not set(parsed["classes"]).issubset(class_tokens):
             return False
     for attr, operator, value in parsed["attributes"]:
-        if not Element._attribute_selector_matches(
-            _get_attribute(element, attr), operator, value
-        ):
+        if not Element._attribute_selector_matches(_get_attribute(element, attr), operator, value):
             return False
     for pseudo in parsed.get("pseudos", ()):
         if not Element._matches_structural_pseudo(element, pseudo):
@@ -929,11 +887,7 @@ def _match_simple_pseudo(
         return any(_match_parsed_selector(element, branch) for branch in value)
     if name == "has":
         combinator, parsed = value
-        scope = (
-            _element_children(element)
-            if combinator == ">"
-            else _element_descendants(element)
-        )
+        scope = _element_children(element) if combinator == ">" else _element_descendants(element)
         return any(_match_parsed_selector(node, parsed) for node in scope)
     parent = getattr(element, "parentNode", None)
     if parent is None:
@@ -964,21 +918,13 @@ def _match_simple_pseudo(
 
 
 def _match_state_pseudo(element: Element, state: str) -> bool:
-    _FORM_ELEMENTS = {
-        "input", "button", "select", "textarea", "optgroup", "option", "fieldset"
-    }
+    _FORM_ELEMENTS = {"input", "button", "select", "textarea", "optgroup", "option", "fieldset"}
     if state == "checked":
-        return (
-            _get_attribute(element, "checked") is not None
-            or _get_attribute(element, "selected") is not None
-        )
+        return _get_attribute(element, "checked") is not None or _get_attribute(element, "selected") is not None
     if state == "disabled":
         return _get_attribute(element, "disabled") is not None
     if state == "enabled":
-        return (
-            element.name.lower() in _FORM_ELEMENTS
-            and _get_attribute(element, "disabled") is None
-        )
+        return element.name.lower() in _FORM_ELEMENTS and _get_attribute(element, "disabled") is None
     return False
 
 
@@ -1088,11 +1034,7 @@ def _select_fast(
         if not matched_ids:
             return []
         return _limit(
-            (
-                candidate
-                for candidate in _element_descendants(self)
-                if id(candidate) in matched_ids
-            ),
+            (candidate for candidate in _element_descendants(self) if id(candidate) in matched_ids),
             limit,
         )
     selector = groups[0]
@@ -1105,9 +1047,7 @@ def _select_fast(
         if pseudo_result is None:
             return None
         simple, pseudo = pseudo_result
-        parsed_parts.append(
-            (combinator, Element._parse_simple_selector(simple), pseudo)
-        )
+        parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
     if any(parsed is None for _, parsed, _ in parsed_parts):
         return None
 
@@ -1141,9 +1081,7 @@ def _select_fast(
             ):
                 next_contexts.append(context)
                 seen_candidates.add(id(context))
-            for candidate in _selector_candidates(
-                context, parsed, combinator, sibling_cache
-            ):
+            for candidate in _selector_candidates(context, parsed, combinator, sibling_cache):
                 marker = id(candidate)
                 if marker in seen_candidates:
                     continue
@@ -1247,11 +1185,7 @@ def _find_siblings(
 ) -> list[Any]:
     merged_attrs = _merge_attrs(attrs, kwargs)
     return _limit(
-        (
-            node
-            for node in _siblings_from(self, previous)
-            if _matches(node, name, merged_attrs, string)
-        ),
+        (node for node in _siblings_from(self, previous) if _matches(node, name, merged_attrs, string)),
         limit,
     )
 
@@ -1305,9 +1239,7 @@ def _find_previous_siblings(
 
 
 def _all_elements(root: Any) -> list[Any]:
-    return [
-        node for node in _document_order(root) if isinstance(node, (Element, str, Text))
-    ]
+    return [node for node in _document_order(root) if isinstance(node, (Element, str, Text))]
 
 
 _NAVIGABLE = (Element, str, Text)
@@ -1386,11 +1318,7 @@ def _find_document_order(
 ) -> list[Any]:
     merged_attrs = _merge_attrs(attrs, kwargs)
     return _limit(
-        (
-            node
-            for node in _document_neighbors(self, previous)
-            if _matches(node, name, merged_attrs, string)
-        ),
+        (node for node in _document_neighbors(self, previous) if _matches(node, name, merged_attrs, string)),
         limit,
     )
 
@@ -1443,9 +1371,7 @@ def _find_all_previous(
     return _find_document_order(self, True, name, attrs, string, limit, **kwargs)
 
 
-_STRINGS_SKIP_TAGS = frozenset(
-    {"script", "style", "SCRIPT", "STYLE", "Script", "Style"}
-)
+_STRINGS_SKIP_TAGS = frozenset({"script", "style", "SCRIPT", "STYLE", "Script", "Style"})
 
 
 def _strings(self: Node) -> Iterator[str]:
@@ -1569,9 +1495,7 @@ def _getitem(self: Element, key: str | int) -> Any:
 
 def _setitem(self: Element, key: str | int, value: Any) -> Element:
     if isinstance(key, int):
-        raise TypeError(
-            "Element child assignment by index is not supported by the BS4 layer"
-        )
+        raise TypeError("Element child assignment by index is not supported by the BS4 layer")
     _invalidate_index(self)
     self.setAttribute(key, value)
     return self  # matches Node.__setitem__'s chaining contract (this replaces it)
@@ -1579,9 +1503,7 @@ def _setitem(self: Element, key: str | int, value: Any) -> Element:
 
 def _delitem(self: Element, key: str | int) -> None:
     if isinstance(key, int):
-        raise TypeError(
-            "Element child deletion by index is not supported by the BS4 layer"
-        )
+        raise TypeError("Element child deletion by index is not supported by the BS4 layer")
     if not self.hasAttribute(key):
         raise KeyError(key)
     _invalidate_index(self)
@@ -1764,11 +1686,7 @@ def _new_tag(
     attrs: dict[str, Any] | None = None,
     **kwargs: Any,
 ) -> Element:
-    tag = (
-        Document.createElementNS(namespace, name)
-        if namespace
-        else Document.createElement(name)
-    )
+    tag = Document.createElementNS(namespace, name) if namespace else Document.createElement(name)
     for attr, value in _merge_attrs(attrs, kwargs).items():
         tag.setAttribute(attr, value)
     return tag
@@ -1826,11 +1744,7 @@ def _prettify(self: Node, formatter: Any = "minimal", indent: str = " ") -> str:
             text = str(node.textContent).strip()
             if text:
                 append(pad)
-                append(
-                    escape(text)
-                    if getattr(node, "_escape_text_on_render", False)
-                    else text
-                )
+                append(escape(text) if getattr(node, "_escape_text_on_render", False) else text)
                 append("\n")
             continue
         if node_class is comment_type:
@@ -1854,10 +1768,7 @@ def _prettify(self: Node, formatter: Any = "minimal", indent: str = " ") -> str:
             continue
 
         if name in _PRETTIFY_RAW_TAGS:
-            body = "".join(
-                str(c.textContent) if isinstance(c, text_type) else str(c)
-                for c in children
-            )
+            body = "".join(str(c.textContent) if isinstance(c, text_type) else str(c) for c in children)
             append(f"{pad}<{name}{attrs}>{body}</{name}>\n")
             continue
 
@@ -1875,9 +1786,7 @@ def _decode(self: Node, *args: Any, **kwargs: Any) -> str:
     return str(self)
 
 
-def _encode(
-    self: Node, encoding: str = "utf-8", *args: Any, **kwargs: Any
-) -> bytes:
+def _encode(self: Node, encoding: str = "utf-8", *args: Any, **kwargs: Any) -> bytes:
     """Beautiful Soup's ``.encode()`` - the byte form of the tree."""
     return str(self).encode(encoding, "xmlcharrefreplace")
 
@@ -1961,9 +1870,7 @@ def _install_element_api() -> None:
 
 _ORIGINAL_GETITEM = Element.__getitem__
 _ORIGINAL_APPEND = {
-    cls: getattr(cls, "append")
-    for cls in (Node, Element, Document, DocumentFragment)
-    if hasattr(cls, "append")
+    cls: getattr(cls, "append") for cls in (Node, Element, Document, DocumentFragment) if hasattr(cls, "append")
 }
 _INSTALLED = False
 

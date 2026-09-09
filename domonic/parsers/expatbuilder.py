@@ -30,6 +30,7 @@ This avoids all the overhead of SAX and pulldom to gain performance.
 from typing import Final
 from xml.dom import minidom  # nosec B408
 from xml.dom import EMPTY_NAMESPACE, EMPTY_PREFIX, XMLNS_NAMESPACE, xmlbuilder
+
 # private CPython minidom internals -- not in typeshed's stub, but this
 # module is explicitly built to piggyback on minidom's expat integration
 from xml.dom.minidom import (  # type: ignore[attr-defined]  # nosec B408
@@ -70,9 +71,7 @@ FILTER_REJECT: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_REJECT
 FILTER_SKIP: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_SKIP
 FILTER_INTERRUPT: Final[int] = xmlbuilder.DOMBuilderFilter.FILTER_INTERRUPT
 
-theDOMImplementation: Final[DOMImplementation] = (
-    DOMImplementation()
-)  # minidom.getDOMImplementation()
+theDOMImplementation: Final[DOMImplementation] = DOMImplementation()  # minidom.getDOMImplementation()
 
 # Expat typename -> TypeInfo
 _typeinfo_map = {
@@ -272,12 +271,8 @@ class ExpatBuilder:
             self.document.doctype.internalSubset = subset
 
     # @check
-    def start_doctype_decl_handler(
-        self, doctypeName, systemId, publicId, has_internal_subset
-    ):
-        doctype = self.document.implementation.createDocumentType(
-            doctypeName, publicId, systemId
-        )
+    def start_doctype_decl_handler(self, doctypeName, systemId, publicId, has_internal_subset):
+        doctype = self.document.implementation.createDocumentType(doctypeName, publicId, systemId)
         # doctype.ownerDocument = self.document
         # _append_child(self.document, doctype)
         # if isinstance(node, Document):
@@ -369,9 +364,7 @@ class ExpatBuilder:
             return
         if not self._options.entities:
             return
-        node = self.document._create_entity(
-            entityName, publicId, systemId, notationName
-        )
+        node = self.document._create_entity(entityName, publicId, systemId, notationName)
         if value is not None:
             # internal entity
             # node *should* be readonly, but we'll cheat
@@ -540,9 +533,7 @@ class FilterVisibilityController:
             if val == FILTER_INTERRUPT:
                 raise ParseEscape
             if val not in _ALLOWED_FILTER_RETURNS:
-                raise ValueError(
-                    "startContainer() returned illegal value: " + repr(val)
-                )
+                raise ValueError("startContainer() returned illegal value: " + repr(val))
             return val
         else:
             return FILTER_ACCEPT
@@ -649,9 +640,7 @@ class Skipper(FilterCrutch):
 # framework document used by the fragment builder.
 # Takes a string for the doctype, subset string, and namespace attrs string.
 
-_FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID = (
-    "http://xml.python.org/entities/fragment-builder/internal"
-)
+_FRAGMENT_BUILDER_INTERNAL_SYSTEM_ID = "http://xml.python.org/entities/fragment-builder/internal"
 
 _FRAGMENT_BUILDER_TEMPLATE = """\
 <!DOCTYPE wrapper
@@ -782,9 +771,7 @@ class FragmentBuilder(ExpatBuilder):
                 self._source = None
             return -1
         else:
-            return ExpatBuilder.external_entity_ref_handler(
-                self, context, base, systemId, publicId
-            )
+            return ExpatBuilder.external_entity_ref_handler(self, context, base, systemId, publicId)
 
 
 class Namespaces:
@@ -905,11 +892,7 @@ class Namespaces:
             curNode = self.curNode
             if " " in name:
                 uri, localname, prefix, qname = _parse_ns_name(self, name)
-                if not (
-                    curNode.namespaceURI == uri
-                    and curNode.localName == localname
-                    and curNode.prefix == prefix
-                ):
+                if not (curNode.namespaceURI == uri and curNode.localName == localname and curNode.prefix == prefix):
                     raise AssertionError("element stack messed up! (namespace)")
             else:
 
@@ -917,9 +900,7 @@ class Namespaces:
                     if curNode.nodeName.upper() != name.upper():
                         raise AssertionError("element stack messed up - bad nodeName")
                     if curNode.namespaceURI != EMPTY_NAMESPACE:
-                        raise AssertionError(
-                            "element stack messed up - bad namespaceURI"
-                        )
+                        raise AssertionError("element stack messed up - bad namespaceURI")
             self.curNode = curNode.parentNode
             self._finish_end_element(curNode)
 

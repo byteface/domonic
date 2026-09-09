@@ -34,13 +34,30 @@ from domonic.d3.color import lab as _lab
 from domonic.d3.color import rgb as _rgb
 
 __all__ = [
-    "interpolate", "interpolateNumber", "interpolateRound", "interpolateString",
-    "interpolateArray", "interpolateNumberArray", "interpolateObject",
-    "interpolateDate", "interpolateBasis", "interpolateBasisClosed",
-    "interpolateRgb", "interpolateRgbBasis", "interpolateRgbBasisClosed",
-    "interpolateHsl", "interpolateHslLong", "interpolateLab", "interpolateHcl",
-    "interpolateHclLong", "interpolateCubehelix", "interpolateCubehelixLong",
-    "interpolateHue", "interpolateDiscrete", "piecewise", "quantize",
+    "interpolate",
+    "interpolateNumber",
+    "interpolateRound",
+    "interpolateString",
+    "interpolateArray",
+    "interpolateNumberArray",
+    "interpolateObject",
+    "interpolateDate",
+    "interpolateBasis",
+    "interpolateBasisClosed",
+    "interpolateRgb",
+    "interpolateRgbBasis",
+    "interpolateRgbBasisClosed",
+    "interpolateHsl",
+    "interpolateHslLong",
+    "interpolateLab",
+    "interpolateHcl",
+    "interpolateHclLong",
+    "interpolateCubehelix",
+    "interpolateCubehelixLong",
+    "interpolateHue",
+    "interpolateDiscrete",
+    "piecewise",
+    "quantize",
     "interpolateZoom",
 ]
 
@@ -50,6 +67,7 @@ def _constant(x: Any) -> Callable[[float], Any]:
 
 
 # -- number / round / date -------------------------------------------
+
 
 def interpolateNumber(a: float, b: float) -> Callable[[float], float]:
     a = float(a)
@@ -71,9 +89,7 @@ def interpolateDate(a: datetime, b: datetime) -> Callable[[float], datetime]:
 
 # -- string ---------------------------------------------------------
 
-_RE_NUM = re.compile(
-    r"[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?"
-)
+_RE_NUM = re.compile(r"[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?")
 
 
 def interpolateString(a: Any, b: Any) -> Callable[[float], str]:
@@ -92,7 +108,7 @@ def interpolateString(a: Any, b: Any) -> Callable[[float], str]:
 
     for am, bm in zip(a_numbers, b_numbers):
         if bm.start() > bi:
-            append_string(b[bi:bm.start()])
+            append_string(b[bi : bm.start()])
         an_text, bn_text = am.group(), bm.group()
         if an_text == bn_text:
             append_string(bn_text)
@@ -127,6 +143,7 @@ def _format_number(x: float) -> str:
 
 # -- array / object -----------------------------------------------
 
+
 def interpolateNumberArray(a: Sequence, b: Sequence) -> Callable[[float], list]:
     n = min(len(a), len(b)) if a is not None else 0
     a = list(a) if a is not None else []
@@ -147,9 +164,7 @@ def interpolateArray(a: Sequence, b: Sequence) -> Callable[[float], list]:
     b_list = list(b)
     a_list = list(a) if a is not None else []
     na = min(len(a_list), len(b_list))
-    interps: list[Callable[[float], Any]] = [
-        interpolate(a_list[i], b_list[i]) for i in range(na)
-    ]
+    interps: list[Callable[[float], Any]] = [interpolate(a_list[i], b_list[i]) for i in range(na)]
 
     def interp(t: float) -> list:
         out = list(b_list)
@@ -162,9 +177,7 @@ def interpolateArray(a: Sequence, b: Sequence) -> Callable[[float], list]:
 
 def _is_number_array(values: Any) -> bool:
     try:
-        return len(values) > 0 and all(
-            isinstance(v, (int, float)) and not isinstance(v, bool) for v in values
-        )
+        return len(values) > 0 and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in values)
     except TypeError:
         return False
 
@@ -182,14 +195,12 @@ def interpolateObject(a: Any, b: Any) -> Callable[[float], dict]:
 
 # -- basis (B-spline) -------------------------------------------------
 
+
 def _basis(t1: float, v0: float, v1: float, v2: float, v3: float) -> float:
     t2 = t1 * t1
     t3 = t2 * t1
     return (
-        (1 - 3 * t1 + 3 * t2 - t3) * v0
-        + (4 - 6 * t2 + 3 * t3) * v1
-        + (1 + 3 * t1 + 3 * t2 - 3 * t3) * v2
-        + t3 * v3
+        (1 - 3 * t1 + 3 * t2 - t3) * v0 + (4 - 6 * t2 + 3 * t3) * v1 + (1 + 3 * t1 + 3 * t2 - 3 * t3) * v2 + t3 * v3
     ) / 6
 
 
@@ -225,6 +236,7 @@ def interpolateBasisClosed(values: Sequence[float]) -> Callable[[float], float]:
 
 # -- colour ---------------------------------------------------------
 
+
 def _nogamma(a: float, b: float) -> Callable[[float], float]:
     if a != a:  # NaN start -> hold at b
         return _constant(b)
@@ -241,9 +253,7 @@ def _hue(a: float, b: float) -> Callable[[float], float]:
     return _constant(b if b == b else a)
 
 
-def interpolateRgb(
-    a: Any, b: Any, gamma: float = 1.0
-) -> Callable[[float], str]:
+def interpolateRgb(a: Any, b: Any, gamma: float = 1.0) -> Callable[[float], str]:
     ca = _rgb(a)
     cb = _rgb(b)
 
@@ -253,7 +263,7 @@ def interpolateRgb(
         d = y - x
         if gamma == 1:
             return lambda t: x + t * d
-        yg, xg = y ** gamma, x ** gamma
+        yg, xg = y**gamma, x**gamma
         dg = yg - xg
         return lambda t: (xg + t * dg) ** (1 / gamma)
 
@@ -334,7 +344,7 @@ def _cubehelix_factory(long: bool):
             op = _nogamma(ca.opacity, cb.opacity)
 
             def interpolate(t: float) -> str:
-                c = Cubehelix(h(t), s(t), light(t ** y), op(t))
+                c = Cubehelix(h(t), s(t), light(t**y), op(t))
                 return c.rgb().formatRgb()
 
             return interpolate
@@ -360,6 +370,7 @@ def _clamp_hue(h: float) -> float:
 
 # -- generic dispatch --------------------------------------------------
 
+
 def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
     if b is None or isinstance(b, bool):
         return _constant(b)
@@ -382,6 +393,7 @@ def interpolate(a: Any, b: Any) -> Callable[[float], Any]:
 
 
 # -- piecewise / quantize / discrete ---------------------------------
+
 
 def piecewise(*args: Any) -> Callable[[float], Any]:
     if len(args) == 1:
@@ -417,9 +429,8 @@ def interpolateDiscrete(values: Sequence) -> Callable[[float], Any]:
 
 # -- zoom ----------------------------------------------------------
 
-def interpolateZoom(
-    p0: Sequence[float], p1: Sequence[float]
-) -> Callable[[float], list]:
+
+def interpolateZoom(p0: Sequence[float], p1: Sequence[float]) -> Callable[[float], list]:
     rho = 1.4142135623730951
     rho2 = 2.0
     rho4 = 4.0
@@ -440,6 +451,7 @@ def interpolateZoom(
                 uy0 + t * dy,
                 w0 * math.exp(rho * t * S),
             ]
+
     else:
         d1 = math.sqrt(d2)
         b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * d1)

@@ -42,11 +42,7 @@ class Websocket:
             evt.code = dom_event["code"]
             evt.key = dom_event["key"]
 
-        elif (
-            event_string == "mousedown"
-            or event_string == "mouseup"
-            or event_string == "mousemove"
-        ):
+        elif event_string == "mousedown" or event_string == "mouseup" or event_string == "mousemove":
             evt = MouseEvent(event_string)
             evt.initMouseEvent(
                 _type=event_string,
@@ -428,9 +424,7 @@ class SpriteCSS:
         bg_color: str = "none",
     ):
         self.id = id
-        self.styles = SpriteCSS.STYLE(
-            id, width, height, spritesheet, time, steps, loop, y_offset, bg_color
-        )
+        self.styles = SpriteCSS.STYLE(id, width, height, spritesheet, time, steps, loop, y_offset, bg_color)
 
     def __str__(self):
         return str(span(style(self.styles), div(_class=self.id)))
@@ -649,9 +643,7 @@ class Input:
 class Modal:
     """Small renderable modal helper used by the examples."""
 
-    def __init__(
-        self, reference=None, content=None, visible=False, close_text="&times;"
-    ):
+    def __init__(self, reference=None, content=None, visible=False, close_text="&times;"):
         self.reference = reference or "modal"
         self.content = content
         self.visible = visible
@@ -754,7 +746,7 @@ class Webpage:
         """)
         page = HTMLDocument(
             head(title(self.title_text), classless_css, jquery, code, styles),
-            body(div(self.content, _class='domonic-container')),
+            body(div(self.content, _class="domonic-container")),
         )
         # A full page must render with a doctype. ``Document.doctype`` no longer
         # synthesises one implicitly, so set it explicitly here.

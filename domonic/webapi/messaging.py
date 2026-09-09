@@ -76,9 +76,7 @@ class MessagePort(EventTarget):
             return
         self._message_queue.append(event)
 
-    def _dispatch_messageerror(
-        self, message: Any, error: Exception, source: Any, ports: list[Any]
-    ) -> None:
+    def _dispatch_messageerror(self, message: Any, error: Exception, source: Any, ports: list[Any]) -> None:
         event = MessageEvent(
             "messageerror",
             {
@@ -159,9 +157,7 @@ class BroadcastChannel(EventTarget):
     channel does not receive its own message, matching browser behaviour.
     """
 
-    _channels: ClassVar[dict[str, weakref.WeakSet["BroadcastChannel"]]] = defaultdict(
-        weakref.WeakSet
-    )
+    _channels: ClassVar[dict[str, weakref.WeakSet["BroadcastChannel"]]] = defaultdict(weakref.WeakSet)
 
     def __init__(self, name: str) -> None:
         super().__init__()

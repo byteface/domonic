@@ -23,6 +23,7 @@ from domonic.events import (
     SubmitEvent,
 )
 from domonic.html import *  # type: ignore[no-redef]  # <time> tag element wins
+
 # over domonic.dom's own `import time`, which leaks through the star-import
 # above (dom.py has no __all__); this is the intended, unambiguous runtime
 # result, just not something two wildcard imports can express to mypy.
@@ -125,15 +126,11 @@ class EventHandler:
         """
         event_type, namespace = _split_event_name(event)
         for registered in self.events:
-            if registered["_type"] == event_type and (
-                namespace is None or registered["namespace"] == namespace
-            ):
+            if registered["_type"] == event_type and (namespace is None or registered["namespace"] == namespace):
                 return registered
         return None
 
-    def unbindEvent(
-        self, event=None, targetElement=None, callback=None, selector=_UNSET
-    ):
+    def unbindEvent(self, event=None, targetElement=None, callback=None, selector=_UNSET):
         """Unbinds an event.
 
         Args:
@@ -143,37 +140,21 @@ class EventHandler:
             selector (str, optional): Only remove listeners registered with this delegated selector.
         """
         event_type, namespace = _split_event_name(event) if event else (None, None)
-        source = (
-            list(getattr(targetElement, "_dquery_events", []))
-            if targetElement is not None
-            else list(self.events)
-        )
+        source = list(getattr(targetElement, "_dquery_events", [])) if targetElement is not None else list(self.events)
         remaining_for_target = []
 
         for registered in source:
             type_matches = event_type in (None, "") or registered["_type"] == event_type
-            namespace_matches = (
-                namespace is None or registered["namespace"] == namespace
-            )
+            namespace_matches = namespace is None or registered["namespace"] == namespace
             callback_matches = callback is None or callback in (
                 registered["event"],
                 registered["original"],
             )
             selector_matches = selector is _UNSET or registered["selector"] == selector
-            target_matches = (
-                targetElement is None or registered["target"] == targetElement
-            )
+            target_matches = targetElement is None or registered["target"] == targetElement
 
-            if (
-                type_matches
-                and namespace_matches
-                and callback_matches
-                and selector_matches
-                and target_matches
-            ):
-                registered["target"].removeEventListener(
-                    registered["_type"], registered["event"]
-                )
+            if type_matches and namespace_matches and callback_matches and selector_matches and target_matches:
+                registered["target"].removeEventListener(registered["_type"], registered["event"])
             else:
                 remaining_for_target.append(registered)
 
@@ -184,10 +165,7 @@ class EventHandler:
             registered
             for registered in self.events
             if registered in remaining_for_target
-            or (
-                targetElement is not None
-                and registered.get("target") is not targetElement
-            )
+            or (targetElement is not None and registered.get("target") is not targetElement)
         ]
 
 
@@ -267,11 +245,7 @@ class dQuery_el:
         if selector is None:
             return True
         if callable(selector):
-            return bool(
-                dQuery_el._call_with_fallback(
-                    selector, (index, element), (element,), (index,)
-                )
-            )
+            return bool(dQuery_el._call_with_fallback(selector, (index, element), (element,), (index,)))
         if isinstance(selector, dQuery_el):
             return element in selector.toArray()
         if isinstance(selector, (list, tuple, set)):
@@ -304,9 +278,7 @@ class dQuery_el:
             return []
         if callable(value):
             current = element.getAttribute("class") if element is not None else ""
-            value = dQuery_el._call_with_fallback(
-                value, (index, current or ""), (index,), (element,)
-            )
+            value = dQuery_el._call_with_fallback(value, (index, current or ""), (index,), (element,))
         if isinstance(value, (list, tuple, set)):
             tokens = []
             for item in value:
@@ -376,11 +348,7 @@ class dQuery_el:
     def _deepest_element(node):
         current = node
         while True:
-            children = [
-                child
-                for child in getattr(current, "children", [])
-                if isinstance(child, Element)
-            ]
+            children = [child for child in getattr(current, "children", []) if isinstance(child, Element)]
             if not children:
                 return current
             current = children[0]
@@ -395,9 +363,7 @@ class dQuery_el:
 
     def _set_elements(self, elements, preserve_current=True):
         if preserve_current:
-            current = (
-                self._coerce_nodes(self.elements) if self.elements is not None else []
-            )
+            current = self._coerce_nodes(self.elements) if self.elements is not None else []
             self.prevObject = list(current)
         self.elements = elements
         return self
@@ -539,13 +505,8 @@ class dQuery_el:
                 insertion_index = siblings.index(el) + 1
             except ValueError:
                 continue
-            items = [
-                self._copy_for_target(item, target_index)
-                for item in self._content_nodes(newnode)
-            ]
-            p.args = tuple(
-                siblings[:insertion_index] + items + siblings[insertion_index:]
-            )
+            items = [self._copy_for_target(item, target_index) for item in self._content_nodes(newnode)]
+            p.args = tuple(siblings[:insertion_index] + items + siblings[insertion_index:])
             p._update_parents()
         return self
 
@@ -634,11 +595,7 @@ class dQuery_el:
     def appendTo(self, target):
         """Insert every element in the set of matched elements to the end of the target."""
         target = º(target) if isinstance(target, str) else target
-        targets = (
-            target.toArray()
-            if isinstance(target, dQuery_el)
-            else self._coerce_nodes(target)
-        )
+        targets = target.toArray() if isinstance(target, dQuery_el) else self._coerce_nodes(target)
         for target_index, el in enumerate(targets):
             for item in self._ensure_list():
                 el.append(self._copy_for_target(item, target_index))
@@ -673,13 +630,8 @@ class dQuery_el:
                 insertion_index = siblings.index(el)
             except ValueError:
                 continue
-            items = [
-                self._copy_for_target(item, target_index)
-                for item in self._content_nodes(content)
-            ]
-            p.args = tuple(
-                siblings[:insertion_index] + items + siblings[insertion_index:]
-            )
+            items = [self._copy_for_target(item, target_index) for item in self._content_nodes(content)]
+            p.args = tuple(siblings[:insertion_index] + items + siblings[insertion_index:])
             p._update_parents()
         return self
 
@@ -800,9 +752,7 @@ class dQuery_el:
             if key in store:
                 return store.get(key)
             attr_value = elements[0].getAttribute(self._data_attribute_name(key))
-            return (
-                self._coerce_data_value(attr_value) if attr_value is not None else None
-            )
+            return self._coerce_data_value(attr_value) if attr_value is not None else None
         for el in elements:
             store = getattr(el, "_dquery_data", {}).copy()
             store[key] = value
@@ -894,9 +844,7 @@ class dQuery_el:
 
     def even(self):
         """Reduce the set of matched elements to the even ones in the set, numbered from zero."""
-        self.elements = [
-            el for index, el in enumerate(self._ensure_list()) if index % 2 == 0
-        ]
+        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 0]
         return self
 
     def fadeIn(self, duration=None, complete=None):
@@ -915,9 +863,7 @@ class dQuery_el:
         for el in self._ensure_list():
             el.style.setProperty("opacity", 0)
             el.style.setProperty("display", "none")
-            setattr(
-                el, "_dquery_animation", {"effect": "fadeOut", "duration": duration}
-            )
+            setattr(el, "_dquery_animation", {"effect": "fadeOut", "duration": duration})
         self._run_effect_complete(complete)
         return self
 
@@ -943,10 +889,7 @@ class dQuery_el:
         """Display or hide the matched elements by animating their opacity."""
         duration, _easing, complete = self._effect_args(duration, None, complete)
         for el in self._ensure_list():
-            hidden = (
-                el.style.getPropertyValue("display") == "none"
-                or str(el.style.getPropertyValue("opacity")) == "0"
-            )
+            hidden = el.style.getPropertyValue("display") == "none" or str(el.style.getPropertyValue("opacity")) == "0"
             if hidden:
                 el.style.removeProperty("display")
                 el.style.setProperty("opacity", 1)
@@ -964,9 +907,7 @@ class dQuery_el:
     def filter(self, selector):
         """Reduce the set of matched elements to those that match the selector or pass the function’s test."""
         self.elements = [
-            el
-            for index, el in enumerate(self._ensure_list())
-            if self._match_selector(el, selector, index)
+            el for index, el in enumerate(self._ensure_list()) if self._match_selector(el, selector, index)
         ]
         return self
 
@@ -977,9 +918,7 @@ class dQuery_el:
         for el in self._ensure_list():
             if isinstance(selector, str):
                 matches = el.querySelectorAll(selector)
-                found.extend(
-                    list(matches) if isinstance(matches, (list, tuple)) else [matches]
-                )
+                found.extend(list(matches) if isinstance(matches, (list, tuple)) else [matches])
             else:
                 for child in el.getElementsByTagName("*"):
                     if self._match_selector(child, selector):
@@ -1024,19 +963,9 @@ class dQuery_el:
         that matches the selector or DOM element."""
         matched = []
         for index, el in enumerate(self._ensure_list()):
-            descendants = (
-                el.querySelectorAll(selector)
-                if isinstance(selector, str)
-                else el.getElementsByTagName("*")
-            )
-            descendants = (
-                descendants if isinstance(descendants, (list, tuple)) else [descendants]
-            )
-            if any(
-                self._match_selector(child, selector, index)
-                for child in descendants
-                if child is not None
-            ):
+            descendants = el.querySelectorAll(selector) if isinstance(selector, str) else el.getElementsByTagName("*")
+            descendants = descendants if isinstance(descendants, (list, tuple)) else [descendants]
+            if any(self._match_selector(child, selector, index) for child in descendants if child is not None):
                 matched.append(el)
         self.elements = matched
         return self
@@ -1046,9 +975,7 @@ class dQuery_el:
         tokens = self._class_tokens(classname)
         if not tokens:
             return False
-        return any(
-            all(token in el.classList for token in tokens) for el in self._ensure_list()
-        )
+        return any(all(token in el.classList for token in tokens) for el in self._ensure_list())
 
     def height(self):
         """Get the current computed height for the first element in the set of matched elements or set the height
@@ -1154,10 +1081,7 @@ class dQuery_el:
         """Check the current matched set of elements against a selector, element,
         or dQuery object and return true if at least one of these elements matches the given arguments.
         """
-        return any(
-            self._match_selector(el, selector, index)
-            for index, el in enumerate(self._ensure_list())
-        )
+        return any(self._match_selector(el, selector, index) for index, el in enumerate(self._ensure_list()))
 
     def beforeinput(self, handler=None):
         """Bind an event handler to the “beforeinput” event, or trigger that event on an element."""
@@ -1186,9 +1110,7 @@ class dQuery_el:
     @property
     def length(self):
         """The number of elements in the dQuery object."""
-        return (
-            len(self._coerce_nodes(self.elements)) if self.elements is not None else 0
-        )
+        return len(self._coerce_nodes(self.elements)) if self.elements is not None else 0
 
     def live(self, event, handler=None):
         """Attach an event handler for all elements which match the current selector, now and in the future."""
@@ -1337,17 +1259,13 @@ class dQuery_el:
     def not_(self, selector):
         """Remove elements from the set of matched elements."""
         self.elements = [
-            el
-            for index, el in enumerate(self._ensure_list())
-            if not self._match_selector(el, selector, index)
+            el for index, el in enumerate(self._ensure_list()) if not self._match_selector(el, selector, index)
         ]
         return self
 
     def odd(self):
         """Reduce the set of matched elements to the odd ones in the set, numbered from zero."""
-        self.elements = [
-            el for index, el in enumerate(self._ensure_list()) if index % 2 == 1
-        ]
+        self.elements = [el for index, el in enumerate(self._ensure_list()) if index % 2 == 1]
         return self
 
     def off(self, event=None, callback=None):
@@ -1404,9 +1322,7 @@ class dQuery_el:
                             evt.data = _data
                         return _handler(evt)
 
-                    self.eventHandler.bindEvent(
-                        event_name, listener, el, original=callback, data=data
-                    )
+                    self.eventHandler.bindEvent(event_name, listener, el, original=callback, data=data)
                     continue
 
                 def delegated(
@@ -1527,10 +1443,7 @@ class dQuery_el:
         """Insert content, specified by the parameter, to the beginning of each element
         in the set of matched elements."""
         for target_index, el in enumerate(self._ensure_list()):
-            items = [
-                self._copy_for_target(item, target_index)
-                for item in self._content_nodes(html)
-            ]
+            items = [self._copy_for_target(item, target_index) for item in self._content_nodes(html)]
             if all(isinstance(item, Node) for item in items):
                 el.prepend(*items)
             else:
@@ -1540,16 +1453,9 @@ class dQuery_el:
     def prependTo(self, target):
         """Insert every element in the set of matched elements to the beginning of the target."""
         target = º(target) if isinstance(target, str) else target
-        targets = (
-            target.toArray()
-            if isinstance(target, dQuery_el)
-            else self._coerce_nodes(target)
-        )
+        targets = target.toArray() if isinstance(target, dQuery_el) else self._coerce_nodes(target)
         for target_index, el in enumerate(targets):
-            items = [
-                self._copy_for_target(item, target_index)
-                for item in self._ensure_list()
-            ]
+            items = [self._copy_for_target(item, target_index) for item in self._ensure_list()]
             el.prepend(*items)
         return self
 
@@ -1727,9 +1633,7 @@ class dQuery_el:
             items = self._content_nodes(replacement)
             if not items:
                 continue
-            el.parentNode.replaceChild(
-                self._copy_for_target(items[0], target_index), el
-            )
+            el.parentNode.replaceChild(self._copy_for_target(items[0], target_index), el)
         return self
 
     def resize(self, callback=None):
@@ -1778,9 +1682,7 @@ class dQuery_el:
         name = el.getAttribute("name") if hasattr(el, "getAttribute") else None
         if name in (None, ""):
             return []
-        if getattr(el, "disabled", False) or (
-            hasattr(el, "hasAttribute") and el.hasAttribute("disabled")
-        ):
+        if getattr(el, "disabled", False) or (hasattr(el, "hasAttribute") and el.hasAttribute("disabled")):
             return []
 
         node_name = getattr(el, "nodeName", "").upper()
@@ -1801,11 +1703,7 @@ class dQuery_el:
         if node_name == "SELECT":
             values = []
             options = list(el.getElementsByTagName("option"))
-            selected_options = [
-                option
-                for option in options
-                if option.getAttribute("selected") is not None
-            ]
+            selected_options = [option for option in options if option.getAttribute("selected") is not None]
             if el.getAttribute("multiple") is None and not selected_options and options:
                 selected_options = [options[0]]
             for option in selected_options:
@@ -1823,11 +1721,7 @@ class dQuery_el:
         q = []
         for el in self._serializable_controls():
             for name, value in self._control_values(el):
-                q.append(
-                    Global.encodeURIComponent(name)
-                    + "="
-                    + Global.encodeURIComponent(value)
-                )
+                q.append(Global.encodeURIComponent(name) + "=" + Global.encodeURIComponent(value))
 
         return "&".join(q)
 
@@ -1873,9 +1767,7 @@ class dQuery_el:
         duration, _easing, complete = self._effect_args(duration, None, complete)
         for el in self._ensure_list():
             el.style.removeProperty("display")
-            setattr(
-                el, "_dquery_animation", {"effect": "slideDown", "duration": duration}
-            )
+            setattr(el, "_dquery_animation", {"effect": "slideDown", "duration": duration})
         self._run_effect_complete(complete)
         return self
 
@@ -1900,9 +1792,7 @@ class dQuery_el:
         duration, _easing, complete = self._effect_args(duration, None, complete)
         for el in self._ensure_list():
             el.style.setProperty("display", "none")
-            setattr(
-                el, "_dquery_animation", {"effect": "slideUp", "duration": duration}
-            )
+            setattr(el, "_dquery_animation", {"effect": "slideUp", "duration": duration})
         self._run_effect_complete(complete)
         return self
 
@@ -1999,9 +1889,7 @@ class dQuery_el:
                     if registered.get("selector") is not None
                 }
                 for delegated_selector in delegated_selectors:
-                    self.eventHandler.unbindEvent(
-                        event, el, handler, selector=delegated_selector
-                    )
+                    self.eventHandler.unbindEvent(event, el, handler, selector=delegated_selector)
             else:
                 self.eventHandler.unbindEvent(event, el, handler, selector=selector)
         return self
@@ -2213,9 +2101,7 @@ class º(dQuery_el):
                 explicit["processData"] = processData
             if cache is not None:
                 explicit["cache"] = cache
-            options.update(
-                {key: value for key, value in explicit.items() if value is not None}
-            )
+            options.update({key: value for key, value in explicit.items() if value is not None})
         else:
             options = dict(kwargs)
             options.update(
@@ -2239,9 +2125,7 @@ class º(dQuery_el):
         settings.update(options)
         settings["headers"] = headers
         settings["url"] = settings.get("url", "/")
-        settings["type"] = str(
-            settings.get("method", settings.get("type", "GET")) or "GET"
-        ).upper()
+        settings["type"] = str(settings.get("method", settings.get("type", "GET")) or "GET").upper()
         if "data" not in settings:
             settings["data"] = None
         if "processData" not in settings or settings["processData"] is None:
@@ -2331,9 +2215,7 @@ class º(dQuery_el):
         elif request_data is not None:
             if options.get("processData") and isinstance(request_data, (dict, list)):
                 request_kwargs["data"] = º.param(request_data)
-                request_headers.setdefault(
-                    "Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"
-                )
+                request_headers.setdefault("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
             else:
                 request_kwargs["data"] = request_data
 
@@ -2376,18 +2258,12 @@ class º(dQuery_el):
                 º._callback(status_handler, response, text_status)
 
             if text_status == "success":
-                º._callback(
-                    options.get("success"), response.data, text_status, response
-                )
+                º._callback(options.get("success"), response.data, text_status, response)
                 if use_global_events:
-                    º._trigger_ajax_event(
-                        "ajaxSuccess", response, options, response.data
-                    )
+                    º._trigger_ajax_event("ajaxSuccess", response, options, response.data)
             else:
                 thrown = response.reason or response.text
-                º._ajax_error_callback(
-                    options.get("error"), response, text_status, thrown
-                )
+                º._ajax_error_callback(options.get("error"), response, text_status, thrown)
                 if use_global_events:
                     º._trigger_ajax_event("ajaxError", response, options, thrown)
             return response
@@ -2796,9 +2672,7 @@ class º(dQuery_el):
 
         def add_pair(key, value):
             pairs.append(
-                Global.encodeURIComponent(key)
-                + "="
-                + Global.encodeURIComponent("" if value is None else value)
+                Global.encodeURIComponent(key) + "=" + Global.encodeURIComponent("" if value is None else value)
             )
 
         if isinstance(obj, dQuery_el):
@@ -3006,8 +2880,7 @@ class º(dQuery_el):
         if isinstance(self, dQuery_el):
             return dQuery_el.map(self, func)
         return [
-            dQuery_el._call_with_fallback(func, (index, value), (value,), (index,))
-            for index, value in enumerate(self)
+            dQuery_el._call_with_fallback(func, (index, value), (value,), (index,)) for index, value in enumerate(self)
         ]
 
     def data(self, key=_UNSET, value=_UNSET):  # type: ignore[no-redef]

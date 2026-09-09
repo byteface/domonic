@@ -99,9 +99,7 @@ def _bytes_from_buffer_source(data: Any) -> bytes:
     try:
         return bytes(data)
     except TypeError as exc:
-        raise TypeError(
-            "digest data must be an ArrayBuffer, typed array, DataView, or bytes"
-        ) from exc
+        raise TypeError("digest data must be an ArrayBuffer, typed array, DataView, or bytes") from exc
 
 
 def _random_target_byte_length(target: Any) -> int:

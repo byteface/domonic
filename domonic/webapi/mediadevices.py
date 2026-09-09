@@ -114,9 +114,7 @@ class MediaStreamTrack(EventTarget):
 class MediaStream(EventTarget):
     """Collection of media tracks."""
 
-    def __init__(
-        self, tracks: list[MediaStreamTrack] | None = None, id: str | None = None
-    ):
+    def __init__(self, tracks: list[MediaStreamTrack] | None = None, id: str | None = None):
         super().__init__()
         self.id = id or str(uuid.uuid4())
         self.onaddtrack = None
@@ -166,9 +164,7 @@ class MediaDevices(EventTarget):
     def __init__(self, devices: list[MediaDeviceInfo] | None = None) -> None:
         super().__init__()
         self.ondevicechange = None
-        self._devices = (
-            list(devices) if devices is not None else self._default_devices()
-        )
+        self._devices = list(devices) if devices is not None else self._default_devices()
 
     @staticmethod
     def _default_devices() -> list[MediaDeviceInfo]:
@@ -197,13 +193,9 @@ class MediaDevices(EventTarget):
         constraints = constraints or {"audio": True, "video": True}
         tracks = []
         if constraints.get("audio"):
-            tracks.append(
-                self._track_from_constraint("audio", constraints.get("audio"))
-            )
+            tracks.append(self._track_from_constraint("audio", constraints.get("audio")))
         if constraints.get("video"):
-            tracks.append(
-                self._track_from_constraint("video", constraints.get("video"))
-            )
+            tracks.append(self._track_from_constraint("video", constraints.get("video")))
         if not tracks:
             return _create_promise().reject(ValueError("No media requested"))
         return _create_promise().resolve(MediaStream(tracks))

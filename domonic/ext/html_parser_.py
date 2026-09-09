@@ -26,7 +26,6 @@ from domonic.ext._rawdom import (
     _set_attribute_raw,
 )
 
-
 VOID_ELEMENTS = {
     "area",
     "base",
@@ -66,10 +65,36 @@ AUTOCLOSE_BOUNDARY = {
 # A ``<p>`` cannot contain flow-content block elements; starting one of these
 # while a ``<p>`` is open closes the ``<p>`` first (HTML5 "close a p element").
 CLOSES_OPEN_P = {
-    "address", "article", "aside", "blockquote", "details", "div", "dl",
-    "fieldset", "figcaption", "figure", "footer", "form", "h1", "h2", "h3",
-    "h4", "h5", "h6", "header", "hgroup", "hr", "main", "menu", "nav", "ol",
-    "p", "pre", "section", "table", "ul",
+    "address",
+    "article",
+    "aside",
+    "blockquote",
+    "details",
+    "div",
+    "dl",
+    "fieldset",
+    "figcaption",
+    "figure",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "header",
+    "hgroup",
+    "hr",
+    "main",
+    "menu",
+    "nav",
+    "ol",
+    "p",
+    "pre",
+    "section",
+    "table",
+    "ul",
 }
 
 
@@ -114,18 +139,12 @@ class DomonicHTMLParser(HTMLParser):
             if current in self._TABLE_SECTIONS:
                 self._open_implicit("tr")
 
-    def handle_starttag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag = tag.lower()
         self._insert_implied_table_containers(tag)
         if tag in AUTOCLOSE_ON_START:
-            self._close_open_element(
-                AUTOCLOSE_ON_START[tag], boundary=AUTOCLOSE_BOUNDARY.get(tag)
-            )
-        elif tag in CLOSES_OPEN_P and any(
-            getattr(node, "tagName", "").lower() == "p" for node in self.stack[1:]
-        ):
+            self._close_open_element(AUTOCLOSE_ON_START[tag], boundary=AUTOCLOSE_BOUNDARY.get(tag))
+        elif tag in CLOSES_OPEN_P and any(getattr(node, "tagName", "").lower() == "p" for node in self.stack[1:]):
             self._close_open_element("p")
         element = self._create_element(tag, attrs)
         _append_child_raw(self.current, element, self.child_stack[-1])
@@ -137,17 +156,13 @@ class DomonicHTMLParser(HTMLParser):
     def handle_endtag(self, tag: str) -> None:
         self._close_open_element(tag.lower())
 
-    def _close_open_element(
-        self, tag: "str | set[str]", boundary: "set[str] | None" = None
-    ) -> None:
+    def _close_open_element(self, tag: "str | set[str]", boundary: "set[str] | None" = None) -> None:
         targets = {tag} if isinstance(tag, str) else tag
         for index in range(len(self.stack) - 1, 0, -1):
             name = getattr(self.stack[index], "tagName", "").lower()
             if name in targets:
                 for close_index in range(len(self.stack) - 1, index - 1, -1):
-                    self.stack[close_index].__dict__["args"] = tuple(
-                        self.child_stack[close_index]
-                    )
+                    self.stack[close_index].__dict__["args"] = tuple(self.child_stack[close_index])
                 del self.stack[index:]
                 del self.child_stack[index:]
                 del self.namespace_stack[index:]
@@ -155,9 +170,7 @@ class DomonicHTMLParser(HTMLParser):
             if boundary and name in boundary:
                 return
 
-    def handle_startendtag(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         _append_child_raw(
             self.current,
             self._create_element(tag, attrs),
@@ -166,14 +179,10 @@ class DomonicHTMLParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         if data:
-            _append_child_raw(
-                self.current, _create_text_raw(data), self.child_stack[-1]
-            )
+            _append_child_raw(self.current, _create_text_raw(data), self.child_stack[-1])
 
     def handle_comment(self, data: str) -> None:
-        _append_child_raw(
-            self.current, _create_comment_raw(data), self.child_stack[-1]
-        )
+        _append_child_raw(self.current, _create_comment_raw(data), self.child_stack[-1])
 
     def handle_entityref(self, name: str) -> None:
         self.handle_data(unescape(f"&{name};"))
@@ -181,16 +190,12 @@ class DomonicHTMLParser(HTMLParser):
     def handle_charref(self, name: str) -> None:
         self.handle_data(unescape(f"&#{name};"))
 
-    def _create_element(
-        self, tag: str, attrs: list[tuple[str, str | None]]
-    ) -> Node:
+    def _create_element(self, tag: str, attrs: list[tuple[str, str | None]]) -> Node:
         parent_tag = getattr(self.current, "tagName", "")
         parent_encoding = ""
         if isinstance(self.current, Element):
             parent_encoding = self.current.getAttribute("encoding") or ""
-        namespace_uri = _namespace_for_tag(
-            tag, self.namespace_stack[-1], parent_tag, parent_encoding
-        )
+        namespace_uri = _namespace_for_tag(tag, self.namespace_stack[-1], parent_tag, parent_encoding)
         element = _create_element_raw(tag, namespace_uri)
         for name, value in attrs:
             _set_attribute_raw(element, name, name if value is None else value)

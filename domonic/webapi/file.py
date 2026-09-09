@@ -85,9 +85,7 @@ class Blob:
     def text(self, encoding: str = "utf-8", errors: str = "replace") -> str:
         return self._buffer.decode(encoding, errors)
 
-    def slice(
-        self, start: int | None = None, end: int | None = None, contentType: str = ""
-    ) -> "Blob":
+    def slice(self, start: int | None = None, end: int | None = None, contentType: str = "") -> "Blob":
         size = self.size
         relative_start = 0 if start is None else int(start)
         relative_end = size if end is None else int(end)
@@ -229,9 +227,7 @@ class FileReader(EventTarget):
                 lengthComputable=True,
             )
             self.readyState = self.DONE
-            self._dispatch(
-                "load", loaded=blob.size, total=blob.size, lengthComputable=True
-            )
+            self._dispatch("load", loaded=blob.size, total=blob.size, lengthComputable=True)
         except Exception as exc:
             self.error = exc
             self.readyState = self.DONE

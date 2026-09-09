@@ -38,12 +38,14 @@ def _escape_html(value: str, quote: bool = True) -> str:
         if not quote or ('"' not in value and "'" not in value):
             return value
     return _stdlib_escape_html(value, quote)
+
+
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic import _fontmetrics
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
-from domonic.javascript import undefined
 from domonic.geom.vec3 import vec3
+from domonic.javascript import undefined
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
@@ -68,9 +70,7 @@ class DOMConfig:
 
     GLOBAL_AUTOESCAPE: bool = False  # Default is False
     RENDER_OPTIONAL_CLOSING_TAGS: bool = True  # Default is True
-    RENDER_OPTIONAL_CLOSING_SLASH: bool = (
-        True  # on emtpy nodes should the last slash be rendered
-    )
+    RENDER_OPTIONAL_CLOSING_SLASH: bool = True  # on emtpy nodes should the last slash be rendered
     SPACE_BEFORE_OPTIONAL_CLOSING_SLASH: bool = (
         False  # on emtpy nodes should there be a space before the closing slash?
     )
@@ -233,8 +233,11 @@ def _attribute_quote_mark() -> str:
 _ATTR_ESCAPE_DQ = {ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;", ord('"'): "&quot;"}
 _ATTR_ESCAPE_SQ = {ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;", ord("'"): "&#x27;"}
 _ATTR_ESCAPE_NONE = {
-    ord("&"): "&amp;", ord("<"): "&lt;", ord(">"): "&gt;",
-    ord('"'): "&quot;", ord("'"): "&#x27;",
+    ord("&"): "&amp;",
+    ord("<"): "&lt;",
+    ord(">"): "&gt;",
+    ord('"'): "&quot;",
+    ord("'"): "&#x27;",
 }
 
 
@@ -257,11 +260,7 @@ def _escape_attribute_value(value: str, quote: str) -> str:
                 return value
         elif '"' not in value and "'" not in value:
             return value
-    table = (
-        _ATTR_ESCAPE_DQ if quote == '"'
-        else _ATTR_ESCAPE_SQ if quote == "'"
-        else _ATTR_ESCAPE_NONE
-    )
+    table = _ATTR_ESCAPE_DQ if quote == '"' else _ATTR_ESCAPE_SQ if quote == "'" else _ATTR_ESCAPE_NONE
     return value.translate(table)
 
 
@@ -270,9 +269,7 @@ def _render_attribute_value(value: Any, escape: bool | None = None) -> str:
     should_quote = DOMConfig.ATTRIBUTE_QUOTES is not None or type(value) == str
     if escape is None:
         escape = DOMConfig.GLOBAL_AUTOESCAPE
-    rendered_value = (
-        _escape_attribute_value(str(value), quote) if escape else value
-    )
+    rendered_value = _escape_attribute_value(str(value), quote) if escape else value
     quote = quote if should_quote else ""
     return f"{quote}{rendered_value}{quote}"
 
@@ -288,14 +285,40 @@ def _render_attribute_value(value: Any, escape: bool | None = None) -> str:
 
 XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
 
-_HTML_VOID_ELEMENTS = frozenset({
-    "area", "base", "basefont", "bgsound", "br", "col", "embed", "frame", "hr",
-    "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr",
-})
-_HTML_RAWTEXT_ELEMENTS = frozenset({
-    "style", "script", "xmp", "iframe", "noembed", "noframes", "noscript",
-    "plaintext",
-})
+_HTML_VOID_ELEMENTS = frozenset(
+    {
+        "area",
+        "base",
+        "basefont",
+        "bgsound",
+        "br",
+        "col",
+        "embed",
+        "frame",
+        "hr",
+        "img",
+        "input",
+        "keygen",
+        "link",
+        "meta",
+        "param",
+        "source",
+        "track",
+        "wbr",
+    }
+)
+_HTML_RAWTEXT_ELEMENTS = frozenset(
+    {
+        "style",
+        "script",
+        "xmp",
+        "iframe",
+        "noembed",
+        "noframes",
+        "noscript",
+        "plaintext",
+    }
+)
 
 # Attribute names domonic exposes with a Python-unfriendly spelling (a real
 # hyphen, or a name that collides with a Python keyword). Used by
@@ -311,23 +334,52 @@ _ATTRIBUTE_NAME_REMAP = {
 # name) renders as the bare attribute name, e.g. `checked` not `checked="checked"`.
 # Also Element.__attributes__'s -- a frozenset so the per-attribute membership
 # test is O(1) instead of a linear scan, and isn't rebuilt on every render.
-_BOOLEAN_ATTRIBUTES = frozenset({
-    "async", "checked", "autofocus", "disabled", "formnovalidate", "hidden",
-    "multiple", "novalidate", "readonly", "required", "selected", "open",
-    "contenteditable", "reversed", "download", "draggable", "spellcheck",
-    "translate", "autoplay", "controls", "loop", "muted", "default",
-    "allowfullscreen", "playsinline", "attributionsrc", "toolautosubmit",
-    "value", "defer",
-})
+_BOOLEAN_ATTRIBUTES = frozenset(
+    {
+        "async",
+        "checked",
+        "autofocus",
+        "disabled",
+        "formnovalidate",
+        "hidden",
+        "multiple",
+        "novalidate",
+        "readonly",
+        "required",
+        "selected",
+        "open",
+        "contenteditable",
+        "reversed",
+        "download",
+        "draggable",
+        "spellcheck",
+        "translate",
+        "autoplay",
+        "controls",
+        "loop",
+        "muted",
+        "default",
+        "allowfullscreen",
+        "playsinline",
+        "attributionsrc",
+        "toolautosubmit",
+        "value",
+        "defer",
+    }
+)
 
 # "escape a string" -- text mode replaces & \xa0 < > ; attribute mode replaces
 # & \xa0 and the (double) quote, but never < or >.
 _FRAGMENT_TEXT_ESCAPE = {
-    ord("&"): "&amp;", ord("\xa0"): "&nbsp;",
-    ord("<"): "&lt;", ord(">"): "&gt;",
+    ord("&"): "&amp;",
+    ord("\xa0"): "&nbsp;",
+    ord("<"): "&lt;",
+    ord(">"): "&gt;",
 }
 _FRAGMENT_ATTR_ESCAPE = {
-    ord("&"): "&amp;", ord("\xa0"): "&nbsp;", ord('"'): "&quot;",
+    ord("&"): "&amp;",
+    ord("\xa0"): "&nbsp;",
+    ord('"'): "&quot;",
 }
 _FRAGMENT_ATTR_NAME_ALIASES = {
     "accept_charset": "accept-charset",
@@ -337,10 +389,7 @@ _FRAGMENT_ATTR_NAME_ALIASES = {
 
 
 def _fragment_text_escape(data: str, raw: bool) -> str:
-    if raw or (
-        "&" not in data and "<" not in data
-        and ">" not in data and "\xa0" not in data
-    ):
+    if raw or ("&" not in data and "<" not in data and ">" not in data and "\xa0" not in data):
         return data
     return data.translate(_FRAGMENT_TEXT_ESCAPE)
 
@@ -378,9 +427,7 @@ def _serialize_fragment_element(element: "Node", out: list) -> None:
     lname = tagname.lower()
     if lname in _HTML_VOID_ELEMENTS:
         return
-    _serialize_fragment_children(
-        element, out, raw=lname in _HTML_RAWTEXT_ELEMENTS
-    )
+    _serialize_fragment_children(element, out, raw=lname in _HTML_RAWTEXT_ELEMENTS)
     out.append("</")
     out.append(tagname)
     out.append(">")
@@ -393,9 +440,7 @@ def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> 
         elif isinstance(child, RawHTML):
             out.append(str(child))
         elif isinstance(child, Text):
-            out.append(
-                _fragment_text_escape(child.args[0] if child.args else "", raw)
-            )
+            out.append(_fragment_text_escape(child.args[0] if child.args else "", raw))
         elif isinstance(child, Comment):
             out.append("<!--")
             out.append(str(child.data))
@@ -467,9 +512,7 @@ def _node_is_connected(node: "Node") -> bool:
         return False
 
 
-def _notify_attribute_changed(
-    element: "Element", attribute: str, old_value: Any, new_value: Any
-) -> None:
+def _notify_attribute_changed(element: "Element", attribute: str, old_value: Any, new_value: Any) -> None:
     callback = getattr(element, "attributeChangedCallback", None)
     if not callable(callback) or old_value == new_value:
         return
@@ -495,21 +538,13 @@ def _run_disconnected_callback(element: "Element") -> None:
         callback()
 
 
-def _run_adopted_callback(
-    element: "Element", old_document: "Document | None", new_document: "Document | None"
-) -> None:
+def _run_adopted_callback(element: "Element", old_document: "Document | None", new_document: "Document | None") -> None:
     callback = getattr(element, "adoptedCallback", None)
-    if (
-        callable(callback)
-        and old_document is not None
-        and old_document is not new_document
-    ):
+    if callable(callback) and old_document is not None and old_document is not new_document:
         callback(old_document, new_document)
 
 
-def _adopt_tree(
-    node: "Node", old_document: "Document | None", new_document: "Document | None"
-) -> None:
+def _adopt_tree(node: "Node", old_document: "Document | None", new_document: "Document | None") -> None:
     for current in _iter_dom_nodes(node):
         current._ownerDocument = new_document
         if isinstance(current, Element):
@@ -542,9 +577,7 @@ def _coerce_insertion_nodes(*nodes: Any) -> tuple[Any, ...]:
             prepared.extend(_coerce_insertion_nodes(*node))
         else:
             prepared.append(node)
-    last_node_positions = {
-        id(node): index for index, node in enumerate(prepared) if isinstance(node, Node)
-    }
+    last_node_positions = {id(node): index for index, node in enumerate(prepared) if isinstance(node, Node)}
     return tuple(
         node
         for index, node in enumerate(prepared)
@@ -628,9 +661,7 @@ def _connect_tree(node: "Node") -> None:
     is_connected = isinstance(root, Document)
     owner = root if is_connected else getattr(node, "_ownerDocument", None)
     registry = _get_custom_element_registry()
-    has_custom_elements = registry is not None and bool(
-        getattr(registry, "store", None)
-    )
+    has_custom_elements = registry is not None and bool(getattr(registry, "store", None))
     for current in _iter_dom_nodes(node):
         current._ownerDocument = owner
         current.isConnected = is_connected
@@ -672,17 +703,9 @@ def _assigned_slot_for_node(node: "Node") -> "HTMLSlotElement | None":
 def _notify_slot_change(target: "Node") -> None:
     slots: list[HTMLSlotElement] = []
     if isinstance(target, ShadowRoot):
-        slots = [
-            child for child in target.childNodes if isinstance(child, HTMLSlotElement)
-        ]
-    elif isinstance(target, Element) and isinstance(
-        getattr(target, "shadowRoot", None), ShadowRoot
-    ):
-        slots = [
-            child
-            for child in target.shadowRoot.childNodes
-            if isinstance(child, HTMLSlotElement)
-        ]
+        slots = [child for child in target.childNodes if isinstance(child, HTMLSlotElement)]
+    elif isinstance(target, Element) and isinstance(getattr(target, "shadowRoot", None), ShadowRoot):
+        slots = [child for child in target.shadowRoot.childNodes if isinstance(child, HTMLSlotElement)]
     for slot in slots:
         slot.dispatchEvent(Event("slotchange"))
 
@@ -704,15 +727,11 @@ def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, A
         "characterData": bool(options.get("characterData", False)),
         "characterDataOldValue": bool(options.get("characterDataOldValue", False)),
     }
-    if "attributes" not in options and (
-        "attributeFilter" in options or "attributeOldValue" in options
-    ):
+    if "attributes" not in options and ("attributeFilter" in options or "attributeOldValue" in options):
         normalized["attributes"] = True
     if "characterData" not in options and "characterDataOldValue" in options:
         normalized["characterData"] = True
-    if not normalized["attributes"] and (
-        normalized["attributeOldValue"] or "attributeFilter" in options
-    ):
+    if not normalized["attributes"] and (normalized["attributeOldValue"] or "attributeFilter" in options):
         raise TypeError("Attribute options require attributes to be enabled")
     if normalized["characterDataOldValue"] and not normalized["characterData"]:
         raise TypeError("characterDataOldValue requires characterData to be enabled")
@@ -728,9 +747,7 @@ def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, A
             normalized["characterData"],
         )
     ):
-        raise TypeError(
-            "MutationObserver options must enable childList, attributes, or characterData"
-        )
+        raise TypeError("MutationObserver options must enable childList, attributes, or characterData")
     return normalized
 
 
@@ -819,9 +836,7 @@ def _intersect_rects(first: DOMRectReadOnly, second: DOMRectReadOnly) -> DOMRect
     return DOMRect(left, top, right - left, bottom - top)
 
 
-def _default_intersection_root_rect(
-    target: "Element", target_rect: DOMRectReadOnly
-) -> DOMRectReadOnly:
+def _default_intersection_root_rect(target: "Element", target_rect: DOMRectReadOnly) -> DOMRectReadOnly:
     doc = target.ownerDocument if isinstance(target.ownerDocument, Document) else None
     root = None
     if doc is not None:
@@ -831,9 +846,7 @@ def _default_intersection_root_rect(
     return DOMRectReadOnly.fromRect(target_rect)
 
 
-def _process_observer_notifications(
-    target: "Node | None" = None, target_rect: DOMRectReadOnly | None = None
-) -> None:
+def _process_observer_notifications(target: "Node | None" = None, target_rect: DOMRectReadOnly | None = None) -> None:
     global _observer_processing
     if _observer_processing:
         return
@@ -857,9 +870,7 @@ def _process_observer_notifications(
 
 
 def _form_owner(control: "Element") -> "HTMLFormElement | None":
-    owner_document = (
-        control.ownerDocument if isinstance(control.ownerDocument, Document) else None
-    )
+    owner_document = control.ownerDocument if isinstance(control.ownerDocument, Document) else None
     form_id = control.getAttribute("form") if isinstance(control, Element) else None
     if form_id and owner_document is not None:
         form = owner_document.getElementById(form_id)
@@ -912,9 +923,7 @@ def _append_form_data_value(data: dict[str, Any], name: str | None, value: Any) 
     data[name] = value
 
 
-def _construct_form_data(
-    form: "HTMLFormElement", submitter: "Element | None" = None
-) -> dict[str, Any]:
+def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = None) -> dict[str, Any]:
     data: dict[str, Any] = {}
     for control in form.elements:
         if not isinstance(control, Element) or control.hasAttribute("disabled"):
@@ -944,18 +953,12 @@ def _construct_form_data(
         elif hasattr(control, "value"):
             _append_form_data_value(data, name, getattr(control, "value"))
 
-    if (
-        isinstance(submitter, Element)
-        and not submitter.hasAttribute("disabled")
-        and submitter.getAttribute("name")
-    ):
+    if isinstance(submitter, Element) and not submitter.hasAttribute("disabled") and submitter.getAttribute("name"):
         _append_form_data_value(data, submitter.getAttribute("name"), submitter.value)
     return data
 
 
-def _radio_group_members(
-    control: "Element", *, include_disabled: bool = True
-) -> list["HTMLInputElement"]:
+def _radio_group_members(control: "Element", *, include_disabled: bool = True) -> list["HTMLInputElement"]:
     if not isinstance(control, Element):
         return []
     name = control.getAttribute("name")
@@ -1006,11 +1009,7 @@ class ValidityState:
     def badInput(self) -> bool:
         input_type = (self._element.getAttribute("type") or "").lower()
         value = _control_value(self._element)
-        return bool(
-            value
-            and input_type in {"number", "range"}
-            and _constraint_number(value) is None
-        )
+        return bool(value and input_type in {"number", "range"} and _constraint_number(value) is None)
 
     @property
     def customError(self) -> bool:
@@ -1073,10 +1072,7 @@ class ValidityState:
             values = [value]
             if self._element.hasAttribute("multiple"):
                 values = [item.strip() for item in value.split(",")]
-            return any(
-                re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", item) is None
-                for item in values
-            )
+            return any(re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", item) is None for item in values)
         if input_type == "url":
             return re.fullmatch(r"[a-zA-Z][a-zA-Z0-9+.-]*://[^\s]+", value) is None
         return False
@@ -1100,24 +1096,15 @@ class ValidityState:
 
     @property
     def valueMissing(self) -> bool:
-        if self._element.hasAttribute("disabled") or not self._element.hasAttribute(
-            "required"
-        ):
+        if self._element.hasAttribute("disabled") or not self._element.hasAttribute("required"):
             return False
-        tag_name = getattr(
-            self._element, "tagName", getattr(self._element, "name", "")
-        ).lower()
+        tag_name = getattr(self._element, "tagName", getattr(self._element, "name", "")).lower()
         if tag_name == "input":
             input_type = (self._element.getAttribute("type") or "text").lower()
             if input_type == "checkbox":
                 return not self._element.checked
             if input_type == "radio":
-                return not any(
-                    radio.checked
-                    for radio in _radio_group_members(
-                        self._element, include_disabled=False
-                    )
-                )
+                return not any(radio.checked for radio in _radio_group_members(self._element, include_disabled=False))
         return _control_value(self._element) == ""
 
 
@@ -1155,9 +1142,7 @@ class Node(EventTarget):
     __isempty: bool = (
         False  # tells us if the node is empty i.e. has no content aka 'self closing'. in html that would be: area, base, br, col, embed, hr, img, input, link, meta, param, source, track, True
     )
-    __context: ClassVar[list["Node"] | None] = (
-        None  # private. tags will append to last item in context on creation.
-    )
+    __context: ClassVar[list["Node"] | None] = None  # private. tags will append to last item in context on creation.
 
     # populated in __init__; declared here so mypy does not infer them as
     # permanently ``None`` from the initial assignment
@@ -1190,9 +1175,7 @@ class Node(EventTarget):
 
         # ``kwargs`` -- attributes get a leading underscore; build the dict once
         if kwargs:
-            self.kwargs = {
-                (k if k[:1] == "_" else "_" + k): v for k, v in kwargs.items()
-            }
+            self.kwargs = {(k if k[:1] == "_" else "_" + k): v for k, v in kwargs.items()}
         else:
             self.kwargs = {}
 
@@ -1297,9 +1280,7 @@ class Node(EventTarget):
     @property
     def __attributes__(self):
         def format_attr(key, value):
-            escape_attribute = bool(
-                self.__dict__.get("_escape_attributes_on_render", False)
-            )
+            escape_attribute = bool(self.__dict__.get("_escape_attributes_on_render", False))
             if value is True:
                 value = "true"
             if value is False:
@@ -1310,24 +1291,18 @@ class Node(EventTarget):
             if DOMConfig.HTMX_ENABLED:
                 htmx_attribute = _normalize_htmx_attribute(key)
                 if htmx_attribute is not None:
-                    return (
-                        f""" {htmx_attribute}="""
-                        f"""{_render_attribute_value(
+                    return f""" {htmx_attribute}=""" f"""{_render_attribute_value(
                             value,
                             DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
                         )}"""
-                    )
 
             if DOMConfig.ALPINE_ENABLED:
                 alpine_attribute = _normalize_alpine_attribute(key)
                 if alpine_attribute is not None:
-                    return (
-                        f""" {alpine_attribute}="""
-                        f"""{_render_attribute_value(
+                    return f""" {alpine_attribute}=""" f"""{_render_attribute_value(
                             value,
                             DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
                         )}"""
-                    )
 
             # lets us have boolean attributes
             if key in _BOOLEAN_ATTRIBUTES:
@@ -1339,9 +1314,7 @@ class Node(EventTarget):
             )}"""
 
         try:
-            return "".join(
-                [format_attr(key, value) for key, value in self.kwargs.items()]
-            )
+            return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
         except IndexError as e:
             from domonic.html import TemplateError
 
@@ -1352,10 +1325,7 @@ class Node(EventTarget):
     def __attributes__(self, ignore):
         try:
             self.__attributes = "".join(
-                [
-                    f""" {key.split('_', 1)[1]}={_render_attribute_value(value)}"""
-                    for key, value in self.kwargs.items()
-                ]
+                [f""" {key.split('_', 1)[1]}={_render_attribute_value(value)}""" for key, value in self.kwargs.items()]
             )
         except IndexError as e:
             from domonic.html import TemplateError
@@ -1369,10 +1339,7 @@ class Node(EventTarget):
 
         cache = self.__dict__
         fingerprint = _dom_config_render_fingerprint()
-        if (
-            not cache.get("_render_cache_dirty", True)
-            and cache.get("_render_cache_fingerprint") == fingerprint
-        ):
+        if not cache.get("_render_cache_dirty", True) and cache.get("_render_cache_fingerprint") == fingerprint:
             cached = cache.get("_render_cache")
             if cached is not None:
                 return cached
@@ -1388,9 +1355,7 @@ class Node(EventTarget):
             value = value()
 
         if isinstance(value, Text):
-            escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
-                getattr(value, "_escape_text_on_render", False)
-            )
+            escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(value, "_escape_text_on_render", False))
             value = str(value.textContent)
             yield _escape_html(value) if escape_text else value
             return
@@ -1405,9 +1370,7 @@ class Node(EventTarget):
         # children (by far the most common leaf content) would otherwise
         # pay that cost on every single one, just to be rejected by the
         # "not str/bytes/bytearray/dict" half of this same condition anyway.
-        if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(
-            value, IterableABC
-        ):
+        if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(value, IterableABC):
             for child in value:
                 yield from self._stream_value(child)
             return
@@ -1460,9 +1423,7 @@ class Node(EventTarget):
                 value = value()
 
             if isinstance(value, Text):
-                escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
-                    getattr(value, "_escape_text_on_render", False)
-                )
+                escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(value, "_escape_text_on_render", False))
                 value = str(value.textContent)
                 yield _escape_html(value) if escape_text else value
                 continue
@@ -1475,9 +1436,7 @@ class Node(EventTarget):
 
                 if isinstance(value, Document):
                     doctype = value.doctype
-                    if doctype is not None and not any(
-                        child is doctype for child in value.args
-                    ):
+                    if doctype is not None and not any(child is doctype for child in value.args):
                         yield str(doctype)
                 yield f"<{value.name}{value.__attributes__}>"
                 if value.name in _HTML_RAWTEXT_ELEMENTS:
@@ -1492,10 +1451,7 @@ class Node(EventTarget):
                             yield str(child)
                     yield f"</{value.name}>"
                     continue
-                if (
-                    DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
-                    or value.name not in optional_closing_tags
-                ):
+                if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS or value.name not in optional_closing_tags:
                     stack.append(("close", value))
                 stack.append(("iter", iter(value.args)))
                 continue
@@ -1503,9 +1459,7 @@ class Node(EventTarget):
             # See the matching check in _stream_value: concrete types first,
             # since the ABC instancecheck is measurably slower and plain str
             # children would otherwise always pay for it.
-            if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(
-                value, IterableABC
-            ):
+            if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(value, IterableABC):
                 stack.append(("iter", iter(value)))
                 continue
 
@@ -1656,9 +1610,7 @@ class Node(EventTarget):
             # return getattr(super(), attr)
             # return getattr(self, attr)
             # return getattr(Node, attr)  # means overrideing for style etc in element?
-            return getattr(
-                self.__class__, attr
-            )  # means overrideing for style etc in element?
+            return getattr(self.__class__, attr)  # means overrideing for style etc in element?
             # return getattr(Element, attr)
         except AttributeError as e:
             raise e
@@ -1745,19 +1697,20 @@ class Node(EventTarget):
         render_args = self.args
         if DOMConfig.GLOBAL_AUTOESCAPE:
             render_args = tuple(
-                _escape_html(str(child.textContent))
-                if isinstance(child, Text)
-                else _escape_html(str(child))
-                if isinstance(child, str)
-                else child
+                (
+                    _escape_html(str(child.textContent))
+                    if isinstance(child, Text)
+                    else _escape_html(str(child)) if isinstance(child, str) else child
+                )
                 for child in self.args
             )
         else:
             render_args = tuple(
-                _escape_html(str(child.textContent))
-                if isinstance(child, Text)
-                and bool(getattr(child, "_escape_text_on_render", False))
-                else child
+                (
+                    _escape_html(str(child.textContent))
+                    if isinstance(child, Text) and bool(getattr(child, "_escape_text_on_render", False))
+                    else child
+                )
                 for child in self.args
             )
 
@@ -1790,9 +1743,7 @@ class Node(EventTarget):
 
         if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS:
             if size < 150 and wrap:
-                return (
-                    f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
-                )
+                return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
             else:
                 return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n{dent}</{self.name}>"
         else:
@@ -1816,9 +1767,7 @@ class Node(EventTarget):
                 if size < 150 and wrap:
                     return f"\n{dent}<{self.name}{self.__attributes__}>{content}"
                 else:
-                    return (
-                        f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n"
-                    )
+                    return f"{dtype}\n{dent}<{self.name}{self.__attributes__}>{content}\n"
             else:
                 if size < 150 and wrap:
                     return f"\n{dent}<{self.name}{self.__attributes__}>{content}</{self.name}>"
@@ -1892,11 +1841,7 @@ class Node(EventTarget):
                 # if(type(el) not in [str, list, dict, int, float, tuple, object, set]):
                 if isinstance(el, (Element, Node)):
                     old_parent = el.parentNode
-                    if (
-                        old_parent is not None
-                        and old_parent is not self
-                        and isinstance(old_parent, Node)
-                    ):
+                    if old_parent is not None and old_parent is not self and isinstance(old_parent, Node):
                         old_parent.removeChild(el)
                     el.parentNode = self
         except (AttributeError, TypeError) as exc:
@@ -1918,9 +1863,7 @@ class Node(EventTarget):
             if type(el) not in [str, list, dict, int, float, tuple, object, set]:
                 # callback(el)
                 el._iterate(el, callback)
-            elif isinstance(
-                el, list
-            ):  # if someone is incorrectly using a list as a child
+            elif isinstance(el, list):  # if someone is incorrectly using a list as a child
                 for e in el:
                     if type(e) not in (
                         str,
@@ -2046,14 +1989,10 @@ class Node(EventTarget):
 
         ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(other, p))
         if ret:
-            return (
-                Node.DOCUMENT_POSITION_CONTAINED_BY
-            )  # + Node.DOCUMENT_POSITION_FOLLOWING
+            return Node.DOCUMENT_POSITION_CONTAINED_BY  # + Node.DOCUMENT_POSITION_FOLLOWING
 
         children = other.childNodes
-        ret = recursivelyWalk(
-            children, lambda p: testNodeForComparePosition(reference, p)
-        )
+        ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(reference, p))
         if ret:
             return Node.DOCUMENT_POSITION_CONTAINS  # + Node.DOCUMENT_POSITION_PRECEDING
         ret = recursivelyWalk([referenceTop], identifyWhichIsFirst)
@@ -2113,9 +2052,7 @@ class Node(EventTarget):
         # return '#comment'
         # elif isinstance(self, DocumentType):
         #     return '#doctype'
-        if isinstance(
-            self, Document
-        ):  # NOTE - having this one on breaks parser. as it expects 'html'?
+        if isinstance(self, Document):  # NOTE - having this one on breaks parser. as it expects 'html'?
             return "#document"
         if isinstance(self, CDATASection):
             return "#cdata-section"
@@ -2178,11 +2115,7 @@ class Node(EventTarget):
         """Sets the root element (document object) for an element"""
         if newOwner is None:
             return
-        self._ownerDocument = (
-            newOwner
-            if isinstance(newOwner, Document)
-            else getattr(newOwner, "ownerDocument", None)
-        )
+        self._ownerDocument = newOwner if isinstance(newOwner, Document) else getattr(newOwner, "ownerDocument", None)
 
     @property
     def rootNode(self) -> "Node":
@@ -2217,11 +2150,7 @@ class Node(EventTarget):
             index = self.args.index(reference_node)
         except ValueError as exc:
             raise ValueError("reference_node is not a child of this node") from exc
-        previous_sibling = (
-            self.args[index - 1]
-            if index > 0 and isinstance(self.args[index - 1], Node)
-            else None
-        )
+        previous_sibling = self.args[index - 1] if index > 0 and isinstance(self.args[index - 1], Node) else None
         self.__dict__["args"] = self.args[:index] + items + self.args[index:]
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
@@ -2296,15 +2225,10 @@ class Node(EventTarget):
             return oldChild
 
         replace_args = list(self.args)
-        previous_sibling = (
-            replace_args[count - 1]
-            if count > 0 and isinstance(replace_args[count - 1], Node)
-            else None
-        )
+        previous_sibling = replace_args[count - 1] if count > 0 and isinstance(replace_args[count - 1], Node) else None
         next_sibling = (
             replace_args[count + 1]
-            if count + 1 < len(replace_args)
-            and isinstance(replace_args[count + 1], Node)
+            if count + 1 < len(replace_args) and isinstance(replace_args[count + 1], Node)
             else None
         )
         if isinstance(oldChild, Node):
@@ -2350,9 +2274,7 @@ class Node(EventTarget):
         else:
             clone = copy.copy(self)  # shallow copy
             clone.args = ()
-        owner_document = (
-            self.ownerDocument if isinstance(self.ownerDocument, Document) else None
-        )
+        owner_document = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
         return _prepare_detached_clone(clone, owner_document)
 
     def isSameNode(self, node):
@@ -2663,7 +2585,7 @@ class Attr(Node):
         # self.nodeType: int = Node.ATTRIBUTE_NODE
 
     def __repr__(self) -> str:
-        return f'Attr(name={self.name!r}, value={self.value!r})'
+        return f"Attr(name={self.name!r}, value={self.value!r})"
 
     def __str__(self) -> str:
         return "" if self.value is None else str(self.value)
@@ -2720,9 +2642,7 @@ class NamedNodeMap:
     in sync with the owning element's current attributes.
     """
 
-    def __init__(
-        self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None
-    ):
+    def __init__(self, args: Iterable[Attr] | None = None, ownerDocument=None, parentNode=None):
         self.parentNode = parentNode
         self.ownerDocument = ownerDocument
         self._attrs = list(args or [])
@@ -2745,10 +2665,7 @@ class NamedNodeMap:
 
     def _current_attrs(self) -> list[Attr]:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
-            return [
-                Attr(key.lstrip("_"), value)
-                for key, value in self.parentNode.kwargs.items()
-            ]
+            return [Attr(key.lstrip("_"), value) for key, value in self.parentNode.kwargs.items()]
         return list(self._attrs)
 
     def _attribute_namespace(self, attr: Attr) -> str | None:
@@ -2817,9 +2734,7 @@ class NamedNodeMap:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
             self.parentNode.setAttribute(normalized, attr.value)
         else:
-            self._attrs = [
-                existing for existing in self._attrs if existing.name != normalized
-            ]
+            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
             self._attrs.append(Attr(normalized, attr.value))
         return old_attr
 
@@ -2831,19 +2746,14 @@ class NamedNodeMap:
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
             self.parentNode.removeAttribute(normalized)
         else:
-            self._attrs = [
-                existing for existing in self._attrs if existing.name != normalized
-            ]
+            self._attrs = [existing for existing in self._attrs if existing.name != normalized]
         return old_attr
 
     def getNamedItemNS(self, namespaceURI: str, localName: str) -> Attr | None:
         normalized = self._normalize_name(localName)
         for item in self._current_attrs():
             item_local_name = item.name.split(":", 1)[-1]
-            if (
-                item_local_name == normalized
-                and self._attribute_namespace(item) == namespaceURI
-            ):
+            if item_local_name == normalized and self._attribute_namespace(item) == namespaceURI:
                 return item
         return None
 
@@ -3136,9 +3046,7 @@ class CaretPosition:
         self.offset = offset
 
     def getClientRect(self) -> DOMRect:
-        if self.offsetNode is not None and hasattr(
-            self.offsetNode, "getBoundingClientRect"
-        ):
+        if self.offsetNode is not None and hasattr(self.offsetNode, "getBoundingClientRect"):
             return self.offsetNode.getBoundingClientRect()
         return DOMRect(0, 0, 0, 0)
 
@@ -3186,9 +3094,7 @@ class Selection:
 
     @property
     def isCollapsed(self) -> bool:
-        return self.rangeCount == 0 or all(
-            range_obj.collapsed for range_obj in self._ranges
-        )
+        return self.rangeCount == 0 or all(range_obj.collapsed for range_obj in self._ranges)
 
     @property
     def anchorNode(self) -> Node | None:
@@ -3219,9 +3125,7 @@ class Selection:
                 self._sync_anchor_focus_from_range(range_obj)
 
     def removeRange(self, range_obj: "Range") -> None:
-        self._ranges = [
-            candidate for candidate in self._ranges if candidate is not range_obj
-        ]
+        self._ranges = [candidate for candidate in self._ranges if candidate is not range_obj]
         self._sync_anchor_focus_from_range(self._ranges[0] if self._ranges else None)
 
     def removeAllRanges(self) -> None:
@@ -3264,9 +3168,7 @@ class Selection:
         active_range = self._ranges[-1]
         if anchor_node is None:
             active_range.setEnd(node, offset)
-            self._set_anchor_focus(
-                active_range.startContainer, active_range.startOffset, node, offset
-            )
+            self._set_anchor_focus(active_range.startContainer, active_range.startOffset, node, offset)
             return
         if Range._compare_points(anchor_node, anchor_offset, node, offset) <= 0:
             active_range.setStart(anchor_node, anchor_offset)
@@ -3307,9 +3209,7 @@ class Selection:
             range_obj.deleteContents()
         self.removeAllRanges()
 
-    def containsNode(
-        self, node: Node | None, allowPartialContainment: bool = False
-    ) -> bool:
+    def containsNode(self, node: Node | None, allowPartialContainment: bool = False) -> bool:
         if node is None:
             return False
 
@@ -3486,9 +3386,7 @@ class DOMTokenList(list):
     def item(self, index: int):
         """Returns the token at the specified index"""
         self._reload()
-        return (
-            list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
-        )
+        return list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
 
     def toString(self) -> str:
         """Returns a string containing all tokens in the list, with spaces separating each token"""
@@ -3501,9 +3399,7 @@ class DOMTokenList(list):
         for i in range(len(self)):
             yield i, list.__getitem__(self, i)
 
-    def forEach(
-        self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None
-    ) -> None:
+    def forEach(self, func: Callable[[str, int, "DOMTokenList"], Any], thisArg: Any = None) -> None:
         """Calls a function for each token in the list."""
         self._reload()
         for i in range(len(self)):
@@ -3563,9 +3459,7 @@ class ShadowRoot(Node):
             walk(child)
         return matches
 
-    def caretPositionFromPoint(
-        self, x: float = 0, y: float = 0
-    ) -> CaretPosition | None:
+    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> CaretPosition | None:
         """
         Returns a CaretPosition object containing the DOM node containing the caret,
         and caret's character offset within that node.
@@ -3596,16 +3490,10 @@ class DocumentType(Node):
         "_notations",
     )
 
-    def __init__(
-        self, name: str = "html", publicId: str = "", systemId: str = ""
-    ) -> None:
+    def __init__(self, name: str = "html", publicId: str = "", systemId: str = "") -> None:
         self.name: str = name  # A DOMString, eg "html" for <!DOCTYPE HTML>.
-        self.publicId: str = (
-            publicId  # eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
-        )
-        self.systemId: str = (
-            systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
-        )
+        self.publicId: str = publicId  # eg "-//W3C//DTD HTML 4.01//EN", empty string for HTML5.
+        self.systemId: str = systemId  # eg "http://www.w3.org/TR/html4/strict.dtd", empty string for HTML5.
         self._internalSubset: str | None = None
         self._entities = NamedNodeMap()
         self._notations = NamedNodeMap()
@@ -3799,9 +3687,7 @@ class NodeList(list):
         for i in range(len(self)):
             yield i, self[i]
 
-    def forEach(
-        self, func: Callable[[Node, int, "NodeList"], Any], thisArg: Any = None
-    ) -> None:
+    def forEach(self, func: Callable[[Node, int, "NodeList"], Any], thisArg: Any = None) -> None:
         """Calls a function for each item in the NodeList."""
         # thisArg = thisArg or self
         for i in range(len(self)):
@@ -3821,9 +3707,7 @@ class NodeList(list):
 class _LiveNodeList(NodeList):
     """List-like live view over a node's current children."""
 
-    def __init__(
-        self, owner: Node, predicate: Callable[[Any], bool] | None = None
-    ) -> None:
+    def __init__(self, owner: Node, predicate: Callable[[Any], bool] | None = None) -> None:
         self._owner = owner
         self._predicate = predicate
         super().__init__()
@@ -3949,8 +3833,7 @@ class RadioNodeList(NodeList):
             return [
                 control
                 for control in self._owner._controls()
-                if control.getAttribute("id") == self.name
-                or control.getAttribute("name") == self.name
+                if control.getAttribute("id") == self.name or control.getAttribute("name") == self.name
             ]
         return list(list.__iter__(self))
 
@@ -3994,10 +3877,7 @@ class RadioNodeList(NodeList):
         if matching_radio is None:
             return
         for node in self._nodes():
-            if (
-                isinstance(node, HTMLInputElement)
-                and (node.getAttribute("type") or "").lower() == "radio"
-            ):
+            if isinstance(node, HTMLInputElement) and (node.getAttribute("type") or "").lower() == "radio":
                 node.checked = node is matching_radio
 
 
@@ -4103,9 +3983,7 @@ class Element(Node):
         if not selector:
             return None
 
-        parsed: dict[str, Any] = {
-            "tag": "*", "id": None, "classes": [], "attributes": [], "pseudos": []
-        }
+        parsed: dict[str, Any] = {"tag": "*", "id": None, "classes": [], "attributes": [], "pseudos": []}
         position = 0
         # a type selector stops at the first '.', '#', '[' or ':' -- ':' in that
         # position is always a pseudo-class, never part of the tag name
@@ -4119,17 +3997,13 @@ class Element(Node):
         while position < len(selector):
             char = selector[position]
             if char == "#":
-                token, position = Element._read_simple_selector_token(
-                    selector, position + 1
-                )
+                token, position = Element._read_simple_selector_token(selector, position + 1)
                 if not token:
                     return None
                 parsed["id"] = token
                 continue
             if char == ".":
-                token, position = Element._read_simple_selector_token(
-                    selector, position + 1
-                )
+                token, position = Element._read_simple_selector_token(selector, position + 1)
                 if not token:
                     return None
                 parsed["classes"].append(token)
@@ -4159,9 +4033,7 @@ class Element(Node):
                 # is understood here; anything else (``:hover``, ``:nth-child``,
                 # pseudo-elements, ...) fails the parse so the caller falls back
                 # to the full selector engine.
-                pseudo_match = re.match(
-                    r"::?([-\w]+)", selector[position:]
-                )
+                pseudo_match = re.match(r"::?([-\w]+)", selector[position:])
                 if not pseudo_match:
                     return None
                 pseudo_name = pseudo_match.group(1).lower()
@@ -4174,19 +4046,23 @@ class Element(Node):
 
         return parsed
 
-    _STRUCTURAL_PSEUDO_CLASSES = frozenset({
-        "root", "empty",
-        "first-child", "last-child", "only-child",
-        "first-of-type", "last-of-type", "only-of-type",
-    })
+    _STRUCTURAL_PSEUDO_CLASSES = frozenset(
+        {
+            "root",
+            "empty",
+            "first-child",
+            "last-child",
+            "only-child",
+            "first-of-type",
+            "last-of-type",
+            "only-of-type",
+        }
+    )
 
     @staticmethod
     def _matches_structural_pseudo(element, pseudo: str) -> bool:
         parent = getattr(element, "parentNode", None)
-        parent_is_element = (
-            parent is not None
-            and getattr(parent, "nodeType", None) == Node.ELEMENT_NODE
-        )
+        parent_is_element = parent is not None and getattr(parent, "nodeType", None) == Node.ELEMENT_NODE
 
         if pseudo == "root":
             # the root element of the document (``<html>`` in HTML): an element
@@ -4207,11 +4083,7 @@ class Element(Node):
             return True
 
         siblings = (
-            [
-                c
-                for c in parent.__dict__.get("args", ())
-                if getattr(c, "nodeType", None) == Node.ELEMENT_NODE
-            ]
+            [c for c in parent.__dict__.get("args", ()) if getattr(c, "nodeType", None) == Node.ELEMENT_NODE]
             if parent_is_element
             else [element]
         )
@@ -4222,9 +4094,7 @@ class Element(Node):
         if pseudo == "only-child":
             return len(siblings) == 1 and siblings[0] is element
 
-        same_type = [
-            s for s in siblings if getattr(s, "tagName", None) == element.tagName
-        ]
+        same_type = [s for s in siblings if getattr(s, "tagName", None) == element.tagName]
         if pseudo == "first-of-type":
             return bool(same_type) and same_type[0] is element
         if pseudo == "last-of-type":
@@ -4280,9 +4150,7 @@ class Element(Node):
             return False
 
         for attr, operator, value in parsed["attributes"]:
-            if not Element._attribute_selector_matches(
-                element.getAttribute(attr), operator, value
-            ):
+            if not Element._attribute_selector_matches(element.getAttribute(attr), operator, value):
                 return False
 
         for pseudo in parsed.get("pseudos", ()):
@@ -4301,9 +4169,7 @@ class Element(Node):
         Returns:
             bool: True if the selector matches the Element, otherwise False.
         """
-        selectors = [
-            selector.strip() for selector in str(s).split(",") if selector.strip()
-        ]
+        selectors = [selector.strip() for selector in str(s).split(",") if selector.strip()]
         for selector in selectors:
             if self._matchElement(self, selector):
                 return True
@@ -4313,11 +4179,7 @@ class Element(Node):
             if result is True:
                 return True
             if result is None:  # the fast matcher could not parse it
-                root = (
-                    self.ownerDocument
-                    if self.ownerDocument is not None
-                    else self.rootNode
-                )
+                root = self.ownerDocument if self.ownerDocument is not None else self.rootNode
                 if hasattr(root, "querySelectorAll"):
                     try:
                         if any(m is self for m in root.querySelectorAll(selector)):
@@ -4331,11 +4193,11 @@ class Element(Node):
         or ``None`` if the selector is too complex for the fast matcher."""
         try:
             from domonic.bs4 import (
-                _split_simple_selector_chain,
-                _strip_simple_pseudo,
+                _element_children,
                 _match_parsed_selector,
                 _match_simple_pseudo,
-                _element_children,
+                _split_simple_selector_chain,
+                _strip_simple_pseudo,
             )
         except Exception:
             return None
@@ -4391,9 +4253,7 @@ class Element(Node):
                         candidates.append(ancestor)
                         ancestor = getattr(ancestor, "parentNode", None)
                 for candidate in candidates:
-                    if candidate is not None and matches_compound(
-                        candidate, compound, pseudo
-                    ):
+                    if candidate is not None and matches_compound(candidate, compound, pseudo):
                         next_current.append(candidate)
             if not next_current:
                 return False
@@ -4435,11 +4295,7 @@ class Element(Node):
             return []
 
         selected = []
-        selectors = [
-            selector.strip()
-            for selector in str(all_selectors).split(",")
-            if selector.strip()
-        ]
+        selectors = [selector.strip() for selector in str(all_selectors).split(",") if selector.strip()]
         if len(selectors) > 1:
             seen = []
             for selector in selectors:
@@ -4731,29 +4587,15 @@ class Element(Node):
 
     def click(self):
         """Simulates a mouse-click on an element"""
-        view = (
-            getattr(self.ownerDocument, "defaultView", None)
-            if isinstance(self.ownerDocument, Document)
-            else None
-        )
-        evt = MouseEvent(
-            "click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1}
-        )
+        view = getattr(self.ownerDocument, "defaultView", None) if isinstance(self.ownerDocument, Document) else None
+        evt = MouseEvent("click", {"bubbles": True, "cancelable": True, "view": view, "detail": 1})
         return self.dispatchEvent(evt)
 
-    def animate(
-        self, keyframes: list[dict[str, Any]] | dict[str, Any], options: Any = None
-    ):
+    def animate(self, keyframes: list[dict[str, Any]] | dict[str, Any], options: Any = None):
         from domonic.animation import Animation, KeyframeEffect
 
-        owner_document = (
-            self.ownerDocument
-            if isinstance(self.ownerDocument, Document)
-            else globals().get("document")
-        )
-        timeline = (
-            owner_document.timeline if isinstance(owner_document, Document) else None
-        )
+        owner_document = self.ownerDocument if isinstance(self.ownerDocument, Document) else globals().get("document")
+        timeline = owner_document.timeline if isinstance(owner_document, Document) else None
         effect = KeyframeEffect(self, keyframes, options)
         animation = Animation(effect, timeline)
         animation.play()
@@ -4983,9 +4825,7 @@ class Element(Node):
         return _svg_ctm(self, to_screen=True)
 
     def getTransformToElement(self, element: "Element") -> "DOMMatrix":
-        return DOMMatrix.fromMatrix(element.getScreenCTM()).inverse().multiply(
-            self.getScreenCTM()
-        )
+        return DOMMatrix.fromMatrix(element.getScreenCTM()).inverse().multiply(self.getScreenCTM())
 
     def createSVGPoint(self, x: float = 0.0, y: float = 0.0) -> "DOMPoint":
         return DOMPoint(x, y)
@@ -5098,11 +4938,7 @@ class Element(Node):
             wanted = tagName.lower()
 
             def anon(el):
-                if (
-                    el is not self
-                    and isinstance(el, Element)
-                    and el.tagName.lower() == wanted
-                ):
+                if el is not self and isinstance(el, Element) and el.tagName.lower() == wanted:
                     elements.append(el)
 
             self._iterate(self, anon)
@@ -5161,9 +4997,7 @@ class Element(Node):
     @id.setter
     def id(self, newid: str):
         """Sets or returns the value of the id attribute of an element"""
-        self.setAttribute(
-            "id", newid if newid is None or isinstance(newid, str) else str(newid)
-        )
+        self.setAttribute("id", newid if newid is None or isinstance(newid, str) else str(newid))
 
     # Sets or returns the text content of a node and its descendants
     def innerText(self, *args: Any) -> str:
@@ -5192,19 +5026,13 @@ class Element(Node):
     def before(self, *nodes: Any) -> None:
         if self.parentNode is None:
             return
-        nodes = tuple(
-            node for node in _coerce_insertion_nodes(*nodes) if node is not self
-        )
+        nodes = tuple(node for node in _coerce_insertion_nodes(*nodes) if node is not self)
         if not nodes:
             return
         parent = self.parentNode
         old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
         index = parent.args.index(self)
-        previous_sibling = (
-            parent.args[index - 1]
-            if index > 0 and isinstance(parent.args[index - 1], Node)
-            else None
-        )
+        previous_sibling = parent.args[index - 1] if index > 0 and isinstance(parent.args[index - 1], Node) else None
         parent.args = parent.args[:index] + nodes + parent.args[index:]
         for node, old_document in old_documents:
             _connect_inserted_node(parent, node, old_document)
@@ -5223,19 +5051,13 @@ class Element(Node):
     def after(self, *nodes: Any) -> None:
         if self.parentNode is None:
             return
-        nodes = tuple(
-            node for node in _coerce_insertion_nodes(*nodes) if node is not self
-        )
+        nodes = tuple(node for node in _coerce_insertion_nodes(*nodes) if node is not self)
         if not nodes:
             return
         parent = self.parentNode
         old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
         index = parent.args.index(self) + 1
-        next_sibling = (
-            parent.args[index]
-            if index < len(parent.args) and isinstance(parent.args[index], Node)
-            else None
-        )
+        next_sibling = parent.args[index] if index < len(parent.args) and isinstance(parent.args[index], Node) else None
         parent.args = parent.args[:index] + nodes + parent.args[index:]
         for node, old_document in old_documents:
             _connect_inserted_node(parent, node, old_document)
@@ -5438,17 +5260,13 @@ class Element(Node):
         """Prepends a node to the current element"""
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
-        next_sibling = (
-            self.args[0] if len(self.args) and isinstance(self.args[0], Node) else None
-        )
+        next_sibling = self.args[0] if len(self.args) and isinstance(self.args[0], Node) else None
         self.__dict__["args"] = items + tuple(self.args)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
         if added_nodes:
-            _queue_mutation_record(
-                "childList", self, added_nodes=added_nodes, next_sibling=next_sibling
-            )
+            _queue_mutation_record("childList", self, added_nodes=added_nodes, next_sibling=next_sibling)
         _notify_slot_change(self)
 
     def replaceChildren(self, *nodes: Any) -> None:
@@ -5509,9 +5327,7 @@ class Element(Node):
                 node = stack.pop()
                 if isinstance(node, Element):
                     if required_classes is not None:
-                        class_tokens = set(
-                            str(node.getAttribute("class") or "").split()
-                        )
+                        class_tokens = set(str(node.getAttribute("class") or "").split())
                         if required_classes.issubset(class_tokens):
                             return node
                     elif wanted_tag is not None:
@@ -5597,9 +5413,7 @@ class Element(Node):
 
                 evaluator = XPathEvaluator()
                 expression = evaluator.createExpression(expression)
-                result = expression.evaluate(
-                    self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-                )
+                result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
                 if result.nodes:
                     return result.nodes
                 return _fallback_selector_results()
@@ -5682,9 +5496,7 @@ class Element(Node):
 
     def scrollHeight(self):
         """Returns the entire height of an element, including padding"""
-        return max(
-            self.clientHeight, getattr(self, "_scroll_height", self.clientHeight)
-        )
+        return max(self.clientHeight, getattr(self, "_scroll_height", self.clientHeight))
 
     def scrollIntoView(self):
         """Scrolls the specified element into the visible area of the browser window"""
@@ -5737,9 +5549,7 @@ class Element(Node):
 
     def toggleAttribute(self, attribute: str, force: bool | None = None) -> bool:
         """Adds or removes an attribute and returns whether it is present afterwards."""
-        should_add = (
-            bool(force) if force is not None else not self.hasAttribute(attribute)
-        )
+        should_add = bool(force) if force is not None else not self.hasAttribute(attribute)
         if should_add:
             self.setAttribute(attribute, "")
             return True
@@ -5790,9 +5600,7 @@ class Element(Node):
         """CSS Typed OM read-only view over the element's computed style."""
         from domonic.style import ComputedStyleDeclaration, StylePropertyMap
 
-        return StylePropertyMap(
-            ComputedStyleDeclaration(self), read_only=True
-        )
+        return StylePropertyMap(ComputedStyleDeclaration(self), read_only=True)
 
     # def tabIndex(self):
     # ''' Sets or returns the value of the tabindex attribute of an element'''
@@ -5939,9 +5747,7 @@ class DOMImplementation:
         d.doctype = doctype
         return d
 
-    def createDocumentType(
-        self, qualifiedName: str, publicId: str, systemId: str
-    ) -> DocumentType:
+    def createDocumentType(self, qualifiedName: str, publicId: str, systemId: str) -> DocumentType:
         """Creates a DocumentType node.
 
         Args:
@@ -6142,10 +5948,7 @@ class AbastractRange:
         if unit in ("all", "document", "container"):
             self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
             return
-        if (
-            not isinstance(self.startContainer, Text)
-            or self.startContainer is not self.endContainer
-        ):
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
             self.selectNodeContents(self.commonAncestorContainer or self.startContainer)
             return
 
@@ -6234,10 +6037,7 @@ class AbastractRange:
         return self.cloneRange().comparePoint(refNode, offset)
 
     def deleteData(self, offset, count):
-        if (
-            not isinstance(self.startContainer, Text)
-            or self.startContainer is not self.endContainer
-        ):
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.deleteData(offset, count)
         self.endOffset = min(self.endOffset, len(self.startContainer.textContent))
@@ -6251,10 +6051,7 @@ class AbastractRange:
         return data
 
     def getData(self, offset, count):
-        if (
-            not isinstance(self.startContainer, Text)
-            or self.startContainer is not self.endContainer
-        ):
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
             raise ValueError("Range data helpers require a single Text container")
         return self.startContainer.textContent[offset : offset + count]
 
@@ -6265,23 +6062,15 @@ class AbastractRange:
         return (self.startContainer, self.startOffset)
 
     def replaceData(self, offset, count, data):
-        if (
-            not isinstance(self.startContainer, Text)
-            or self.startContainer is not self.endContainer
-        ):
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.replaceData(offset, count, data)
-        self.endOffset = min(
-            len(self.startContainer.textContent), max(self.startOffset, self.endOffset)
-        )
+        self.endOffset = min(len(self.startContainer.textContent), max(self.startOffset, self.endOffset))
         self._update_state()
         return self.startContainer.textContent
 
     def setData(self, data):
-        if (
-            not isinstance(self.startContainer, Text)
-            or self.startContainer is not self.endContainer
-        ):
+        if not isinstance(self.startContainer, Text) or self.startContainer is not self.endContainer:
             raise ValueError("Range data helpers require a single Text container")
         self.startContainer.data = data
         self.startOffset = min(self.startOffset, len(data))
@@ -6290,10 +6079,7 @@ class AbastractRange:
         return self.startContainer.textContent
 
     def _update_state(self) -> None:
-        self.collapsed = (
-            self.startContainer is self.endContainer
-            and self.startOffset == self.endOffset
-        )
+        self.collapsed = self.startContainer is self.endContainer and self.startOffset == self.endOffset
         if self.startContainer is None or self.endContainer is None:
             self.commonAncestorContainer = None
             return
@@ -6341,9 +6127,7 @@ class Range(AbastractRange):
         return path
 
     @staticmethod
-    def _compare_points(
-        node_a: Node, offset_a: int, node_b: Node, offset_b: int
-    ) -> int:
+    def _compare_points(node_a: Node, offset_a: int, node_b: Node, offset_b: int) -> int:
         if node_a is node_b:
             if offset_a < offset_b:
                 return -1
@@ -6374,10 +6158,7 @@ class Range(AbastractRange):
         return 0
 
     def _update_state(self) -> None:
-        self.collapsed = (
-            self.startContainer is self.endContainer
-            and self.startOffset == self.endOffset
-        )
+        self.collapsed = self.startContainer is self.endContainer and self.startOffset == self.endOffset
         if self.startContainer is None or self.endContainer is None:
             self.commonAncestorContainer = None
             return
@@ -6396,9 +6177,7 @@ class Range(AbastractRange):
 
         children = list(getattr(ancestor, "childNodes", []))
 
-        def resolve_index(
-            node: Node | None, offset: int, *, is_end: bool
-        ) -> int | None:
+        def resolve_index(node: Node | None, offset: int, *, is_end: bool) -> int | None:
             if node is None:
                 return None
             if node is ancestor:
@@ -6406,10 +6185,7 @@ class Range(AbastractRange):
                 return bounded
 
             current: Any = node
-            while (
-                current is not None
-                and getattr(current, "parentNode", None) is not ancestor
-            ):
+            while current is not None and getattr(current, "parentNode", None) is not ancestor:
                 current = getattr(current, "parentNode", None)
 
             if current is None:
@@ -6462,10 +6238,7 @@ class Range(AbastractRange):
         if self.startContainer is None:
             self.startContainer = node
             self.startOffset = offset
-        elif (
-            self._compare_points(node, offset, self.startContainer, self.startOffset)
-            < 0
-        ):
+        elif self._compare_points(node, offset, self.startContainer, self.startOffset) < 0:
             self.startContainer = node
             self.startOffset = offset
         self._update_state()
@@ -6540,15 +6313,10 @@ class Range(AbastractRange):
     def extractContents(self) -> "DocumentFragment":
         if self.startContainer is None:
             return DocumentFragment()
-        if (
-            isinstance(self.startContainer, Text)
-            and self.startContainer == self.endContainer
-        ):
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
             text = self.startContainer.textContent
             extracted: Any = text[self.startOffset : self.endOffset]
-            self.startContainer.textContent = (
-                text[: self.startOffset] + text[self.endOffset :]
-            )
+            self.startContainer.textContent = text[: self.startOffset] + text[self.endOffset :]
             self.endContainer = self.startContainer
             self.endOffset = self.startOffset
             self._update_state()
@@ -6591,20 +6359,12 @@ class Range(AbastractRange):
 
         if self.startContainer is None:
             return DocumentFragment()
-        if (
-            isinstance(self.startContainer, Text)
-            and self.startContainer == self.endContainer
-        ):
-            return DocumentFragment(
-                Text(self.startContainer.textContent[self.startOffset : self.endOffset])
-            )
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
+            return DocumentFragment(Text(self.startContainer.textContent[self.startOffset : self.endOffset]))
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
-            cloned = [
-                copy.deepcopy(child)
-                for child in children[self.startOffset : self.endOffset]
-            ]
+            cloned = [copy.deepcopy(child) for child in children[self.startOffset : self.endOffset]]
             return DocumentFragment(*cloned)
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
@@ -6627,10 +6387,7 @@ class Range(AbastractRange):
     def getClientRects(self) -> DOMRectList:
         if self.startContainer is None:
             return DOMRectList()
-        if (
-            isinstance(self.startContainer, Text)
-            and self.startContainer == self.endContainer
-        ):
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
             parent = getattr(self.startContainer, "parentNode", None)
             return (
                 DOMRectList([parent.getBoundingClientRect()])
@@ -6639,9 +6396,7 @@ class Range(AbastractRange):
             )
         if self.startContainer == self.endContainer:
             rects = []
-            for child in list(self.startContainer.childNodes)[
-                self.startOffset : self.endOffset
-            ]:
+            for child in list(self.startContainer.childNodes)[self.startOffset : self.endOffset]:
                 if hasattr(child, "getBoundingClientRect"):
                     rects.append(child.getBoundingClientRect())
             return DOMRectList(rects)
@@ -6669,12 +6424,7 @@ class Range(AbastractRange):
             children = list(parent.childNodes)
             index = children.index(container)
             replacement = (
-                [
-                    part
-                    for part in (before, node, after)
-                    if part.textContent != ""
-                    if isinstance(part, Text)
-                ]
+                [part for part in (before, node, after) if part.textContent != "" if isinstance(part, Text)]
                 if False
                 else None
             )
@@ -6697,9 +6447,7 @@ class Range(AbastractRange):
             return
         if hasattr(container, "insertBefore"):
             children = list(container.childNodes)
-            ref = (
-                children[self.startOffset] if self.startOffset < len(children) else None
-            )
+            ref = children[self.startOffset] if self.startOffset < len(children) else None
             container.insertBefore(node, ref)
             self.startOffset += 1
             self.endOffset = max(self.endOffset, self.startOffset)
@@ -6752,17 +6500,12 @@ class Range(AbastractRange):
     def toString(self) -> str:
         if self.startContainer is None:
             return ""
-        if (
-            isinstance(self.startContainer, Text)
-            and self.startContainer == self.endContainer
-        ):
+        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
             return self.startContainer.textContent[self.startOffset : self.endOffset]
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
-            return "".join(
-                str(child) for child in children[self.startOffset : self.endOffset]
-            )
+            return "".join(str(child) for child in children[self.startOffset : self.endOffset])
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
             container, start_index, end_index = child_slice
@@ -6774,10 +6517,7 @@ class Range(AbastractRange):
         if self.startContainer is None or self.endContainer is None:
             raise Exception("Range has no boundaries")
         offset = self._validate_boundary_point(refNode, offset)
-        if (
-            self._compare_points(refNode, offset, self.startContainer, self.startOffset)
-            < 0
-        ):
+        if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
             return -1
         if self._compare_points(refNode, offset, self.endContainer, self.endOffset) > 0:
             return 1
@@ -6804,14 +6544,8 @@ class Range(AbastractRange):
             end_node, end_offset = parent, index + 1
 
         return not (
-            self._compare_points(
-                end_node, end_offset, self.startContainer, self.startOffset
-            )
-            <= 0
-            or self._compare_points(
-                start_node, start_offset, self.endContainer, self.endOffset
-            )
-            >= 0
+            self._compare_points(end_node, end_offset, self.startContainer, self.startOffset) <= 0
+            or self._compare_points(start_node, start_offset, self.endContainer, self.endOffset) >= 0
         )
 
 
@@ -7049,9 +6783,7 @@ class Document(Element):
         if not isinstance(el, HTMLBodyElement):
             raise DOMException(
                 DOMException.TYPE_MISMATCH_ERR,
-                "The new body element is of type '"
-                + str(type(el))
-                + "'. It must be a 'HTMLBodyElement'",
+                "The new body element is of type '" + str(type(el)) + "'. It must be a 'HTMLBodyElement'",
             )
         else:
             if self.body is not None:
@@ -7150,9 +6882,7 @@ class Document(Element):
         return el
 
     @staticmethod
-    def createElementNS(
-        namespaceURI: str, qualifiedName: str, options: Any = None
-    ) -> "Element":
+    def createElementNS(namespaceURI: str, qualifiedName: str, options: Any = None) -> "Element":
         """Creates an element with the specified namespace URI and qualified name."""
         # el = type(qualifiedName, (Element,), {'name': qualifiedName})
         from domonic.html import create_element
@@ -7239,9 +6969,7 @@ class Document(Element):
             "CustomEvent": lambda: CustomEvent("custom"),
             "DeviceLightEvent": lambda: DeviceLightEvent("devicelight"),
             "DeviceMotionEvent": lambda: DeviceMotionEvent("devicemotion"),
-            "DeviceOrientationEvent": lambda: DeviceOrientationEvent(
-                "deviceorientation"
-            ),
+            "DeviceOrientationEvent": lambda: DeviceOrientationEvent("deviceorientation"),
             "DeviceProximityEvent": lambda: DeviceProximityEvent("deviceproximity"),
             "DOMContentLoadedEvent": lambda: DOMContentLoadedEvent("DOMContentLoaded"),
             "DragEvent": lambda: DragEvent("drag"),
@@ -7261,9 +6989,7 @@ class Document(Element):
             "PointerEvent": lambda: PointerEvent("pointerdown"),
             "PopStateEvent": lambda: PopStateEvent("popstate"),
             "ProgressEvent": lambda: ProgressEvent("progress"),
-            "SecurityPolicyViolationEvent": lambda: SecurityPolicyViolationEvent(
-                "securitypolicyviolation"
-            ),
+            "SecurityPolicyViolationEvent": lambda: SecurityPolicyViolationEvent("securitypolicyviolation"),
             "StorageEvent": lambda: StorageEvent("storage"),
             "SubmitEvent": lambda: SubmitEvent("submit"),
             "SVGEvent": lambda: SVGEvent("load"),
@@ -7336,9 +7062,7 @@ class Document(Element):
         node.ownerDocument = self
         return node
 
-    def _create_notation(
-        self, name: str, publicId: str | None = None, systemId: str | None = None
-    ) -> "Notation":
+    def _create_notation(self, name: str, publicId: str | None = None, systemId: str | None = None) -> "Notation":
         """Create a Notation node for the Expat DTD parser."""
         node = Notation(name, publicId, systemId)
         node.ownerDocument = self
@@ -7365,9 +7089,7 @@ class Document(Element):
         return Range()
 
     @staticmethod
-    def createNodeIterator(
-        root: Node, whatToShow: int | None = None, filter: Any = None
-    ) -> NodeIterator:
+    def createNodeIterator(root: Node, whatToShow: int | None = None, filter: Any = None) -> NodeIterator:
         """Creates a NodeIterator that can be used to traverse the document tree or subtree under root."""
         whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
         return NodeIterator(root, whatToShow, filter)
@@ -7439,9 +7161,7 @@ class Document(Element):
             contextNode = self
         evaluator = XPathEvaluator()
         expression = evaluator.createExpression(xpathExpression)
-        result = expression.evaluate(
-            contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
-        )
+        result = expression.evaluate(contextNode, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
         return result.nodes
 
     def elementsFromPoint(self, x: float, y: float) -> list[Element]:
@@ -7623,16 +7343,8 @@ class Document(Element):
     @property
     def links(self):
         """Returns a collection of all <a> and <area> elements in the document that have a href attribute"""
-        anchors = [
-            node
-            for node in self.getElementsByTagName("a")
-            if node.getAttribute("href") is not None
-        ]
-        areas = [
-            node
-            for node in self.getElementsByTagName("area")
-            if node.getAttribute("href") is not None
-        ]
+        anchors = [node for node in self.getElementsByTagName("a") if node.getAttribute("href") is not None]
+        areas = [node for node in self.getElementsByTagName("area") if node.getAttribute("href") is not None]
         return anchors + areas
 
     # @property
@@ -8174,9 +7886,7 @@ class Text(CharacterData):
 
     def __str__(self) -> str:
         value = str(self.textContent)
-        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
-            getattr(self, "_escape_text_on_render", False)
-        )
+        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(self, "_escape_text_on_render", False))
         return _escape_html(value) if escape_text else value
 
     def __format__(self, format_spec):
@@ -8184,9 +7894,7 @@ class Text(CharacterData):
 
     def stream(self) -> Iterator[str]:
         value = str(self.textContent)
-        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(
-            getattr(self, "_escape_text_on_render", False)
-        )
+        escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(self, "_escape_text_on_render", False))
         yield _escape_html(value) if escape_text else value
 
     # def __repr__(self):
@@ -8222,16 +7930,8 @@ class HTMLCollection(list):
     def namedItem(self, name: str) -> Node | None:
         """Returns the specific node whose ID or, as a fallback, name matches the string specified by name."""
         for item in self:
-            item_id = (
-                item.getAttribute("id")
-                if hasattr(item, "getAttribute")
-                else getattr(item, "id", None)
-            )
-            item_name = (
-                item.getAttribute("name")
-                if hasattr(item, "getAttribute")
-                else getattr(item, "name", None)
-            )
+            item_id = item.getAttribute("id") if hasattr(item, "getAttribute") else getattr(item, "id", None)
+            item_name = item.getAttribute("name") if hasattr(item, "getAttribute") else getattr(item, "name", None)
             if item_id == name:
                 return item
             elif item_name == name:
@@ -8361,10 +8061,7 @@ class MutationObserver:
                 continue
             if record.type == "attributes":
                 attribute_filter = options["attributeFilter"]
-                if (
-                    attribute_filter is not None
-                    and record.attributeName not in attribute_filter
-                ):
+                if attribute_filter is not None and record.attributeName not in attribute_filter:
                     continue
                 if options["attributeOldValue"]:
                     old_value = record.oldValue
@@ -8494,19 +8191,13 @@ class IntersectionObserverEntry:
         self.boundingClientRect = DOMRect.fromRect(boundingClientRect)
         self.intersectionRect = DOMRect.fromRect(intersectionRect)
         self.time = time_value
-        self.isIntersecting = (
-            self.intersectionRect.width > 0 and self.intersectionRect.height > 0
-        )
+        self.isIntersecting = self.intersectionRect.width > 0 and self.intersectionRect.height > 0
         target_area = self.boundingClientRect.width * self.boundingClientRect.height
         intersection_area = self.intersectionRect.width * self.intersectionRect.height
-        self.intersectionRatio = (
-            0.0 if target_area == 0 else intersection_area / target_area
-        )
+        self.intersectionRatio = 0.0 if target_area == 0 else intersection_area / target_area
 
 
-IntersectionObserverCallback = Callable[
-    [list["IntersectionObserverEntry"], "IntersectionObserver"], Any
-]
+IntersectionObserverCallback = Callable[[list["IntersectionObserverEntry"], "IntersectionObserver"], Any]
 
 
 class IntersectionObserver:
@@ -8529,9 +8220,7 @@ class IntersectionObserver:
         self.callback = callback
         self.root = (options or {}).get("root")
         threshold = (options or {}).get("threshold", 0.0)
-        self.thresholds = sorted(
-            threshold if isinstance(threshold, list) else [threshold]
-        )
+        self.thresholds = sorted(threshold if isinstance(threshold, list) else [threshold])
         self._observations: dict[Element, tuple[bool, float] | None] = {}
         self._records: list[IntersectionObserverEntry] = []
         IntersectionObserver._all_observers.append(self)
@@ -8569,13 +8258,9 @@ class IntersectionObserver:
             if isinstance(self.root, Element):
                 root_rect = DOMRect.fromRect(self.root.getBoundingClientRect())
             else:
-                root_rect = DOMRect.fromRect(
-                    _default_intersection_root_rect(target, bounding_rect)
-                )
+                root_rect = DOMRect.fromRect(_default_intersection_root_rect(target, bounding_rect))
             intersection_rect = _intersect_rects(root_rect, bounding_rect)
-            entry = IntersectionObserverEntry(
-                target, root_rect, bounding_rect, intersection_rect, now_ms
-            )
+            entry = IntersectionObserverEntry(target, root_rect, bounding_rect, intersection_rect, now_ms)
             state = (entry.isIntersecting, entry.intersectionRatio)
             if previous is None or previous != state:
                 self._observations[target] = state
@@ -8590,9 +8275,7 @@ class IntersectionObserver:
 
 
 class PerformanceEntry:
-    def __init__(
-        self, name: str, entryType: str, startTime: float, duration: float
-    ) -> None:
+    def __init__(self, name: str, entryType: str, startTime: float, duration: float) -> None:
         self.name = name
         self.entryType = entryType
         self.startTime = startTime
@@ -8617,9 +8300,7 @@ class PerformanceMeasure(PerformanceEntry):
         super().__init__(name, "measure", startTime, duration)
 
 
-PerformanceObserverCallback = Callable[
-    [list["PerformanceEntry"], "PerformanceObserver"], Any
-]
+PerformanceObserverCallback = Callable[[list["PerformanceEntry"], "PerformanceObserver"], Any]
 
 
 class PerformanceObserver:
@@ -8792,10 +8473,22 @@ class DOMMatrixReadOnly:
     # m11..m44 are installed as ``property`` objects by the loop after this
     # class body (and given setters on ``DOMMatrix``); declare them so callers
     # and the 2D aliases below type-check.
-    m11: float; m12: float; m13: float; m14: float
-    m21: float; m22: float; m23: float; m24: float
-    m31: float; m32: float; m33: float; m34: float
-    m41: float; m42: float; m43: float; m44: float
+    m11: float
+    m12: float
+    m13: float
+    m14: float
+    m21: float
+    m22: float
+    m23: float
+    m24: float
+    m31: float
+    m32: float
+    m33: float
+    m34: float
+    m41: float
+    m42: float
+    m43: float
+    m44: float
 
     @staticmethod
     def fromFloat64Array(array: Iterable[float]) -> "DOMMatrixReadOnly":
@@ -8812,9 +8505,7 @@ class DOMMatrixReadOnly:
         values = []
         for row in range(1, 5):
             for col in range(1, 5):
-                values.append(
-                    getattr(matrix, f"m{row}{col}", 1.0 if row == col else 0.0)
-                )
+                values.append(getattr(matrix, f"m{row}{col}", 1.0 if row == col else 0.0))
         return DOMMatrixReadOnly(*values)
 
     def __init__(self, *values: float) -> None:
@@ -8937,11 +8628,7 @@ class DOMMatrixReadOnly:
         return list(self._values)
 
     def toJSON(self) -> dict[str, float | bool]:
-        data = {
-            f"m{row}{col}": self._get(row, col)
-            for row in range(1, 5)
-            for col in range(1, 5)
-        }
+        data = {f"m{row}{col}": self._get(row, col) for row in range(1, 5) for col in range(1, 5)}
         data.update({"is2D": self.is2D, "isIdentity": self.isIdentity})
         return data
 
@@ -8951,17 +8638,13 @@ class DOMMatrixReadOnly:
     def translate(self, tx: float = 0, ty: float = 0, tz: float = 0) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).translateSelf(tx, ty, tz)
 
-    def scale(
-        self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1
-    ) -> "DOMMatrix":
+    def scale(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).scaleSelf(scaleX, scaleY, scaleZ)
 
     def inverse(self) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).invertSelf()
 
-    def rotate(
-        self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None
-    ) -> "DOMMatrix":
+    def rotate(self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None) -> "DOMMatrix":
         return DOMMatrix.fromMatrix(self).rotateSelf(rotX, rotY, rotZ)
 
     def skewX(self, sx: float = 0) -> "DOMMatrix":
@@ -9081,9 +8764,7 @@ class DOMMatrix(DOMMatrixReadOnly):
         result = [0.0] * 16
         for row in range(4):
             for col in range(4):
-                result[row * 4 + col] = sum(
-                    left[row * 4 + k] * right[k * 4 + col] for k in range(4)
-                )
+                result[row * 4 + col] = sum(left[row * 4 + k] * right[k * 4 + col] for k in range(4))
         self._values = result
         return self
 
@@ -9108,9 +8789,7 @@ class DOMMatrix(DOMMatrixReadOnly):
         )
         return self.multiplySelf(translation)
 
-    def scaleSelf(
-        self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1
-    ) -> "DOMMatrix":
+    def scaleSelf(self, scaleX: float = 1, scaleY: float | None = None, scaleZ: float = 1) -> "DOMMatrix":
         if scaleY is None:
             scaleY = scaleX
         scale = DOMMatrix(
@@ -9133,9 +8812,7 @@ class DOMMatrix(DOMMatrixReadOnly):
         )
         return self.multiplySelf(scale)
 
-    def rotateSelf(
-        self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None
-    ) -> "DOMMatrix":
+    def rotateSelf(self, rotX: float = 0, rotY: float | None = None, rotZ: float | None = None) -> "DOMMatrix":
         # 1-arg form is a rotation about the Z axis (the common CSS ``rotate()``)
         if rotY is None and rotZ is None:
             rotZ, rotX = rotX, 0.0
@@ -9156,33 +8833,23 @@ class DOMMatrix(DOMMatrixReadOnly):
         return self.rotateSelf(angle)
 
     def skewXSelf(self, sx: float = 0) -> "DOMMatrix":
-        return self.multiplySelf(
-            DOMMatrix(1, 0, math.tan(math.radians(sx)), 1, 0, 0)
-        )
+        return self.multiplySelf(DOMMatrix(1, 0, math.tan(math.radians(sx)), 1, 0, 0))
 
     def skewYSelf(self, sy: float = 0) -> "DOMMatrix":
-        return self.multiplySelf(
-            DOMMatrix(1, math.tan(math.radians(sy)), 0, 1, 0, 0)
-        )
+        return self.multiplySelf(DOMMatrix(1, math.tan(math.radians(sy)), 0, 1, 0, 0))
 
     def toString(self) -> str:
         if self.is2D:
             parts = [self.a, self.b, self.c, self.d, self.e, self.f]
             return "matrix(" + ", ".join(_format_matrix_number(v) for v in parts) + ")"
-        return (
-            "matrix3d("
-            + ", ".join(_format_matrix_number(v) for v in self._values)
-            + ")"
-        )
+        return "matrix3d(" + ", ".join(_format_matrix_number(v) for v in self._values) + ")"
 
     def __str__(self) -> str:
         return self.toString()
 
     def invertSelf(self) -> "DOMMatrix":
         matrix = [[self._values[row * 4 + col] for col in range(4)] for row in range(4)]
-        identity = [
-            [1.0 if row == col else 0.0 for col in range(4)] for row in range(4)
-        ]
+        identity = [[1.0 if row == col else 0.0 for col in range(4)] for row in range(4)]
         for col in range(4):
             pivot = max(range(col, 4), key=lambda row: abs(matrix[row][col]))
             if matrix[pivot][col] == 0:
@@ -9196,13 +8863,9 @@ class DOMMatrix(DOMMatrixReadOnly):
                 if row == col:
                     continue
                 factor = matrix[row][col]
-                matrix[row] = [
-                    current - factor * pivot_value
-                    for current, pivot_value in zip(matrix[row], matrix[col])
-                ]
+                matrix[row] = [current - factor * pivot_value for current, pivot_value in zip(matrix[row], matrix[col])]
                 identity[row] = [
-                    current - factor * pivot_value
-                    for current, pivot_value in zip(identity[row], identity[col])
+                    current - factor * pivot_value for current, pivot_value in zip(identity[row], identity[col])
                 ]
         self._values = [identity[row][col] for row in range(4) for col in range(4)]
         return self
@@ -9214,9 +8877,7 @@ for _row in range(1, 5):
         setattr(
             DOMMatrix,
             f"m{_row}{_col}",
-            readonly_prop.setter(
-                lambda self, value, r=_row, c=_col: self._set(r, c, value)
-            ),
+            readonly_prop.setter(lambda self, value, r=_row, c=_col: self._set(r, c, value)),
         )
 
 
@@ -9442,9 +9103,7 @@ def traverseChildren(tw: TreeWalker, _type: str) -> Node | None:
                 node = child
                 continue
         while node != None:
-            sibling = getattr(
-                node, mapSibling["next" if _type == "first" else "previous"]
-            )
+            sibling = getattr(node, mapSibling["next" if _type == "first" else "previous"])
             if sibling != None:
                 node = sibling
                 break
@@ -9787,29 +9446,21 @@ SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 # SVG elements whose geometry is intrinsic (a leaf shape or text run) rather
 # than the union of their children.
 _SVG_SHAPE_TAGS = frozenset(
-    {"rect", "circle", "ellipse", "line", "polygon", "polyline", "path",
-     "image", "use", "foreignObject"}
+    {"rect", "circle", "ellipse", "line", "polygon", "polyline", "path", "image", "use", "foreignObject"}
 )
 _SVG_TEXT_TAGS = frozenset({"text", "tspan", "textPath", "textpath"})
 # containers whose getBBox() is the union of rendered descendants
 _SVG_CONTAINER_TAGS = frozenset(
-    {"svg", "g", "a", "switch", "marker", "symbol", "clipPath", "clippath",
-     "pattern", "mask"}
+    {"svg", "g", "a", "switch", "marker", "symbol", "clipPath", "clippath", "pattern", "mask"}
 )
-_SVG_ALL_GEOMETRY_TAGS = (
-    _SVG_SHAPE_TAGS | _SVG_TEXT_TAGS | _SVG_CONTAINER_TAGS
-)
+_SVG_ALL_GEOMETRY_TAGS = _SVG_SHAPE_TAGS | _SVG_TEXT_TAGS | _SVG_CONTAINER_TAGS
 
-_SVG_TRANSFORM_RE = re.compile(
-    r"(matrix|translate|scale|rotate|skewX|skewY)\s*\(([^)]*)\)"
-)
+_SVG_TRANSFORM_RE = re.compile(r"(matrix|translate|scale|rotate|skewX|skewY)\s*\(([^)]*)\)")
 
 
 def _svg_numbers(value: Any) -> list[float]:
     return [
-        float(token)
-        for token in re.split(r"[\s,]+", str(value or "").strip())
-        if token and _SVG_NUMBER_RE.match(token)
+        float(token) for token in re.split(r"[\s,]+", str(value or "").strip()) if token and _SVG_NUMBER_RE.match(token)
     ]
 
 
@@ -9850,11 +9501,7 @@ def _parse_svg_transform(value: Any) -> "DOMMatrix":
                 # translate to the origin, rotate, translate back: the "back"
                 # step is outermost (applied to the point last), so it pre-
                 # multiplies -- spec order T(cx,cy) . R . T(-cx,-cy)
-                token = (
-                    DOMMatrix(1, 0, 0, 1, cx, cy)
-                    .multiply(rot)
-                    .multiply(DOMMatrix(1, 0, 0, 1, -cx, -cy))
-                )
+                token = DOMMatrix(1, 0, 0, 1, cx, cy).multiply(rot).multiply(DOMMatrix(1, 0, 0, 1, -cx, -cy))
             else:
                 token = rot
         elif name == "skewX":
@@ -9913,14 +9560,11 @@ def _svg_text_content(element: "Element") -> str:
 
 
 def _svg_own_bbox(element: "Element") -> "DOMRect | None":
-    name = str(
-        getattr(element, "nodeName", "") or getattr(element, "name", "")
-    ).lower()
+    name = str(getattr(element, "nodeName", "") or getattr(element, "name", "")).lower()
     g = lambda a: element.getAttribute(a)  # noqa: E731
 
     if name in ("rect", "image", "use", "foreignobject"):
-        return DOMRect(_svg_length(g("x")), _svg_length(g("y")),
-                       _svg_length(g("width")), _svg_length(g("height")))
+        return DOMRect(_svg_length(g("x")), _svg_length(g("y")), _svg_length(g("width")), _svg_length(g("height")))
     if name == "circle":
         cx, cy, r = _svg_length(g("cx")), _svg_length(g("cy")), _svg_length(g("r"))
         return DOMRect(cx - r, cy - r, r * 2, r * 2)
@@ -9977,9 +9621,26 @@ def _svg_path_bbox(d: Any) -> "DOMRect":
                 cx, cy = start_x, start_y
             continue
         numbers.append(float(num))
-        needed = {"H": 1, "h": 1, "V": 1, "v": 1, "M": 2, "m": 2, "L": 2, "l": 2,
-                  "T": 2, "t": 2, "Q": 4, "q": 4, "S": 4, "s": 4, "C": 6, "c": 6,
-                  "A": 7, "a": 7}.get(cmd, 2)
+        needed = {
+            "H": 1,
+            "h": 1,
+            "V": 1,
+            "v": 1,
+            "M": 2,
+            "m": 2,
+            "L": 2,
+            "l": 2,
+            "T": 2,
+            "t": 2,
+            "Q": 4,
+            "q": 4,
+            "S": 4,
+            "s": 4,
+            "C": 6,
+            "c": 6,
+            "A": 7,
+            "a": 7,
+        }.get(cmd, 2)
         if len(numbers) < needed:
             continue
         rel = cmd.islower()
@@ -10627,9 +10288,7 @@ class HTMLCanvasElement(HTMLElement):
         constraints = {}
         if frameRate is not None:
             constraints["frameRate"] = frameRate
-        return MediaStream(
-            [MediaStreamTrack("video", "Canvas capture", constraints=constraints)]
-        )
+        return MediaStream([MediaStreamTrack("video", "Canvas capture", constraints=constraints)])
 
     def transferControlToOffscreen(self):
         """Return an ``OffscreenCanvas`` with the same dimensions."""
@@ -10816,14 +10475,11 @@ class HTMLFormControlsCollection(HTMLCollection):
         controls = self._controls()
         return controls[index] if 0 <= index < len(controls) else None
 
-    def namedItem(  # type: ignore[override]
-        self, name: str
-    ) -> HTMLElement | RadioNodeList | None:
+    def namedItem(self, name: str) -> HTMLElement | RadioNodeList | None:  # type: ignore[override]
         matches = [
             control
             for control in self._controls()
-            if control.getAttribute("id") == name
-            or control.getAttribute("name") == name
+            if control.getAttribute("id") == name or control.getAttribute("name") == name
         ]
         if not matches:
             return None
@@ -10893,9 +10549,7 @@ class HTMLFormElement(HTMLElement):
         for control in self.elements:
             if not _is_control_valid(control):
                 valid = False
-                control.dispatchEvent(
-                    Event("invalid", {"bubbles": False, "cancelable": True})
-                )
+                control.dispatchEvent(Event("invalid", {"bubbles": False, "cancelable": True}))
         return valid
 
     def requestSubmit(self, submitter=None):
@@ -10907,9 +10561,7 @@ class HTMLFormElement(HTMLElement):
         if should_validate and not self.checkValidity():
             return False
         submit_event_result = self.dispatchEvent(
-            SubmitEvent(
-                "submit", {"bubbles": True, "cancelable": True, "submitter": submitter}
-            )
+            SubmitEvent("submit", {"bubbles": True, "cancelable": True, "submitter": submitter})
         )
         if not submit_event_result:
             return False
@@ -11300,9 +10952,7 @@ class HTMLInputElement(HTMLElement):
     def files(self, new_files: Any) -> None:
         from domonic.webapi.file import FileList
 
-        self._files = (
-            new_files if isinstance(new_files, FileList) else FileList(new_files)
-        )
+        self._files = new_files if isinstance(new_files, FileList) else FileList(new_files)
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
         if dispatch_events and not _dispatch_before_input_event(self, new_value):
@@ -11507,9 +11157,7 @@ class HTMLMediaElement(HTMLElement):
 
     def load(self):
         self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
-        self.dispatchEvent(
-            Event("loadedmetadata", {"bubbles": False, "cancelable": False})
-        )
+        self.dispatchEvent(Event("loadedmetadata", {"bubbles": False, "cancelable": False}))
         self.dispatchEvent(Event("loadeddata", {"bubbles": False, "cancelable": False}))
         return self
 
@@ -11522,9 +11170,7 @@ class HTMLMediaElement(HTMLElement):
         self.dispatchEvent(Event("pause", {"bubbles": False, "cancelable": False}))
         return None
 
-    def addTextTrack(
-        self, kind: str, label: str = "", language: str = ""
-    ) -> dict[str, Any]:
+    def addTextTrack(self, kind: str, label: str = "", language: str = "") -> dict[str, Any]:
         from domonic.events import TrackEvent
 
         track = {
@@ -11561,9 +11207,7 @@ class HTMLMetaElement(HTMLElement):
     name = "meta"
     __isempty = True
 
-    def __init__(
-        self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs
-    ):
+    def __init__(self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs):
         """HTMLMetaElement
 
         Args:
@@ -11653,9 +11297,7 @@ class HTMLOptGroupElement(HTMLElement):
 class HTMLOptionElement(HTMLElement):
     name = "option"
 
-    def __init__(
-        self, *args, disabled=None, label=None, selected=None, value=None, **kwargs
-    ):
+    def __init__(self, *args, disabled=None, label=None, selected=None, value=None, **kwargs):
         """HTMLOptionElement
 
         Args:
@@ -11692,13 +11334,9 @@ class HTMLOptionElement(HTMLElement):
     def selected(self, is_selected: bool) -> None:
         if is_selected:
             select_owner = self.parentNode
-            while select_owner is not None and not isinstance(
-                select_owner, HTMLSelectElement
-            ):
+            while select_owner is not None and not isinstance(select_owner, HTMLSelectElement):
                 select_owner = getattr(select_owner, "parentNode", None)
-            if isinstance(
-                select_owner, HTMLSelectElement
-            ) and not select_owner.hasAttribute("multiple"):
+            if isinstance(select_owner, HTMLSelectElement) and not select_owner.hasAttribute("multiple"):
                 for option in select_owner.options:
                     if option is not self:
                         option.removeAttribute("selected")
@@ -12046,9 +11684,7 @@ class HTMLSpanElement(HTMLElement):
 class HTMLStyleElement(HTMLElement):
     name = "style"
 
-    def __init__(
-        self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs
-    ):
+    def __init__(self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs):
         """HTMLStyleElement
 
         Args:
@@ -12057,9 +11693,7 @@ class HTMLStyleElement(HTMLElement):
             scoped (str, optional): Indicates whether the style is scoped to the element.
         """
         super().__init__(*args, **kwargs)
-        _set_attributes(
-            self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type}
-        )
+        _set_attributes(self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type})
 
 
 class HTMLTableCaptionElement(HTMLElement):
@@ -12222,9 +11856,7 @@ class HTMLSlotElement(HTMLElement):
         return fallback
 
     def assignedElements(self, options: dict[str, Any] | None = None) -> list[Element]:
-        return [
-            node for node in self.assignedNodes(options) if isinstance(node, Element)
-        ]
+        return [node for node in self.assignedNodes(options) if isinstance(node, Element)]
 
 
 class HTMLTemplateElement(HTMLElement):

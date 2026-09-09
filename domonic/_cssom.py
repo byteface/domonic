@@ -20,23 +20,70 @@ from typing import Callable
 # CSS properties that inherit from the parent element by default.
 INHERITED_PROPERTIES: frozenset[str] = frozenset(
     {
-        "azimuth", "border-collapse", "border-spacing", "caption-side", "color",
-        "cursor", "direction", "empty-cells", "font", "font-family",
-        "font-feature-settings", "font-kerning", "font-language-override",
-        "font-optical-sizing", "font-size", "font-size-adjust", "font-stretch",
-        "font-style", "font-synthesis", "font-variant", "font-variant-alternates",
-        "font-variant-caps", "font-variant-east-asian", "font-variant-ligatures",
-        "font-variant-numeric", "font-variant-position", "font-variation-settings",
-        "font-weight", "hanging-punctuation", "hyphens", "image-rendering",
-        "letter-spacing", "line-break", "line-height", "list-style",
-        "list-style-image", "list-style-position", "list-style-type", "orphans",
-        "overflow-wrap", "paint-order", "pointer-events", "quotes",
-        "ruby-position", "tab-size", "text-align", "text-align-last",
-        "text-combine-upright", "text-decoration-skip-ink", "text-indent",
-        "text-justify", "text-orientation", "text-rendering", "text-shadow",
-        "text-transform", "text-underline-offset", "text-underline-position",
-        "visibility", "white-space", "widows", "word-break", "word-spacing",
-        "word-wrap", "writing-mode",
+        "azimuth",
+        "border-collapse",
+        "border-spacing",
+        "caption-side",
+        "color",
+        "cursor",
+        "direction",
+        "empty-cells",
+        "font",
+        "font-family",
+        "font-feature-settings",
+        "font-kerning",
+        "font-language-override",
+        "font-optical-sizing",
+        "font-size",
+        "font-size-adjust",
+        "font-stretch",
+        "font-style",
+        "font-synthesis",
+        "font-variant",
+        "font-variant-alternates",
+        "font-variant-caps",
+        "font-variant-east-asian",
+        "font-variant-ligatures",
+        "font-variant-numeric",
+        "font-variant-position",
+        "font-variation-settings",
+        "font-weight",
+        "hanging-punctuation",
+        "hyphens",
+        "image-rendering",
+        "letter-spacing",
+        "line-break",
+        "line-height",
+        "list-style",
+        "list-style-image",
+        "list-style-position",
+        "list-style-type",
+        "orphans",
+        "overflow-wrap",
+        "paint-order",
+        "pointer-events",
+        "quotes",
+        "ruby-position",
+        "tab-size",
+        "text-align",
+        "text-align-last",
+        "text-combine-upright",
+        "text-decoration-skip-ink",
+        "text-indent",
+        "text-justify",
+        "text-orientation",
+        "text-rendering",
+        "text-shadow",
+        "text-transform",
+        "text-underline-offset",
+        "text-underline-position",
+        "visibility",
+        "white-space",
+        "widows",
+        "word-break",
+        "word-spacing",
+        "word-wrap",
+        "writing-mode",
         # custom properties inherit
     }
 )
@@ -192,38 +239,62 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
     "padding": ("padding-top", "padding-right", "padding-bottom", "padding-left"),
     "inset": ("top", "right", "bottom", "left"),
     "border-width": (
-        "border-top-width", "border-right-width",
-        "border-bottom-width", "border-left-width",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
     ),
     "border-style": (
-        "border-top-style", "border-right-style",
-        "border-bottom-style", "border-left-style",
+        "border-top-style",
+        "border-right-style",
+        "border-bottom-style",
+        "border-left-style",
     ),
     "border-color": (
-        "border-top-color", "border-right-color",
-        "border-bottom-color", "border-left-color",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
     ),
     "border-radius": (
-        "border-top-left-radius", "border-top-right-radius",
-        "border-bottom-right-radius", "border-bottom-left-radius",
+        "border-top-left-radius",
+        "border-top-right-radius",
+        "border-bottom-right-radius",
+        "border-bottom-left-radius",
     ),
     "border-top": (
-        "border-top-width", "border-top-style", "border-top-color",
+        "border-top-width",
+        "border-top-style",
+        "border-top-color",
     ),
     "border-right": (
-        "border-right-width", "border-right-style", "border-right-color",
+        "border-right-width",
+        "border-right-style",
+        "border-right-color",
     ),
     "border-bottom": (
-        "border-bottom-width", "border-bottom-style", "border-bottom-color",
+        "border-bottom-width",
+        "border-bottom-style",
+        "border-bottom-color",
     ),
     "border-left": (
-        "border-left-width", "border-left-style", "border-left-color",
+        "border-left-width",
+        "border-left-style",
+        "border-left-color",
     ),
     "border": (
-        "border-top-width", "border-right-width", "border-bottom-width",
-        "border-left-width", "border-top-style", "border-right-style",
-        "border-bottom-style", "border-left-style", "border-top-color",
-        "border-right-color", "border-bottom-color", "border-left-color",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
+        "border-top-style",
+        "border-right-style",
+        "border-bottom-style",
+        "border-left-style",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
     ),
     "outline": ("outline-width", "outline-style", "outline-color"),
     "overflow": ("overflow-x", "overflow-y"),
@@ -234,40 +305,68 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
     "flex": ("flex-grow", "flex-shrink", "flex-basis"),
     "flex-flow": ("flex-direction", "flex-wrap"),
     "font": (
-        "font-style", "font-variant", "font-weight", "font-stretch",
-        "font-size", "line-height", "font-family",
+        "font-style",
+        "font-variant",
+        "font-weight",
+        "font-stretch",
+        "font-size",
+        "line-height",
+        "font-family",
     ),
     "list-style": (
-        "list-style-type", "list-style-position", "list-style-image",
+        "list-style-type",
+        "list-style-position",
+        "list-style-image",
     ),
     "text-decoration": (
-        "text-decoration-line", "text-decoration-style", "text-decoration-color",
+        "text-decoration-line",
+        "text-decoration-style",
+        "text-decoration-color",
     ),
     "columns": ("column-width", "column-count"),
     "column-rule": (
-        "column-rule-width", "column-rule-style", "column-rule-color",
+        "column-rule-width",
+        "column-rule-style",
+        "column-rule-color",
     ),
     "background": (
-        "background-image", "background-position", "background-size",
-        "background-repeat", "background-origin", "background-clip",
-        "background-attachment", "background-color",
+        "background-image",
+        "background-position",
+        "background-size",
+        "background-repeat",
+        "background-origin",
+        "background-clip",
+        "background-attachment",
+        "background-color",
     ),
     "transition": (
-        "transition-property", "transition-duration",
-        "transition-timing-function", "transition-delay",
+        "transition-property",
+        "transition-duration",
+        "transition-timing-function",
+        "transition-delay",
     ),
     "animation": (
-        "animation-duration", "animation-timing-function", "animation-delay",
-        "animation-iteration-count", "animation-direction",
-        "animation-fill-mode", "animation-play-state", "animation-name",
+        "animation-duration",
+        "animation-timing-function",
+        "animation-delay",
+        "animation-iteration-count",
+        "animation-direction",
+        "animation-fill-mode",
+        "animation-play-state",
+        "animation-name",
     ),
     "grid-template": (
-        "grid-template-rows", "grid-template-columns", "grid-template-areas",
+        "grid-template-rows",
+        "grid-template-columns",
+        "grid-template-areas",
     ),
     "grid-column": ("grid-column-start", "grid-column-end"),
     "grid-row": ("grid-row-start", "grid-row-end"),
     "grid-area": (
-        "grid-row-start", "grid-column-start", "grid-row-end", "grid-column-end",
+        "grid-row-start",
+        "grid-column-start",
+        "grid-row-end",
+        "grid-column-end",
     ),
 }
 
@@ -361,20 +460,35 @@ def collapse_box_values(top: str, right: str, bottom: str, left: str) -> str:
 
 _BORDER_STYLE_KEYWORDS = frozenset(
     {
-        "none", "hidden", "dotted", "dashed", "solid", "double", "groove",
-        "ridge", "inset", "outset",
+        "none",
+        "hidden",
+        "dotted",
+        "dashed",
+        "solid",
+        "double",
+        "groove",
+        "ridge",
+        "inset",
+        "outset",
     }
 )
 _BORDER_WIDTH_KEYWORDS = frozenset({"thin", "medium", "thick"})
 _FONT_STYLE_KEYWORDS = frozenset({"italic", "oblique"})
 _FONT_VARIANT_KEYWORDS = frozenset({"small-caps"})
 _FONT_WEIGHT_KEYWORDS = frozenset(
-    {"bold", "bolder", "lighter", "100", "200", "300", "400", "500", "600",
-     "700", "800", "900"}
+    {"bold", "bolder", "lighter", "100", "200", "300", "400", "500", "600", "700", "800", "900"}
 )
 _FONT_STRETCH_KEYWORDS = frozenset(
-    {"ultra-condensed", "extra-condensed", "condensed", "semi-condensed",
-     "semi-expanded", "expanded", "extra-expanded", "ultra-expanded"}
+    {
+        "ultra-condensed",
+        "extra-condensed",
+        "condensed",
+        "semi-condensed",
+        "semi-expanded",
+        "expanded",
+        "extra-expanded",
+        "ultra-expanded",
+    }
 )
 _GLOBAL_KEYWORDS = frozenset({"inherit", "initial", "unset", "revert", "revert-layer"})
 
@@ -424,11 +538,41 @@ def _looks_like_length(token: str) -> bool:
     token = token.strip().lower()
     if token in _BORDER_WIDTH_KEYWORDS:
         return True
-    return bool(token) and (token[0].isdigit() or token[0] in "+-.") and (
-        token.endswith(
-            ("px", "em", "rem", "%", "vh", "vw", "vmin", "vmax", "pt", "pc",
-             "ex", "ch", "cm", "mm", "in", "q", "fr", "0", "1", "2", "3", "4",
-             "5", "6", "7", "8", "9")
+    return (
+        bool(token)
+        and (token[0].isdigit() or token[0] in "+-.")
+        and (
+            token.endswith(
+                (
+                    "px",
+                    "em",
+                    "rem",
+                    "%",
+                    "vh",
+                    "vw",
+                    "vmin",
+                    "vmax",
+                    "pt",
+                    "pc",
+                    "ex",
+                    "ch",
+                    "cm",
+                    "mm",
+                    "in",
+                    "q",
+                    "fr",
+                    "0",
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                )
+            )
         )
     )
 
@@ -453,8 +597,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         top, right, bottom, left = expand_box_values(value)
         return list(zip(longs, (top, right, bottom, left)))
 
-    if name in ("border", "border-top", "border-right", "border-bottom", "border-left",
-                "outline", "column-rule"):
+    if name in ("border", "border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"):
         width = style = color = None
         for token in value.split():
             tl = token.lower()
@@ -502,8 +645,17 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             basis = "0%"
         return [("flex-grow", grow), ("flex-shrink", shrink), ("flex-basis", basis)]
 
-    if name in ("overflow", "gap", "place-content", "place-items", "place-self",
-                "flex-flow", "columns", "grid-column", "grid-row"):
+    if name in (
+        "overflow",
+        "gap",
+        "place-content",
+        "place-items",
+        "place-self",
+        "flex-flow",
+        "columns",
+        "grid-column",
+        "grid-row",
+    ):
         parts = value.split()
         if len(parts) == 1:
             return [(long, parts[0]) for long in longs]
@@ -587,10 +739,19 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         # (a comma inside url()/rgb()/gradient() is not a layer separator)
         if _has_top_level_comma(value):
             return None
-        bg = {k: "" for k in (
-            "image", "position", "size", "repeat", "attachment", "origin", "clip",
-            "color",
-        )}
+        bg = {
+            k: ""
+            for k in (
+                "image",
+                "position",
+                "size",
+                "repeat",
+                "attachment",
+                "origin",
+                "clip",
+                "color",
+            )
+        }
         tokens = _split_ws_keep_funcs(value)
         i = 0
         while i < len(tokens):
@@ -647,8 +808,7 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
             return ""
         return collapse_box_values(*vals)
 
-    if name in ("border-top", "border-right", "border-bottom", "border-left",
-                "outline", "column-rule"):
+    if name in ("border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"):
         # longs is (<x>-width, <x>-style, <x>-color) for this exact shorthand
         parts = [get(long) for long in longs]
         if any(p == "" for p in parts):
@@ -667,8 +827,17 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
         c = get("border-top-color")
         return " ".join(x for x in (w, s, c) if x and x not in ("medium", "currentcolor")) or s
 
-    if name in ("overflow", "gap", "flex-flow", "place-content", "place-items",
-                "place-self", "columns", "grid-column", "grid-row"):
+    if name in (
+        "overflow",
+        "gap",
+        "flex-flow",
+        "place-content",
+        "place-items",
+        "place-self",
+        "columns",
+        "grid-column",
+        "grid-row",
+    ):
         vals = [get(long) for long in longs]
         if any(v == "" for v in vals):
             return ""
@@ -707,79 +876,157 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
     return ""
 
 
-
 # --- colour normalisation ----------------------------------------------------
 # The 148 CSS named colours -> (r, g, b). Used by ``window.getComputedStyle`` to
 # report a used colour as ``rgb()`` / ``rgba()`` the way a browser does.
 NAMED_COLORS: dict[str, tuple[int, int, int]] = {
-    "aliceblue": (240, 248, 255), "antiquewhite": (250, 235, 215),
-    "aqua": (0, 255, 255), "aquamarine": (127, 255, 212), "azure": (240, 255, 255),
-    "beige": (245, 245, 220), "bisque": (255, 228, 196), "black": (0, 0, 0),
-    "blanchedalmond": (255, 235, 205), "blue": (0, 0, 255),
-    "blueviolet": (138, 43, 226), "brown": (165, 42, 42),
-    "burlywood": (222, 184, 135), "cadetblue": (95, 158, 160),
-    "chartreuse": (127, 255, 0), "chocolate": (210, 105, 30),
-    "coral": (255, 127, 80), "cornflowerblue": (100, 149, 237),
-    "cornsilk": (255, 248, 220), "crimson": (220, 20, 60), "cyan": (0, 255, 255),
-    "darkblue": (0, 0, 139), "darkcyan": (0, 139, 139),
-    "darkgoldenrod": (184, 134, 11), "darkgray": (169, 169, 169),
-    "darkgreen": (0, 100, 0), "darkgrey": (169, 169, 169),
-    "darkkhaki": (189, 183, 107), "darkmagenta": (139, 0, 139),
-    "darkolivegreen": (85, 107, 47), "darkorange": (255, 140, 0),
-    "darkorchid": (153, 50, 204), "darkred": (139, 0, 0),
-    "darksalmon": (233, 150, 122), "darkseagreen": (143, 188, 143),
-    "darkslateblue": (72, 61, 139), "darkslategray": (47, 79, 79),
-    "darkslategrey": (47, 79, 79), "darkturquoise": (0, 206, 209),
-    "darkviolet": (148, 0, 211), "deeppink": (255, 20, 147),
-    "deepskyblue": (0, 191, 255), "dimgray": (105, 105, 105),
-    "dimgrey": (105, 105, 105), "dodgerblue": (30, 144, 255),
-    "firebrick": (178, 34, 34), "floralwhite": (255, 250, 240),
-    "forestgreen": (34, 139, 34), "fuchsia": (255, 0, 255),
-    "gainsboro": (220, 220, 220), "ghostwhite": (248, 248, 255),
-    "gold": (255, 215, 0), "goldenrod": (218, 165, 32), "gray": (128, 128, 128),
-    "green": (0, 128, 0), "greenyellow": (173, 255, 47), "grey": (128, 128, 128),
-    "honeydew": (240, 255, 240), "hotpink": (255, 105, 180),
-    "indianred": (205, 92, 92), "indigo": (75, 0, 130), "ivory": (255, 255, 240),
-    "khaki": (240, 230, 140), "lavender": (230, 230, 250),
-    "lavenderblush": (255, 240, 245), "lawngreen": (124, 252, 0),
-    "lemonchiffon": (255, 250, 205), "lightblue": (173, 216, 230),
-    "lightcoral": (240, 128, 128), "lightcyan": (224, 255, 255),
-    "lightgoldenrodyellow": (250, 250, 210), "lightgray": (211, 211, 211),
-    "lightgreen": (144, 238, 144), "lightgrey": (211, 211, 211),
-    "lightpink": (255, 182, 193), "lightsalmon": (255, 160, 122),
-    "lightseagreen": (32, 178, 170), "lightskyblue": (135, 206, 250),
-    "lightslategray": (119, 136, 153), "lightslategrey": (119, 136, 153),
-    "lightsteelblue": (176, 196, 222), "lightyellow": (255, 255, 224),
-    "lime": (0, 255, 0), "limegreen": (50, 205, 50), "linen": (250, 240, 230),
-    "magenta": (255, 0, 255), "maroon": (128, 0, 0),
-    "mediumaquamarine": (102, 205, 170), "mediumblue": (0, 0, 205),
-    "mediumorchid": (186, 85, 211), "mediumpurple": (147, 112, 219),
-    "mediumseagreen": (60, 179, 113), "mediumslateblue": (123, 104, 238),
-    "mediumspringgreen": (0, 250, 154), "mediumturquoise": (72, 209, 204),
-    "mediumvioletred": (199, 21, 133), "midnightblue": (25, 25, 112),
-    "mintcream": (245, 255, 250), "mistyrose": (255, 228, 225),
-    "moccasin": (255, 228, 181), "navajowhite": (255, 222, 173),
-    "navy": (0, 0, 128), "oldlace": (253, 245, 230), "olive": (128, 128, 0),
-    "olivedrab": (107, 142, 35), "orange": (255, 165, 0),
-    "orangered": (255, 69, 0), "orchid": (218, 112, 214),
-    "palegoldenrod": (238, 232, 170), "palegreen": (152, 251, 152),
-    "paleturquoise": (175, 238, 238), "palevioletred": (219, 112, 147),
-    "papayawhip": (255, 239, 213), "peachpuff": (255, 218, 185),
-    "peru": (205, 133, 63), "pink": (255, 192, 203), "plum": (221, 160, 221),
-    "powderblue": (176, 224, 230), "purple": (128, 0, 128),
-    "rebeccapurple": (102, 51, 153), "red": (255, 0, 0),
-    "rosybrown": (188, 143, 143), "royalblue": (65, 105, 225),
-    "saddlebrown": (139, 69, 19), "salmon": (250, 128, 114),
-    "sandybrown": (244, 164, 96), "seagreen": (46, 139, 87),
-    "seashell": (255, 245, 238), "sienna": (160, 82, 45),
-    "silver": (192, 192, 192), "skyblue": (135, 206, 235),
-    "slateblue": (106, 90, 205), "slategray": (112, 128, 144),
-    "slategrey": (112, 128, 144), "snow": (255, 250, 250),
-    "springgreen": (0, 255, 127), "steelblue": (70, 130, 180),
-    "tan": (210, 180, 140), "teal": (0, 128, 128), "thistle": (216, 191, 216),
-    "tomato": (255, 99, 71), "turquoise": (64, 224, 208),
-    "violet": (238, 130, 238), "wheat": (245, 222, 179), "white": (255, 255, 255),
-    "whitesmoke": (245, 245, 245), "yellow": (255, 255, 0),
+    "aliceblue": (240, 248, 255),
+    "antiquewhite": (250, 235, 215),
+    "aqua": (0, 255, 255),
+    "aquamarine": (127, 255, 212),
+    "azure": (240, 255, 255),
+    "beige": (245, 245, 220),
+    "bisque": (255, 228, 196),
+    "black": (0, 0, 0),
+    "blanchedalmond": (255, 235, 205),
+    "blue": (0, 0, 255),
+    "blueviolet": (138, 43, 226),
+    "brown": (165, 42, 42),
+    "burlywood": (222, 184, 135),
+    "cadetblue": (95, 158, 160),
+    "chartreuse": (127, 255, 0),
+    "chocolate": (210, 105, 30),
+    "coral": (255, 127, 80),
+    "cornflowerblue": (100, 149, 237),
+    "cornsilk": (255, 248, 220),
+    "crimson": (220, 20, 60),
+    "cyan": (0, 255, 255),
+    "darkblue": (0, 0, 139),
+    "darkcyan": (0, 139, 139),
+    "darkgoldenrod": (184, 134, 11),
+    "darkgray": (169, 169, 169),
+    "darkgreen": (0, 100, 0),
+    "darkgrey": (169, 169, 169),
+    "darkkhaki": (189, 183, 107),
+    "darkmagenta": (139, 0, 139),
+    "darkolivegreen": (85, 107, 47),
+    "darkorange": (255, 140, 0),
+    "darkorchid": (153, 50, 204),
+    "darkred": (139, 0, 0),
+    "darksalmon": (233, 150, 122),
+    "darkseagreen": (143, 188, 143),
+    "darkslateblue": (72, 61, 139),
+    "darkslategray": (47, 79, 79),
+    "darkslategrey": (47, 79, 79),
+    "darkturquoise": (0, 206, 209),
+    "darkviolet": (148, 0, 211),
+    "deeppink": (255, 20, 147),
+    "deepskyblue": (0, 191, 255),
+    "dimgray": (105, 105, 105),
+    "dimgrey": (105, 105, 105),
+    "dodgerblue": (30, 144, 255),
+    "firebrick": (178, 34, 34),
+    "floralwhite": (255, 250, 240),
+    "forestgreen": (34, 139, 34),
+    "fuchsia": (255, 0, 255),
+    "gainsboro": (220, 220, 220),
+    "ghostwhite": (248, 248, 255),
+    "gold": (255, 215, 0),
+    "goldenrod": (218, 165, 32),
+    "gray": (128, 128, 128),
+    "green": (0, 128, 0),
+    "greenyellow": (173, 255, 47),
+    "grey": (128, 128, 128),
+    "honeydew": (240, 255, 240),
+    "hotpink": (255, 105, 180),
+    "indianred": (205, 92, 92),
+    "indigo": (75, 0, 130),
+    "ivory": (255, 255, 240),
+    "khaki": (240, 230, 140),
+    "lavender": (230, 230, 250),
+    "lavenderblush": (255, 240, 245),
+    "lawngreen": (124, 252, 0),
+    "lemonchiffon": (255, 250, 205),
+    "lightblue": (173, 216, 230),
+    "lightcoral": (240, 128, 128),
+    "lightcyan": (224, 255, 255),
+    "lightgoldenrodyellow": (250, 250, 210),
+    "lightgray": (211, 211, 211),
+    "lightgreen": (144, 238, 144),
+    "lightgrey": (211, 211, 211),
+    "lightpink": (255, 182, 193),
+    "lightsalmon": (255, 160, 122),
+    "lightseagreen": (32, 178, 170),
+    "lightskyblue": (135, 206, 250),
+    "lightslategray": (119, 136, 153),
+    "lightslategrey": (119, 136, 153),
+    "lightsteelblue": (176, 196, 222),
+    "lightyellow": (255, 255, 224),
+    "lime": (0, 255, 0),
+    "limegreen": (50, 205, 50),
+    "linen": (250, 240, 230),
+    "magenta": (255, 0, 255),
+    "maroon": (128, 0, 0),
+    "mediumaquamarine": (102, 205, 170),
+    "mediumblue": (0, 0, 205),
+    "mediumorchid": (186, 85, 211),
+    "mediumpurple": (147, 112, 219),
+    "mediumseagreen": (60, 179, 113),
+    "mediumslateblue": (123, 104, 238),
+    "mediumspringgreen": (0, 250, 154),
+    "mediumturquoise": (72, 209, 204),
+    "mediumvioletred": (199, 21, 133),
+    "midnightblue": (25, 25, 112),
+    "mintcream": (245, 255, 250),
+    "mistyrose": (255, 228, 225),
+    "moccasin": (255, 228, 181),
+    "navajowhite": (255, 222, 173),
+    "navy": (0, 0, 128),
+    "oldlace": (253, 245, 230),
+    "olive": (128, 128, 0),
+    "olivedrab": (107, 142, 35),
+    "orange": (255, 165, 0),
+    "orangered": (255, 69, 0),
+    "orchid": (218, 112, 214),
+    "palegoldenrod": (238, 232, 170),
+    "palegreen": (152, 251, 152),
+    "paleturquoise": (175, 238, 238),
+    "palevioletred": (219, 112, 147),
+    "papayawhip": (255, 239, 213),
+    "peachpuff": (255, 218, 185),
+    "peru": (205, 133, 63),
+    "pink": (255, 192, 203),
+    "plum": (221, 160, 221),
+    "powderblue": (176, 224, 230),
+    "purple": (128, 0, 128),
+    "rebeccapurple": (102, 51, 153),
+    "red": (255, 0, 0),
+    "rosybrown": (188, 143, 143),
+    "royalblue": (65, 105, 225),
+    "saddlebrown": (139, 69, 19),
+    "salmon": (250, 128, 114),
+    "sandybrown": (244, 164, 96),
+    "seagreen": (46, 139, 87),
+    "seashell": (255, 245, 238),
+    "sienna": (160, 82, 45),
+    "silver": (192, 192, 192),
+    "skyblue": (135, 206, 235),
+    "slateblue": (106, 90, 205),
+    "slategray": (112, 128, 144),
+    "slategrey": (112, 128, 144),
+    "snow": (255, 250, 250),
+    "springgreen": (0, 255, 127),
+    "steelblue": (70, 130, 180),
+    "tan": (210, 180, 140),
+    "teal": (0, 128, 128),
+    "thistle": (216, 191, 216),
+    "tomato": (255, 99, 71),
+    "turquoise": (64, 224, 208),
+    "violet": (238, 130, 238),
+    "wheat": (245, 222, 179),
+    "white": (255, 255, 255),
+    "whitesmoke": (245, 245, 245),
+    "yellow": (255, 255, 0),
     "yellowgreen": (154, 205, 50),
 }
 
@@ -843,7 +1090,7 @@ def normalize_color(value: str) -> str | None:
         if len(digits) in (3, 4):
             digits = "".join(c * 2 for c in digits)
         if len(digits) in (6, 8):
-            r, g, b = (int(digits[i:i + 2], 16) for i in (0, 2, 4))
+            r, g, b = (int(digits[i : i + 2], 16) for i in (0, 2, 4))
             a = int(digits[6:8], 16) / 255 if len(digits) == 8 else None
             return _fmt_rgb(r, g, b, a)
         return None
@@ -865,10 +1112,7 @@ def normalize_color(value: str) -> str | None:
     try:
         alpha = num(parts[3]) if len(parts) >= 4 else None
         if kind.startswith("rgb"):
-            channels = [
-                num(parts[i], 255.0) if parts[i].endswith("%") else float(parts[i])
-                for i in range(3)
-            ]
+            channels = [num(parts[i], 255.0) if parts[i].endswith("%") else float(parts[i]) for i in range(3)]
             return _fmt_rgb(
                 int(round(channels[0])),
                 int(round(channels[1])),

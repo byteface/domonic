@@ -10,27 +10,26 @@ from __future__ import annotations
 import ast
 import copy
 import functools
+import importlib
 import inspect
 import textwrap
 from collections.abc import Iterable
 
+from domonic._ssr_cache import compiled_code
 from domonic.dom import (
+    _ATTRIBUTE_NAME_REMAP,
+    _BOOLEAN_ATTRIBUTES,
+    _HTML_RAWTEXT_ELEMENTS,
     DOMConfig,
     Node,
     RawHTML,
     Text,
-    _ATTRIBUTE_NAME_REMAP,
-    _BOOLEAN_ATTRIBUTES,
-    _HTML_RAWTEXT_ELEMENTS,
     _dom_config_render_fingerprint,
     _escape_html,
     _normalize_alpine_attribute,
     _normalize_htmx_attribute,
     _render_attribute_value,
 )
-import importlib
-
-from domonic._ssr_cache import compiled_code
 
 raw = RawHTML
 
@@ -42,9 +41,7 @@ _TAGS = {
 }
 # form sets its tag name on instances instead of on the class.
 _TAGS.add(_html.form)
-_OPTIONAL = frozenset(
-    "html head body p dt dd li option thead th tbody tr td tfoot colgroup".split()
-)
+_OPTIONAL = frozenset("html head body p dt dd li option thead th tbody tr td tfoot colgroup".split())
 
 
 class UnsupportedView(ValueError):
@@ -62,18 +59,13 @@ def _text(value):
         text = str(value.textContent)
         return (
             _escape_html(text)
-            if (
-                DOMConfig.GLOBAL_AUTOESCAPE
-                or getattr(value, "_escape_text_on_render", False)
-            )
+            if (DOMConfig.GLOBAL_AUTOESCAPE or getattr(value, "_escape_text_on_render", False))
             else text
         )
     if isinstance(value, Node):
         # A runtime-supplied DOM is an explicit subtree fallback.
         return str(value)
-    if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(
-        value, Iterable
-    ):
+    if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(value, Iterable):
         return "".join(_text(item) for item in value)
     value = str(value)
     return _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
@@ -105,9 +97,7 @@ def _quoted_attribute(value, quote):
     if type(value) is not str:
         value = "true" if value is True else "false" if value is False else str(value)
     value = value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-    return (
-        value.replace('"', "&quot;") if quote == '"' else value.replace("'", "&#x27;")
-    )
+    return value.replace('"', "&quot;") if quote == '"' else value.replace("'", "&#x27;")
 
 
 def _attribute_dq(value):
@@ -133,12 +123,7 @@ def _join(parts):
         return ast.Constant("")
     if len(merged) == 1:
         return merged[0]
-    return ast.JoinedStr(
-        [
-            part if isinstance(part, ast.Constant) else ast.FormattedValue(part, -1)
-            for part in merged
-        ]
-    )
+    return ast.JoinedStr([part if isinstance(part, ast.Constant) else ast.FormattedValue(part, -1) for part in merged])
 
 
 class _Compiler:
@@ -177,9 +162,7 @@ class _Compiler:
                     ast.Lambda,
                 ),
             ):
-                raise UnsupportedView(
-                    "runtime calls or mutation in a dynamic expression"
-                )
+                raise UnsupportedView("runtime calls or mutation in a dynamic expression")
             if isinstance(node, ast.Name) and node.id.startswith("__domonic_ssr_"):
                 raise UnsupportedView("reserved compiler name")
         return copy.deepcopy(expr)
@@ -220,30 +203,21 @@ class _Compiler:
                 if isinstance(value, ast.Constant):
                     return [ast.Constant(str(value.value))]
                 value = self.slot(value, slots)
-                return [
-                    ast.Call(ast.Name("__domonic_ssr_raw", ast.Load()), [value], [])
-                ]
+                return [ast.Call(ast.Name("__domonic_ssr_raw", ast.Load()), [value], [])]
             tag = self.tag(expr.func)
             if tag is None:
-                raise UnsupportedView(
-                    "only directly imported HTML element calls are supported"
-                )
+                raise UnsupportedView("only directly imported HTML element calls are supported")
             if any(isinstance(arg, ast.Starred) for arg in expr.args):
                 raise UnsupportedView("starred element arguments")
             if any(kw.arg is None for kw in expr.keywords):
                 raise UnsupportedView("expanded attribute dictionaries")
-            keys = [
-                kw.arg if kw.arg.startswith("_") else "_" + kw.arg
-                for kw in expr.keywords
-            ]
+            keys = [kw.arg if kw.arg.startswith("_") else "_" + kw.arg for kw in expr.keywords]
             if len(set(keys)) != len(keys):
                 raise UnsupportedView("duplicate normalized attribute names")
             name = "form" if tag is _html.form else tag.name
             children = []
             for child in expr.args:
-                children.extend(
-                    self.parts(child, slots, name in _HTML_RAWTEXT_ELEMENTS)
-                )
+                children.extend(self.parts(child, slots, name in _HTML_RAWTEXT_ELEMENTS))
             attrs = []
             for kw in expr.keywords:
                 if isinstance(kw.value, ast.Constant):
@@ -262,11 +236,7 @@ class _Compiler:
                 return opening + [ast.Constant(end)]
             closing = (
                 "</" + name + ">"
-                if (
-                    DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
-                    or name not in _OPTIONAL
-                    or name in _HTML_RAWTEXT_ELEMENTS
-                )
+                if (DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS or name not in _OPTIONAL or name in _HTML_RAWTEXT_ELEMENTS)
                 else ""
             )
             return opening + [ast.Constant(">"), *children, ast.Constant(closing)]
@@ -311,12 +281,8 @@ class _Compiler:
         # Boolean shorthand and type-dependent/unusual quoting retain the
         # general serializer. Common delimiters and names become literals.
         quote = DOMConfig.ATTRIBUTE_QUOTES
-        if (quote == '"' or quote == "'") and (
-            shortcut is not None or name not in _BOOLEAN_ATTRIBUTES
-        ):
-            helper = (
-                "__domonic_ssr_attr_dq" if quote == '"' else "__domonic_ssr_attr_sq"
-            )
+        if (quote == '"' or quote == "'") and (shortcut is not None or name not in _BOOLEAN_ATTRIBUTES):
+            helper = "__domonic_ssr_attr_dq" if quote == '"' else "__domonic_ssr_attr_sq"
             return [
                 ast.Constant(" " + name + "=" + quote),
                 ast.Call(ast.Name(helper, ast.Load()), [value], []),
@@ -357,19 +323,11 @@ class _Compiler:
             elif isinstance(statement, ast.Assign) and all(
                 isinstance(target, ast.Name) for target in statement.targets
             ):
-                result.append(
-                    ast.Assign(
-                        copy.deepcopy(statement.targets), self.scalar(statement.value)
-                    )
-                )
-            elif isinstance(statement, ast.Expr) and isinstance(
-                statement.value, ast.Constant
-            ):
+                result.append(ast.Assign(copy.deepcopy(statement.targets), self.scalar(statement.value)))
+            elif isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Constant):
                 result.append(copy.deepcopy(statement))  # docstring
             else:
-                raise UnsupportedView(
-                    "unsupported statement: " + type(statement).__name__
-                )
+                raise UnsupportedView("unsupported statement: " + type(statement).__name__)
         return result
 
 
@@ -404,28 +362,20 @@ def compile(view, *, strict=False, cache_dir=None):
             fallback.source = None
             return fallback
     if not inspect.isfunction(view) or inspect.iscoroutinefunction(view):
-        raise TypeError(
-            "compile expects a synchronous Python view function or DOM node"
-        )
+        raise TypeError("compile expects a synchronous Python view function or DOM node")
     original = view
     reason = None
     try:
         if hasattr(view, "__wrapped__"):
-            raise UnsupportedView(
-                "wrapped view; compile before applying other decorators"
-            )
+            raise UnsupportedView("wrapped view; compile before applying other decorators")
         source = textwrap.dedent(inspect.getsource(view))
         tree = ast.parse(source)
-        function = next(
-            (node for node in tree.body if isinstance(node, ast.FunctionDef)), None
-        )
+        function = next((node for node in tree.body if isinstance(node, ast.FunctionDef)), None)
         if function is None:
             raise UnsupportedView("source must contain a named function")
         local_names = set(view.__code__.co_varnames)
         local_names.update(
-            node.id
-            for node in ast.walk(function)
-            if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+            node.id for node in ast.walk(function) if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
         )
         if any(name.startswith("__domonic_ssr_") for name in local_names):
             raise UnsupportedView("reserved compiler name")
@@ -546,26 +496,18 @@ def _snapshot(view, *, cache_dir=None):
             ]
         if isinstance(node, (list, tuple)):
             return [part for child in node for part in parts(child)]
-        if isinstance(node, Iterable) and not isinstance(
-            node, (str, bytes, bytearray, dict)
-        ):
-            raise UnsupportedView(
-                "snapshot requires concrete children, not an iterator"
-            )
+        if isinstance(node, Iterable) and not isinstance(node, (str, bytes, bytearray, dict)):
+            raise UnsupportedView("snapshot requires concrete children, not an iterator")
         return [ast.Constant(_text(node))]
 
     expression = ast.Expression(
         ast.Lambda(
-            ast.arguments(
-                posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]
-            ),
+            ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
             _join(parts(view)),
         )
     )
     expression = ast.fix_missing_locations(expression)
-    code, cache_hit = compiled_code(
-        ast.unparse(expression), "<domonic-snapshot>", "eval", cache_dir
-    )
+    code, cache_hit = compiled_code(ast.unparse(expression), "<domonic-snapshot>", "eval", cache_dir)
     # ``code`` is a lambda AST that domonic synthesised from the rendered DOM
     # tree (string ``ast.Constant``s plus calls to the helpers in ``namespace``);
     # nothing is parsed from a string. Build-time codegen, no external input.
@@ -597,13 +539,9 @@ class CompiledRoutes:
                 original = handler.original
             else:
                 original = handler
-            if not inspect.isfunction(original) or inspect.iscoroutinefunction(
-                original
-            ):
+            if not inspect.isfunction(original) or inspect.iscoroutinefunction(original):
                 continue
-            compiled_views[endpoint] = compile(
-                original, strict=strict, cache_dir=cache_dir
-            )
+            compiled_views[endpoint] = compile(original, strict=strict, cache_dir=cache_dir)
         # Build everything before changing registration (strict mode is atomic).
         for endpoint, renderer in compiled_views.items():
             if renderer.is_compiled:

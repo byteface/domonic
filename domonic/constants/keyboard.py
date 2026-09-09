@@ -249,9 +249,7 @@ _KEY_TO_CODE.update({chr(97 + i): f"Key{chr(65 + i)}" for i in range(26)})
 _KEY_TO_CODE.update({str(i): f"Digit{i}" for i in range(10)})
 _KEY_TO_CODE.update({f"F{i}": f"F{i}" for i in range(1, 13)})
 
-_KEY_TO_LEGACY_KEYCODE: Final[dict[str, int]] = {
-    key: int(code) for code, key in _LEGACY_KEYCODE_TO_KEY.items()
-}
+_KEY_TO_LEGACY_KEYCODE: Final[dict[str, int]] = {key: int(code) for code, key in _LEGACY_KEYCODE_TO_KEY.items()}
 
 
 class KeyCode:

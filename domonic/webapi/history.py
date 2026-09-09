@@ -107,9 +107,7 @@ class History:  # (EventTarget):
         finally:
             self.skip_update = False
 
-        self.window.dispatchEvent(
-            PopStateEvent("popstate", {"state": entry.exposed_state})
-        )
+        self.window.dispatchEvent(PopStateEvent("popstate", {"state": entry.exposed_state}))
 
     def _update(self, url: str):
         """Updates the current history state for normal location navigations."""
