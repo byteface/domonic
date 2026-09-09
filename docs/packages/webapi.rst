@@ -202,6 +202,42 @@ available for Web Streams-style examples and tests.
 	print(stream.read())
 	# b' world'
 
+``ReadableStream`` also accepts an underlying source ``dict``/object with
+``start``/``pull``/``cancel`` callbacks. In that mode ``getReader()`` returns a
+``ReadableStreamDefaultReader`` whose ``read()`` yields ``{"value": ...,
+"done": ...}`` (the reader is a plain Python iterator too), ``pull`` is driven by
+backpressure derived from an optional queuing strategy, and ``cancel()``,
+``tee()`` and ``locked`` behave as in the browser.
+
+.. code-block :: python
+
+	from domonic.webapi.streams import ReadableStream, CountQueuingStrategy
+
+	def make_source(items):
+		def pull(controller):
+			if items:
+				controller.enqueue(items.pop(0))
+			else:
+				controller.close()
+		return {"pull": pull}
+
+	stream = ReadableStream(
+		make_source([b"a", b"b", b"c"]),
+		CountQueuingStrategy({"highWaterMark": 2}),
+	)
+	reader = stream.getReader()
+	print(reader.read())
+	# {'value': b'a', 'done': False}
+	print(list(reader))
+	# [b'b', b'c']
+
+``CountQueuingStrategy`` measures the internal queue by chunk count and
+``ByteLengthQueuingStrategy`` measures it by ``byteLength``; both expose
+``highWaterMark`` and ``size()`` and can be passed to ``ReadableStream`` or
+``WritableStream``. ``WritableStream.getWriter()`` returns a
+``WritableStreamDefaultWriter`` with ``write()``, ``close()``, ``abort()``,
+``releaseLock()`` and a ``desiredSize`` derived from the strategy.
+
 
 Canvas and WebGL
 ----------------

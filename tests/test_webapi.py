@@ -82,9 +82,12 @@ from domonic.webapi.serviceworker import (
 )
 from domonic.webapi.sse import EventSource
 from domonic.webapi.streams import (
+    ByteLengthQueuingStrategy,
     CompressionStream,
+    CountQueuingStrategy,
     DecompressionStream,
     ReadableStream,
+    ReadableStreamDefaultReader,
     TransformStream,
     WritableStream,
 )
@@ -521,6 +524,113 @@ class TestCase(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             CompressionStream("brotli")
+
+    def test_readable_stream_reader_and_backpressure(self):
+        # legacy raw-value construction is unchanged
+        legacy = ReadableStream(b"hello")
+        self.assertEqual(legacy.getReader(), b"hello")
+        self.assertFalse(legacy.locked)
+
+        # an underlying source yields a real reader driven by backpressure
+        source_chunks = [b"a", b"b", b"c", b"d"]
+        observed = []
+
+        def pull(controller):
+            if source_chunks:
+                observed.append(controller.desiredSize)
+                controller.enqueue(source_chunks.pop(0))
+            else:
+                controller.close()
+
+        stream = ReadableStream(
+            {"pull": pull}, CountQueuingStrategy({"highWaterMark": 2})
+        )
+        # start pre-fills the queue up to the high water mark (2 chunks)
+        self.assertEqual(observed, [2, 1])
+
+        reader = stream.getReader()
+        self.assertIsInstance(reader, ReadableStreamDefaultReader)
+        self.assertTrue(stream.locked)
+        with self.assertRaises(TypeError):
+            stream.getReader()
+
+        self.assertEqual(reader.read(), {"value": b"a", "done": False})
+        self.assertEqual(
+            [reader.read()["value"] for _ in range(3)], [b"b", b"c", b"d"]
+        )
+        self.assertEqual(reader.read(), {"value": None, "done": True})
+        self.assertTrue(reader.closed)
+
+        reader.releaseLock()
+        self.assertFalse(stream.locked)
+        with self.assertRaises(TypeError):
+            reader.read()
+
+    def test_readable_stream_cancel_tee_and_iteration(self):
+        cancelled = []
+        stream = ReadableStream(
+            {
+                "pull": lambda controller: controller.enqueue(b"z"),
+                "cancel": lambda reason: cancelled.append(reason),
+            }
+        )
+        self.assertEqual(stream.cancel("no thanks"), None)
+        self.assertEqual(cancelled, ["no thanks"])
+        self.assertEqual(stream.getReader().read(), {"value": None, "done": True})
+
+        left, right = ReadableStream(b"hello").tee()
+        self.assertEqual(left.read(), b"hello")
+        self.assertEqual(right.read(), b"hello")
+
+        iterated = ReadableStream(
+            {
+                "start": lambda controller: [
+                    controller.enqueue(b"1"),
+                    controller.enqueue(b"2"),
+                    controller.close(),
+                ]
+            }
+        )
+        self.assertEqual(list(iterated), [b"1", b"2"])
+
+    def test_queuing_strategies(self):
+        count = CountQueuingStrategy({"highWaterMark": 5})
+        self.assertEqual(count.highWaterMark, 5)
+        self.assertEqual(count.size(b"anything"), 1)
+
+        byte_length = ByteLengthQueuingStrategy(highWaterMark=64)
+        self.assertEqual(byte_length.highWaterMark, 64)
+        self.assertEqual(byte_length.size(b"abcd"), 4)
+        self.assertEqual(byte_length.size("abcd"), 4)
+
+        with self.assertRaises(TypeError):
+            CountQueuingStrategy()
+
+        # ByteLengthQueuingStrategy measures the queue in bytes
+        queued = []
+
+        def pull(controller):
+            if len(queued) < 4:
+                queued.append(b"xxxx")
+                controller.enqueue(b"xxxx")
+            else:
+                controller.close()
+
+        ReadableStream({"pull": pull}, ByteLengthQueuingStrategy({"highWaterMark": 8}))
+        self.assertEqual(len(queued), 2)
+
+    def test_writable_stream_writer_and_abort(self):
+        writable = WritableStream()
+        writer = writable.getWriter()
+        self.assertEqual(writer.write(b"chunk"), b"chunk")
+        self.assertEqual(writer.desiredSize, 0)
+        writer.abort("stop")
+        self.assertTrue(writable.aborted)
+        with self.assertRaises(ValueError):
+            writable.write(b"more")
+        writer.releaseLock()
+        with self.assertRaises(TypeError):
+            writer.write(b"more")
 
     def test_scheduler_api(self):
         immediate = scheduler.postTask(lambda: "ready")
