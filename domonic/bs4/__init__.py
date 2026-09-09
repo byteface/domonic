@@ -474,7 +474,7 @@ def _search_nodes(
                     try:
                         if name(candidate):
                             yield child
-                    except TypeError:
+                    except TypeError:  # nosec B110 - user matcher rejected both node and name: skip child
                         pass
             return
     else:
@@ -573,7 +573,7 @@ def _find_all(
             return _limit(fast, limit)
         try:
             return _limit(self.querySelectorAll(selector), limit)
-        except Exception:
+        except Exception:  # nosec B110 - CSS fast path is optional; fall through to the node scan below
             pass
     candidates = _indexed_candidates(self, name, recursive, string)
     if candidates is None:

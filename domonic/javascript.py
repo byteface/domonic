@@ -4408,7 +4408,7 @@ def _expand_js_replacement(replacement: str, m: "re.Match[str]") -> str:
             end = replacement.index(">", i + 2)
             try:
                 out.append(m.group(replacement[i + 2:end]) or "")
-            except (IndexError, re.error):
+            except (IndexError, re.error):  # nosec B110 - unknown $<name> group expands to empty, per JS
                 pass
             i = end + 1
         elif nxt.isdigit():

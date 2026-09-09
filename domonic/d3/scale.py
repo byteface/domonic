@@ -1227,7 +1227,7 @@ def tickFormat(start: float, stop: float, count: int, specifier: Any = None):
             from domonic.d3.format import format as d3_format
 
             return d3_format(str(specifier))  # type: ignore[misc]
-        except Exception:
+        except Exception:  # nosec B110 - invalid specifier: fall back to step-derived precision, like d3
             pass
 
     step = abs(tickStep(start, stop, count if count else 10))

@@ -58,7 +58,7 @@ def compiled_code(source, filename, mode, cache_dir=None):
         if not isinstance(code, types.CodeType):
             raise ValueError("invalid cached code")
         return code, True
-    except (OSError, ValueError, EOFError, TypeError):
+    except (OSError, ValueError, EOFError, TypeError):  # nosec B110 - any cache-read failure just recompiles below
         pass
     code = compile(source, filename, mode)
     payload = marshal.dumps(code)

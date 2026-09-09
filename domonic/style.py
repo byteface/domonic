@@ -5751,7 +5751,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             if adopted:
                 try:
                     sheet_list = sheet_list + list(adopted)
-                except TypeError:
+                except TypeError:  # nosec B110 - adoptedStyleSheets not iterable: skip it
                     pass
         window = getattr(document, "defaultView", None) if document else None
         viewport = (
@@ -5768,7 +5768,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             if document is not None:
                 try:
                     document._cssom_rule_index = index
-                except Exception:
+                except Exception:  # nosec B110 - index cache is best-effort; cache["__rule_index__"] still set below
                     pass
         cache["__rule_index__"] = index
         if not index:

@@ -9896,7 +9896,7 @@ def _svg_resolve_font(element: "Element") -> tuple[float, bool, float]:
             got = computed.getPropertyValue(name)
             if got and got not in ("normal", "medium"):
                 return got
-        except Exception:
+        except Exception:  # nosec B110 - computed style is optional; fall back to attribute/default
             pass
         return None
 
