@@ -704,10 +704,18 @@ def _normalize_mutation_observer_options(options: dict[str, Any]) -> dict[str, A
         "characterData": bool(options.get("characterData", False)),
         "characterDataOldValue": bool(options.get("characterDataOldValue", False)),
     }
-    if normalized["attributeFilter"] is not None or normalized["attributeOldValue"]:
+    if "attributes" not in options and (
+        "attributeFilter" in options or "attributeOldValue" in options
+    ):
         normalized["attributes"] = True
-    if normalized["characterDataOldValue"]:
+    if "characterData" not in options and "characterDataOldValue" in options:
         normalized["characterData"] = True
+    if not normalized["attributes"] and (
+        normalized["attributeOldValue"] or "attributeFilter" in options
+    ):
+        raise TypeError("Attribute options require attributes to be enabled")
+    if normalized["characterDataOldValue"] and not normalized["characterData"]:
+        raise TypeError("characterDataOldValue requires characterData to be enabled")
     if normalized["attributeFilter"] is not None:
         normalized["attributeFilter"] = tuple(
             attr[1:] if isinstance(attr, str) and attr.startswith("_") else attr
@@ -8296,7 +8304,9 @@ class MutationObserver:
 
     This implementation follows the familiar platform model: call ``observe()``
     with a target and options, allow DOM operations to queue records, then
-    receive them through the callback or ``takeRecords()``.
+    receive them through the callback or ``takeRecords()``. Callbacks currently
+    run synchronously after each mutation; browser microtask batching is not
+    implemented. Call ``disconnect()`` to release an active registration.
     """
 
     _all_observers: ClassVar[list["MutationObserver"]] = []
@@ -8307,16 +8317,19 @@ class MutationObserver:
         self.callback = callback
         self._records: list[MutationRecord] = []
         self._observations: dict[Node, dict[str, Any]] = {}
-        MutationObserver._all_observers.append(self)
 
     def disconnect(self) -> None:
         self._observations.clear()
         self._records.clear()
+        if self in MutationObserver._all_observers:
+            MutationObserver._all_observers.remove(self)
 
     def observe(self, target: Node, options: dict[str, Any]) -> None:
         if not isinstance(target, Node):
             raise TypeError("MutationObserver target must be a Node")
         self._observations[target] = _normalize_mutation_observer_options(options)
+        if self not in MutationObserver._all_observers:
+            MutationObserver._all_observers.append(self)
 
     def takeRecords(self) -> list[MutationRecord]:
         records = list(self._records)
@@ -8324,48 +8337,51 @@ class MutationObserver:
         return records
 
     def _enqueue_if_observing(self, record: MutationRecord) -> bool:
+        # Adapted from 7HR4IZ3's interestedObservers algorithm in PR #68:
+        # https://github.com/byteface/domonic/pull/68
+        # Combine every matching registration before queuing one record. A direct
+        # observation must not hide an ancestor's request for the old value.
+        # See test_overlapping_observations_preserve_old_value in
+        # tests/test_dom_mutation_observer.py.
+        interested = False
+        old_value = None
         for current in _iter_ancestors_inclusive(record.target):
             options = self._observations.get(current)
             if options is None:
                 continue
             if current is not record.target and not options["subtree"]:
                 continue
-            if record.type == "childList" and not options["childList"]:
+            if not options.get(record.type, False):
                 continue
             if record.type == "attributes":
-                if not options["attributes"]:
-                    continue
-                attribute_filter = options.get("attributeFilter")
+                attribute_filter = options["attributeFilter"]
                 if (
                     attribute_filter is not None
                     and record.attributeName not in attribute_filter
                 ):
                     continue
-                old_value = record.oldValue if options["attributeOldValue"] else None
-                filtered_record = MutationRecord(
-                    "attributes",
-                    record.target,
-                    attributeName=record.attributeName,
-                    attributeNamespace=record.attributeNamespace,
-                    oldValue=old_value,
-                )
-                self._records.append(filtered_record)
-                return True
-            if record.type == "characterData":
-                if not options["characterData"]:
-                    continue
-                old_value = (
-                    record.oldValue if options["characterDataOldValue"] else None
-                )
-                filtered_record = MutationRecord(
-                    "characterData", record.target, oldValue=old_value
-                )
-                self._records.append(filtered_record)
-                return True
-            if record.type == "childList":
-                self._records.append(record)
-                return True
-        return False
+                if options["attributeOldValue"]:
+                    old_value = record.oldValue
+            elif record.type == "characterData":
+                if options["characterDataOldValue"]:
+                    old_value = record.oldValue
+            interested = True
+        if not interested:
+            return False
+        self._records.append(
+            MutationRecord(
+                record.type,
+                record.target,
+                addedNodes=record.addedNodes,
+                removedNodes=record.removedNodes,
+                previousSibling=record.previousSibling,
+                nextSibling=record.nextSibling,
+                attributeName=record.attributeName,
+                attributeNamespace=record.attributeNamespace,
+                oldValue=old_value,
+            )
+        )
+        return True
 
     def _flush(self) -> None:
         if not self._records:
