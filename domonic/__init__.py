@@ -6,7 +6,7 @@ Python DOM, HTML, SVG, XML, Web API, and JavaScript-like runtime toolkit.
 
 """
 
-__version__ = "1.7.1"
+__version__ = "1.7.2"
 __license__ = "MIT"
 __author__ = "@byteface"
 
@@ -1486,7 +1486,7 @@ class domonic:
         return domonic.parseString_active_parser
 
     @staticmethod
-    def parseString(string, parser=None, debug: bool = False):
+    def parseString(string, parser=None, debug: bool = False, *, document: bool = False):
         """Parse a file into a DOM from a string.
 
         With ``parser="auto"`` (the default) the fastest installed backend that
@@ -1494,7 +1494,15 @@ class domonic:
         parsers to the stdlib ones. Missing or failing backends are skipped.
         Call :meth:`get_active_parser` afterwards, or enable the
         ``"domonic.parser"`` logger at ``DEBUG``, to see which backend was used.
+
+        ``document=True`` requests a complete HTML document, including implied
+        html/head/body elements, using html5lib's document parser. The default
+        retains the existing fragment-oriented behavior for snippets.
         """
+        if document:
+            if parser not in (None, "auto", "html5lib"):
+                raise ValueError("document=True requires the html5lib parser")
+            parser = "html5lib"
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
         def _upgrade_custom_elements(page):
@@ -1511,7 +1519,8 @@ class domonic:
         def _looks_like_full_html_document(source: str) -> bool:
             probe = source.lstrip().lower()
             return (
-                probe.startswith("<!doctype html")
+                document
+                or probe.startswith("<!doctype html")
                 or probe.startswith("<html")
                 or "<html" in probe[:512]
             )
@@ -1588,7 +1597,11 @@ class domonic:
 
             if html_root is None:
                 if is_full_document and doctype is not None:
-                    return _html_document_from_doctype(source)
+                    # A backend may return only the body content. Do not replace
+                    # it with an empty document (issue #74). Let the HTML tree
+                    # builder supply implied containers while retaining content.
+                    _record_active("html5lib")
+                    return _parse_with_html5lib()
                 if isinstance(page, dom.Element):
                     page.parentNode = None
                 return _ensure_owner_document(page)
@@ -1733,7 +1746,7 @@ class domonic:
             "expat": ("expat", _parse_with_expat),
         }
 
-        if _is_doctype_only(string):
+        if _is_doctype_only(string) and not document:
             return _upgrade_custom_elements(_html_document_from_doctype(string))
 
         if parser in explicit_parsers:

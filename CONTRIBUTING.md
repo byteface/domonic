@@ -160,5 +160,7 @@ I'd like to thank here...
 * dmalataeva
 * Eoghan Murray - eoghanmurray
 * Nikolay - Kiuh
+* testmigrator
+* 7HR4IZ3
 
 and of course dependabot[bot]

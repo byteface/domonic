@@ -146,6 +146,63 @@ script actually executes):
 	# <body><script>if (a && b) x("y");</script></body>
 
 
+Parsing documents and pretty-printing
+-------------------------------------
+
+``DOMParser().parseFromString(markup, "text/html")`` parses a complete HTML
+document with html5lib, including implied ``html``, ``head`` and ``body``
+elements. ``domonic.parseString(markup)`` retains fragment-oriented behavior
+for snippets; pass ``document=True`` to request the same full-document mode.
+Other explicit backends can differ in their HTML error recovery. If a backend
+returns content without an HTML root for input containing an HTML doctype,
+domonic reparses it with html5lib rather than discarding the content.
+
+Parsing does not invent a title or add indentation. ``str(doc)`` serializes
+the document compactly, including a supplied doctype; ``doc.documentElement.outerHTML``
+serializes the root element without the doctype. Use ``format(doc)`` for
+human-readable indentation. Add an empty title explicitly if desired:
+
+.. code-block:: python
+
+    from domonic.dom import DOMParser
+    from domonic.html import title
+
+    doc = DOMParser().parseFromString(
+        "<!DOCTYPE html><div>Hello World</div>", "text/html"
+    )
+    doc.head.appendChild(title(""))
+    print(format(doc).expandtabs(2).strip())
+
+Pretty-printing is intended for display: inserted whitespace can affect text
+layout, so use compact serialization when preserving text spacing matters.
+
+
+Doctypes
+--------
+
+``Document.doctype`` is ``None`` unless a doctype was parsed from the source or
+set explicitly -- it is no longer synthesised on read. Parsing markup that
+contains ``<!DOCTYPE ...>`` sets it, and
+``document.implementation.createHTMLDocument()`` creates one (``<!DOCTYPE
+html>``), matching the DOM spec.
+
+When building a full page programmatically, ask the ``html`` tag for a doctype
+with the ``_doctype`` keyword:
+
+.. code-block:: python
+
+    from domonic.html import html, head, body, h1
+
+    page = html(head(), body(h1("Hi")), _doctype=True)          # <!DOCTYPE html>
+    page = html(head(), body(), _doctype="XHTML1_1")            # a domonic.constants.doctypes key
+    page = html(head(), body(), _doctype="<!DOCTYPE html>")     # a literal string
+
+``str(page)`` and ``format(page)`` then both emit the doctype ahead of
+``<html>``. Without the keyword ``html()`` renders as ``<html>...</html>`` and
+``page.doctype`` is ``None``. Equivalently, assign ``page.doctype =
+DocumentType("html", "", "")`` after construction.
+
+
 tagName, nodeName and localName
 --------------------------------
 

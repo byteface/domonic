@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 
 from domonic import domonic
 from domonic.decorators import silence
+from domonic.dom import DocumentType
 from domonic.html import *
 
 html_module = importlib.import_module("domonic.html")
@@ -1997,6 +1998,7 @@ body(
         # `<button>` plus a duplicated `<form>` in the old expected value
         # below -- this now asserts the correct, non-duplicated tree.
         d = html()
+        d.doctype = DocumentType("html", "", "")
         with d:
             dialog("hello", _open="")
             form(button("close"), _method="dialog", _action="close")
@@ -2011,6 +2013,36 @@ body(
         # print(mydialog)
         # print(str(mydialog))
         # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
+
+    def test_html_doctype_kwarg(self):
+        # No keyword -> no doctype, matching the DOM spec and the parser.
+        self.assertEqual(str(html()), "<html></html>")
+        self.assertIsNone(html().doctype)
+
+        # _doctype=True -> HTML5, emitted by both str() and format().
+        page = html(head(), body(), _doctype=True)
+        self.assertEqual(str(page.doctype), "<!DOCTYPE html>")
+        self.assertTrue(str(page).startswith("<!DOCTYPE html><html>"))
+        self.assertTrue(f"{page}".startswith("<!DOCTYPE html>\n<html>"))
+        # the keyword must not leak through as an attribute
+        self.assertNotIn("doctype", str(page))
+
+        # a known key from domonic.constants.doctypes
+        self.assertEqual(
+            str(html(_doctype="XHTML1_1").doctype),
+            '<!DOCTYPE html PUBLIC -//W3C//DTD XHTML 1.1//EN SYSTEM '
+            "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd>",
+        )
+
+        # a bare root name and a literal string both work
+        self.assertEqual(str(html(_doctype="html").doctype), "<!DOCTYPE html>")
+        self.assertEqual(
+            str(html(_doctype="<!DOCTYPE html>").doctype), "<!DOCTYPE html>"
+        )
+
+        # an explicit DocumentType is passed straight through
+        dt = DocumentType("html", "", "")
+        self.assertIs(html(_doctype=dt).doctype, dt)
 
 
 if __name__ == "__main__":

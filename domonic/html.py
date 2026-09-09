@@ -9,6 +9,7 @@ Generate HTML using python.
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from domonic.dom import RawHTML as raw
@@ -642,7 +643,56 @@ class closed_tag(Node):
         yield f"<{self.name}{self.__attributes__}>"
 
 
-html = type("html", (HTMLDocument,), {"name": "html"})
+_DOCTYPE_LITERAL_RE = re.compile(
+    r"""<!DOCTYPE\s+(?P<name>[^\s>]+)
+        (?:\s+PUBLIC\s+"(?P<public>[^"]*)")?
+        (?:\s+(?:SYSTEM\s+)?"(?P<system>[^"]*)")?
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def _resolve_doctype(spec: Any) -> DocumentType:
+    """Coerce an ``html(..., _doctype=...)`` / ``Webpage`` argument into a
+    :class:`~domonic.dom.DocumentType`.
+
+    Accepts ``True`` (HTML5), an existing ``DocumentType``, a key from
+    ``domonic.constants.doctypes`` (e.g. ``"HTML5"``, ``"XHTML1_1"``), a bare
+    root-element name (``"html"``), or a literal ``"<!DOCTYPE ...>"`` string.
+    """
+    if spec is True:
+        return DocumentType("html", "", "")
+    if isinstance(spec, DocumentType):
+        return spec
+    if isinstance(spec, str):
+        from domonic.constants import doctypes
+
+        text = doctypes.get(spec, doctypes.get(spec.upper(), spec)).strip()
+        match = _DOCTYPE_LITERAL_RE.match(text)
+        if match:
+            return DocumentType(
+                match.group("name"),
+                match.group("public") or "",
+                match.group("system") or "",
+            )
+        return DocumentType(text or "html", "", "")
+    raise TypeError(f"Unsupported _doctype value: {spec!r}")
+
+
+def _html_tag_init(self, *args, _doctype=None, **kwargs):
+    """``html`` tag constructor: like ``HTMLDocument`` but with an optional
+    ``_doctype`` keyword so a full page can be built in one call, e.g.
+    ``html(head(...), body(...), _doctype=True)``. ``Document.doctype`` stays
+    ``None`` when the keyword is omitted, matching the parser and the DOM
+    spec."""
+    HTMLDocument.__init__(self, *args, **kwargs)
+    if _doctype not in (None, False):
+        self.doctype = _resolve_doctype(_doctype)
+
+
+html = type(
+    "html", (HTMLDocument,), {"name": "html", "__init__": _html_tag_init}
+)
 body = type("body", (HTMLBodyElement,), {"name": "body"})
 head = type("head", (HTMLHeadElement,), {"name": "head"})
 hx_partial = type("hx-partial", (Element,), {"name": "hx-partial"})

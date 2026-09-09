@@ -1473,6 +1473,12 @@ class Node(EventTarget):
                     yield from value.stream()
                     continue
 
+                if isinstance(value, Document):
+                    doctype = value.doctype
+                    if doctype is not None and not any(
+                        child is doctype for child in value.args
+                    ):
+                        yield str(doctype)
                 yield f"<{value.name}{value.__attributes__}>"
                 if value.name in _HTML_RAWTEXT_ELEMENTS:
                     # raw-text elements (<script>, <style>, ...): content is
@@ -5950,6 +5956,7 @@ class DOMImplementation:
 
     def createHTMLDocument(self, title=None):
         doc = HTMLDocument()
+        doc.doctype = DocumentType("html", "", "")
         html_el = Document.createElement("html")
         head_el = Document.createElement("head")
         body_el = Document.createElement("body")
@@ -7382,14 +7389,13 @@ class Document(Element):
         doctype = getattr(self, "_doctype", None)
         if doctype is not None:
             return doctype
-        if getattr(self, "contentType", None) == "text/html":
-            return DocumentType("html", "", "")
         return None
 
     @doctype.setter
     def doctype(self, value):
         """Sets the Document Type Declaration associated with the document"""
         self._doctype = value
+        _invalidate_render_cache(self)
         return
 
         # def documentElement(self):
@@ -9678,8 +9684,6 @@ class TreeWalker:
                 return node
 
 
-# fetch api
-
 # AbortController
 # AbortSignal
 # Cache
@@ -9688,14 +9692,10 @@ class TreeWalker:
 # ContactPicker
 # Client - serviceworker api
 # CredentialsContainer - new login api
-# DOMMatrix #https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix
-# DOMParser
 # IndexedDB API
 # ImageBitmap
 # ImageBitmapRenderingContext
 # ImageData
-# MutationObserver
-# MutationRecord
 # OverconstrainedError
 # QueueingStrategy
 # ReadableStream
@@ -9703,9 +9703,8 @@ class TreeWalker:
 # SourceBuffer
 # SourceBufferAppendMode
 # SourceBufferAppendWindowEnd
-# TimeRanges - media
 # TrackEvent - media
-# ValidityState
+
 # Web Share API
 # WebGL
 # also
@@ -9727,7 +9726,7 @@ class DOMParser:
         mime = (mimeType or "text/html").lower()
         if "xml" in mime or "svg" in mime:
             return domonic.parseString(str(string), parser="expat")
-        return domonic.parseString(str(string))
+        return domonic.parseString(str(string), document=True)
 
 
 class XMLSerializer:
@@ -9735,6 +9734,8 @@ class XMLSerializer:
     to markup."""
 
     def serializeToString(self, node: Any) -> str:
+        if isinstance(node, Document):
+            return str(node)
         outer = getattr(node, "outerHTML", None)
         return outer if isinstance(outer, str) else str(node)
 

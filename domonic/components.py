@@ -752,10 +752,14 @@ class Webpage:
             }
 
         """)
-        return f"{HTMLDocument(
+        page = HTMLDocument(
             head(title(self.title_text), classless_css, jquery, code, styles),
             body(div(self.content, _class='domonic-container')),
-        )}"
+        )
+        # A full page must render with a doctype. ``Document.doctype`` no longer
+        # synthesises one implicitly, so set it explicitly here.
+        page.doctype = DocumentType("html", "", "")
+        return f"{page}"
 
 
 # quick templates
