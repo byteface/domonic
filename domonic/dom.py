@@ -6377,9 +6377,13 @@ class Range(AbastractRange):
             return DocumentFragment(*extracted)
         return DocumentFragment()
 
-    def cloneContents(self) -> "DocumentFragment":
-        import copy
+    @staticmethod
+    def _clone_child(child: Any) -> Any:
+        # Clone via cloneNode so listeners are dropped and the copy is detached,
+        # not copy.deepcopy which would duplicate the listener dicts.
+        return child.cloneNode(True) if isinstance(child, Node) else child
 
+    def cloneContents(self) -> "DocumentFragment":
         if self.startContainer is None:
             return DocumentFragment()
         if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
@@ -6387,13 +6391,13 @@ class Range(AbastractRange):
         if self.startContainer == self.endContainer:
             container = self.startContainer
             children = list(container.childNodes)
-            cloned = [copy.deepcopy(child) for child in children[self.startOffset : self.endOffset]]
+            cloned = [self._clone_child(child) for child in children[self.startOffset : self.endOffset]]
             return DocumentFragment(*cloned)
         child_slice = self._common_ancestor_child_slice()
         if child_slice is not None:
             container, start_index, end_index = child_slice
             children = list(container.childNodes)
-            cloned = [copy.deepcopy(child) for child in children[start_index:end_index]]
+            cloned = [self._clone_child(child) for child in children[start_index:end_index]]
             return DocumentFragment(*cloned)
         return DocumentFragment()
 

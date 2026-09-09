@@ -1553,6 +1553,24 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(str(r.cloneContents()), str(r.extractContents()))
         self.assertEqual(str(container), "<div></div>")
 
+    def test_range_clone_contents_drops_event_listeners(self):
+        from domonic.events import MouseEvent
+
+        fired = []
+        container = div(span("a"), span("b"))
+        container.childNodes[0].addEventListener("click", lambda e: fired.append("a"))
+
+        r = Range()
+        r.setStart(container, 0)
+        r.setEnd(container, 2)
+        frag = r.cloneContents()
+        for child in frag.childNodes:
+            child.dispatchEvent(MouseEvent("click"))
+        self.assertEqual(fired, [])
+
+        container.childNodes[0].dispatchEvent(MouseEvent("click"))
+        self.assertEqual(fired, ["a"])
+
     def test_range_intersects_and_invalid_compare_type(self):
         container = div(
             span("a", _id="first"), span("b", _id="second"), span("c", _id="third")
