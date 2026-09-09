@@ -2144,12 +2144,19 @@ class Node(EventTarget):
         if new_node is reference_node:
             return new_node
 
+        # Validate the reference child before touching anything else: a bad
+        # reference must raise without detaching new_node from its old parent.
+        if reference_node not in self.args:
+            raise ValueError("reference_node is not a child of this node")
+
         items = _coerce_insertion_nodes(new_node)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
+        # _detach may have removed a preceding sibling of the reference node,
+        # so re-find its index; if new_node contained it, fall back to append.
         try:
             index = self.args.index(reference_node)
-        except ValueError as exc:
-            raise ValueError("reference_node is not a child of this node") from exc
+        except ValueError:
+            return self.appendChild(new_node)
         previous_sibling = self.args[index - 1] if index > 0 and isinstance(self.args[index - 1], Node) else None
         self.__dict__["args"] = self.args[:index] + items + self.args[index:]
         for item, old_document in old_documents:
@@ -2215,6 +2222,13 @@ class Node(EventTarget):
             Node: The old child node.
         """
         if newChild is oldChild:
+            return oldChild
+
+        # Bail out before detaching newChild from its old parent if oldChild is
+        # not actually a child here -- otherwise a no-op call still orphans it.
+        try:
+            list(self.args).index(oldChild)
+        except ValueError:
             return oldChild
 
         items = _coerce_insertion_nodes(newChild)
@@ -4954,7 +4968,7 @@ class Element(Node):
             if self._matchElement(el, tagName):
                 elements.append(el)
 
-        self._iterate(self, anon)
+        self._iterate(self, _collect)
         return elements
 
     def __contains__(self, item: Any) -> bool:

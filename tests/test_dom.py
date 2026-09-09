@@ -4968,6 +4968,37 @@ class NodeTest(unittest.TestCase):
         self.assertIs(moved.parentNode, target)
         self.assertIsNone(old.parentNode)
 
+    def test_insert_and_replace_with_bad_reference_do_not_orphan_new_node(self):
+        # insertBefore / replaceChild must validate the reference child before
+        # detaching the incoming node from its current parent.
+        keeper = Document.createElement("keeper")
+        movable = Document.createElement("movable")
+        keeper.appendChild(movable)
+        target = Document.createElement("target")
+        target.appendChild(Document.createElement("existing"))
+        stranger = Document.createElement("stranger")
+
+        with self.assertRaises(ValueError):
+            target.insertBefore(movable, stranger)
+        self.assertIs(movable.parentNode, keeper)
+        self.assertIn(movable, list(keeper.childNodes))
+        self.assertEqual(target.childNodes.length, 1)
+
+        result = target.replaceChild(movable, stranger)
+        self.assertIs(result, stranger)
+        self.assertIs(movable.parentNode, keeper)
+        self.assertIn(movable, list(keeper.childNodes))
+        self.assertEqual(target.childNodes.length, 1)
+
+    def test_get_elements_by_tag_name_returns_empty_for_non_name_input(self):
+        node = Document.createElement("node")
+        child = Document.createElement("child")
+        node.appendChild(child)
+        # browsers return an empty collection for these, never an exception
+        for bad in ("", "123", "a.b", "has space"):
+            self.assertEqual(list(node.getElementsByTagName(bad)), [])
+        self.assertEqual(list(node.getElementsByTagName("child")), [child])
+
     def test_removeChild(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
