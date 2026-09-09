@@ -625,6 +625,19 @@ def _connect_inserted_node(
     _connect_tree(node)
 
 
+def _deepcopy_subtree(node: "Node") -> "Node":
+    """``copy.deepcopy`` of a node without dragging in its parent chain -- a bare
+    ``deepcopy`` follows ``parentNode`` and copies the whole document."""
+    import copy
+
+    saved_parent = node.__dict__.get("parentNode")
+    node.__dict__["parentNode"] = None
+    try:
+        return copy.deepcopy(node)
+    finally:
+        node.__dict__["parentNode"] = saved_parent
+
+
 def _prepare_detached_clone(
     node: "Node",
     owner_document: "Document | None",
@@ -2289,7 +2302,9 @@ class Node(EventTarget):
         import copy
 
         if deep:
-            clone = copy.deepcopy(self)
+            # Copy this subtree only -- a bare deepcopy follows parentNode and
+            # copies the whole document just to throw all of it away.
+            clone = _deepcopy_subtree(self)
         else:
             clone = copy.copy(self)  # shallow copy
             # A shallow clone drops child nodes, but a Text node's ``args`` hold
@@ -7331,7 +7346,7 @@ class Document(Element):
         """Imports a node from another document to this document."""
         old_document = node.ownerDocument if isinstance(node, Node) else None
         if isinstance(node, (Element, DocumentFragment)):
-            cloned = copy.deepcopy(node)
+            cloned = _deepcopy_subtree(node)
             if not deep:
                 cloned.args = ()
             return _prepare_detached_clone(

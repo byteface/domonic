@@ -5313,6 +5313,23 @@ class NodeTest(unittest.TestCase):
         self.assertEqual(shallow_clone.childNodes.length, 0)
         self.assertIs(source.parentNode, page.body)
 
+    def test_clone_node_copies_only_the_subtree_not_the_parent_chain(self):
+        siblings = [Document.createElement(f"s{i}") for i in range(4)]
+        parent = Document.createElement("parent")
+        for sib in siblings:
+            parent.appendChild(sib)
+        target = siblings[1]
+        target.appendChild(Document.createElement("only-child"))
+
+        clone = target.cloneNode(True)
+        self.assertEqual(str(clone), "<s1><only-child></only-child></s1>")
+        self.assertIsNone(clone.parentNode)
+        # the parent and the other siblings must be untouched originals
+        self.assertIs(parent.childNodes[1], target)
+        self.assertEqual(parent.childNodes.length, 4)
+        # and the clone's descendants point at the clone, not the original
+        self.assertIs(clone.firstChild.parentNode, clone)
+
     def test_normalize(self):
         node = Document.createElement("node")
         one = Document.createElement("one")
