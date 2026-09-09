@@ -2,6 +2,20 @@
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.black]
+line-length = 120
+
+[tool.isort]
+# Match black, and match black's line length (the Makefile runs `black -l 120`).
+# Without this a bare `isort` defaults to 79 columns and rewraps everything
+# black just laid out. isort reads this automatically however it is invoked.
+profile = "black"
+line_length = 120
+# Deliberate `from x import name` lines that must stay put after an earlier
+# `from y import *` (to win a name collision) are pinned with `# isort: skip`
+# at their site -- see domonic/__init__.py (svg vs html `a`) and
+# tests/test_d3.py (d3 `select` vs the html `<select>` tag).
+
 [tool.mypy]
 # Incremental adoption: this list is the set of modules that currently type-check
 # clean. Grow it as more modules are cleaned up. The big DOM modules

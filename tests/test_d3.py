@@ -35,7 +35,11 @@ from domonic.decorators import silence
 from domonic.dom import *
 from domonic.html import *
 from domonic.svg import *  # lowercase path is in here
-from domonic.d3.selection import Selection, select, selectAll
+
+# d3's select/selectAll/Selection must win over the <select> tag that
+# `from domonic.html import *` above brings in -- this line is deliberately
+# last, so pin it against isort reordering.
+from domonic.d3.selection import Selection, select, selectAll  # isort: skip  # noqa: F811,E402
 
 # from domonic.d3.timer import *
 

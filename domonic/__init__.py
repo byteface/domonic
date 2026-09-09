@@ -41,10 +41,11 @@ except ImportError:  # pragma: no cover - optional dependency chain
     _HAS_JAVASCRIPT = False
 
 try:
-    from domonic.svg import *
-
-    # Keep package-root tag conflicts HTML-first; SVG versions are available from domonic.svg.
-    from domonic.html import a, audio, canvas, iframe, script, style, video
+    # Keep package-root tag conflicts HTML-first: pull in every SVG name, then
+    # re-bind the HTML version of each overlapping tag on top. The order is
+    # load-bearing, so both lines are pinned against isort reordering.
+    from domonic.svg import *  # isort: skip
+    from domonic.html import a, audio, canvas, iframe, script, style, video  # isort: skip
 
     _HAS_SVG = True
 except ImportError:  # pragma: no cover - optional dependency chain
@@ -1807,7 +1808,7 @@ class domonic:
 parseString = domonic.parseString
 parse = domonic.parse
 from domonic.html import render
-
 from domonic.ssr import compile, compiled
+
 domonic.compile = staticmethod(compile)
 domonic.compiled = staticmethod(compiled)
