@@ -5258,6 +5258,24 @@ class NodeTest(unittest.TestCase):
         assert len(shallow.childNodes) == 0
         assert shallow.parentNode is None
 
+    def test_clone_node_does_not_copy_event_listeners(self):
+        from domonic.events import MouseEvent
+
+        fired = []
+        outer = Document.createElement("outer")
+        inner = Document.createElement("inner")
+        outer.append(inner)
+        outer.addEventListener("click", lambda e: fired.append("outer"))
+        inner.addEventListener("click", lambda e: fired.append("inner"))
+
+        clone = outer.cloneNode(True)
+        clone.dispatchEvent(MouseEvent("click"))
+        clone.firstChild.dispatchEvent(MouseEvent("click"))
+        self.assertEqual(fired, [])
+
+        outer.dispatchEvent(MouseEvent("click"))
+        self.assertEqual(fired, ["outer"])
+
     def test_cloneNode_from_attached_tree_is_disconnected(self):
         page = html(body(div(span("kid", _id="kid"), _id="source")))
         source = page.querySelector("#source")

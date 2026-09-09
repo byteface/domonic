@@ -638,6 +638,11 @@ def _prepare_detached_clone(
     for current in _iter_dom_nodes(node):
         current._ownerDocument = owner_document
         current.isConnected = False
+        # cloneNode() / importNode() never carry over event listeners (DOM spec);
+        # copy.deepcopy would otherwise duplicate the listener dicts.
+        if getattr(current, "listeners", None):
+            current.listeners = {}
+            current._listener_options = {}
         if isinstance(current, Element):
             if upgrade_custom_elements:
                 _upgrade_custom_element_instance(current)
