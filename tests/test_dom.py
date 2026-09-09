@@ -3388,6 +3388,42 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(page.URL, "")
         self.assertEqual(page.baseURI, "")
 
+    def test_empty_text_node_behaves_like_dom(self):
+        # ``new Text()`` / ``createTextNode("")`` -> a node whose data is "",
+        # not an IndexError waiting to happen.
+        for empty in (Text(), Text(""), document.createTextNode("")):
+            self.assertEqual(empty.data, "")
+            self.assertEqual(empty.textContent, "")
+            self.assertEqual(str(empty), "")
+            self.assertEqual(empty.length, 0)
+            self.assertEqual(len(empty), 0)
+
+        blank = Text()
+        self.assertEqual(blank.appendData("hi"), "hi")
+        self.assertEqual(Text().splitText(0).data, "")
+
+    def test_text_node_length_counts_characters_not_children(self):
+        # DOM: CharacterData.length is the code-unit count of the data.
+        self.assertEqual(Text("hello").length, 5)
+        self.assertEqual(len(Text("hello")), 5)
+        self.assertEqual(Text("café").length, 4)
+        node = div(Text("hello"))
+        self.assertEqual(node.firstChild.length, 5)
+
+    def test_shallow_clone_of_text_node_keeps_its_data(self):
+        # Text/Comment/CDATA/PI have no children, so cloneNode(False) must keep
+        # their data -- only element children are dropped by a shallow clone.
+        text = Text("hello world")
+        shallow = text.cloneNode(False)
+        self.assertEqual(shallow.data, "hello world")
+        self.assertEqual(str(shallow), "hello world")
+
+        comment = Comment("note")
+        self.assertEqual(str(comment.cloneNode(False)), "<!--note-->")
+
+        # an element's shallow clone still drops its (text) children
+        self.assertEqual(str(p("some text").cloneNode(False)), "<p></p>")
+
     def test_document_baseuri_uses_base_href_and_inherits_to_children(self):
         page = Document(
             html(

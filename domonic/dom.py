@@ -2273,7 +2273,11 @@ class Node(EventTarget):
             clone = copy.deepcopy(self)
         else:
             clone = copy.copy(self)  # shallow copy
-            clone.args = ()
+            # A shallow clone drops child nodes, but a Text node's ``args`` hold
+            # its character data, not children -- Text/Comment/CDATA/PI have no
+            # children, so a shallow clone must preserve their data (DOM spec).
+            if self.nodeType != Node.TEXT_NODE:
+                clone.args = ()
         owner_document = self.ownerDocument if isinstance(self.ownerDocument, Document) else None
         return _prepare_detached_clone(clone, owner_document)
 
@@ -7628,6 +7632,22 @@ class CharacterData(Node):
     before = ChildNode.before
     after = ChildNode.after
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # A CharacterData node's data is always a string kept in ``args[0]``.
+        # An argumentless ``Text()`` / ``createTextNode("")`` must behave like
+        # the DOM -- ``data`` is ``""`` -- not raise IndexError on access.
+        super().__init__(*(args or ("",)), **kwargs)
+
+    def __len__(self) -> int:
+        # DOM: CharacterData.length is the number of code units in the data,
+        # not the child count (Node.__len__). Comment/CDATASection already
+        # override this; Text inherits it from here.
+        return len(self.args[0]) if self.args else 0
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
     def _validate_data_range(self, offset: int, count: int | None = None) -> str:
         if not isinstance(offset, int):
             raise TypeError("offset must be an integer")
@@ -7660,8 +7680,8 @@ class CharacterData(Node):
     def appendData(self, data):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString."""
-        old_value = self.args[0]
-        updated = self.args[0] + data
+        old_value = self.args[0] if self.args else ""
+        updated = old_value + data
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -7824,7 +7844,7 @@ class Text(CharacterData):
         The first node is returned, while the second node is discarded and exists outside the tree.
         """
         self._validate_data_range(offset)
-        current = self.args[0]
+        current = self.args[0] if self.args else ""
         head = current[:offset]
         tail = current[offset:]
         self.args = (head,)
@@ -7848,7 +7868,7 @@ class Text(CharacterData):
 
     @property
     def data(self):
-        return self.args[0]
+        return self.args[0] if self.args else ""
 
     @data.setter
     def data(self, data):
