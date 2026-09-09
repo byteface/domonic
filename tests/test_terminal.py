@@ -98,8 +98,28 @@ class TestCase(unittest.TestCase):
 
     @silence
     def test_bash_git(self):
-        # print(git('status'))
-        self.assertIn("master", git("status"))
+        # Exercise Git in an isolated repository, including the detached HEAD
+        # used by PR builds. The project's checkout need not be on master.
+        with TemporaryDirectory() as tmp:
+            git("init", cwd=tmp)
+            git("symbolic-ref HEAD refs/heads/terminal-test", cwd=tmp)
+            git(
+                "-c user.name=Test -c user.email=test@example.invalid "
+                "-c commit.gpgsign=false commit --allow-empty -m initial",
+                cwd=tmp,
+            )
+            for detached in (False, True):
+                with self.subTest(detached=detached):
+                    if detached:
+                        git("checkout --detach HEAD", cwd=tmp)
+                    self.assertEqual(str(git("status --porcelain", cwd=tmp)), "")
+                    with open(os.path.join(tmp, "untracked.txt"), "w") as handle:
+                        handle.write("test")
+                    self.assertEqual(
+                        str(git("status --porcelain", cwd=tmp)).strip(),
+                        "?? untracked.txt",
+                    )
+                    os.remove(os.path.join(tmp, "untracked.txt"))
 
     def test_bash_general(self):
         self.assertIn("LS", man("ls").upper())
