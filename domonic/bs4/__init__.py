@@ -84,7 +84,7 @@ def _iter_child_nodes(node: Any) -> Iterator[Any]:
 _LEAF_NODE_TYPES = frozenset((str, Text, Comment))
 
 
-def _descendants(node: Any) -> Iterator[Any]:
+def _walk_descendants(node: Any) -> Iterator[Any]:
     kids = getattr(node, "args", None)
     if not kids:
         return
@@ -102,13 +102,37 @@ def _descendants(node: Any) -> Iterator[Any]:
                 extend(grand[::-1])
 
 
+def _descendants(node: Any) -> Iterator[Any]:
+    # ``soup.descendants`` over a whole tree is pure iteration, called far more
+    # often than the tree is mutated. Cache the flat document-order node list on
+    # the root (invalidated by every mutation helper, like ``_bs4_tag_index``),
+    # but only once a consumer has actually walked the whole thing -- an
+    # early-exiting caller (``find(..., limit=1)``) must stay lazy.
+    if node is _root_for_index(node):
+        cache = node.__dict__.get("_bs4_all_nodes")
+        if cache is not None:
+            return iter(cache)
+        return _cache_on_full_walk(node, "_bs4_all_nodes", _walk_descendants(node))
+    return _walk_descendants(node)
+
+
+def _cache_on_full_walk(node: Any, key: str, source: Iterator[Any]) -> Iterator[Any]:
+    acc: list[Any] = []
+    append = acc.append
+    for item in source:
+        append(item)
+        yield item
+    # reached only if the consumer exhausted the iterator (no early break)
+    node.__dict__.setdefault(key, acc)
+
+
 def _document_order(root: Any) -> list[Any]:
     nodes = [root]
     nodes.extend(_descendants(root))
     return nodes
 
 
-def _element_descendants(node: Any) -> Iterator[Element]:
+def _walk_element_descendants(node: Any) -> Iterator[Element]:
     kids = getattr(node, "args", None)
     if not kids:
         return
@@ -129,6 +153,17 @@ def _element_descendants(node: Any) -> Iterator[Element]:
             extend(grand[::-1])
         if isinstance(child, element_type):
             yield child
+
+
+def _element_descendants(node: Any) -> Iterator[Element]:
+    # If a prior ``find_all`` already built the tag index, its "*" list is every
+    # element in document order -- reuse it. Don't *force* a build here: a lazy
+    # ``select_one`` / ``find(limit=1)`` on the root would pay for a full walk.
+    if node is _root_for_index(node):
+        cached = node.__dict__.get("_bs4_tag_index")
+        if cached is not None:
+            return iter(cached["*"])
+    return _walk_element_descendants(node)
 
 
 def _element_children(node: Any) -> Iterator[Element]:
@@ -196,7 +231,9 @@ def _root_for_index(node: Any) -> Node | None:
 def _invalidate_index(node: Any) -> None:
     root = _root_for_index(node)
     if root is not None:
-        root.__dict__.pop("_bs4_tag_index", None)
+        d = root.__dict__
+        d.pop("_bs4_tag_index", None)
+        d.pop("_bs4_all_nodes", None)
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
@@ -208,7 +245,7 @@ def _tag_index(node: Any) -> dict[str, list[Element]]:
         return cached
 
     index: dict[str, list[Element]] = {"*": []}
-    for element in _element_descendants(root):
+    for element in _walk_element_descendants(root):
         index["*"].append(element)
         index.setdefault(element.name.lower(), []).append(element)
     root.__dict__["_bs4_tag_index"] = index
@@ -516,10 +553,12 @@ def _find_all(
     merged_attrs = _merge_attrs(attrs, kwargs)
     if string is None and not merged_attrs and (name is True or name is None):
         # ``find_all(True)`` / ``find_all()`` -- every tag, no filtering
-        return _limit(
-            _element_descendants(self) if recursive else _element_children(self),
-            limit,
-        )
+        if recursive:
+            indexed = _indexed_candidates(self, None, recursive, string)
+            if indexed is not None:
+                return _limit(indexed, limit)
+            return _limit(_element_descendants(self), limit)
+        return _limit(_element_children(self), limit)
     if recursive and string is None and not merged_attrs and isinstance(name, (str, type(None))):
         candidates = _indexed_candidates(self, name, recursive, string)
         if candidates is None:
@@ -1511,7 +1550,7 @@ def _delitem(self: Element, key: str | int) -> None:
 
 
 def _contents(self: Node) -> list[Any]:
-    return list(_iter_child_nodes(self))
+    return list(getattr(self, "args", ()) or ())
 
 
 def _children(self: Node) -> Iterator[Any]:
