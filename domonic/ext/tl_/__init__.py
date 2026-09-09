@@ -22,8 +22,14 @@ from domonic.ext._rawdom import (
 )
 
 _RAW_TEXT = {"script", "style", "xmp", "iframe", "noembed", "noframes", "plaintext"}
+# The comment body is a tempered ``[\s\S]`` rather than ``.*?``: a lazy ``.*?``
+# under DOTALL can match across ``-->`` boundaries, so a run of leading comments
+# ``<!-- --><!-- -->...`` has exponentially many parses and a trailing near-miss
+# doctype triggers catastrophic backtracking (ReDoS). ``(?:(?!-->)[\s\S])*``
+# cannot cross a ``-->`` and keeps the match linear.
 _DOCTYPE = re.compile(
-    r"""\A\s*(?:<!--.*?-->\s*)*(<!doctype\s+(?:[^>"']|"[^"]*"|'[^']*')*>)""",
+    r"""\A\s*(?:<!--(?:(?!-->)[\s\S])*-->\s*)*"""
+    r"""(<!doctype\s+(?:[^>"']|"[^"]*"|'[^']*')*>)""",
     re.IGNORECASE | re.DOTALL,
 )
 

@@ -453,7 +453,11 @@ def compile(view, *, strict=False, cache_dir=None):
             "exec",
             cache_dir,
         )
-        exec(code, namespace)
+        # ``code`` is compiled from ``ast.unparse`` of the developer's own view
+        # function AST (rewritten by ``_Compiler``); ``namespace`` is that
+        # function's own module globals and closure. No external/request input
+        # reaches here -- this is build-time codegen, like dataclasses' __init__.
+        exec(code, namespace)  # nosec B102
         renderer = namespace[function.name]
         renderer.__defaults__ = view.__defaults__
         renderer.__kwdefaults__ = view.__kwdefaults__
@@ -562,7 +566,10 @@ def _snapshot(view, *, cache_dir=None):
     code, cache_hit = compiled_code(
         ast.unparse(expression), "<domonic-snapshot>", "eval", cache_dir
     )
-    renderer = eval(code, namespace)
+    # ``code`` is a lambda AST that domonic synthesised from the rendered DOM
+    # tree (string ``ast.Constant``s plus calls to the helpers in ``namespace``);
+    # nothing is parsed from a string. Build-time codegen, no external input.
+    renderer = eval(code, namespace)  # nosec B307
     renderer.cache_hit = cache_hit
     renderer.original = view
     renderer.is_compiled = True

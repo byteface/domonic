@@ -50,7 +50,11 @@ def compiled_code(source, filename, mode, cache_dir=None):
         checksum, payload = data[:32], data[32:]
         if hashlib.sha256(payload).digest() != checksum:
             raise ValueError("invalid cache checksum")
-        code = marshal.loads(payload)
+        # The payload is our own marshalled code object, read from a 0700
+        # directory owned by the current uid (checked above and via O_NOFOLLOW +
+        # fstat), and SHA-256 verified. This is the same trust model as CPython's
+        # own .pyc loader.
+        code = marshal.loads(payload)  # nosec B302
         if not isinstance(code, types.CodeType):
             raise ValueError("invalid cached code")
         return code, True
