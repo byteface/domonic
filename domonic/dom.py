@@ -2617,6 +2617,84 @@ class ParentNode:
             _connect_inserted_node(self, item, old_document)
 
 
+def _child_insert_adjacent(node: "Node", nodes: tuple, *, after: bool) -> None:
+    """``ChildNode.before`` / ``ChildNode.after`` core: insert ``nodes`` (strings
+    and, spec-permitting, ``node`` itself) as siblings of ``node``. Handles the
+    tricky cases the WPT suite checks -- ``node`` among the arguments, arguments
+    that are already siblings -- by resolving the reference point *before* any
+    detaching, against nodes not in the argument list."""
+    parent = node.parentNode
+    if parent is None:
+        return
+    items = list(_coerce_insertion_nodes(*nodes))
+    node_ids = {id(n) for n in items if isinstance(n, Node)}
+
+    kids = list(parent.args)
+    try:
+        index = kids.index(node)
+    except ValueError:
+        return
+    reference: Any = None
+    tail = kids[index + 1 :] if after else kids[index:]
+    for sib in tail:
+        if not (isinstance(sib, Node) and id(sib) in node_ids):
+            reference = sib
+            break
+
+    old_documents = [(it, _detach_node_for_insertion(it)) for it in items if isinstance(it, Node)]
+    kids = list(parent.args)
+    pos = kids.index(reference) if reference is not None and reference in kids else len(kids)
+    previous_sibling = kids[pos - 1] if pos > 0 and isinstance(kids[pos - 1], Node) else None
+    kids[pos:pos] = items
+    parent.__dict__["args"] = tuple(kids)
+    for it, old_document in old_documents:
+        _connect_inserted_node(parent, it, old_document)
+    added = [it for it in items if isinstance(it, Node)]
+    if added:
+        _queue_mutation_record(
+            "childList", parent, added_nodes=added, previous_sibling=previous_sibling, next_sibling=reference
+        )
+    _notify_slot_change(parent)
+    parent._update_parents()
+
+
+def _child_replace_with(node: "Node", nodes: tuple) -> None:
+    """``ChildNode.replaceWith`` core -- replace ``node`` with ``nodes`` in its
+    parent. ``node`` may itself be one of ``nodes`` (then it stays put)."""
+    parent = node.parentNode
+    if parent is None:
+        return
+    items = list(_coerce_replacement_nodes(*nodes))
+    node_ids = {id(n) for n in items if isinstance(n, Node)}
+
+    kids = list(parent.args)
+    try:
+        index = kids.index(node)
+    except ValueError:
+        return
+    reference: Any = None
+    for sib in kids[index + 1 :]:
+        if not (isinstance(sib, Node) and id(sib) in node_ids):
+            reference = sib
+            break
+
+    old_documents = [(it, _detach_node_for_insertion(it)) for it in items if isinstance(it, Node) and it is not node]
+    kids = list(parent.args)
+    if node in kids:
+        kids.remove(node)
+    pos = kids.index(reference) if reference is not None and reference in kids else len(kids)
+    kids[pos:pos] = items
+    parent.__dict__["args"] = tuple(kids)
+    node.parentNode = None
+    _disconnect_tree(node)
+    for it, old_document in old_documents:
+        _connect_inserted_node(parent, it, old_document)
+    added = [it for it in items if isinstance(it, Node)]
+    _queue_mutation_record("childList", parent, added_nodes=added, removed_nodes=(node,))
+    _notify_slot_change(parent)
+    parent._update_parents()
+
+
 class ChildNode(Node):
     def remove(self):
         """Removes this ChildNode from the children list of its parent."""
@@ -2628,29 +2706,17 @@ class ChildNode(Node):
 
     def replaceWith(self, *nodes):
         """Replaces this ChildNode with one or more nodes or strings."""
-        if self.parentNode is None:
-            return self
-        replacement = DocumentFragment(*_coerce_replacement_nodes(*nodes))
-        self.parentNode.replaceChild(replacement, self)
+        _child_replace_with(self, nodes)
         return self
 
     def before(self, *nodes):
         """Inserts one or more nodes or strings immediately before this ChildNode."""
-        if self.parentNode is None:
-            return self
-        insertion = DocumentFragment(*_coerce_insertion_nodes(*nodes))
-        self.parentNode.insertBefore(insertion, self)
+        _child_insert_adjacent(self, nodes, after=False)
         return self
 
     def after(self, *nodes):
         """Inserts one or more nodes or strings immediately after this ChildNode."""
-        if self.parentNode is None:
-            return self
-        siblings = list(self.parentNode.childNodes)
-        index = siblings.index(self)
-        reference = siblings[index + 1] if index + 1 < len(siblings) else None
-        insertion = DocumentFragment(*_coerce_insertion_nodes(*nodes))
-        self.parentNode.insertBefore(insertion, reference)
+        _child_insert_adjacent(self, nodes, after=True)
         return self
 
 
@@ -5105,54 +5171,17 @@ class Element(Node):
         return [content]
 
     def before(self, *nodes: Any) -> None:
-        if self.parentNode is None:
-            return
-        nodes = tuple(node for node in _coerce_insertion_nodes(*nodes) if node is not self)
-        if not nodes:
-            return
-        parent = self.parentNode
-        old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
-        index = parent.args.index(self)
-        previous_sibling = parent.args[index - 1] if index > 0 and isinstance(parent.args[index - 1], Node) else None
-        parent.args = parent.args[:index] + nodes + parent.args[index:]
-        for node, old_document in old_documents:
-            _connect_inserted_node(parent, node, old_document)
-        added_nodes = [node for node in nodes if isinstance(node, Node)]
-        if added_nodes:
-            _queue_mutation_record(
-                "childList",
-                parent,
-                added_nodes=added_nodes,
-                previous_sibling=previous_sibling,
-                next_sibling=self,
-            )
-        _notify_slot_change(parent)
-        parent._update_parents()
+        """ChildNode.before -- insert ``nodes`` as previous siblings."""
+        _child_insert_adjacent(self, nodes, after=False)
 
     def after(self, *nodes: Any) -> None:
-        if self.parentNode is None:
-            return
-        nodes = tuple(node for node in _coerce_insertion_nodes(*nodes) if node is not self)
-        if not nodes:
-            return
-        parent = self.parentNode
-        old_documents = [(node, _detach_node_for_insertion(node)) for node in nodes]
-        index = parent.args.index(self) + 1
-        next_sibling = parent.args[index] if index < len(parent.args) and isinstance(parent.args[index], Node) else None
-        parent.args = parent.args[:index] + nodes + parent.args[index:]
-        for node, old_document in old_documents:
-            _connect_inserted_node(parent, node, old_document)
-        added_nodes = [node for node in nodes if isinstance(node, Node)]
-        if added_nodes:
-            _queue_mutation_record(
-                "childList",
-                parent,
-                added_nodes=added_nodes,
-                previous_sibling=self,
-                next_sibling=next_sibling,
-            )
-        _notify_slot_change(parent)
-        parent._update_parents()
+        """ChildNode.after -- insert ``nodes`` as next siblings."""
+        _child_insert_adjacent(self, nodes, after=True)
+
+    def replaceWith(self, *nodes: Any) -> None:
+        """ChildNode.replaceWith -- replace this element with ``nodes`` (strings
+        included; this element itself may appear among them)."""
+        _child_replace_with(self, nodes)
 
     def insertAdjacentElement(self, position: str, element: Element) -> Element | None:
         """Inserts an element adjacent to the current element."""
@@ -5868,7 +5897,7 @@ class DOMImplementation:
         return True
 
 
-class ProcessingInstruction(Node):
+class ProcessingInstruction(ChildNode):
 
     nodeType: int = Node.PROCESSING_INSTRUCTION_NODE
     __slots__ = ("target", "data")
@@ -5897,7 +5926,7 @@ class ProcessingInstruction(Node):
         yield self.toString()
 
 
-class Comment(Node):
+class Comment(ChildNode):
 
     nodeType: int = Node.COMMENT_NODE
     nodeName: str = "#comment"
@@ -5936,7 +5965,7 @@ class Comment(Node):
         return len(self.data)
 
 
-class CDATASection(Node):
+class CDATASection(ChildNode):
     """The CDATASection interface represents a CDATA section that can be used within XML
     to include extended portions of unescaped text, such that the symbols < and & do not
     need escaping as they normally do within XML when used as text."""
