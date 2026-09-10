@@ -7785,10 +7785,14 @@ class DocumentFragment(Node):
     def childElementCount(self) -> int:
         return self.children.length
 
+    firstElementChild = ParentNode.firstElementChild
+    lastElementChild = ParentNode.lastElementChild
+
     querySelector = Document.querySelector
     querySelectorAll = Document.querySelectorAll
     getElementById = Document.getElementById
     getElementsByTagName = Document.getElementsByTagName
+    getElementsByClassName = Element.getElementsByClassName
     _matchElement = Document._matchElement
     attributes = Element.attributes
 
