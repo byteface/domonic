@@ -281,6 +281,31 @@ mapping and as JavaScript-style attribute access:
 	print(el.dataset.missing)      # None (JS: undefined)
 
 
+classList
+---------
+
+``element.classList`` is a live ``DOMTokenList`` over the ``class`` attribute.
+It follows the DOM spec: ``add()`` / ``remove()`` / ``toggle()`` / ``replace()``
+throw ``DOMException("SyntaxError")`` for an empty token and
+``DOMException("InvalidCharacterError")`` for a token containing an ASCII
+space, and validate every argument *before* touching the attribute.
+``contains()`` never throws -- an empty or whitespace-containing token simply
+is not present. ``toString()`` returns the attribute value verbatim (not
+normalised), out-of-range indexing returns ``None`` (JS ``undefined``), and
+``supports()`` always raises ``TypeError`` because ``classList`` has no
+defined token set.
+
+.. code-block :: python
+
+	from domonic.html import div
+
+	el = div(_class="  a  a b ")
+	el.classList.toString()          # '  a  a b '  (verbatim)
+	list(el.classList)               # ['a', 'b']   (the token set is normalised)
+	el.classList.replace("a", "c")   # True  ->  class="c b"
+	el.classList.toggle("c", True)   # no-op force toggle leaves class="c b" untouched
+
+
 DOMConfig
 ----------------
 

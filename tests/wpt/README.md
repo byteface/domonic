@@ -24,7 +24,11 @@ It's one of two things:
   (`Node-isEqualNode` was `str(a) == str(b)`; the port drove it to a proper
   per-interface comparison. `Node-appendChild`/`insertBefore`/`replaceChild`
   drove the "pre-insertion validity" cycle check — inserting a node into its
-  own subtree used to hang — and typed `DOMException` names.)
+  own subtree used to hang — and typed `DOMException` names. `Element-classlist`
+  drove the `DOMTokenList` spec fixes: `SyntaxError`/`InvalidCharacterError`
+  names, non-validating `contains()`, verbatim stringifier, ordered-set
+  `replace()`, no-op force `toggle()`, `supports()` raising `TypeError`.
+  `Node-childNodes` drove out-of-range indexed access returning `None`.)
 - **A deliberate domonic deviation** — mark the method
   `@pytest.mark.xfail(reason=…, strict=True)` with the reason, so the gap is
   tracked rather than silently passing or failing. Known ones:

@@ -5750,11 +5750,16 @@ class TestDomTokenList(unittest.TestCase):
         sample = div(_class="one")
         tokens = sample.classList
 
-        for method in (tokens.add, tokens.remove, tokens.toggle, tokens.contains):
+        for method in (tokens.add, tokens.remove, tokens.toggle):
             with self.assertRaises(ValueError):
                 method("")
             with self.assertRaises(ValueError):
                 method("two words")
+
+        # contains() does not validate its argument (DOM spec): an empty or
+        # whitespace-containing token simply is not present.
+        self.assertFalse(tokens.contains(""))
+        self.assertFalse(tokens.contains("two words"))
 
     def test_replace_and_iteration_helpers(self):
         sample = div(_class="one two three")

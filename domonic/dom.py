@@ -3429,17 +3429,27 @@ class DOMTokenList(list):
             list.extend(self, tokens)
         self.classes = tokens
 
+    # DOM "ASCII whitespace": TAB, LF, FF, CR, SPACE
+    _ASCII_WS = " \t\n\f\r"
+
     @staticmethod
     def _validate_token(token) -> str:
         token = str(token)
         if len(token) == 0:
-            raise ValueError("DOMTokenList token must not be empty")
-        if any(char.isspace() for char in token):
-            raise ValueError("DOMTokenList token must not contain whitespace")
+            raise DOMException("The token provided must not be empty.", "SyntaxError")
+        if any(char in DOMTokenList._ASCII_WS for char in token):
+            raise DOMException(
+                "The token provided contains HTML space characters, which are not valid in tokens.",
+                "InvalidCharacterError",
+            )
         return token
 
     def _sync(self) -> None:
         self.classes = list(list.__iter__(self))
+        # DOM update steps: if the element has no ``class`` attribute and the
+        # token set is empty, do nothing -- do not materialise ``class=""``.
+        if not self.classes and not self.el.hasAttribute("class"):
+            return
         self.el.className = " ".join(self.classes)
 
     @property
@@ -3475,6 +3485,12 @@ class DOMTokenList(list):
 
     def __getitem__(self, index):
         self._reload()
+        if isinstance(index, int):
+            # WebIDL indexed access: only 0..length-1 are valid, everything
+            # else (including negative indices) is "undefined", not an error.
+            if 0 <= index < list.__len__(self):
+                return list.__getitem__(self, index)
+            return None
         return list.__getitem__(self, index)
 
     def __eq__(self, other):
@@ -3491,18 +3507,20 @@ class DOMTokenList(list):
 
     def add(self, *args):
         """Adds the given tokens to the list"""
+        # Validate every token before mutating: a bad token throws and must
+        # leave the class attribute untouched (DOM spec).
+        tokens = [self._validate_token(item) for item in args]
         self._reload()
-        for item in args:
-            token = self._validate_token(item)
+        for token in tokens:
             if not list.__contains__(self, token):
                 list.append(self, token)
         self._sync()
 
     def remove(self, *args):
         """Removes the given tokens from the list"""
+        tokens = [self._validate_token(item) for item in args]
         self._reload()
-        for item in args:
-            token = self._validate_token(item)
+        for token in tokens:
             while list.__contains__(self, token):
                 list.remove(self, token)
         self._sync()
@@ -3510,59 +3528,86 @@ class DOMTokenList(list):
     def toggle(self, token, force=None):
         """If force is not given, removes token from list if present,
         otherwise adds token to list. If force is true, adds token to list,
-        and if force is false, removes token from list if present."""
+        and if force is false, removes token from list if present.
+
+        A ``force`` toggle that is a no-op (adding a token already present, or
+        removing one that is absent) does *not* run the update steps -- the
+        class attribute is left byte-for-byte unchanged (DOM spec)."""
         token = self._validate_token(token)
         self._reload()
+        present = list.__contains__(self, token)
         if force is None:
-            if list.__contains__(self, token):
+            if present:
                 self.remove(token)
                 return False
-            else:
-                self.add(token)
-                return True
-        elif force is True:
             self.add(token)
             return True
-        elif force is False:
-            self.remove(token)
+        if force is True:
+            if not present:
+                self.add(token)
+            return True
+        if force is False:
+            if present:
+                self.remove(token)
             return False
-        else:
-            raise TypeError("force must be a boolean")
+        raise TypeError("force must be a boolean")
 
     def replace(self, token, newToken) -> bool:
-        """Replaces an existing token with a new token."""
-        token = self._validate_token(token)
-        newToken = self._validate_token(newToken)
+        """Replaces ``token`` with ``newToken``, in place, then drops any other
+        occurrence of ``newToken`` (https://dom.spec.whatwg.org/#dom-domtokenlist-replace).
+
+        Per spec the empty-string check for *both* arguments happens before the
+        whitespace check for either, so ``replace(" ", "")`` is a
+        ``SyntaxError`` (empty ``newToken``), not an ``InvalidCharacterError``.
+        """
+        token, newToken = str(token), str(newToken)
+        for candidate in (token, newToken):
+            if candidate == "":
+                raise DOMException("The token provided must not be empty.", "SyntaxError")
+        for candidate in (token, newToken):
+            self._validate_token(candidate)
+
         self._reload()
         if not list.__contains__(self, token):
             return False
-        if token == newToken:
-            self._sync()
-            return True
 
-        index = list.index(self, token)
-        if list.__contains__(self, newToken):
-            list.remove(self, token)
-        else:
-            list.__setitem__(self, index, newToken)
+        # Ordered-set replace (https://infra.spec.whatwg.org/#set-replace):
+        # put newToken at the first position holding either token or newToken,
+        # and drop every other occurrence of both.
+        items = list(list.__iter__(self))
+        first = next(i for i, tok in enumerate(items) if tok in (token, newToken))
+        replaced = [
+            newToken if i == first else tok for i, tok in enumerate(items) if i == first or tok not in (token, newToken)
+        ]
+        list.clear(self)
+        list.extend(self, replaced)
         self._sync()
         return True
 
     def contains(self, token) -> bool:
-        """Returns true if the token is in the list, and false otherwise"""
-        # return token in self.el.className
-        token = self._validate_token(token)
-        return token in self
+        """Returns true if the token is in the list, and false otherwise.
+
+        Does not validate ``token`` -- an empty string or one containing
+        whitespace simply is not present, so this returns ``False`` (DOM spec;
+        only the mutating methods throw)."""
+        self._reload()
+        return list.__contains__(self, str(token))
+
+    def supports(self, token) -> bool:
+        """A ``classList`` has no defined set of supported tokens, so per the
+        DOM spec ``supports()`` always throws ``TypeError``."""
+        raise TypeError("classList has no supported tokens")
 
     def item(self, index: int):
-        """Returns the token at the specified index"""
+        """Returns the token at the specified index, or ``None`` if out of range."""
         self._reload()
         return list.__getitem__(self, index) if 0 <= index < list.__len__(self) else None
 
     def toString(self) -> str:
-        """Returns a string containing all tokens in the list, with spaces separating each token"""
-        self._reload()
-        return " ".join(list.__iter__(self))
+        """The stringifier returns the associated attribute's value verbatim --
+        it is *not* normalised (DOM spec: the stringifier is the ``class``
+        attribute's value, so ``"  a  a b"`` stringifies to ``"  a  a b"``)."""
+        return str(self.el.className or "")
 
     def entries(self) -> Iterable[tuple[int, str]]:
         """Returns an iterator over index/token pairs."""
