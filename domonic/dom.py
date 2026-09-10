@@ -2052,14 +2052,18 @@ class Node(EventTarget):
 
     @property
     def localName(self) -> str | None:
-        # the lower-case local part -- never upper-cased like ``tagName``.
-        # ``None`` for anything that isn't an element (a plain Node has no tag).
+        # the local part -- never upper-cased like ``tagName``, and with any
+        # ``prefix:`` stripped. ``None`` for anything that isn't an element.
         if not isinstance(self, Element):
             return None
         try:
-            return self.name
+            name = self.name
         except Exception:
             return None
+        prefix = getattr(self, "prefix", None)
+        if prefix and isinstance(name, str) and name.startswith(prefix + ":"):
+            return name[len(prefix) + 1 :]
+        return name
 
     @property
     def nodeName(self) -> str | None:
@@ -2319,9 +2323,48 @@ class Node(EventTarget):
         """Checks if two elements are the same node"""
         return self == node
 
-    def isEqualNode(self, node):
-        """Checks if two elements are equal"""
-        return str(self) == str(node)
+    def isEqualNode(self, node: "Node | None") -> bool:
+        """Whether ``node`` is *equal* to this one -- same type, the same
+        interface-specific fields, an equal (unordered) attribute set, and
+        recursively equal children in order (https://dom.spec.whatwg.org/#concept-node-equals).
+        Not the same as ``==`` / ``isSameNode`` (identity)."""
+        if node is self:
+            return True
+        if not isinstance(node, Node) or getattr(node, "nodeType", None) != getattr(self, "nodeType", None):
+            return False
+
+        if isinstance(self, DocumentType):
+            if (self.name, self.publicId, self.systemId) != (node.name, node.publicId, node.systemId):
+                return False
+        elif isinstance(self, ProcessingInstruction):
+            if (self.target, self.data) != (node.target, node.data):
+                return False
+        elif isinstance(self, (Text, Comment, CDATASection)):
+            if str(self.data) != str(getattr(node, "data", None)):
+                return False
+        elif isinstance(self, Element):
+            if (
+                getattr(self, "namespaceURI", None) != getattr(node, "namespaceURI", None)
+                or getattr(self, "prefix", None) != getattr(node, "prefix", None)
+                or self.localName != node.localName
+            ):
+                return False
+            a = {(at.name, str(at.value)) for at in self.attributes}
+            b = {(at.name, str(at.value)) for at in node.attributes}
+            if a != b or len(list(self.attributes)) != len(list(node.attributes)):
+                return False
+
+        own = list(self.args)
+        other = list(node.args)
+        if len(own) != len(other):
+            return False
+        for x, y in zip(own, other):
+            if isinstance(x, Node):
+                if not x.isEqualNode(y):
+                    return False
+            elif isinstance(y, Node) or str(x) != str(y):
+                return False
+        return True
 
     def getRootNode(self, options=None):
         composed = False
@@ -6940,6 +6983,9 @@ class Document(Element):
         else:
             el = create_element(qualifiedName)  # , *args, **kwargs)
             el.namespaceURI = namespaceURI
+        # split ``prefix:localName`` so ``.prefix`` / ``.localName`` are correct
+        qn = str(qualifiedName)
+        el.prefix = qn.split(":", 1)[0] if ":" in qn else None
         _upgrade_custom_element_instance(el)
         # el["name"] = qualifiedName
         return el
