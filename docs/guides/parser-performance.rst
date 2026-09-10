@@ -76,6 +76,35 @@ Set a Default
    domonic.set_default_parser("selectolax")
    page = domonic.parseString("<p>Hello</p>")
 
+Registering Your Own Backend
+----------------------------
+
+Plug an external parser in by name with ``register_parser``. The callable is
+invoked as ``parser(source, **options)`` and must return a domonic ``Node``.
+``options`` currently carries ``document`` (bool) and ``debug`` (bool); accept
+``**kwargs`` so a future option cannot break the call.
+
+.. code-block:: python
+
+   from domonic import domonic
+
+   def my_backend(source, **options):
+       tree = some_parser.parse(source, full_document=options.get("document", False))
+       return adapt_to_domonic(tree)          # a domonic Document / Element
+
+   domonic.register_parser("mybackend", my_backend)
+
+   domonic.parseString(markup, parser="mybackend")   # by name
+   domonic.set_default_parser("mybackend")            # or as the default
+
+``register_parser("name", fn, auto=True)`` also places the backend at the front
+of the ``parser="auto"`` cascade. A ``name`` that matches a built-in shadows it.
+``unregister_parser("name")`` removes one; ``registered_parsers()`` lists them.
+
+Because ``options`` is forwarded as keywords, a backend written this way keeps
+working when ``parseString`` gains new options -- prefer it to monkeypatching
+``domonic.parseString``, whose signature is not a stable API.
+
 Which Backend Ran
 -----------------
 

@@ -737,7 +737,7 @@ itself (here, the ``<p>``) rather than a document wrapping it, so query it
 directly -- ``querySelector`` and friends only search *descendants*, not the
 node itself.
 
-Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, ``turbohtml``, and ``expat``.
+Supported parser names are ``auto``, ``html.parser``, ``html_parser``, ``html5_parser``, ``html5lib``, ``lxml_html``, ``justhtml``, ``markupever``, ``selectolax``, ``turbohtml``, and ``expat`` -- plus any backend added with ``domonic.register_parser`` (see :doc:`../guides/parser-performance`).
 
 ``html.parser`` uses Python's standard library and has no external dependency.
 

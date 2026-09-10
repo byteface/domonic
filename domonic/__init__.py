@@ -95,6 +95,10 @@ class domonic:
     dom = dom
     DEFAULT_PARSER = "auto"
 
+    # name -> (callable, in_auto). Populated by register_parser(); an external
+    # backend registered here is dispatched exactly like a built-in one.
+    _CUSTOM_PARSERS: dict = {}
+
     JS_MASTER = "assets/js/master.js"
     CSS_STYLE = "assets/css/style.css"
 
@@ -122,7 +126,7 @@ class domonic:
             "justhtml",
             "turbohtml",
         }
-        if parser_name not in valid:
+        if parser_name not in valid and parser_name not in domonic._CUSTOM_PARSERS:
             raise ValueError(f"Unknown parser: {parser}")
         if parser_name == "html5-parser":
             parser_name = "html5_parser"
@@ -140,6 +144,37 @@ class domonic:
     def get_default_parser() -> str:
         """Return the parser name used by parseString by default."""
         return domonic.DEFAULT_PARSER
+
+    @staticmethod
+    def register_parser(name: str, parser, *, auto: bool = False) -> None:
+        """Register an external HTML parser backend.
+
+        ``parser`` is called as ``parser(source, **options)`` and must return a
+        domonic ``Node``. ``options`` currently carries ``document`` (bool) and
+        ``debug`` (bool); the callable **must** accept ``**kwargs`` so a future
+        option cannot break the call. Once registered, use the backend by name:
+        ``parseString(src, parser=name)`` or ``set_default_parser(name)``.
+
+        ``auto=True`` also places it at the front of the ``parser="auto"``
+        cascade. A ``name`` that matches a built-in backend shadows it.
+        """
+        key = str(name).strip().lower()
+        if not key or key == "auto":
+            raise ValueError("parser name must be non-empty and not 'auto'")
+        if not callable(parser):
+            raise TypeError("parser must be callable")
+        domonic._CUSTOM_PARSERS[key] = (parser, bool(auto))
+
+    @staticmethod
+    def unregister_parser(name: str) -> bool:
+        """Remove a backend registered with ``register_parser``. Returns whether
+        one was removed."""
+        return domonic._CUSTOM_PARSERS.pop(str(name).strip().lower(), None) is not None
+
+    @staticmethod
+    def registered_parsers() -> "list[str]":
+        """The names registered with ``register_parser``, sorted."""
+        return sorted(domonic._CUSTOM_PARSERS)
 
     @staticmethod
     def get(url: str, evaluate: bool = False):
@@ -1451,11 +1486,11 @@ class domonic:
         ``document=True`` requests a complete HTML document, including implied
         html/head/body elements, using html5lib's document parser. The default
         retains the existing fragment-oriented behavior for snippets.
+
+        ``parser`` may name a backend registered with
+        :meth:`register_parser`; it is called as ``parser(source, **options)``.
         """
-        if document:
-            if parser not in (None, "auto", "html5lib"):
-                raise ValueError("document=True requires the html5lib parser")
-            parser = "html5lib"
+        parser_was_explicit = parser is not None
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
         def _upgrade_custom_elements(page):
@@ -1678,6 +1713,19 @@ class domonic:
             "expat": ("expat", _parse_with_expat),
         }
 
+        # An externally registered backend is dispatched first, so it can even
+        # shadow a built-in name. It receives every parseString option as a
+        # keyword and is trusted to return a domonic Node.
+        custom = domonic._CUSTOM_PARSERS.get(parser)
+        if custom is not None:
+            _record_active(parser)
+            return _upgrade_custom_elements(custom[0](string, document=document, debug=debug))
+
+        if document:
+            if parser_was_explicit and parser not in ("auto", "html5lib"):
+                raise ValueError("document=True requires the html5lib parser")
+            parser = "html5lib"
+
         if _is_doctype_only(string) and not document:
             return _upgrade_custom_elements(_html_document_from_doctype(string))
 
@@ -1688,10 +1736,16 @@ class domonic:
         if parser != "auto":
             raise ValueError(f"Unknown parser: {parser}")
 
+        def _run_custom(fn):
+            return lambda: _upgrade_custom_elements(fn(string, document=document, debug=debug))
+
         # Fastest first: ``auto`` uses the quickest backend that is installed and
         # can parse the input, falling back through the pure-Python parsers and
         # finally the stdlib ones. Order mirrors the speed table in the README.
-        fallback_parsers = (
+        # Registered backends that opted in with ``auto=True`` go first.
+        fallback_parsers = tuple(
+            (n, _run_custom(fn), (Exception,)) for n, (fn, in_auto) in domonic._CUSTOM_PARSERS.items() if in_auto
+        ) + (
             ("selectolax", _parse_with_selectolax, (Exception,)),
             ("turbohtml", _parse_with_turbohtml, (Exception,)),
             ("lxml_html", _parse_with_lxml_html, (Exception,)),
@@ -1736,6 +1790,11 @@ class domonic:
 
 parseString = domonic.parseString
 parse = domonic.parse
+register_parser = domonic.register_parser
+unregister_parser = domonic.unregister_parser
+registered_parsers = domonic.registered_parsers
+set_default_parser = domonic.set_default_parser
+get_default_parser = domonic.get_default_parser
 from domonic.html import render
 from domonic.ssr import compile, compiled
 
