@@ -638,6 +638,24 @@ def _find_all(
             candidates = _candidate_nodes(self, name, recursive, string)
         if candidates is not None:
             return _limit(candidates, limit)
+    # ``find_all(class_=<regex>)`` alone -> match the regex against the class
+    # index's tokens (dozens) instead of every element's class string.
+    if (
+        recursive
+        and string is None
+        and name in (None, True)
+        and list(merged_attrs) == ["class"]
+        and hasattr(merged_attrs["class"], "search")
+        and self is _root_for_index(self)
+        # only when the regex matches individual tokens, not the whole ``class``
+        # string -- anchors / whitespace could mean the latter
+        and not re.search(r"[\^$\s]|\\s|\\b\Z", getattr(merged_attrs["class"], "pattern", " "))
+    ):
+        pattern = merged_attrs["class"]
+        matched = {id(el) for token, bucket in _class_index(self).items() if pattern.search(token) for el in bucket}
+        if matched:
+            return _limit((el for el in _tag_index(self)["*"] if id(el) in matched), limit)
+        return []
     if recursive and _can_use_css(name, merged_attrs, string):
         selector = _css_from_filters(name, merged_attrs)
         fast = _select_fast(self, selector, limit=limit)
