@@ -32,8 +32,11 @@ of `dom/events/` (EventTarget add/remove, dispatch order and phases,
 propagation, once, handleEvent, CustomEvent), `ParentNode-append` /
 `-prepend` / `-replaceChildren` (Element / Document / DocumentFragment),
 `Node-cloneNode` / `Document-importNode` / `Document-adoptNode`,
-`Node-properties` (parentElement, sibling elements), and the WHATWG
-fragment-serialisation checks for `innerHTML` / `outerHTML`.
+`Node-properties` (parentElement, sibling elements), the WHATWG
+fragment-serialisation checks for `innerHTML` / `outerHTML`, `dom/abort/`
+(`AbortSignal.abort` / `.timeout` / `.any`), `DOMParser` / `XMLSerializer`,
+`Document-*` metadata (compatMode / contentType / readyState), and
+`attributes-namednodemap`.
 
 ## When a port fails
 

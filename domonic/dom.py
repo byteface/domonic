@@ -2929,7 +2929,9 @@ class NamedNodeMap:
         normalized = self._normalize_name(name)
         old_attr = self.getNamedItem(normalized)
         if old_attr is None:
-            return None
+            # DOM spec: removing an attribute that is not present is a
+            # NotFoundError (unlike Element.removeAttribute, which is a no-op).
+            raise DOMException(f"No attribute named '{name}'.", "NotFoundError")
         if self.parentNode is not None and hasattr(self.parentNode, "kwargs"):
             self.parentNode.removeAttribute(normalized)
         else:
