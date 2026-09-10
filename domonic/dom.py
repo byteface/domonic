@@ -6894,12 +6894,21 @@ class Document(Element):
             self._fonts = FontFaceSet()
         return self._fonts
 
-    # def adoptNode(self, node):
-    #     """ Adopts a node from another document """
-    #     if node.ownerDocument is not None:
-    #         node.ownerDocument.removeChild(node)
-    #     node.ownerDocument = self
-    #     return node
+    def adoptNode(self, node: "Node") -> "Node":
+        """Move ``node`` (and its subtree) out of its current document and into
+        this one, returning the same node -- not a copy
+        (https://dom.spec.whatwg.org/#dom-document-adoptnode).
+        """
+        if not isinstance(node, Node):
+            raise TypeError("adoptNode: argument must be a Node")
+        if isinstance(node, Document):
+            raise DOMException("A Document may not be adopted.", "NotSupportedError")
+        old_document = node.ownerDocument if isinstance(node.ownerDocument, Document) else None
+        parent = getattr(node, "parentNode", None)
+        if isinstance(parent, Node):
+            parent.removeChild(node)
+        _adopt_tree(node, old_document, self)
+        return node
 
     @property
     def stylesheets(self):
