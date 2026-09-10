@@ -137,6 +137,11 @@ class EventTarget:
         for listener in listeners:
             if listener["capture"] != capture:
                 continue
+            # DOM spec: dispatch iterates a snapshot, but a listener removed by
+            # an earlier listener in the same phase must not be called.
+            live = getattr(current_target, "_listener_options", {}).get(event_type, [])
+            if not any(entry is listener for entry in live):
+                continue
             callback = listener["callback"]
             event._in_passive_listener = listener["passive"]
             try:
