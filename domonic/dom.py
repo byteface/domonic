@@ -5949,18 +5949,18 @@ class DOMImplementation:
         return DocumentType(qualifiedName, publicId, systemId)
 
     def createHTMLDocument(self, title=None):
+        # In domonic an ``HTMLDocument`` *is* the ``<html>`` root element
+        # (``documentElement`` is the document itself), so ``<head>`` / ``<body>``
+        # are appended straight to it -- wrapping them in a second ``<html>``
+        # element would serialise as ``<html><html>...``.
         doc = HTMLDocument()
         doc.doctype = DocumentType("html", "", "")
-        html_el = Document.createElement("html")
         head_el = Document.createElement("head")
         body_el = Document.createElement("body")
         if title is not None:
-            head_el.appendChild(Document.createElement("title", title))
-        html_el.appendChild(head_el)
-        html_el.appendChild(body_el)
-        doc.args = (html_el,)
-        html_el.parentNode = doc
-        doc.documentElement = html_el
+            head_el.appendChild(Document.createElement("title", str(title)))
+        doc.appendChild(head_el)
+        doc.appendChild(body_el)
         return doc
 
     def hasFeatures(self, featureList) -> bool:
