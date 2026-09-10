@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.ru
 ====================================
@@ -17,7 +14,7 @@ telo = тело = body
 golova = голова = head
 skript = скрипт = script
 # style = style = style
-portal = портал = portal
+портал = portal
 silnyy = сильный = strong
 # blockquote = blockquote = blockquote
 tablitsa = таблица = table
@@ -30,7 +27,7 @@ razdel = раздел = section
 # nav = nav = nav
 # article = article = article
 vstoronu = всторону = aside
-hgroup = hgroup = hgroup
+# hgroup = hgroup = hgroup  # redundant (already aliased above)
 adres = адрес = address
 risunok = рисунок = figure
 # figcaption = figcaption = figcaption
@@ -43,11 +40,11 @@ otmetka = отметка = mark
 rubin = рубин = ruby
 # span = span = span
 # iframe = iframe = iframe
-video = видео = video
+видео = video
 # audio = audio = audio
 kholst = холст = canvas
-caption = caption = caption
-colgroup = colgroup = colgroup
+# caption = caption = caption  # redundant (already aliased above)
+# colgroup = colgroup = colgroup  # redundant (already aliased above)
 # tbody = tbody = tbody
 # thead = thead = thead
 # tfoot = tfoot = tfoot
@@ -60,7 +57,7 @@ vyberite = выберите = select
 # option = option = option
 # textarea = textarea = textarea
 # output = output = output
-progress = прогресс = progress
+прогресс = progress
 metr = метр = meter
 detali = детали = details
 rezyume = резюме = summary
@@ -70,7 +67,7 @@ zagolovok = заголовок = header
 nizhniykolontitul = нижнийколонтитул = footer
 baza = база = base
 ssylka = ссылка = link
-meta = meta = meta
+# meta = meta = meta  # redundant (already aliased above)
 # img = img = img
 vstavlyat = вставлять = embed
 istochnik = источник = source
@@ -82,10 +79,10 @@ komanda = команда = command
 # main = main = main
 # basefont = basefont = basefont
 tsentr = центр = center
-vstavlyat = вставлять = embed
+# vstavlyat = вставлять = embed  # redundant (already aliased above)
 # font = font = font
 # isindex = isindex = isindex
-listing = листинг = listing
+листинг = listing
 otkrytyy = открытыйтекст = plaintext
 udar = удар = strike
 # template = template = template

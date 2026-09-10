@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.fr
 ====================================
@@ -17,7 +14,7 @@ from domonic.html import *
 corps = body
 tete = tête = head
 scenario = scénario = script
-style = style
+# style = style  # redundant (already aliased above)
 portail = portal
 fort = strong
 guillemets = blockquote
@@ -29,7 +26,7 @@ titre = title
 # noscript = noscript
 rubrique = section
 # nav = nav
-article = article
+# article = article  # redundant (already aliased above)
 decote = decôté = aside
 hgroupe = hgroup
 adresse = address
@@ -37,7 +34,7 @@ chiffre = figure
 legendedelafigure = légendedelafigure = figcaption
 petit = small
 citer = cite
-code = code
+# code = code  # redundant (already aliased above)
 sous = sub
 # sup = sup
 marque = mark
@@ -45,11 +42,11 @@ rubis = ruby
 envergure = span
 # iframe = iframe
 vidéo = video
-audio = audio
+# audio = audio  # redundant (already aliased above)
 toile = canvas
 # legende = légende = caption
 groupecol = colgroup
-corps = tbody
+# corps = tbody  # dup of 'corps' (already <body>)
 # tête = thead
 pied = tfoot
 jeudechamps = fieldset
@@ -58,7 +55,7 @@ bouton = button
 selectionner = sélectionner = select
 listededonnées = datalist
 groupeopt = optgroup
-option = option
+# option = option  # redundant (already aliased above)
 zonedetexte = textarea
 sortie = output
 progres = progrès = progress
@@ -70,12 +67,12 @@ elementdemenu = élémentdemenu = menuitem
 police = font
 entete = entête = header
 pieddepage = footer
-base = base
+# base = base  # redundant (already aliased above)
 lien = link
 méta = meta
 # img = img
 incorporer = embed
-source = source
+# source = source  # redundant (already aliased above)
 piste = track
 zone = area
 # col = col
@@ -84,7 +81,7 @@ commande = command
 principal = main
 policedebase = basefont
 centre = center
-incorporer = embed
+# incorporer = embed  # redundant (already aliased above)
 # police = font
 # isindex = isindex
 liste = listing

@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.sw
 ====================================
@@ -45,7 +42,7 @@ takwimu = figure
 ndogo = small
 taja = cite
 kanuni = code
-ndogo = sub
+# ndogo = sub  # dup of 'ndogo' (already <small>)
 chakula = sup
 alama = mark
 # ruby = ruby
@@ -64,13 +61,13 @@ hadithi = legend
 kitufe = button
 chagua = select
 orodhayadata = datalist
-optgroup = optgroup
+# optgroup = optgroup  # redundant (already aliased above)
 chaguo = option
 eneolamaandishi = textarea
 pato = output
 maendeleo = progress
 mita = meter
-maelezo = details
+# maelezo = details  # dup of 'maelezo' (already <caption>)
 muhtasari = summary
 menyu = menu
 # menyu = menuitem
@@ -85,14 +82,14 @@ kiungo = link
 chanzo = source
 wimbo = track
 eneo = area
-col = col
+# col = col  # redundant (already aliased above)
 pembejeo = input
 amri = command
 kuu = main
-fonti = basefont
+# fonti = basefont  # dup of 'fonti' (already <font>)
 kituo = center
 # embed = embed
-fonti = font
+# fonti = font  # redundant (already aliased above)
 # isindex = isindex
 orodha = listing
 maandishiwazi = plaintext

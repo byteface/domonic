@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.es
 ====================================
@@ -30,28 +27,28 @@ sección = section
 # nav = nav
 articulo = article
 aparte = aside
-hgroup = hgroup
+# hgroup = hgroup  # redundant (already aliased above)
 dirección = address
 figura = figure
 # figcaption = figcaption
 pequeño = small
-cite = cite
+# cite = cite  # redundant (already aliased above)
 código = code
 # sub = sub
 # sup = sup
 marca = mark
-ruby = ruby
+# ruby = ruby  # redundant (already aliased above)
 # span = span
 # iframe = iframe
 # video = video
 # audio = audio
 lienzo = canvas
 subtítulo = caption
-colgroup = colgroup
+# colgroup = colgroup  # redundant (already aliased above)
 # tbody = tbody
 # thead = thead
 # tfoot = tfoot
-fieldset = fieldset
+# fieldset = fieldset  # redundant (already aliased above)
 leyenda = legend
 botón = button
 seleccionar = select
@@ -69,12 +66,12 @@ resumen = summary
 fuente = font
 encabezado = header
 piedepágina = footer
-base = base
+# base = base  # redundant (already aliased above)
 enlace = link
-meta = meta
+# meta = meta  # redundant (already aliased above)
 # img = img
 # embed = embed
-fuente = source
+# fuente = source  # dup of 'fuente' (already <font>)
 # track = track
 # area = area
 # col = col
@@ -83,7 +80,7 @@ comando = command
 principal = main
 # basefont = basefont
 centro = center
-fuente = font
+# fuente = font  # redundant (already aliased above)
 # isindex = isindex
 listado = listing
 textosinformato = plaintext

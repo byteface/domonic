@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.it
 ====================================
@@ -25,7 +22,7 @@ forma = form
 etichetta = label
 inviare = submit
 titolo = title
-noscript = noscript
+# noscript = noscript  # redundant (already aliased above)
 sezione = section
 # nav = nav
 articolo = article
@@ -33,7 +30,7 @@ aparte = aside
 hgruppo = hgroup
 indirizzo = address
 figura = figure
-figcaption = figcaption
+# figcaption = figcaption  # redundant (already aliased above)
 piccolo = small
 citare = cite
 codice = code
@@ -43,11 +40,11 @@ segno = mark
 rubino = ruby
 # span = span
 # iframe = iframe
-video = video
-audio = audio
+# video = video  # redundant (already aliased above)
+# audio = audio  # redundant (already aliased above)
 tela = canvas
 didascalia = caption
-colgroup = colgroup
+# colgroup = colgroup  # redundant (already aliased above)
 # tbody = tbody
 # testa = thead
 tpiede = tfoot
@@ -56,7 +53,7 @@ legenda = legend
 pulsante = button
 seleziona = select
 listadati = datalist
-optgroup = optgroup
+# optgroup = optgroup  # redundant (already aliased above)
 opzione = option
 areaditesto = textarea
 uscita = output
@@ -83,8 +80,8 @@ comando = command
 principale = main
 caratteredibase = basefont
 centro = center
-incorporare = embed
-carattere = font
+# incorporare = embed  # redundant (already aliased above)
+# carattere = font  # redundant (already aliased above)
 isindice = isindex
 lista = listing
 testoinchiaro = plaintext

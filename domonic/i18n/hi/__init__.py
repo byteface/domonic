@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.hi
 ====================================
@@ -17,7 +14,7 @@ from domonic.html import *
 सिर = sir = head
 लिपि = lipi = script
 शैली = shailee = style
-पोर्टल = portal = portal
+पोर्टल = portal
 मजबूत = majaboot = strong
 ब्लॉककोट = blokakot = blockquote
 टेबल = tebal = table
@@ -27,7 +24,7 @@ from domonic.html import *
 शीर्षक = sheershak = title
 नोस्क्रिप्ट = noskript = noscript
 खंड = khand = section
-नव = nav = nav
+नव = nav
 लेख = lekh = article
 एकतरफ = ek = aside
 एचग्रुप = echagrup = hgroup
@@ -48,7 +45,7 @@ from domonic.html import *
 कैनवास = kainavaas = canvas
 कैप्शन = kaipshan = caption
 कोलग्रुप = kolagrup = colgroup
-शरीर = shareer = tbody
+# शरीर = shareer = tbody  # dup of 'shareer' (already <body>)
 थैड = thaid = thead
 टफ़ुट = tafut = tfoot
 फ़ील्डसेट = feeldaset = fieldset
@@ -66,14 +63,14 @@ from domonic.html import *
 सारांश = saaraansh = summary
 मेनू = menoo = menu
 मेन्युइटम = menyuitam = menuitem
-फ़ॉन्ट = font = font
+फ़ॉन्ट = font
 हेडर = hedar = header
 पादलेख = paad = footer
 आधार = aadhaar = base
-लिंक = link = link
-मेटा = meta = meta
+लिंक = link
+मेटा = meta
 आईएमजी = aaeeemajee = img
-एम्बेड = embed = embed
+एम्बेड = embed
 स्रोत = srot = source
 ट्रैक = traik = track
 क्षेत्र = kshetr = area
@@ -83,10 +80,10 @@ from domonic.html import *
 मुख्य = mukhy = main
 बेसफॉन्ट = besaphont = basefont
 केंद्र = kendr = center
-एम्बेड = embed = embed
-फ़ॉन्ट = font = font
+# एम्बेड = embed = embed  # redundant (already aliased above)
+# फ़ॉन्ट = font = font  # redundant (already aliased above)
 आइसइंडेक्स = aaisindeks = isindex
-लिस्टिंग = listing = listing
+लिस्टिंग = listing
 सादापाठ = saada = plaintext
 हड़ताल = hadataal = strike
 टेम्पलेट = tempalet = template

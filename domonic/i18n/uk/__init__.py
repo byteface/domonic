@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.uk
 ====================================
@@ -17,7 +14,7 @@ tilo = тіло = body
 holova = голова = head
 stsenariy = сценарій = script
 # stylʹ = стиль = style
-portal = портал = portal
+портал = portal
 # sylʹnyy = сильний = strong
 # blokova tsytata = блокова цитата = blockquote
 stil = стіл = table
@@ -27,7 +24,7 @@ podaty = подати = submit
 tytul = титул = title
 # noscript = noscript = noscript
 rozdil = розділ = section
-nav = нав = nav
+нав = nav
 statti = статті = article
 # ostoronʹ = осторонь = aside
 # hgroup = hgroup = hgroup
@@ -38,13 +35,13 @@ malyy = малий = small
 tsytuvaty = цитувати = cite
 kod = код = code
 pid = під = sub
-sup = суп = sup
+суп = sup
 poznachka = позначка = mark
 rubinovyy = рубіновий = ruby
 promizhok = проміжок = span
 # iframe = iframe = iframe
-video = відео = video
-audio = аудіо = audio
+відео = video
+аудіо = audio
 polotno = полотно = canvas
 pidpys = підпис = caption
 kolhrupa = колгрупа = colgroup
@@ -82,7 +79,7 @@ komanda = команда = command
 osnovnyy = основний = main
 # bazovyy shryft = базовий шрифт = basefont
 tsentr = центр = center
-vbudovuvaty = вбудовувати = embed
+# vbudovuvaty = вбудовувати = embed  # redundant (already aliased above)
 shryft = шрифт = font
 # isindex = isindex = isindex
 perelik = перелік = listing
@@ -90,5 +87,5 @@ perelik = перелік = listing
 strayk = страйк = strike
 shablon = шаблон = template
 kartyna = картина = picture
-doctype = doctype = doctype
+# doctype = doctype = doctype  # redundant (already aliased above)
 komentar = коментар = comment

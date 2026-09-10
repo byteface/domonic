@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.zu
 ====================================
@@ -28,7 +25,7 @@ isihloko = title
 umbhalo = noscript
 isigaba = section
 # nav = nav
-isihloko = article
+# isihloko = article  # dup of 'isihloko' (already <title>)
 eceleni = aside
 iqembu = hgroup
 ikheli = address
@@ -47,8 +44,8 @@ ividiyo = video
 umsindo = audio
 indwangu = canvas
 amazwibela = caption
-iqembu = colgroup
-umzimba = tbody
+# iqembu = colgroup  # dup of 'iqembu' (already <hgroup>)
+# umzimba = tbody  # dup of 'umzimba' (already <body>)
 inqola = thead
 izinyawo = tfoot
 insimu = fieldset
@@ -56,7 +53,7 @@ inganekwane = legend
 inkinobho = button
 khetha = select
 uhlulwedatha = datalist
-iqembu = optgroup
+# iqembu = optgroup  # dup of 'iqembu' (already <hgroup>)
 # option = option
 indawo = textarea
 okukhiphayo = output
@@ -76,14 +73,14 @@ metha = meta
 shumeka = embed
 umthombo = source
 ithrekhi = track
-indawo = area
+# indawo = area  # dup of 'indawo' (already <textarea>)
 ikholo = col
 okokufaka = input
 umyalo = command
 # main = main
-isisekelo = basefont
+# isisekelo = basefont  # dup of 'isisekelo' (already <base>)
 isikhungo = center
-shumeka = embed
+# shumeka = embed  # redundant (already aliased above)
 # isindex = isindex
 uhlu = listing
 umbhaloongenalutho = plaintext

@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.ch
 ====================================
@@ -46,9 +43,9 @@ kuàdù = 跨度 = span
 shìpín = 视频 = video
 yīnpín = 音频 = audio
 huàbù = 画布 = canvas
-biāotí = 标题 = caption
+# biāotí = 标题 = caption  # dup of '标题' (already <title>)
 zǔqún = 组群 = colgroup
-shēntǐ = 身体 = tbody
+shēntǐ = tbody  # ('身体' also wanted here; kept as <body>)
 # tóu = 头 = thead
 jiǎo = 脚 = tfoot
 zìduànjí = 字段集 = fieldset
@@ -67,7 +64,7 @@ zǒngjié = 总结 = summary
 càidān = 菜单 = menu
 càidānxiàng = 菜单项 = menuitem
 zìtǐ = 字体 = font
-biāotí = 标题 = header
+# biāotí = 标题 = header  # dup of '标题' (already <title>)
 yèjiǎo = 页脚 = footer
 jīshù = 基数 = base
 liànjiē = 链接 = link
@@ -83,13 +80,13 @@ mìnglìng = 命令 = command
 zhǔyào = 主要 = main
 jīběnzìtǐ = 基本字体 = basefont
 zhōngxīn = 中心 = center
-qiànrù = 嵌入 = embed
-zìtǐ = 字体 = font
+# qiànrù = 嵌入 = embed  # redundant (already aliased above)
+# zìtǐ = 字体 = font  # redundant (already aliased above)
 # isindex = isindex = isindex
 lièbiǎo = 列表 = listing
 míngwén = 明文 = plaintext
 bàgōng = 罢工 = strike
 múbǎn = 模板 = template
-túpiàn = 图片 = picture
+# túpiàn = 图片 = picture  # dup of '图片' (already <img>)
 wéndànglèixíng = 文档类型 = doctype
 pínglùn = 评论 = comment

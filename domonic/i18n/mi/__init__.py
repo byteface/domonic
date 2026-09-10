@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.mi
 ====================================
@@ -38,17 +35,17 @@ iti = small
 whakahua = cite
 waehere = code
 raro = sub
-sup = sup
+# sup = sup  # redundant (already aliased above)
 tohu = mark
 rupi = ruby
 whanganga = span
-iframe = iframe
+# iframe = iframe  # redundant (already aliased above)
 ataata = video
 ororongo = audio
 kākahu = canvas
-tapanga = caption
+# tapanga = caption  # dup of 'tapanga' (already <label>)
 roopuroopu = colgroup
-tinana = tbody
+# tinana = tbody  # dup of 'tinana' (already <body>)
 # upoko = thead
 waewae = tfoot
 huingamara = fieldset
@@ -56,23 +53,23 @@ pūrākau = legend
 patene = button
 whiriwhiri = select
 rārangiraraunga = datalist
-optgroup = optgroup
+# optgroup = optgroup  # redundant (already aliased above)
 kōwhiringa = option
-textarea = textarea
+# textarea = textarea  # redundant (already aliased above)
 putanga = output
 ahuwhakamua = progress
 mita = meter
 taipitopito = details
 whakarāpopototanga = summary
 tahua = menu
-tahua = menuitem
+# tahua = menuitem  # dup of 'tahua' (already <menu>)
 momotuhi = font
 pane = header
 hiku = footer
 turanga = base
 hono = link
-meta = meta
-img = img
+# meta = meta  # redundant (already aliased above)
+# img = img  # redundant (already aliased above)
 tāmau = embed
 puna = source
 ara = track
@@ -83,9 +80,9 @@ whakahau = command
 matua = main
 momotuhituranga = basefont
 pokapū = center
-tāmau = embed
-momotuhi = font
-isindex = isindex
+# tāmau = embed  # redundant (already aliased above)
+# momotuhi = font  # redundant (already aliased above)
+# isindex = isindex  # redundant (already aliased above)
 whakarārangi = listing
 Kuputuhi = plaintext
 patuki = strike

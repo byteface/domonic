@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.ar
 ====================================
@@ -31,9 +28,9 @@ altanaqul = التنقل = nav
 maqal = مقال = article
 janiban = جانبا = aside
 # hgroup = hgroup = hgroup
-aleunwan = العنوان = address
+# aleunwan = العنوان = address  # dup of 'العنوان' (already <title>)
 alraqm = الرقم = figure
-figcaption = figcaption = figcaption
+# figcaption = figcaption = figcaption  # redundant (already aliased above)
 saghir = صغير = small
 austushhid = استشهد = cite
 kwd = كود = code
@@ -42,7 +39,7 @@ soob = سوب = sup
 ealamat = علامة = mark
 rwby = روبي = ruby
 tamtadu = تمتد = span
-iframe = iframe = iframe
+# iframe = iframe = iframe  # redundant (already aliased above)
 fidyu = فيديو = video
 sawt = صوت = audio
 qumash = قماش = canvas
@@ -83,10 +80,10 @@ alamr = الأمر = command
 rayiysi = رئيسي = main
 alkhatualasasiu = الخطالأساسي = basefont
 almarkaz = المركز = center
-tadmin = تضمين = embed
-alkhatu = الخط = font
+# tadmin = تضمين = embed  # redundant (already aliased above)
+# alkhatu = الخط = font  # redundant (already aliased above)
 # isindex = isindex = isindex
-alqayimat = القائمة = listing
+# alqayimat = القائمة = listing  # dup of 'القائمة' (already <menu>)
 nasueadi = نصعادي = plaintext
 iidrab = إضراب = strike
 qalib = قالب = template

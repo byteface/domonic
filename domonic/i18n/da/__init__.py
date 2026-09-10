@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.da
 ====================================
@@ -33,7 +30,7 @@ tilside = aside
 hgruppe = hgroup
 adresse = address
 figur = figure
-figcaption = figcaption
+# figcaption = figcaption  # redundant (already aliased above)
 lille = small
 citere = cite
 kode = code
@@ -47,8 +44,8 @@ rubin = ruby
 lyd = audio
 lærred = canvas
 billedtekst = caption
-colgroup = colgroup
-krop = tbody
+# colgroup = colgroup  # redundant (already aliased above)
+# krop = tbody  # dup of 'krop' (already <body>)
 # thead = thead
 tfod = tfoot
 feltsæt = fieldset
@@ -83,8 +80,8 @@ kommando = command
 hoved = main
 # basefont = basefont
 centrum = center
-indlejre = embed
-skrifttype = font
+# indlejre = embed  # redundant (already aliased above)
+# skrifttype = font  # redundant (already aliased above)
 isindeks = isindex
 liste = listing
 klartekst = plaintext

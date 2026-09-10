@@ -1,6 +1,3 @@
-# Machine-translated tag-name aliases (data, not logic); google-translate
-# collisions mean some names legitimately rebind. Not type-checked.
-# mypy: ignore-errors
 """
 domonic.i18n.de
 ====================================
@@ -46,7 +43,7 @@ spanne = span
 # video = video
 # audio = audio
 leinwand = canvas
-bildunterschrift = caption
+# bildunterschrift = caption  # dup of 'bildunterschrift' (already <figcaption>)
 kolgruppe = colgroup
 # Körper = tbody
 # Kopf = thead
@@ -83,7 +80,7 @@ befehl = command
 haupt = main
 # basefont = basefont
 zentrum = center
-schriftart = font
+# schriftart = font  # redundant (already aliased above)
 # isindex = isindex
 auflistung = listing
 klartext = plaintext
