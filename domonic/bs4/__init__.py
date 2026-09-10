@@ -10,6 +10,7 @@ real DOM classes. Returned objects remain normal domonic nodes, not wrappers.
 
 from __future__ import annotations
 
+import functools
 import re
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
@@ -1190,6 +1191,29 @@ def _match_descendant_chain(
     return result
 
 
+@functools.lru_cache(maxsize=512)
+def _parse_selector_chain(selector: str) -> "tuple[tuple[str | None, dict[str, Any], Any], ...] | None":
+    """Parse one comma-free selector into ``((combinator, parsed, pseudo), ...)``.
+
+    Cached: the returned dicts are treated as read-only by every consumer
+    (``_match_parsed_selector`` etc. never mutate them).
+    """
+    parts = _split_simple_selector_chain(selector)
+    if not parts:
+        return None
+    out: list = []
+    for combinator, simple in parts:
+        pseudo_result = _strip_simple_pseudo(simple)
+        if pseudo_result is None:
+            return None
+        simple, pseudo = pseudo_result
+        parsed = Element._parse_simple_selector(simple)
+        if parsed is None:
+            return None
+        out.append((combinator, parsed, pseudo))
+    return tuple(out)
+
+
 def _select_fast(
     self: Node,
     selector: str,
@@ -1248,18 +1272,8 @@ def _select_fast(
             (candidate for candidate in _element_descendants(self) if id(candidate) in matched_ids),
             limit,
         )
-    selector = groups[0]
-    parts = _split_simple_selector_chain(selector)
-    if not parts:
-        return None
-    parsed_parts = []
-    for combinator, simple in parts:
-        pseudo_result = _strip_simple_pseudo(simple)
-        if pseudo_result is None:
-            return None
-        simple, pseudo = pseudo_result
-        parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
-    if any(parsed is None for _, parsed, _ in parsed_parts):
+    parsed_parts = _parse_selector_chain(groups[0])
+    if parsed_parts is None:
         return None
 
     # Single simple selector, no pseudo, index-servable -> return the index
