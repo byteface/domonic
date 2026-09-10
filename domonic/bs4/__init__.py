@@ -1325,12 +1325,18 @@ def _select_fast(
     if parsed_parts is None:
         return None
 
-    # Single simple selector, no pseudo, index-servable -> return the index
-    # list straight, skipping the per-candidate re-match loop below.
-    if len(parsed_parts) == 1 and parsed_parts[0][2] is None:
-        direct = _descendant_index_candidates(self, parsed_parts[0][1])
+    # Single simple selector -> the index gives the exact tag/class/attr match;
+    # skip the per-candidate _match_parsed_selector re-check. A trailing pseudo
+    # is applied on top of that pool.
+    if len(parsed_parts) == 1:
+        _combinator, parsed0, pseudo0 = parsed_parts[0]
+        direct = _descendant_index_candidates(self, parsed0)
         if direct is not None:
-            return direct if limit is None else direct[:limit]
+            if pseudo0 is None:
+                return direct if limit is None else direct[:limit]
+            pos_cache: dict[int, Any] = {}
+            out = [e for e in direct if _match_simple_pseudo(e, pseudo0, pos_cache)]
+            return out if limit is None else out[:limit]
 
     # Pure descendant chain ("A B C", no >/+/~, no pseudos): match from the
     # rightmost selector (served by the index) and verify each element's
