@@ -795,8 +795,16 @@ def _connect_tree(node: "Node") -> None:
         current.isConnected = is_connected
         if id_map is not None:
             cid = current.__dict__.get("kwargs", {}).get("_id")
-            if cid is not None and cid not in id_map:
-                id_map[cid] = current
+            if cid is not None:
+                if cid not in id_map:
+                    id_map[cid] = current
+                elif id_map[cid] is not current:
+                    # A duplicate id joins the tree. getElementById must return
+                    # the first in tree order; the incremental splice can't tell
+                    # whether this one now precedes the indexed one, so drop the
+                    # id index and let the next lookup rebuild it.
+                    _bump_dom_epoch()
+                    id_map = None
         if isinstance(current, Element):
             if has_custom_elements:
                 _upgrade_custom_element_instance(current)
@@ -1075,15 +1083,14 @@ def _queue_mutation_record(
     old_value: str | None = None,
 ) -> None:
     # Structural changes bump the index epochs through _connect_tree /
-    # _disconnect_tree. Here we catch an ``id`` change (id index) or a
-    # ``class`` change (tag/class index), and only once indexing is on.
+    # _disconnect_tree. Here we catch attribute changes: an ``id`` change also
+    # moves the id index, and every attribute feeds the bs4 layer's attribute
+    # index, so any attribute change moves the structure epoch.
     if _ID_INDEXING_ON and record_type == "attributes":
         name = attribute_name[1:] if attribute_name and attribute_name[:1] == "_" else attribute_name
         if name == "id":
             _bump_dom_epoch()
-            _bump_structure_epoch()  # bs4's _id_index keys on the structure epoch
-        elif name == "class" or name == "name":
-            _bump_structure_epoch()
+        _bump_structure_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
         _invalidate_render_cache(target)
     try:
@@ -2954,9 +2961,11 @@ def _child_replace_with(node: "Node", nodes: tuple) -> None:
         kids.remove(node)
     pos = kids.index(reference) if reference is not None and reference in kids else len(kids)
     kids[pos:pos] = items
+    # Disconnect while ``node`` is still parented, so the walk can reach the
+    # real root and invalidate its id / structure index.
+    _disconnect_tree(node)
     parent.__dict__["args"] = tuple(kids)
     node.parentNode = None
-    _disconnect_tree(node)
     for it, old_document in old_documents:
         _connect_inserted_node(parent, it, old_document)
     added = [it for it in items if isinstance(it, Node)]

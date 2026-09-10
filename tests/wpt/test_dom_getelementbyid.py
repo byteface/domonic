@@ -88,6 +88,19 @@ class GetElementById(unittest.TestCase):
         root.removeChild(first)
         self.assertIs(document.getElementById("dup2"), second)
 
+    def test_inserting_a_duplicate_id_ahead_of_the_indexed_one_wins(self):
+        # The incremental id-index splice must not keep pointing at the later
+        # element when a duplicate id is inserted earlier in tree order.
+        root = _tree()
+        later = document.createElement("a")
+        later.id = "dup3"
+        root.appendChild(later)
+        self.assertIs(document.getElementById("dup3"), later)
+        earlier = document.createElement("b")
+        earlier.id = "dup3"
+        root.insertBefore(earlier, later)
+        self.assertIs(document.getElementById("dup3"), earlier)
+
     def test_reflects_a_wholesale_innerHTML_replacement(self):
         root = _tree()
         old = document.createElement("a")
