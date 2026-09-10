@@ -5220,9 +5220,12 @@ class Element(Node):
     def _normalize_adjacent_position(self, position: str) -> str:
         pos = str(position).lower()
         if pos not in ("beforebegin", "afterbegin", "beforeend", "afterend"):
-            raise ValueError(
-                f"The value provided ({position}) is not one of"
-                '"beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".'
+            # DOM spec: a bad position is a SyntaxError (still a ValueError, so
+            # existing ``except ValueError`` callers are unaffected).
+            raise DOMException(
+                f"The value provided ('{position}') is not one of "
+                "'beforebegin', 'afterbegin', 'beforeend', or 'afterend'.",
+                "SyntaxError",
             )
         return pos
 
