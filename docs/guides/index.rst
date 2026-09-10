@@ -27,3 +27,4 @@ browser concepts visible instead of hiding them behind a Python-only abstraction
    compiled-rendering
    live-dom-updates
    parser-performance
+   cli

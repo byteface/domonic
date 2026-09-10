@@ -10,10 +10,12 @@ real DOM classes. Returned objects remain normal domonic nodes, not wrappers.
 
 from __future__ import annotations
 
+import functools
 import re
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 
+from domonic import dom as _dom
 from domonic import domonic
 from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text
 
@@ -108,7 +110,7 @@ def _descendants(node: Any) -> Iterator[Any]:
     # the root (invalidated by every mutation helper, like ``_bs4_tag_index``),
     # but only once a consumer has actually walked the whole thing -- an
     # early-exiting caller (``find(..., limit=1)``) must stay lazy.
-    if node is _root_for_index(node):
+    if node is _fresh_root(node):
         cache = node.__dict__.get("_bs4_all_nodes")
         if cache is not None:
             return iter(cache)
@@ -159,7 +161,7 @@ def _element_descendants(node: Any) -> Iterator[Element]:
     # If a prior ``find_all`` already built the tag index, its "*" list is every
     # element in document order -- reuse it. Don't *force* a build here: a lazy
     # ``select_one`` / ``find(limit=1)`` on the root would pay for a full walk.
-    if node is _root_for_index(node):
+    if node is _fresh_root(node):
         cached = node.__dict__.get("_bs4_tag_index")
         if cached is not None:
             return iter(cached["*"])
@@ -210,6 +212,30 @@ def _next_element_sibling(node: Any, cache: dict[int, Any] | None = None) -> Ele
     return kids[idx + 1] if idx + 1 < len(kids) else None
 
 
+def _id_index(node: Any) -> dict[str, Element]:
+    """``{id: first element in tree order}`` for the whole tree, cached on the
+    root alongside ``_bs4_tag_index`` and invalidated the same way.
+
+    Reuses the tag index's ordered element list when it is already warm;
+    otherwise pays one walk (as ``_tag_index`` does for the first ``find_all``).
+    """
+    root = _fresh_root(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_id_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, Element] = {}
+    for element in source:
+        eid = _get_attribute(element, "id")
+        if eid is not None and eid not in index:
+            index[eid] = element
+    root.__dict__["_bs4_id_index"] = index
+    return index
+
+
 def _find_element_by_id(
     node: Any,
     element_id: str,
@@ -217,6 +243,10 @@ def _find_element_by_id(
 ) -> Element | None:
     if include_self and isinstance(node, Element) and _get_attribute(node, "id") == element_id:
         return node
+    # Whole-tree lookup (context *is* the root) -> O(1) via the id index.
+    if node is _root_for_index(node):
+        return _id_index(node).get(element_id)
+    # Scoped lookup -> the match must be a descendant of ``node``.
     for child in _element_descendants(node):
         if _get_attribute(child, "id") == element_id:
             return child
@@ -228,16 +258,44 @@ def _root_for_index(node: Any) -> Node | None:
     return root if isinstance(root, Node) else None
 
 
+_BS4_INDEX_KEYS = (
+    "_bs4_tag_index",
+    "_bs4_all_nodes",
+    "_bs4_id_index",
+    "_bs4_class_index",
+    "_bs4_attr_index",
+)
+
+
 def _invalidate_index(node: Any) -> None:
     root = _root_for_index(node)
     if root is not None:
         d = root.__dict__
-        d.pop("_bs4_tag_index", None)
-        d.pop("_bs4_all_nodes", None)
+        for key in _BS4_INDEX_KEYS:
+            d.pop(key, None)
+        d.pop("_bs4_index_epoch", None)
+    # a bs4-side mutation must also stale domonic's own tag/class index
+    _dom._bump_structure_epoch()
+
+
+def _fresh_root(node: Any) -> "Node | None":
+    """``_root_for_index`` plus: drop the cached bs4 indexes if a *domonic*-side
+    mutation (which does not go through ``_invalidate_index``) has moved the
+    shared structure epoch since they were built."""
+    _dom._enable_id_indexing()  # so domonic mutation paths start bumping the epoch
+    root = _root_for_index(node)
+    if root is not None:
+        d = root.__dict__
+        cur = _dom._STRUCTURE_EPOCH
+        if d.get("_bs4_index_epoch") != cur:
+            for key in _BS4_INDEX_KEYS:
+                d.pop(key, None)
+            d["_bs4_index_epoch"] = cur
+    return root
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
-    root = _root_for_index(node)
+    root = _fresh_root(node)
     if root is None:
         return {}
     cached = root.__dict__.get("_bs4_tag_index")
@@ -250,6 +308,106 @@ def _tag_index(node: Any) -> dict[str, list[Element]]:
         index.setdefault(element.name.lower(), []).append(element)
     root.__dict__["_bs4_tag_index"] = index
     return index
+
+
+def _class_index(node: Any) -> dict[str, list[Element]]:
+    """``{class token: [elements in tree order]}`` for the whole tree, cached on
+    the root and invalidated alongside ``_bs4_tag_index``. Built off the tag
+    index's ordered element list when that is warm, else one walk."""
+    root = _fresh_root(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_class_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, list[Element]] = {}
+    for element in source:
+        cls = _get_attribute(element, "class")
+        if cls:
+            for token in str(cls).split():
+                index.setdefault(token, []).append(element)
+    root.__dict__["_bs4_class_index"] = index
+    return index
+
+
+def _attr_index(node: Any) -> dict[str, list[Element]]:
+    """``{attribute name: [elements in tree order]}`` -- every element listed
+    once per attribute it carries. Cached / invalidated like the others."""
+    root = _fresh_root(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_attr_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, list[Element]] = {}
+    for element in source:
+        for key in element.__dict__.get("kwargs", ()):  # keys are ``_name``
+            index.setdefault(key[1:] if key[:1] == "_" else key, []).append(element)
+    root.__dict__["_bs4_attr_index"] = index
+    return index
+
+
+def _exact_index_pool(
+    self: Any,
+    name: Any,
+    merged_attrs: dict[str, Any],
+    recursive: bool,
+    string: Any,
+) -> "list[Element] | None":
+    """The exact, document-ordered result for a ``find_all`` that reduces to a
+    tag (or list of tags) plus attribute-*presence* filters -- served straight
+    from the indexes with no per-element re-check.
+
+    Returns ``None`` (defer to the CSS path / node scan) whenever a filter the
+    index can't fully resolve is present: a concrete attribute value, a regex or
+    callable ``name``, ``string=``, ``recursive=False`` or a non-root context.
+    """
+    if not recursive or string is not None:
+        return None
+    if isinstance(name, (list, tuple, set)):
+        if not all(isinstance(item, str) for item in name):
+            return None
+        names: "set[str] | None" = {item.lower() for item in name}
+    elif isinstance(name, str):
+        names = {name.lower()}
+    elif name is None or name is True:
+        names = None
+    else:  # regex, callable, ...
+        return None
+    if merged_attrs and not all(value is True for value in merged_attrs.values()):
+        return None
+    attr_names = [_attribute_name(a) for a in merged_attrs]
+    if "class" in attr_names:
+        # ``class_=True`` is token-truthiness, not attribute presence: an element
+        # carrying ``class=""`` has the attribute but no tokens, so BS4 does not
+        # match it. Leave that to the general scan.
+        return None
+    if self is not _root_for_index(self):
+        return None
+
+    if attr_names:
+        attr_map = _attr_index(self)
+        pools = sorted((attr_map.get(a) or [] for a in attr_names), key=len)
+        if not pools[0]:
+            return []
+        out = list(pools[0])
+        for other in pools[1:]:
+            keep = set(other)
+            out = [e for e in out if e in keep]
+        if names is not None:
+            out = [e for e in out if e.name.lower() in names]
+        return out
+
+    tag_map = _tag_index(self)
+    if names is None:
+        return list(tag_map.get("*", ()))
+    if len(names) == 1:
+        return list(tag_map.get(next(iter(names)), ()))
+    return [e for e in tag_map.get("*", ()) if e.name.lower() in names]
 
 
 def _indexed_candidates(
@@ -551,6 +709,9 @@ def _find_all(
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
     merged_attrs = _merge_attrs(attrs, kwargs)
+    exact = _exact_index_pool(self, name, merged_attrs, recursive, string)
+    if exact is not None:
+        return _limit(iter(exact), limit)
     if string is None and not merged_attrs and (name is True or name is None):
         # ``find_all(True)`` / ``find_all()`` -- every tag, no filtering
         if recursive:
@@ -565,6 +726,24 @@ def _find_all(
             candidates = _candidate_nodes(self, name, recursive, string)
         if candidates is not None:
             return _limit(candidates, limit)
+    # ``find_all(class_=<regex>)`` alone -> match the regex against the class
+    # index's tokens (dozens) instead of every element's class string.
+    if (
+        recursive
+        and string is None
+        and name in (None, True)
+        and list(merged_attrs) == ["class"]
+        and hasattr(merged_attrs["class"], "search")
+        and self is _root_for_index(self)
+        # only when the regex matches individual tokens, not the whole ``class``
+        # string -- anchors / whitespace could mean the latter
+        and not re.search(r"[\^$\s]|\\s|\\b\Z", getattr(merged_attrs["class"], "pattern", " "))
+    ):
+        pattern = merged_attrs["class"]
+        matched = {id(el) for token, bucket in _class_index(self).items() if pattern.search(token) for el in bucket}
+        if matched:
+            return _limit((el for el in _tag_index(self)["*"] if id(el) in matched), limit)
+        return []
     if recursive and _can_use_css(name, merged_attrs, string):
         selector = _css_from_filters(name, merged_attrs)
         fast = _select_fast(self, selector, limit=limit)
@@ -1009,13 +1188,167 @@ def _selector_candidates(
         if isinstance(found, Element):
             yield found
         return
-    if parsed["tag"] != "*":
-        tag_name = parsed["tag"].lower()
+
+    tag_name = parsed["tag"].lower() if parsed["tag"] != "*" else None
+
+    # Whole-tree selector -> narrow the candidate pool through the tag / class
+    # / attribute indexes (the general loop still re-checks value operators and
+    # pseudos on whatever comes back).
+    if context is _root_for_index(context):
+        yield from _index_candidate_pool(context, parsed)
+        return
+
+    if tag_name is not None:
         for candidate in _element_descendants(context):
             if candidate.name.lower() == tag_name:
                 yield candidate
         return
     yield from _element_descendants(context)
+
+
+def _index_candidate_pool(root: Any, parsed: dict[str, Any]) -> "list[Element]":
+    """A (possibly loose) superset of the elements a single simple selector can
+    match, drawn from the tag / class / attribute indexes. Value operators and
+    pseudos are ignored here -- the caller re-checks them."""
+    tag = parsed["tag"].lower() if parsed["tag"] != "*" else None
+    pools: "list[list[Element]]" = []
+    if parsed["classes"]:
+        class_map = _class_index(root)
+        for token in parsed["classes"]:
+            bucket = class_map.get(token)
+            if bucket is None:
+                return []
+            pools.append(bucket)
+    if parsed["attributes"]:
+        attr_map = _attr_index(root)
+        for name, _op, _val in parsed["attributes"]:
+            bucket = attr_map.get(name)
+            if bucket is None:
+                return []
+            pools.append(bucket)
+    if not pools:
+        return list(_tag_index(root).get(tag or "*", []))
+    pools.sort(key=len)
+    out = list(pools[0])
+    for other in pools[1:]:
+        keep = set(other)
+        out = [e for e in out if e in keep]
+    if tag is not None:
+        out = [e for e in out if e.name.lower() == tag]
+    return out
+
+
+def _descendant_index_candidates(root: Any, parsed: dict[str, Any]) -> "list[Element] | None":
+    """The *exact* set of elements one simple selector matches, straight from
+    the indexes, or ``None`` when a value operator / pseudo / id means the
+    result still needs per-element checking."""
+    if parsed["id"] is not None or parsed.get("pseudos"):
+        return None
+    if any(op for _n, op, _v in parsed["attributes"]):
+        return None  # [a=b], [a^=b] etc. -- the index only knows presence
+    if root is not _root_for_index(root):
+        return None
+    return _index_candidate_pool(root, parsed)
+
+
+def _match_descendant_chain(
+    root: Any, parsed_chain: "list[dict[str, Any]]", limit: int | None
+) -> "list[Element] | None":
+    rightmost = _descendant_index_candidates(root, parsed_chain[-1])
+    if rightmost is None:
+        return None
+    # Each ancestor part becomes a cheap predicate: a lower-case tag string
+    # (compared directly, no set built), or -- for a class selector -- an
+    # identity set of the elements the index says match.
+    checks: "list[tuple[str | None, set[Element] | None]]" = []
+    for part in parsed_chain[:-1]:
+        if part["id"] is not None or part["attributes"] or part.get("pseudos") or part["classes"]:
+            cands = _descendant_index_candidates(root, part)
+            if cands is None:
+                return None
+            if not cands:  # a required ancestor selector matches nothing
+                return []
+            checks.append((None, set(cands)))
+        elif part["tag"] != "*":
+            tag = part["tag"].lower()
+            if not _tag_index(root).get(tag):  # no element with this tag anywhere
+                return []
+            checks.append((tag, None))
+        else:
+            checks.append((None, None))  # bare "*" ancestor -> any element
+
+    result: list[Element] = []
+
+    if len(checks) == 1:
+        # "A B": memoise whether a node (or an ancestor) satisfies A, so a run
+        # of siblings sharing a container is walked once, not once each.
+        want_tag, want_set = checks[0]
+        memo: "dict[int, bool]" = {}
+        for element in rightmost:
+            node = element.__dict__.get("parentNode")
+            path: "list[int]" = []
+            hit = False
+            while node is not None and node is not root:
+                nid = id(node)
+                cached = memo.get(nid)
+                if cached is not None:
+                    hit = cached
+                    break
+                path.append(nid)
+                if node in want_set if want_set is not None else (want_tag is None or node.name.lower() == want_tag):
+                    hit = True
+                    break
+                node = node.__dict__.get("parentNode")
+            for nid in path:
+                memo[nid] = hit
+            if hit:
+                result.append(element)
+                if limit is not None and len(result) >= limit:
+                    break
+        return result
+
+    depth = len(checks) - 1
+    for element in rightmost:
+        # satisfy ``checks`` right-to-left; the chain need not be contiguous
+        # ("div span a" matches an <a> whose <span> ancestor has a <div> ancestor)
+        need = depth
+        node = element.__dict__.get("parentNode")
+        while node is not None and node is not root and need >= 0:
+            want_tag, want_set = checks[need]
+            if want_set is not None:
+                if node in want_set:
+                    need -= 1
+            elif want_tag is None or node.name.lower() == want_tag:
+                need -= 1
+            node = node.__dict__.get("parentNode")
+        if need < 0:
+            result.append(element)
+            if limit is not None and len(result) >= limit:
+                break
+    return result
+
+
+@functools.lru_cache(maxsize=512)
+def _parse_selector_chain(selector: str) -> "tuple[tuple[str | None, dict[str, Any], Any], ...] | None":
+    """Parse one comma-free selector into ``((combinator, parsed, pseudo), ...)``.
+
+    Cached: the returned dicts are treated as read-only by every consumer
+    (``_match_parsed_selector`` etc. never mutate them).
+    """
+    parts = _split_simple_selector_chain(selector)
+    if not parts:
+        return None
+    out: list = []
+    for combinator, simple in parts:
+        pseudo_result = _strip_simple_pseudo(simple)
+        if pseudo_result is None:
+            return None
+        simple, pseudo = pseudo_result
+        parsed = Element._parse_simple_selector(simple)
+        if parsed is None:
+            return None
+        out.append((combinator, parsed, pseudo))
+    return tuple(out)
 
 
 def _select_fast(
@@ -1076,19 +1409,34 @@ def _select_fast(
             (candidate for candidate in _element_descendants(self) if id(candidate) in matched_ids),
             limit,
         )
-    selector = groups[0]
-    parts = _split_simple_selector_chain(selector)
-    if not parts:
+    parsed_parts = _parse_selector_chain(groups[0])
+    if parsed_parts is None:
         return None
-    parsed_parts = []
-    for combinator, simple in parts:
-        pseudo_result = _strip_simple_pseudo(simple)
-        if pseudo_result is None:
-            return None
-        simple, pseudo = pseudo_result
-        parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
-    if any(parsed is None for _, parsed, _ in parsed_parts):
-        return None
+
+    # Single simple selector -> the index gives the exact tag/class/attr match;
+    # skip the per-candidate _match_parsed_selector re-check. A trailing pseudo
+    # is applied on top of that pool.
+    if len(parsed_parts) == 1:
+        _combinator, parsed0, pseudo0 = parsed_parts[0]
+        direct = _descendant_index_candidates(self, parsed0)
+        if direct is not None:
+            if pseudo0 is None:
+                return direct if limit is None else direct[:limit]
+            pos_cache: dict[int, Any] = {}
+            out = [e for e in direct if _match_simple_pseudo(e, pseudo0, pos_cache)]
+            return out if limit is None else out[:limit]
+
+    # Pure descendant chain ("A B C", no >/+/~, no pseudos): match from the
+    # rightmost selector (served by the index) and verify each element's
+    # ancestor chain, instead of walking every A's whole subtree for B.
+    if (
+        len(parsed_parts) >= 2
+        and all(c in (None, " ") for c, _, _ in parsed_parts)
+        and all(p is None for _, _, p in parsed_parts)
+    ):
+        matched = _match_descendant_chain(self, [pp[1] for pp in parsed_parts], limit)
+        if matched is not None:
+            return matched
 
     contexts: list[Any] = [self]
     last_index = len(parsed_parts) - 1
@@ -1300,7 +1648,11 @@ def _subtree_forward(node: Any, skip_self: bool = False) -> Iterator[Any]:
 
 
 def _subtree_backward(node: Any) -> Iterator[Any]:
-    """Nodes of ``node``'s subtree in reverse document order (``node`` last)."""
+    """Nodes of ``node``'s subtree in reverse document order (``node`` last).
+
+    Lazy on purpose: ``find_previous`` (limit=1) usually finds its match a few
+    nodes back and must not pay to walk the whole preceding subtree.
+    """
     stack: list[tuple[Any, bool]] = [(node, False)]
     while stack:
         cur, expanded = stack.pop()

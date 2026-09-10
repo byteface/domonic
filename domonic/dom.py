@@ -320,6 +320,27 @@ _HTML_RAWTEXT_ELEMENTS = frozenset(
     }
 )
 
+# Elements whose end tag ``str(node)`` omits unless RENDER_OPTIONAL_CLOSING_TAGS
+# is set. Module-level so Element.stream() does not rebuild the set per call.
+_OPTIONAL_CLOSING_TAGS = frozenset(
+    {
+        "html",
+        "head",
+        "body",
+        "p",
+        "dt",
+        "dd",
+        "li",
+        "option",
+        "thead",
+        "th",
+        "tbody",
+        "tr",
+        "td",
+        "tfoot",
+        "colgroup",
+    }
+)
 # Attribute names domonic exposes with a Python-unfriendly spelling (a real
 # hyphen, or a name that collides with a Python keyword). Used by
 # Element.__attributes__, which runs once per attribute on every render --
@@ -639,6 +660,55 @@ def _validate_xml_name(name: Any, *, qualified: bool = False) -> str:
     raise DOMException(f"The name provided ('{text}') is not a valid name.", "InvalidCharacterError")
 
 
+# The element-index machinery below is completely dormant until the first
+# getElementById / getElementsByTagName / getElementsByClassName call sets
+# ``_ID_INDEXING_ON``. Code that never calls those (e.g. the bs4 layer, pure
+# serialisation) pays nothing: _connect_tree / _disconnect_tree /
+# _queue_mutation_record all short-circuit on this flag.
+_ID_INDEXING_ON: bool = False
+
+# Two process-wide monotonic counters, each stamped onto the index it guards:
+#  - _DOM_MUTATION_EPOCH: the id index. Bumped only when it cannot be kept in
+#    sync incrementally (an id-bearing subtree removed, an ``id`` attribute
+#    changed, an untracked structural change). id-less appends do not bump it.
+#  - _STRUCTURE_EPOCH: the tag/class index (which cannot be spliced in order).
+#    Bumped on every structural change and every ``class`` attribute change.
+_DOM_MUTATION_EPOCH: int = 0
+_STRUCTURE_EPOCH: int = 0
+
+
+def _bump_dom_epoch() -> None:
+    global _DOM_MUTATION_EPOCH
+    _DOM_MUTATION_EPOCH += 1
+
+
+def _bump_structure_epoch() -> None:
+    global _STRUCTURE_EPOCH
+    _STRUCTURE_EPOCH += 1
+
+
+# Every structural (tag / class / attr / name) index -- domonic's own and the
+# ones the bs4 layer caches on the same root -- is stamped with
+# ``_STRUCTURE_EPOCH`` and rebuilt when it moves. A structural mutation only
+# needs to bump the epoch when the root actually holds one of these.
+_STRUCTURE_INDEX_KEYS = (
+    "_dom_index",
+    "_bs4_tag_index",
+    "_bs4_class_index",
+    "_bs4_attr_index",
+    "_bs4_all_nodes",
+)
+
+
+def _root_holds_structure_index(root_dict: dict) -> bool:
+    return any(key in root_dict for key in _STRUCTURE_INDEX_KEYS)
+
+
+def _enable_id_indexing() -> None:
+    global _ID_INDEXING_ON
+    _ID_INDEXING_ON = True
+
+
 def _detach_node_for_insertion(node: Any) -> "Document | None":
     if not isinstance(node, Node):
         return None
@@ -720,6 +790,23 @@ def _connect_tree(node: "Node") -> None:
     # ``rootNode`` walks to the top of the tree; it is the same for every node in
     # the subtree being connected, so resolve it once.
     root = node.rootNode
+    # Keep a live id index in sync incrementally: splice the joining subtree's
+    # ids in and leave the id epoch alone, so an id-less append stays O(1).
+    # The tag/class index can't be spliced in order, so bump its epoch.
+    # Only trees that actually hold an index pay anything here.
+    id_map = None
+    if _ID_INDEXING_ON:
+        rd = root.__dict__
+        id_index = rd.get("_id_index")
+        if id_index is not None:
+            _bump_structure_epoch()
+            if id_index[0] == _DOM_MUTATION_EPOCH:
+                id_map = id_index[1]
+            else:
+                _bump_dom_epoch()
+        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
+            _bump_structure_epoch()
+            _bump_dom_epoch()
     is_connected = isinstance(root, Document)
     owner = root if is_connected else getattr(node, "_ownerDocument", None)
     registry = _get_custom_element_registry()
@@ -727,6 +814,18 @@ def _connect_tree(node: "Node") -> None:
     for current in _iter_dom_nodes(node):
         current._ownerDocument = owner
         current.isConnected = is_connected
+        if id_map is not None:
+            cid = current.__dict__.get("kwargs", {}).get("_id")
+            if cid is not None:
+                if cid not in id_map:
+                    id_map[cid] = current
+                elif id_map[cid] is not current:
+                    # A duplicate id joins the tree. getElementById must return
+                    # the first in tree order; the incremental splice can't tell
+                    # whether this one now precedes the indexed one, so drop the
+                    # id index and let the next lookup rebuild it.
+                    _bump_dom_epoch()
+                    id_map = None
         if isinstance(current, Element):
             if has_custom_elements:
                 _upgrade_custom_element_instance(current)
@@ -735,8 +834,28 @@ def _connect_tree(node: "Node") -> None:
 
 
 def _disconnect_tree(node: "Node") -> None:
+    id_map: "dict[str, Any] | None" = None
+    if _ID_INDEXING_ON:
+        rd = node.rootNode.__dict__
+        id_index = rd.get("_id_index")
+        if id_index is not None:
+            _bump_structure_epoch()
+            if id_index[0] == _DOM_MUTATION_EPOCH:
+                id_map = id_index[1]
+            else:
+                _bump_dom_epoch()
+        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
+            _bump_structure_epoch()
+            _bump_dom_epoch()
     for current in _iter_dom_nodes(node):
         current.isConnected = False
+        if id_map is not None:
+            cid = current.__dict__.get("kwargs", {}).get("_id")
+            if cid is not None and cid in id_map:
+                # A shadowed duplicate id could now become visible -- cheapest
+                # correct move is a full rebuild on the next lookup.
+                _bump_dom_epoch()
+                id_map = None
         if isinstance(current, Element):
             _run_disconnected_callback(current)
 
@@ -832,6 +951,133 @@ def _dom_config_render_fingerprint() -> tuple:
     )
 
 
+def _child_nodes_for_walk(node: Any) -> list:
+    # only real Nodes -- args can also hold raw strings, and occasionally
+    # dicts/other junk (e.g. JSON.tablify rows).
+    return [c for c in node.__dict__.get("args", ()) if isinstance(c, Node)]
+
+
+def _walk_descendants_for_id(root: "Node", _id: str) -> "Element | None":
+    """Pre-order DFS of ``root``'s descendants for the first whose ``_id``
+    kwarg matches (``root`` itself is not considered)."""
+    stack: list[Any] = list(reversed(_child_nodes_for_walk(root)))
+    while stack:
+        node = stack.pop()
+        if node.__dict__.get("kwargs", {}).get("_id") == _id:
+            return node
+        stack.extend(reversed(_child_nodes_for_walk(node)))
+    return None
+
+
+def _collect_id_index(root: "Node") -> dict[str, "Element"]:
+    """A ``{id: element}`` map of ``root``'s descendants in tree order --
+    first element wins for a duplicated id, matching ``getElementById``."""
+    index: dict[str, Any] = {}
+    stack: list[Any] = list(reversed(_child_nodes_for_walk(root)))
+    while stack:
+        node = stack.pop()
+        cid = node.__dict__.get("kwargs", {}).get("_id")
+        if cid is not None and cid not in index:
+            index[cid] = node
+        stack.extend(reversed(_child_nodes_for_walk(node)))
+    return index
+
+
+def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
+    """A ``{"tag": {name: [el]}, "class": {token: [el]}, "name": {name: [el]}}``
+    index of ``root``'s descendant elements in tree order, cached on ``root``
+    and rebuilt only when the structure epoch has moved. Backs
+    ``getElementsByTagName`` / ``-ClassName`` / ``-Name`` and the document
+    collection accessors."""
+    if not _ID_INDEXING_ON:
+        _enable_id_indexing()
+    cached = root.__dict__.get("_dom_index")
+    if cached is not None and cached[0] == _STRUCTURE_EPOCH:
+        return cached[1]
+    tags: "dict[str, list[Element]]" = {"*": []}
+    classes: "dict[str, list[Element]]" = {}
+    names: "dict[str, list[Element]]" = {}
+    all_tag = tags["*"]
+    stack: list[Any] = list(reversed(_child_nodes_for_walk(root)))
+    while stack:
+        node = stack.pop()
+        if isinstance(node, Element):
+            all_tag.append(node)
+            kw = node.__dict__.get("kwargs", {})
+            tag = str(getattr(node, "name", "") or "").lower()
+            bucket = tags.get(tag)
+            if bucket is None:
+                tags[tag] = [node]
+            else:
+                bucket.append(node)
+            cls = kw.get("_class")
+            if cls:
+                for token in str(cls).split():
+                    cbucket = classes.get(token)
+                    if cbucket is None:
+                        classes[token] = [node]
+                    else:
+                        cbucket.append(node)
+            nm = kw.get("_name")
+            if nm is not None:
+                nbucket = names.get(nm)
+                if nbucket is None:
+                    names[nm] = [node]
+                else:
+                    nbucket.append(node)
+        stack.extend(reversed(_child_nodes_for_walk(node)))
+    maps = {"tag": tags, "class": classes, "name": names}
+    root.__dict__["_dom_index"] = (_STRUCTURE_EPOCH, maps)
+    return maps
+
+
+def _elements_by_tag_name(root: "Node", tag_name: str) -> "list[Element]":
+    return list(_root_element_index(root)["tag"].get(tag_name.lower(), ()))
+
+
+def _elements_by_name(root: "Node", name: str) -> "list[Element]":
+    return list(_root_element_index(root)["name"].get(name, ()))
+
+
+def _elements_by_class_name(root: "Node", tokens: "frozenset[str]") -> "list[Element]":
+    class_map = _root_element_index(root)["class"]
+    buckets: "list[list[Element]]" = []
+    for token in tokens:
+        bucket = class_map.get(token)
+        if bucket is None:  # a required class no element has -> no matches
+            return []
+        buckets.append(bucket)
+    if not buckets:
+        return []
+    buckets.sort(key=len)
+    smallest = buckets[0]
+    if len(buckets) == 1:
+        return list(smallest)
+    if len(buckets) == 2:  # the common ``.a.b`` case -- one membership test
+        other = set(buckets[1])
+        return [el for el in smallest if el in other]
+    others = [set(bucket) for bucket in buckets[1:]]
+    return [el for el in smallest if all(el in seen for seen in others)]
+
+
+def _element_by_id_via_index(root: "Node", _id: str) -> "Element | None":
+    """``getElementById`` backed by a lazily-built id -> element index that is
+    rebuilt only when the global mutation epoch has moved. A fresh index is
+    authoritative, so a miss is O(1) (no fallback walk)."""
+    if not _ID_INDEXING_ON:
+        _enable_id_indexing()
+    cached = root.__dict__.get("_id_index")
+    if cached is None or cached[0] != _DOM_MUTATION_EPOCH:
+        cached = (_DOM_MUTATION_EPOCH, _collect_id_index(root))
+        root.__dict__["_id_index"] = cached
+    node = cached[1].get(_id)
+    # Cheap correctness guard: if a truly untracked mutation changed the id,
+    # return nothing rather than the wrong element.
+    if node is not None and node.__dict__.get("kwargs", {}).get("_id") != _id:
+        return None
+    return node
+
+
 def _invalidate_render_cache(node: "Node | None") -> None:
     """Mark node and every ancestor's cached str(node) stale.
 
@@ -857,6 +1103,15 @@ def _queue_mutation_record(
     attribute_namespace: str | None = None,
     old_value: str | None = None,
 ) -> None:
+    # Structural changes bump the index epochs through _connect_tree /
+    # _disconnect_tree. Here we catch attribute changes: an ``id`` change also
+    # moves the id index, and every attribute feeds the bs4 layer's attribute
+    # index, so any attribute change moves the structure epoch.
+    if _ID_INDEXING_ON and record_type == "attributes":
+        name = attribute_name[1:] if attribute_name and attribute_name[:1] == "_" else attribute_name
+        if name == "id":
+            _bump_dom_epoch()
+        _bump_structure_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
         _invalidate_render_cache(target)
     try:
@@ -1341,47 +1596,50 @@ class Node(EventTarget):
 
     @property
     def __attributes__(self):
-        def format_attr(key, value):
-            escape_attribute = bool(self.__dict__.get("_escape_attributes_on_render", False))
-            if value is True:
-                value = "true"
-            if value is False:
-                value = "false"
-            key = key.split("_", 1)[1]
-            key = _ATTRIBUTE_NAME_REMAP.get(key, key)
-
-            if DOMConfig.HTMX_ENABLED:
-                htmx_attribute = _normalize_htmx_attribute(key)
-                if htmx_attribute is not None:
-                    return f""" {htmx_attribute}=""" f"""{_render_attribute_value(
-                            value,
-                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-                        )}"""
-
-            if DOMConfig.ALPINE_ENABLED:
-                alpine_attribute = _normalize_alpine_attribute(key)
-                if alpine_attribute is not None:
-                    return f""" {alpine_attribute}=""" f"""{_render_attribute_value(
-                            value,
-                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-                        )}"""
-
-            # lets us have boolean attributes
-            if key in _BOOLEAN_ATTRIBUTES:
-                if value == "" or value == key:
-                    return f""" {key}"""
-            return f""" {key}={_render_attribute_value(
-                value,
-                DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-            )}"""
-
+        kwargs = self.kwargs
+        if not kwargs:
+            return ""
+        # Constants that do not vary between this element's attributes are read
+        # once here rather than on every iteration of the old per-attr closure.
+        escape = DOMConfig.GLOBAL_AUTOESCAPE or bool(self.__dict__.get("_escape_attributes_on_render", False))
+        htmx = DOMConfig.HTMX_ENABLED
+        alpine = DOMConfig.ALPINE_ENABLED
+        extensions = htmx or alpine
+        remap = _ATTRIBUTE_NAME_REMAP
+        boolean_attrs = _BOOLEAN_ATTRIBUTES
+        render_value = _render_attribute_value
+        parts: list[str] = []
         try:
-            return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
+            for key, value in kwargs.items():
+                if value is True:
+                    value = "true"
+                elif value is False:
+                    value = "false"
+                key = key.split("_", 1)[1]
+                key = remap.get(key, key)
+
+                if extensions:
+                    if htmx:
+                        htmx_attribute = _normalize_htmx_attribute(key)
+                        if htmx_attribute is not None:
+                            parts.append(f" {htmx_attribute}={render_value(value, escape)}")
+                            continue
+                    if alpine:
+                        alpine_attribute = _normalize_alpine_attribute(key)
+                        if alpine_attribute is not None:
+                            parts.append(f" {alpine_attribute}={render_value(value, escape)}")
+                            continue
+
+                # lets us have boolean attributes
+                if key in boolean_attrs and (value == "" or value == key):
+                    parts.append(f" {key}")
+                    continue
+                parts.append(f" {key}={render_value(value, escape)}")
         except IndexError as e:
             from domonic.html import TemplateError
 
             raise TemplateError(e)
-        # except Exception as e:
+        return "".join(parts)
 
     @__attributes__.setter
     def __attributes__(self, ignore):
@@ -1449,50 +1707,35 @@ class Node(EventTarget):
 
     def stream(self) -> Iterator[str]:
         """Yield rendered HTML chunks without materialising the full subtree."""
-        optional_closing_tags = {
-            "html",
-            "head",
-            "body",
-            "p",
-            "dt",
-            "dd",
-            "li",
-            "option",
-            "thead",
-            "th",
-            "tbody",
-            "tr",
-            "td",
-            "tfoot",
-            "colgroup",
-        }
-        stack: list[tuple[str, Any]] = [("value", self)]
+        # Config is read once per top-level render: a single serialization is
+        # atomic, and threading these locals through the loop avoids a
+        # DOMConfig attribute lookup per node.
+        autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        render_optional = DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
+        optional_closing_tags = _OPTIONAL_CLOSING_TAGS
+        rawtext = _HTML_RAWTEXT_ELEMENTS
+        escape_html = _escape_html
+        node_stream = Node.stream
+        stack: list[tuple[bool, Any]] = [(False, self)]
         while stack:
-            kind, value = stack.pop()
-            if kind == "close":
-                yield f"</{value.name}>"
-                continue
-            if kind == "iter":
-                try:
-                    child = next(value)
-                except StopIteration:
-                    continue
-                stack.append(("iter", value))
-                stack.append(("value", child))
+            is_close, value = stack.pop()
+
+            if is_close:
+                yield value  # already-rendered "</name>" string
                 continue
 
             if callable(value) and not isinstance(value, (Node, str)):
                 value = value()
 
             if isinstance(value, Text):
-                escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(value, "_escape_text_on_render", False))
-                value = str(value.textContent)
-                yield _escape_html(value) if escape_text else value
+                escape_text = autoescape or bool(getattr(value, "_escape_text_on_render", False))
+                text = str(value.textContent)
+                yield escape_html(text) if escape_text else text
                 continue
 
             if isinstance(value, Node):
                 custom_stream = getattr(type(value), "stream", None)
-                if custom_stream is not None and custom_stream is not Node.stream:
+                if custom_stream is not None and custom_stream is not node_stream:
                     yield from value.stream()
                     continue
 
@@ -1500,8 +1743,9 @@ class Node(EventTarget):
                     doctype = value.doctype
                     if doctype is not None and not any(child is doctype for child in value.args):
                         yield str(doctype)
-                yield f"<{value.name}{value.__attributes__}>"
-                if value.name in _HTML_RAWTEXT_ELEMENTS:
+                name = value.name
+                yield f"<{name}{value.__attributes__}>"
+                if name in rawtext:
                     # raw-text elements (<script>, <style>, ...): content is
                     # serialised verbatim, never entity-escaped
                     for child in value.args:
@@ -1511,25 +1755,32 @@ class Node(EventTarget):
                             yield from child.stream()
                         else:
                             yield str(child)
-                    yield f"</{value.name}>"
+                    yield f"</{name}>"
                     continue
-                if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS or value.name not in optional_closing_tags:
-                    stack.append(("close", value))
-                stack.append(("iter", iter(value.args)))
+                if render_optional or name not in optional_closing_tags:
+                    stack.append((True, f"</{name}>"))
+                # Push children in reverse so they pop in document order --
+                # cheaper than wrapping each element's args in an iterator and
+                # cycling it back through the stack one child at a time.
+                args = value.args
+                for i in range(len(args) - 1, -1, -1):
+                    stack.append((False, args[i]))
                 continue
 
             # See the matching check in _stream_value: concrete types first,
             # since the ABC instancecheck is measurably slower and plain str
             # children would otherwise always pay for it.
             if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(value, IterableABC):
-                stack.append(("iter", iter(value)))
+                items = list(value)
+                for i in range(len(items) - 1, -1, -1):
+                    stack.append((False, items[i]))
                 continue
 
             if isinstance(value, RawHTML):
                 yield str(value)
                 continue
             value = str(value)
-            yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+            yield escape_html(value) if autoescape else value
 
     def __mul__(self, other):
         """
@@ -1845,6 +2096,9 @@ class Node(EventTarget):
         if name == "args":
             super().__setattr__(name, value)
             self._update_parents()
+            if _ID_INDEXING_ON:  # structure changed -> both indexes may be stale
+                _bump_dom_epoch()
+                _bump_structure_epoch()
             return
         super().__setattr__(name, value)
 
@@ -2724,9 +2978,11 @@ def _child_replace_with(node: "Node", nodes: tuple) -> None:
         kids.remove(node)
     pos = kids.index(reference) if reference is not None and reference in kids else len(kids)
     kids[pos:pos] = items
+    # Disconnect while ``node`` is still parented, so the walk can reach the
+    # real root and invalidate its id / structure index.
+    _disconnect_tree(node)
     parent.__dict__["args"] = tuple(kids)
     node.parentNode = None
-    _disconnect_tree(node)
     for it, old_document in old_documents:
         _connect_inserted_node(parent, it, old_document)
     added = [it for it in items if isinstance(it, Node)]
@@ -4164,15 +4420,13 @@ class Element(Node):
         return _LiveNodeList(self, lambda child: isinstance(child, Element))
 
     def _find_element_by_id(self, _id: str) -> Element | None:
-        if self.getAttribute("id") == _id:
+        # Hot path: pre-order DFS over ``args``, reading the raw ``_id`` kwarg
+        # directly instead of going through ``childNodes`` (which allocates a
+        # _LiveNodeList per node) and ``getAttribute`` (-> _attr_key ->
+        # str.lower + concat). ~2.4x faster on a large tree.
+        if self.__dict__.get("kwargs", {}).get("_id") == _id:
             return self
-        for child in self.childNodes:
-            if not isinstance(child, Element):
-                continue
-            match = child._find_element_by_id(_id)
-            if match is not None:
-                return match
-        return None
+        return _walk_descendants_for_id(self, _id)
 
     def _getElementById(self, _id: str) -> Element | None:
         """Compatibility wrapper for older internal callers."""
@@ -5126,24 +5380,16 @@ class Element(Node):
         Returns:
             HTMLCollection: All child elements with the specified class name.
         """
-        required = {token for token in str(className).split() if token}
-        if not required:
-            return _LiveHTMLCollection(self, lambda el: False)
-
-        def matcher(el: "Element") -> bool:
-            return required.issubset(set(str(el.getAttribute("class") or "").split()))
-
-        return _LiveHTMLCollection(self, matcher)
+        required = frozenset(token for token in str(className).split() if token)
+        return _LiveHTMLCollection(self, classes=required)
 
     def getElementById(self, _id: str) -> Element | None:
-        """Returns the descendant element whose id matches the supplied value."""
-        for child in self.childNodes:
-            if not isinstance(child, Element):
-                continue
-            match = child._find_element_by_id(_id)
-            if match is not None:
-                return match
-        return None
+        """Returns the descendant element whose id matches the supplied value.
+
+        Backed by a lazily-built id -> element index that is rebuilt only after
+        a DOM mutation, so repeated lookups on a static tree are O(1).
+        """
+        return _element_by_id_via_index(self, _id)
 
     def elementFromPoint(self, x: float, y: float) -> Element | None:
         """Returns the topmost element in this subtree at the specified coordinates."""
@@ -5185,22 +5431,11 @@ class Element(Node):
         Returns:
             HTMLCollection: A live HTMLCollection of elements with the given tag name.
         """
-        tagName = str(tagName)
-
-        if tagName == "*":
-            return _LiveHTMLCollection(self, lambda el: True)
-
         # getElementsByTagName does not validate its argument and is not a
         # selector engine: it matches the qualified name literally (ASCII
         # case-insensitively). Anything that is not a real tag name -- "",
         # "a.b", "has space" -- simply matches nothing.
-        wanted = tagName.lower()
-
-        def matcher(el: "Element") -> bool:
-            name = el.tagName
-            return isinstance(name, str) and name.lower() == wanted
-
-        return _LiveHTMLCollection(self, matcher)
+        return _LiveHTMLCollection(self, tag=str(tagName).lower())
 
     def __contains__(self, item: Any) -> bool:
         """``x in element``.
@@ -5549,6 +5784,17 @@ class Element(Node):
 
         class_match = re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query)
         tag_match = re.match(r"^(\*|[A-Za-z][\w-]*)$", query)
+        # Single tag / class selector: if the element index is already warm,
+        # answer from it (O(1)); otherwise fall through to the short-circuiting
+        # inline walk -- do NOT force a full index build just to find one node.
+        warm = self.__dict__.get("_dom_index")
+        if warm is not None and warm[0] == _STRUCTURE_EPOCH:
+            if tag_match:
+                hits = warm[1]["tag"].get(query.lower(), ())
+                return hits[0] if hits else None
+            if class_match:
+                hits = _elements_by_class_name(self, frozenset(query.split(".")[1:]))
+                return hits[0] if hits else None
         # Only a single compound selector (no descendant/child/sibling step) is
         # safe for the in-line stack walk below; with a combinator present
         # ``_parse_simple_selector`` mis-parses (e.g. it folds the space in
@@ -5611,10 +5857,11 @@ class Element(Node):
             return list(self.getElementsByTagName(query))
 
         # The native CSS engine shared with BeautifulSlop resolves descendant /
-        # child combinators, classes, attribute selectors and simple pseudos
-        # several times faster than the cssselect -> XPath -> elementpath path.
-        # It returns ``None`` for selectors it does not support (``+``, ``~``,
-        # complex pseudo-classes), which then fall through to the XPath engine.
+        # child / adjacent (``+``) / general-sibling (``~``) combinators,
+        # classes, attribute selectors and the common pseudo-classes several
+        # times faster than the cssselect -> XPath -> elementpath path. It
+        # returns ``None`` for the rarer selectors it does not support, which
+        # then fall through to the XPath engine.
         try:
             from domonic.bs4 import _select_fast
 
@@ -7034,7 +7281,7 @@ class Document(Element):
     @property
     def anchors(self):
         """A live ``HTMLCollection`` of the document's ``<a name>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "a" and el.hasAttribute("name"))
+        return _LiveHTMLCollection(self, lambda el: el.hasAttribute("name"), tag="a")
 
     @property
     def applets(self):
@@ -7530,14 +7777,14 @@ class Document(Element):
     @property
     def embeds(self):
         """A live ``HTMLCollection`` of the document's ``<embed>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "embed")
+        return _LiveHTMLCollection(self, tag="embed")
 
     plugins = embeds
 
     @property
     def forms(self):
         """A live ``HTMLCollection`` of the document's ``<form>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "form")
+        return _LiveHTMLCollection(self, tag="form")
 
     def fullscreenElement(self):
         """Returns the current element that is displayed in fullscreen mode"""
@@ -7550,20 +7797,16 @@ class Document(Element):
     def getElementById(self, _id: str) -> Element | None:
         """Returns the element that has the ID attribute with the specified value.
 
+        Backed by a lazily-built id -> element index that is rebuilt only after
+        a DOM mutation, so repeated lookups on a static document are O(1).
+
         Args:
             _id (str): The value of the ID attribute.
 
         Returns:
             Element | None: The element that has the ID attribute with the specified value.
         """
-        for each in self.childNodes:
-            if not isinstance(each, Element):
-                continue
-            match = each._find_element_by_id(_id)
-            if match is not None:
-                return match
-
-        return None
+        return _element_by_id_via_index(self, _id)
 
     def getElementsByName(self, name: str):
         """Returns a NodeList containing all elements with a specified name.
@@ -7574,7 +7817,7 @@ class Document(Element):
         Returns:
             HTMLCollection: The matching elements.
         """
-        return _LiveHTMLCollection(self, lambda el: el.getAttribute("name") == name)
+        return _LiveHTMLCollection(self, named=str(name))
 
     # def hasFocus():
     # '''Returns a Boolean value indicating whether the document has focus'''
@@ -7606,7 +7849,7 @@ class Document(Element):
     @property
     def images(self):
         """A live ``HTMLCollection`` of the document's ``<img>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "img")
+        return _LiveHTMLCollection(self, tag="img")
 
     @property
     def implementation(self):
@@ -7752,7 +7995,7 @@ class Document(Element):
     @property
     def scripts(self):
         """A live ``HTMLCollection`` of the document's ``<script>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "script")
+        return _LiveHTMLCollection(self, tag="script")
 
     def strictErrorChecking(self):
         """Returns a Boolean value indicating whether to stop on the first error"""
@@ -8317,18 +8560,43 @@ class _LiveHTMLCollection(HTMLCollection):
     / ``getElementsByName`` return per the DOM spec.
     """
 
-    def __init__(self, root: "Node", matcher: Callable[["Element"], bool]) -> None:
+    def __init__(
+        self,
+        root: "Node",
+        matcher: "Callable[[Element], bool] | None" = None,
+        *,
+        tag: "str | None" = None,
+        classes: "frozenset[str] | None" = None,
+        named: "str | None" = None,
+    ) -> None:
         self._root = root
         self._matcher = matcher
+        self._tag = tag  # a lower-case tag name, or "*"
+        self._classes = classes  # required class tokens (empty set -> match none)
+        self._named = named  # a value for the ``name`` attribute
         super().__init__()
 
     def _elements(self) -> list:
+        matcher = self._matcher
+        # Index-backed fast paths. A matcher alongside ``tag`` / ``named``
+        # post-filters the (already narrow) index result.
+        if self._tag is not None:
+            hits = _elements_by_tag_name(self._root, self._tag)
+            return [el for el in hits if matcher(el)] if matcher is not None else hits
+        if self._named is not None:
+            hits = _elements_by_name(self._root, self._named)
+            return [el for el in hits if matcher(el)] if matcher is not None else hits
+        if self._classes is not None:
+            return _elements_by_class_name(self._root, self._classes) if self._classes else []
+
+        if matcher is None:
+            return []
         out: list = []
 
         def walk(node: Any) -> None:
             for child in list(getattr(node, "args", ())):
                 if isinstance(child, Element):
-                    if self._matcher(child):
+                    if matcher(child):
                         out.append(child)
                     walk(child)
 

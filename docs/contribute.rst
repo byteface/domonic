@@ -46,6 +46,29 @@ Writing tests
 
 Test coverage is a huge plus as it fixes bugs and increases the quality of the code.
 
+Running the suite against each parser backend
+---------------------------------------------
+
+``domonic.parseString`` can use any of several HTML backends. To check that a
+change holds no matter which one parsed the input, force the default backend for
+a whole run:
+
+.. code-block:: bash
+
+   pytest tests/ --parser-backend=html5lib
+   DOMONIC_TEST_PARSER=lxml_html pytest tests/
+
+Tests that pass ``parser=`` explicitly stay pinned to the backend they name, and
+the many tests that build the DOM programmatically never parse at all. To loop
+the whole suite over every installed backend at once:
+
+.. code-block:: bash
+
+   scripts/test_all_backends.sh                     # every known backend
+   scripts/test_all_backends.sh html5lib lxml_html  # just these
+
+A backend that is not installed is reported as skipped, not failed.
+
 
 More information
 =====================

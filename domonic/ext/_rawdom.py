@@ -101,14 +101,14 @@ _TEXT_STATE_DEFAULTS = {
 _ELEMENT_STATE_DEFAULTS = {
     **_NODE_STATE_DEFAULTS,
     "args": (),
-    "lang": None,
-    "tabIndex": None,
     "_Element__style": None,
     "shadowRoot": None,
-    "dir": None,
     "_namespaceURI": HTML_NAMESPACE,
     "_escape_attributes_on_render": True,
 }
+# ``dir`` / ``lang`` / ``tabIndex`` are reflection *properties* on Element that
+# read from getAttribute(); a same-named __dict__ entry is shadowed by the
+# descriptor and never read, so the parser adapters don't seed them.
 
 
 def _initialize_node_raw(node: _NodeT, args: tuple[Any, ...] = ()) -> _NodeT:
@@ -129,8 +129,11 @@ def _initialize_element_raw(element: dom.Element, namespace_uri: str = HTML_NAME
     state["name"] = getattr(element.__class__, "name", "") or ""
     state["listeners"] = {}
     state["_listener_options"] = {}
-    state["namespaceURI"] = namespace_uri
-    state["_namespaceURI"] = namespace_uri
+    # _ELEMENT_STATE_DEFAULTS already carries the HTML namespace on both keys;
+    # only the (rare) foreign-namespace element needs the override.
+    if namespace_uri != HTML_NAMESPACE:
+        state["namespaceURI"] = namespace_uri
+        state["_namespaceURI"] = namespace_uri
     return element
 
 
