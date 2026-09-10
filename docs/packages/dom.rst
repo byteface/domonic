@@ -133,6 +133,25 @@ browser-style, ``DOMException(message, name)``, or with the legacy
 ``DOMException(code, message)`` form.
 
 
+compareDocumentPosition
+-----------------------
+
+``node.compareDocumentPosition(other)`` returns the DOM spec's *combined*
+bitmask, not a single flag: an ancestor is
+``DOCUMENT_POSITION_CONTAINS | DOCUMENT_POSITION_PRECEDING`` (10), a descendant
+is ``DOCUMENT_POSITION_CONTAINED_BY | DOCUMENT_POSITION_FOLLOWING`` (20), and
+two nodes in different trees give
+``DOCUMENT_POSITION_DISCONNECTED | DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC``
+plus a ``PRECEDING`` / ``FOLLOWING`` direction bit that is stable for the pair
+and reverses when the arguments are swapped. Test the result with ``&``:
+
+.. code-block :: python
+
+	pos = a.compareDocumentPosition(b)
+	if pos & Node.DOCUMENT_POSITION_CONTAINED_BY:
+	    ...  # b is inside a
+
+
 Serialising: str() vs innerHTML / outerHTML
 -------------------------------------------
 

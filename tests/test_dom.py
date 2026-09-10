@@ -4929,17 +4929,26 @@ class NodeTest(unittest.TestCase):
         rc = four.compareDocumentPosition(one)
         assert rc == expected, '"%s" != "%s"' % (rc, expected)
 
-        expected = Node.DOCUMENT_POSITION_CONTAINED_BY
+        # per the DOM spec the flags are combined: a contained node is
+        # CONTAINED_BY | FOLLOWING, an ancestor is CONTAINS | PRECEDING
+        expected = Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
         rc = node.compareDocumentPosition(four)
         assert rc == expected, '"%s" != "%s"' % (rc, expected)
 
-        expected = Node.DOCUMENT_POSITION_CONTAINS
+        expected = Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
         rc = four.compareDocumentPosition(node)
         assert rc == expected, '"%s" != "%s"' % (rc, expected)
 
-        expected = Node.DOCUMENT_POSITION_DISCONNECTED
+        # different trees: DISCONNECTED and IMPLEMENTATION_SPECIFIC are always
+        # set, plus a stable direction bit
         rc = five.compareDocumentPosition(node)
-        assert rc == expected, '"%s" != "%s"' % (rc, expected)
+        assert rc & Node.DOCUMENT_POSITION_DISCONNECTED
+        assert rc & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+        assert rc & (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_FOLLOWING)
+        # and it is anticommutative: one direction each
+        back = node.compareDocumentPosition(five)
+        assert bool(rc & Node.DOCUMENT_POSITION_PRECEDING) != bool(back & Node.DOCUMENT_POSITION_PRECEDING)
+        assert bool(rc & Node.DOCUMENT_POSITION_FOLLOWING) != bool(back & Node.DOCUMENT_POSITION_FOLLOWING)
 
     def test_insertBefore(self):
         node = Document.createElement("node")

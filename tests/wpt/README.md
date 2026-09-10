@@ -28,7 +28,10 @@ It's one of two things:
   drove the `DOMTokenList` spec fixes: `SyntaxError`/`InvalidCharacterError`
   names, non-validating `contains()`, verbatim stringifier, ordered-set
   `replace()`, no-op force `toggle()`, `supports()` raising `TypeError`.
-  `Node-childNodes` drove out-of-range indexed access returning `None`.)
+  `Node-childNodes` drove out-of-range indexed access returning `None`.
+  `Node-compareDocumentPosition` drove the combined bitmasks
+  (`CONTAINS | PRECEDING`, `CONTAINED_BY | FOLLOWING`, and
+  `DISCONNECTED | IMPLEMENTATION_SPECIFIC | direction` for separate trees).)
 - **A deliberate domonic deviation** — mark the method
   `@pytest.mark.xfail(reason=…, strict=True)` with the reason, so the gap is
   tracked rather than silently passing or failing. Known ones:

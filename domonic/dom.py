@@ -1974,72 +1974,57 @@ class Node(EventTarget):
         return _LiveNodeList(self, lambda child: not isinstance(child, str))
 
     def compareDocumentPosition(self, otherElement: "Node") -> int:
+        """A bitmask of ``DOCUMENT_POSITION_*`` flags describing where
+        ``otherElement`` sits relative to this node
+        (https://dom.spec.whatwg.org/#dom-node-comparedocumentposition).
+
+        The spec's combined masks are returned: an ancestor is
+        ``CONTAINS | PRECEDING`` (10), a descendant is
+        ``CONTAINED_BY | FOLLOWING`` (20), and two nodes in different trees are
+        ``DISCONNECTED | IMPLEMENTATION_SPECIFIC | (PRECEDING or FOLLOWING)``
+        with the direction stable and anticommutative for a given pair.
         """
-        An integer value representing otherNode's position relative to node as a bitmask combining the following constant properties of Node:
-
-        https://stackoverflow.com/questions/8334286/cross-browser-compare-document-position
-
-        """
-        thisNode = self
-        other = otherElement
-
-        # if isinstance(other, str):
-        #     other = Text(other)
-        # if isinstance(thisNode, str):
-        #     thisNode = Text(thisNode)
-
-        def recursivelyWalk(nodes, cb):
-            for node in nodes:
-                if isinstance(node, str):
-                    node = Text(node)
-                    # continue
-                ret = cb(node)
-                if ret:
-                    return ret
-                if node.childNodes and node.childNodes.length > 0:
-                    ret = recursivelyWalk(node.childNodes, cb)
-                    if ret:
-                        return ret
-
-        def testNodeForComparePosition(node, other):
-            if node is other:
-                return True
-
-        def identifyWhichIsFirst(node):
-            if node == other:
-                return "other"
-            elif node == reference:
-                return "reference"
-
-        reference = thisNode
-        referenceTop = thisNode
-        otherTop = other
-
-        if self == other:
+        if otherElement is self:
             return 0
-        while referenceTop.parentNode is not None:
-            referenceTop = referenceTop.parentNode
-        while otherTop.parentNode is not None:
-            otherTop = otherTop.parentNode
 
-        if referenceTop != otherTop:
-            return Node.DOCUMENT_POSITION_DISCONNECTED
+        node1, node2 = otherElement, self  # spec: node1 = other, node2 = this
 
-        children = reference.childNodes
+        def _inclusive_ancestors(node: Any) -> list:
+            chain = []
+            while node is not None:
+                chain.append(node)
+                node = getattr(node, "parentNode", None)
+            return chain
 
-        ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(other, p))
-        if ret:
-            return Node.DOCUMENT_POSITION_CONTAINED_BY  # + Node.DOCUMENT_POSITION_FOLLOWING
+        anc1 = _inclusive_ancestors(node1)
+        anc2 = _inclusive_ancestors(node2)
 
-        children = other.childNodes
-        ret = recursivelyWalk(children, lambda p: testNodeForComparePosition(reference, p))
-        if ret:
-            return Node.DOCUMENT_POSITION_CONTAINS  # + Node.DOCUMENT_POSITION_PRECEDING
-        ret = recursivelyWalk([referenceTop], identifyWhichIsFirst)
-        if ret == "other":
+        if anc1[-1] is not anc2[-1]:
+            # not in the same tree -- disconnected. Direction must be stable and
+            # opposite for (a, b) vs (b, a); ``id`` ordering gives us both.
+            bits = Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
+            direction = Node.DOCUMENT_POSITION_FOLLOWING if id(node1) < id(node2) else Node.DOCUMENT_POSITION_PRECEDING
+            return bits | direction
+
+        if any(a is node1 for a in anc2[1:]):
+            return Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
+        if any(a is node2 for a in anc1[1:]):
+            return Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
+
+        def _tree_path(node: Any, root: Any) -> list:
+            path: list = []
+            while node is not root:
+                parent = node.parentNode
+                kids = list(getattr(parent, "args", ()))
+                path.append(next((i for i, k in enumerate(kids) if k is node), len(kids)))
+                node = parent
+            path.reverse()
+            return path
+
+        root = anc2[-1]
+        if _tree_path(node1, root) < _tree_path(node2, root):
             return Node.DOCUMENT_POSITION_PRECEDING
-        else:
-            return Node.DOCUMENT_POSITION_FOLLOWING
+        return Node.DOCUMENT_POSITION_FOLLOWING
 
     def contains(self, node: "Node") -> bool:
         """Check whether a node is a descendant of a given node"""
