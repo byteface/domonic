@@ -265,6 +265,7 @@ def _invalidate_index(node: Any) -> None:
         d.pop("_bs4_all_nodes", None)
         d.pop("_bs4_id_index", None)
         d.pop("_bs4_class_index", None)
+        d.pop("_bs4_attr_index", None)
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
@@ -302,6 +303,25 @@ def _class_index(node: Any) -> dict[str, list[Element]]:
             for token in str(cls).split():
                 index.setdefault(token, []).append(element)
     root.__dict__["_bs4_class_index"] = index
+    return index
+
+
+def _attr_index(node: Any) -> dict[str, list[Element]]:
+    """``{attribute name: [elements in tree order]}`` -- every element listed
+    once per attribute it carries. Cached / invalidated like the others."""
+    root = _root_for_index(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_attr_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, list[Element]] = {}
+    for element in source:
+        for key in element.__dict__.get("kwargs", ()):  # keys are ``_name``
+            index.setdefault(key[1:] if key[:1] == "_" else key, []).append(element)
+    root.__dict__["_bs4_attr_index"] = index
     return index
 
 
@@ -1063,25 +1083,13 @@ def _selector_candidates(
             yield found
         return
 
-    at_root = context is _root_for_index(context)
     tag_name = parsed["tag"].lower() if parsed["tag"] != "*" else None
-    class_tokens = parsed["classes"]
 
-    # Whole-tree tag / class selectors -> serve straight from the index.
-    if at_root and (tag_name is not None or class_tokens):
-        if class_tokens:
-            class_map = _class_index(context)
-            buckets = [class_map.get(tok, ()) for tok in class_tokens]
-            buckets = sorted(buckets, key=len)
-            base: Iterable[Element] = buckets[0]
-            if len(buckets) > 1:
-                others = [{id(e) for e in b} for b in buckets[1:]]
-                base = [e for e in base if all(id(e) in seen for seen in others)]
-            if tag_name is not None:
-                base = [e for e in base if e.name.lower() == tag_name]
-        else:
-            base = _tag_index(context).get(tag_name or "*", ())
-        yield from base
+    # Whole-tree selector -> narrow the candidate pool through the tag / class
+    # / attribute indexes (the general loop still re-checks value operators and
+    # pseudos on whatever comes back).
+    if context is _root_for_index(context):
+        yield from _index_candidate_pool(context, parsed)
         return
 
     if tag_name is not None:
@@ -1092,26 +1100,49 @@ def _selector_candidates(
     yield from _element_descendants(context)
 
 
+def _index_candidate_pool(root: Any, parsed: dict[str, Any]) -> "list[Element]":
+    """A (possibly loose) superset of the elements a single simple selector can
+    match, drawn from the tag / class / attribute indexes. Value operators and
+    pseudos are ignored here -- the caller re-checks them."""
+    tag = parsed["tag"].lower() if parsed["tag"] != "*" else None
+    pools: "list[list[Element]]" = []
+    if parsed["classes"]:
+        class_map = _class_index(root)
+        for token in parsed["classes"]:
+            bucket = class_map.get(token)
+            if bucket is None:
+                return []
+            pools.append(bucket)
+    if parsed["attributes"]:
+        attr_map = _attr_index(root)
+        for name, _op, _val in parsed["attributes"]:
+            bucket = attr_map.get(name)
+            if bucket is None:
+                return []
+            pools.append(bucket)
+    if not pools:
+        return list(_tag_index(root).get(tag or "*", []))
+    pools.sort(key=len)
+    out = list(pools[0])
+    for other in pools[1:]:
+        keep = set(other)
+        out = [e for e in out if e in keep]
+    if tag is not None:
+        out = [e for e in out if e.name.lower() == tag]
+    return out
+
+
 def _descendant_index_candidates(root: Any, parsed: dict[str, Any]) -> "list[Element] | None":
-    """The elements matching one simple selector, straight from the tag / class
-    index, or ``None`` when the selector needs the general walk."""
-    if parsed["id"] is not None or parsed["attributes"] or parsed.get("pseudos"):
+    """The *exact* set of elements one simple selector matches, straight from
+    the indexes, or ``None`` when a value operator / pseudo / id means the
+    result still needs per-element checking."""
+    if parsed["id"] is not None or parsed.get("pseudos"):
         return None
+    if any(op for _n, op, _v in parsed["attributes"]):
+        return None  # [a=b], [a^=b] etc. -- the index only knows presence
     if root is not _root_for_index(root):
         return None
-    tag = parsed["tag"].lower() if parsed["tag"] != "*" else None
-    classes = parsed["classes"]
-    if classes:
-        class_map = _class_index(root)
-        buckets = sorted((class_map.get(t, ()) for t in classes), key=len)
-        out = list(buckets[0])
-        for other in buckets[1:]:
-            keep = set(other)
-            out = [e for e in out if e in keep]
-        if tag is not None:
-            out = [e for e in out if e.name.lower() == tag]
-        return out
-    return list(_tag_index(root).get(tag or "*", ()))
+    return _index_candidate_pool(root, parsed)
 
 
 def _match_descendant_chain(
