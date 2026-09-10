@@ -3903,7 +3903,16 @@ class _LiveNodeList(NodeList):
         return reversed(self._nodes())
 
     def __getitem__(self, index):
-        return self._nodes()[index]
+        nodes = self._nodes()
+        if isinstance(index, int):
+            if index < 0:
+                index += len(nodes)
+            if 0 <= index < len(nodes):
+                return nodes[index]
+            # WebIDL indexed access is "undefined" out of range, not an error
+            # (https://dom.spec.whatwg.org/#dom-nodelist-item) -- match a browser.
+            return None
+        return nodes[index]
 
     def __contains__(self, item: Any) -> bool:
         return item in self._nodes()
