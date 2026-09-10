@@ -2014,6 +2014,43 @@ body(
         # print(str(mydialog))
         # assert str(d) == '<html><dialog open>hello<form method="dialog" action="close"><button>close</button></form></dialog></html>'
 
+    def test_tag_typing_stubs(self):
+        # html.py declares each tag twice: an `if TYPE_CHECKING: class div(...)`
+        # stub for tools, and the runtime `else: div = type(...)` factory. This
+        # guards against the two lists drifting when a tag is added or removed.
+        import ast
+        import pathlib
+
+        source = pathlib.Path(html_module.__file__).read_text()
+        stub_names: set[str] = set()
+        factory_names: set[str] = set()
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.If):
+                continue
+            body_classes = {s.name for s in node.body if isinstance(s, ast.ClassDef)}
+            else_factories = {
+                s.targets[0].id
+                for s in node.orelse
+                if isinstance(s, ast.Assign)
+                and isinstance(s.value, ast.Call)
+                and getattr(s.value.func, "id", None) == "type"
+                and isinstance(s.targets[0], ast.Name)
+            }
+            if body_classes and else_factories:
+                stub_names |= body_classes
+                factory_names |= else_factories
+
+        self.assertTrue(factory_names, "tag factory block not found")
+        self.assertEqual(
+            stub_names,
+            factory_names,
+            f"typing stubs out of sync: stub-only={stub_names - factory_names}, "
+            f"factory-only={factory_names - stub_names}",
+        )
+        # every stubbed tag must also be constructible at runtime
+        for name in sorted(factory_names):
+            self.assertTrue(callable(getattr(html_module, name)), name)
+
     def test_html_doctype_kwarg(self):
         # No keyword -> no doctype, matching the DOM spec and the parser.
         self.assertEqual(str(html()), "<html></html>")

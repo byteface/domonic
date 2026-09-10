@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from domonic.dom import Document  # HTMLOptionsCollection,
 from domonic.dom import (
@@ -686,43 +686,11 @@ def _html_tag_init(self, *args, _doctype=None, **kwargs):
         self.doctype = _resolve_doctype(_doctype)
 
 
-html = type("html", (HTMLDocument,), {"name": "html", "__init__": _html_tag_init})
-body = type("body", (HTMLBodyElement,), {"name": "body"})
-head = type("head", (HTMLHeadElement,), {"name": "head"})
-hx_partial = type("hx-partial", (Element,), {"name": "hx-partial"})
-script = type("script", (HTMLScriptElement,), {"name": "script"})
-style = type("style", (HTMLStyleElement,), {"name": "style"})
-h1 = type("h1", (HTMLHeadingElement,), {"name": "h1"})
-h2 = type("h2", (HTMLHeadingElement,), {"name": "h2"})
-h3 = type("h3", (HTMLHeadingElement,), {"name": "h3"})
-h4 = type("h4", (HTMLHeadingElement,), {"name": "h4"})
-h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
-h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
-p = type("p", (HTMLParagraphElement,), {"name": "p"})
-
-i = type("i", (Element,), {"name": "i"})
-b = type("b", (Element,), {"name": "b"})
-portal = type("portal", (HTMLPortalElement, Element), {"name": "portal"})
-
-
 def Atag(self, *args: Any, **kwargs: Any) -> None:
     """
     Base class for the a tag
     """
     HTMLAnchorElement.__init__(self, *args, **kwargs)
-
-
-a = type("a", (HTMLAnchorElement, Element, URL), {"name": "a", "__init__": Atag})
-ul = type("ul", (HTMLUListElement,), {"name": "ul"})
-ol = type("ol", (HTMLOListElement,), {"name": "ol"})
-li = type("li", (HTMLLIElement,), {"name": "li"})
-div = type("div", (HTMLDivElement,), {"name": "div"})
-
-strong = type("strong", (Element,), {"name": "strong"})
-blockquote = type("blockquote", (Element,), {"name": "blockquote"})
-table = type("table", (HTMLTableElement,), {"name": "table"})
-tr = type("tr", (HTMLTableRowElement,), {"name": "tr"})
-td = type("td", (HTMLTableCellElement,), {"name": "td"})
 
 
 class form(HTMLFormElement):
@@ -749,142 +717,317 @@ class form(HTMLFormElement):
         return super().elements
 
 
-label = type("label", (HTMLLabelElement,), {"name": "label"})
-# label.__doc__ = '''
-#                 .. highlight:: python
-#                 .. code-block:: python
+if TYPE_CHECKING:
+    # What type checkers and IDEs see for the tag constructors that the
+    # else branch builds with type(): ``div(...) -> div``, carrying the base
+    # element's attributes and methods. Keep this list in step with the
+    # ``type(...)`` calls below (tests/test_html.py::test_tag_typing_stubs).
+    # fmt: off
+    class html(HTMLDocument): ...
+    class body(HTMLBodyElement): ...
+    class head(HTMLHeadElement): ...
+    class hx_partial(Element): ...
+    class script(HTMLScriptElement): ...
+    class style(HTMLStyleElement): ...
+    class h1(HTMLHeadingElement): ...
+    class h2(HTMLHeadingElement): ...
+    class h3(HTMLHeadingElement): ...
+    class h4(HTMLHeadingElement): ...
+    class h5(HTMLHeadingElement): ...
+    class h6(HTMLHeadingElement): ...
+    class p(HTMLParagraphElement): ...
+    class i(Element): ...
+    class b(Element): ...
+    class portal(HTMLPortalElement, Element): ...
+    class a(HTMLAnchorElement, Element, URL): ...
+    class ul(HTMLUListElement): ...
+    class ol(HTMLOListElement): ...
+    class li(HTMLLIElement): ...
+    class div(HTMLDivElement): ...
+    class strong(Element): ...
+    class blockquote(Element): ...
+    class table(HTMLTableElement): ...
+    class tr(HTMLTableRowElement): ...
+    class td(HTMLTableCellElement): ...
+    class label(HTMLLabelElement): ...
+    class submit(Element): ...
+    class title(HTMLTitleElement): ...
+    class noscript(Element): ...
+    class section(Element): ...
+    class nav(Element): ...
+    class article(Element): ...
+    class aside(Element): ...
+    class hgroup(Element): ...
+    class address(Element): ...
+    class pre(HTMLPreElement): ...
+    class dl(HTMLDListElement): ...
+    class dt(Element): ...
+    class dd(Element): ...
+    class figure(Element): ...
+    class figcaption(Element): ...
+    class em(Element): ...
+    class small(Element): ...
+    class s(Element): ...
+    class cite(Element): ...
+    class q(HTMLQuoteElement): ...
+    class dfn(Element): ...
+    class abbr(Element): ...
+    class code(Element): ...
+    class var(Element): ...
+    class samp(Element): ...
+    class kbd(Element): ...
+    class sub(Element): ...
+    class sup(Element): ...
+    class u(Element): ...
+    class mark(Element): ...
+    class ruby(Element): ...
+    class rt(Element): ...
+    class rp(Element): ...
+    class bdi(Element): ...
+    class bdo(Element): ...
+    class span(HTMLSpanElement): ...
+    class ins(Element): ...
+    class iframe(HTMLIFrameElement): ...
+    class video(HTMLVideoElement): ...
+    class audio(HTMLAudioElement): ...
+    class canvas(HTMLCanvasElement): ...
+    class caption(HTMLTableCaptionElement): ...
+    class colgroup(Element): ...
+    class tbody(HTMLTableSectionElement): ...
+    class thead(Element): ...
+    class tfoot(Element): ...
+    class th(HTMLTableHeaderCellElement): ...
+    class fieldset(HTMLFieldSetElement): ...
+    class legend(HTMLLegendElement): ...
+    class button(HTMLButtonElement): ...
+    class select(HTMLSelectElement): ...
+    class selectedcontent(HTMLSelectedContentElement): ...
+    class datalist(HTMLDataListElement): ...
+    class optgroup(HTMLOptGroupElement): ...
+    class option(HTMLOptionElement): ...
+    class textarea(HTMLTextAreaElement): ...
+    class output(HTMLOutputElement): ...
+    class progress(HTMLProgressElement): ...
+    class meter(HTMLMeterElement): ...
+    class details(Element): ...
+    class summary(Element): ...
+    class menu(Element): ...
+    class menuitem(Element): ...
+    class font(Element): ...
+    class header(Element): ...
+    class footer(Element): ...
+    class map(HTMLMapElement): ...
+    class object(HTMLObjectElement): ...
+    class del_(HTMLModElement): ...
+    class mod(HTMLModElement): ...
+    class time(HTMLTimeElement): ...
+    class data(HTMLDataElement): ...
+    class base(closed_tag, HTMLBaseElement): ...
+    class link(closed_tag, HTMLLinkElement): ...
+    class meta(closed_tag, HTMLMetaElement): ...
+    class hr(closed_tag, HTMLHRElement): ...
+    class br(closed_tag, HTMLBRElement): ...
+    class wbr(closed_tag, Element): ...
+    class img(closed_tag, HTMLImageElement): ...
+    class param(closed_tag, HTMLParamElement): ...
+    class source(closed_tag, HTMLSourceElement): ...
+    class track(closed_tag, HTMLTrackElement): ...
+    class area(closed_tag, HTMLAreaElement): ...
+    class col(closed_tag, HTMLTableColElement): ...
+    class input(closed_tag, HTMLInputElement): ...
+    class keygen(closed_tag, HTMLKeygenElement): ...
+    class command(closed_tag, Element): ...
+    class main(Element): ...
+    class slot(HTMLSlotElement): ...
+    class search(Element): ...
+    class applet(Element): ...
+    class basefont(HTMLBaseFontElement): ...
+    class center(Element): ...
+    class dir(Element): ...
+    class embed(closed_tag, HTMLEmbedElement): ...
+    class frame(Element): ...
+    class frameset(HTMLFrameSetElement): ...
+    class isindex(Element): ...
+    class listing(Element): ...
+    class noframes(Element): ...
+    class plaintext(Element): ...
+    class strike(Element): ...
+    class xmp(Element): ...
+    class template(HTMLTemplateElement): ...
+    class picture(HTMLPictureElement): ...
+    class dialog(HTMLDialogElement): ...
+    class doctype(DocumentType): ...
+    class comment(Comment): ...
+    class content(HTMLContentElement): ...
+    # fmt: on
 
-#                     # used to label form elements. i.e.
-#                     label(_for=None, _text=None, **kwargs)
-#                     # <label for=""></label>
-#                 '''
+else:
+    html = type("html", (HTMLDocument,), {"name": "html", "__init__": _html_tag_init})
+    body = type("body", (HTMLBodyElement,), {"name": "body"})
+    head = type("head", (HTMLHeadElement,), {"name": "head"})
+    hx_partial = type("hx-partial", (Element,), {"name": "hx-partial"})
+    script = type("script", (HTMLScriptElement,), {"name": "script"})
+    style = type("style", (HTMLStyleElement,), {"name": "style"})
+    h1 = type("h1", (HTMLHeadingElement,), {"name": "h1"})
+    h2 = type("h2", (HTMLHeadingElement,), {"name": "h2"})
+    h3 = type("h3", (HTMLHeadingElement,), {"name": "h3"})
+    h4 = type("h4", (HTMLHeadingElement,), {"name": "h4"})
+    h5 = type("h5", (HTMLHeadingElement,), {"name": "h5"})
+    h6 = type("h6", (HTMLHeadingElement,), {"name": "h6"})
+    p = type("p", (HTMLParagraphElement,), {"name": "p"})
 
-submit = type("submit", (Element,), {"name": "submit"})
-title = type("title", (HTMLTitleElement,), {"name": "title"})
-noscript = type("noscript", (Element,), {"name": "noscript"})
-section = type("section", (Element,), {"name": "section"})
-nav = type("nav", (Element,), {"name": "nav"})
-article = type("article", (Element,), {"name": "article"})
-aside = type("aside", (Element,), {"name": "aside"})
-hgroup = type("hgroup", (Element,), {"name": "hgroup"})
-address = type("address", (Element,), {"name": "address"})
-pre = type("pre", (HTMLPreElement,), {"name": "pre"})
-dl = type("dl", (HTMLDListElement,), {"name": "dl"})
-dt = type("dt", (Element,), {"name": "dt"})
-dd = type("dd", (Element,), {"name": "dd"})
-figure = type("figure", (Element,), {"name": "figure"})
-figcaption = type("figcaption", (Element,), {"name": "figcaption"})
-em = type("em", (Element,), {"name": "em"})
-small = type("small", (Element,), {"name": "small"})
-s = type("s", (Element,), {"name": "s"})
-cite = type("cite", (Element,), {"name": "cite"})
-q = type("q", (HTMLQuoteElement,), {"name": "q"})
-dfn = type("dfn", (Element,), {"name": "dfn"})
-abbr = type("abbr", (Element,), {"name": "abbr"})
-code = type("code", (Element,), {"name": "code"})
-var = type("var", (Element,), {"name": "var"})
-samp = type("samp", (Element,), {"name": "samp"})
-kbd = type("kbd", (Element,), {"name": "kbd"})
-sub = type("sub", (Element,), {"name": "sub"})
-sup = type("sup", (Element,), {"name": "sup"})
-u = type("u", (Element,), {"name": "u"})
-mark = type("mark", (Element,), {"name": "mark"})
-ruby = type("ruby", (Element,), {"name": "ruby"})
-rt = type("rt", (Element,), {"name": "rt"})
-rp = type("rp", (Element,), {"name": "rp"})
-bdi = type("bdi", (Element,), {"name": "bdi"})
-bdo = type("bdo", (Element,), {"name": "bdo"})
-span = type("span", (HTMLSpanElement,), {"name": "span"})
-ins = type("ins", (Element,), {"name": "ins"})
-iframe = type("iframe", (HTMLIFrameElement,), {"name": "iframe"})
-video = type("video", (HTMLVideoElement,), {"name": "video"})
-audio = type("audio", (HTMLAudioElement,), {"name": "audio"})
-canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
-caption = type("caption", (HTMLTableCaptionElement,), {"name": "caption"})
-colgroup = type("colgroup", (Element,), {"name": "colgroup"})
-tbody = type("tbody", (HTMLTableSectionElement,), {"name": "tbody"})
-thead = type("thead", (Element,), {"name": "thead"})  # Note - also should extend HTMLTableSectionElement
-tfoot = type("tfoot", (Element,), {"name": "tfoot"})
-th = type("th", (HTMLTableHeaderCellElement,), {"name": "th"})
-fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})
-legend = type("legend", (HTMLLegendElement,), {"name": "legend"})
-button = type("button", (HTMLButtonElement,), {"name": "button"})
-select = type("select", (HTMLSelectElement,), {"name": "select"})
-selectedcontent = type("selectedcontent", (HTMLSelectedContentElement,), {"name": "selectedcontent"})
-datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
-optgroup = type("optgroup", (HTMLOptGroupElement,), {"name": "optgroup"})
-option = type("option", (HTMLOptionElement,), {"name": "option"})
-textarea = type("textarea", (HTMLTextAreaElement,), {"name": "textarea"})
-output = type("output", (HTMLOutputElement,), {"name": "output"})
-progress = type("progress", (HTMLProgressElement,), {"name": "progress"})
-meter = type("meter", (HTMLMeterElement,), {"name": "meter"})
-details = type("details", (Element,), {"name": "details"})
-summary = type("summary", (Element,), {"name": "summary"})
-menu = type("menu", (Element,), {"name": "menu"})
-menuitem = type("menuitem", (Element,), {"name": "menuitem"})  # dead but may be used
-font = type("font", (Element,), {"name": "font"})
-header = type("header", (Element,), {"name": "header"})
-footer = type("footer", (Element,), {"name": "footer"})
-map = type("map", (HTMLMapElement,), {"name": "map"})
-object = type("object", (HTMLObjectElement,), {"name": "object"})
-del_ = type("del_", (HTMLModElement,), {"name": "del"})
-mod = type("mod", (HTMLModElement,), {"name": "mod"})
+    i = type("i", (Element,), {"name": "i"})
+    b = type("b", (Element,), {"name": "b"})
+    portal = type("portal", (HTMLPortalElement, Element), {"name": "portal"})
 
-time = type("time", (HTMLTimeElement,), {"name": "time"})
-data = type("data", (HTMLDataElement,), {"name": "data"})
+    a = type("a", (HTMLAnchorElement, Element, URL), {"name": "a", "__init__": Atag})
+    ul = type("ul", (HTMLUListElement,), {"name": "ul"})
+    ol = type("ol", (HTMLOListElement,), {"name": "ol"})
+    li = type("li", (HTMLLIElement,), {"name": "li"})
+    div = type("div", (HTMLDivElement,), {"name": "div"})
 
-base = type("base", (closed_tag, HTMLBaseElement), {"name": "base"})
-link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})
-meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})
-hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
-br = type(
-    "br",
-    (
-        closed_tag,
-        HTMLBRElement,
-    ),
-    {"name": "br"},
-)
-wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
-img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})
-param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})
-source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})
-track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})
-area = type("area", (closed_tag, HTMLAreaElement), {"name": "area"})
-col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})
-input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})
-keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
-command = type("command", (closed_tag, Element), {"name": "command"})
+    strong = type("strong", (Element,), {"name": "strong"})
+    blockquote = type("blockquote", (Element,), {"name": "blockquote"})
+    table = type("table", (HTMLTableElement,), {"name": "table"})
+    tr = type("tr", (HTMLTableRowElement,), {"name": "tr"})
+    td = type("td", (HTMLTableCellElement,), {"name": "td"})
 
-main = type("main", (Element,), {"name": "main"})
-slot = type("slot", (HTMLSlotElement,), {"name": "slot"})
-search = type("search", (Element,), {"name": "search"})
+    label = type("label", (HTMLLabelElement,), {"name": "label"})
+    # label.__doc__ = '''
+    #                 .. highlight:: python
+    #                 .. code-block:: python
 
-# obsolete
-applet = type("applet", (Element,), {"name": "applet"})
-basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
-center = type("center", (Element,), {"name": "center"})
-dir = type("dir", (Element,), {"name": "dir"})
-embed = type("embed", (closed_tag, HTMLEmbedElement), {"name": "embed"})
-frame = type("frame", (Element,), {"name": "frame"})
-frameset = type("frameset", (HTMLFrameSetElement,), {"name": "frameset"})
-isindex = type("isindex", (Element,), {"name": "isindex"})
-listing = type("listing", (Element,), {"name": "listing"})
-noframes = type("noframes", (Element,), {"name": "noframes"})
-plaintext = type("plaintext", (Element,), {"name": "plaintext"})
-strike = type("strike", (Element,), {"name": "strike"})
-xmp = type("xmp", (Element,), {"name": "xmp"})
-# shadow
+    #                     # used to label form elements. i.e.
+    #                     label(_for=None, _text=None, **kwargs)
+    #                     # <label for=""></label>
+    #                 '''
 
-template = type("template", (HTMLTemplateElement,), {"name": "template"})
+    submit = type("submit", (Element,), {"name": "submit"})
+    title = type("title", (HTMLTitleElement,), {"name": "title"})
+    noscript = type("noscript", (Element,), {"name": "noscript"})
+    section = type("section", (Element,), {"name": "section"})
+    nav = type("nav", (Element,), {"name": "nav"})
+    article = type("article", (Element,), {"name": "article"})
+    aside = type("aside", (Element,), {"name": "aside"})
+    hgroup = type("hgroup", (Element,), {"name": "hgroup"})
+    address = type("address", (Element,), {"name": "address"})
+    pre = type("pre", (HTMLPreElement,), {"name": "pre"})
+    dl = type("dl", (HTMLDListElement,), {"name": "dl"})
+    dt = type("dt", (Element,), {"name": "dt"})
+    dd = type("dd", (Element,), {"name": "dd"})
+    figure = type("figure", (Element,), {"name": "figure"})
+    figcaption = type("figcaption", (Element,), {"name": "figcaption"})
+    em = type("em", (Element,), {"name": "em"})
+    small = type("small", (Element,), {"name": "small"})
+    s = type("s", (Element,), {"name": "s"})
+    cite = type("cite", (Element,), {"name": "cite"})
+    q = type("q", (HTMLQuoteElement,), {"name": "q"})
+    dfn = type("dfn", (Element,), {"name": "dfn"})
+    abbr = type("abbr", (Element,), {"name": "abbr"})
+    code = type("code", (Element,), {"name": "code"})
+    var = type("var", (Element,), {"name": "var"})
+    samp = type("samp", (Element,), {"name": "samp"})
+    kbd = type("kbd", (Element,), {"name": "kbd"})
+    sub = type("sub", (Element,), {"name": "sub"})
+    sup = type("sup", (Element,), {"name": "sup"})
+    u = type("u", (Element,), {"name": "u"})
+    mark = type("mark", (Element,), {"name": "mark"})
+    ruby = type("ruby", (Element,), {"name": "ruby"})
+    rt = type("rt", (Element,), {"name": "rt"})
+    rp = type("rp", (Element,), {"name": "rp"})
+    bdi = type("bdi", (Element,), {"name": "bdi"})
+    bdo = type("bdo", (Element,), {"name": "bdo"})
+    span = type("span", (HTMLSpanElement,), {"name": "span"})
+    ins = type("ins", (Element,), {"name": "ins"})
+    iframe = type("iframe", (HTMLIFrameElement,), {"name": "iframe"})
+    video = type("video", (HTMLVideoElement,), {"name": "video"})
+    audio = type("audio", (HTMLAudioElement,), {"name": "audio"})
+    canvas = type("canvas", (HTMLCanvasElement,), {"name": "canvas"})
+    caption = type("caption", (HTMLTableCaptionElement,), {"name": "caption"})
+    colgroup = type("colgroup", (Element,), {"name": "colgroup"})
+    tbody = type("tbody", (HTMLTableSectionElement,), {"name": "tbody"})
+    thead = type("thead", (Element,), {"name": "thead"})  # Note - also should extend HTMLTableSectionElement
+    tfoot = type("tfoot", (Element,), {"name": "tfoot"})
+    th = type("th", (HTMLTableHeaderCellElement,), {"name": "th"})
+    fieldset = type("fieldset", (HTMLFieldSetElement,), {"name": "fieldset"})
+    legend = type("legend", (HTMLLegendElement,), {"name": "legend"})
+    button = type("button", (HTMLButtonElement,), {"name": "button"})
+    select = type("select", (HTMLSelectElement,), {"name": "select"})
+    selectedcontent = type("selectedcontent", (HTMLSelectedContentElement,), {"name": "selectedcontent"})
+    datalist = type("datalist", (HTMLDataListElement,), {"name": "datalist"})
+    optgroup = type("optgroup", (HTMLOptGroupElement,), {"name": "optgroup"})
+    option = type("option", (HTMLOptionElement,), {"name": "option"})
+    textarea = type("textarea", (HTMLTextAreaElement,), {"name": "textarea"})
+    output = type("output", (HTMLOutputElement,), {"name": "output"})
+    progress = type("progress", (HTMLProgressElement,), {"name": "progress"})
+    meter = type("meter", (HTMLMeterElement,), {"name": "meter"})
+    details = type("details", (Element,), {"name": "details"})
+    summary = type("summary", (Element,), {"name": "summary"})
+    menu = type("menu", (Element,), {"name": "menu"})
+    menuitem = type("menuitem", (Element,), {"name": "menuitem"})  # dead but may be used
+    font = type("font", (Element,), {"name": "font"})
+    header = type("header", (Element,), {"name": "header"})
+    footer = type("footer", (Element,), {"name": "footer"})
+    map = type("map", (HTMLMapElement,), {"name": "map"})
+    object = type("object", (HTMLObjectElement,), {"name": "object"})
+    del_ = type("del_", (HTMLModElement,), {"name": "del"})
+    mod = type("mod", (HTMLModElement,), {"name": "mod"})
 
-picture = type("picture", (HTMLPictureElement,), {"name": "picture"})
-dialog = type("dialog", (HTMLDialogElement,), {"name": "dialog"})
+    time = type("time", (HTMLTimeElement,), {"name": "time"})
+    data = type("data", (HTMLDataElement,), {"name": "data"})
 
-# legacy.
-doctype = type("doctype", (DocumentType,), {"name": "doctype"})
-comment = type("comment", (Comment,), {"name": "comment"})
-content = type("content", (HTMLContentElement,), {"name": "content"})
+    base = type("base", (closed_tag, HTMLBaseElement), {"name": "base"})
+    link = type("link", (closed_tag, HTMLLinkElement), {"name": "link"})
+    meta = type("meta", (closed_tag, HTMLMetaElement), {"name": "meta"})
+    hr = type("hr", (closed_tag, HTMLHRElement), {"name": "hr"})
+    br = type(
+        "br",
+        (
+            closed_tag,
+            HTMLBRElement,
+        ),
+        {"name": "br"},
+    )
+    wbr = type("wbr", (closed_tag, Element), {"name": "wbr"})
+    img = type("img", (closed_tag, HTMLImageElement), {"name": "img"})
+    param = type("param", (closed_tag, HTMLParamElement), {"name": "param"})
+    source = type("source", (closed_tag, HTMLSourceElement), {"name": "source"})
+    track = type("track", (closed_tag, HTMLTrackElement), {"name": "track"})
+    area = type("area", (closed_tag, HTMLAreaElement), {"name": "area"})
+    col = type("col", (closed_tag, HTMLTableColElement), {"name": "col"})
+    input = type("input", (closed_tag, HTMLInputElement), {"name": "input"})
+    keygen = type("keygen", (closed_tag, HTMLKeygenElement), {"name": "keygen"})
+    command = type("command", (closed_tag, Element), {"name": "command"})
+
+    main = type("main", (Element,), {"name": "main"})
+    slot = type("slot", (HTMLSlotElement,), {"name": "slot"})
+    search = type("search", (Element,), {"name": "search"})
+
+    # obsolete
+    applet = type("applet", (Element,), {"name": "applet"})
+    basefont = type("basefont", (HTMLBaseFontElement,), {"name": "basefont"})
+    center = type("center", (Element,), {"name": "center"})
+    dir = type("dir", (Element,), {"name": "dir"})
+    embed = type("embed", (closed_tag, HTMLEmbedElement), {"name": "embed"})
+    frame = type("frame", (Element,), {"name": "frame"})
+    frameset = type("frameset", (HTMLFrameSetElement,), {"name": "frameset"})
+    isindex = type("isindex", (Element,), {"name": "isindex"})
+    listing = type("listing", (Element,), {"name": "listing"})
+    noframes = type("noframes", (Element,), {"name": "noframes"})
+    plaintext = type("plaintext", (Element,), {"name": "plaintext"})
+    strike = type("strike", (Element,), {"name": "strike"})
+    xmp = type("xmp", (Element,), {"name": "xmp"})
+    # shadow
+
+    template = type("template", (HTMLTemplateElement,), {"name": "template"})
+
+    picture = type("picture", (HTMLPictureElement,), {"name": "picture"})
+    dialog = type("dialog", (HTMLDialogElement,), {"name": "dialog"})
+
+    # legacy.
+    doctype = type("doctype", (DocumentType,), {"name": "doctype"})
+    comment = type("comment", (Comment,), {"name": "comment"})
+    content = type("content", (HTMLContentElement,), {"name": "content"})
 
 
 def create_element(name: str = "custom_tag", *args: Any, **kwargs: Any) -> Element:

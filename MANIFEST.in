@@ -6,5 +6,6 @@ include requirements.txt
 include requirements-dev.txt
 include requirements-docs.txt
 recursive-include tests *
+include domonic/py.typed
 global-exclude __pycache__
 global-exclude *.pyc

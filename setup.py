@@ -142,6 +142,8 @@ setup(
     install_requires=get_requirements(),
     packages=find_packages(exclude=("tests", "tests.*")),
     include_package_data=True,
+    # PEP 561: ship the inline type information (tag stubs in domonic/html.py)
+    package_data={"domonic": ["py.typed"]},
     license_files=("LICENSE.txt",),
     entry_points={
         "console_scripts": [

@@ -1,3 +1,6 @@
+# Machine-translated tag-name aliases (data, not logic); google-translate
+# collisions mean some names legitimately rebind. Not type-checked.
+# mypy: ignore-errors
 """
 domonic.i18n.hi
 ====================================
