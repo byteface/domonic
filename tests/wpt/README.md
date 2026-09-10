@@ -39,9 +39,11 @@ fragment-serialisation checks for `innerHTML` / `outerHTML`, `dom/abort/`
 `attributes-namednodemap`, DocumentFragment insertion (appendChild /
 insertBefore / replaceChild), `shadow-dom/Element-interface-attachShadow`
 + shadow-including `getRootNode`, `Element-matches` / `Element-closest`
-(including `:scope`), the `<template>` element's `.content`, and the live
+(including `:scope`), the `<template>` element's `.content`, the live
 `document.forms` / `images` / `links` / `scripts` / `anchors` / `embeds`
-accessors.
+accessors, the `<form>` element (`elements`, `length`, named access,
+`RadioNodeList.value`, control `.form`), and IDL reflection
+(`id` / `className` / `hidden` / `tabIndex`).
 
 ## When a port fails
 
