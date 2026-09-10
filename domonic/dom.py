@@ -755,15 +755,19 @@ def _connect_tree(node: "Node") -> None:
     # Keep a live id index in sync incrementally: splice the joining subtree's
     # ids in and leave the id epoch alone, so an id-less append stays O(1).
     # The tag/class index can't be spliced in order, so bump its epoch.
-    # Entirely skipped until some code has called an indexed lookup.
+    # Only trees that actually hold an index pay anything here.
     id_map = None
     if _ID_INDEXING_ON:
-        _bump_structure_epoch()
-        id_index = root.__dict__.get("_id_index")
-        if id_index is not None and id_index[0] == _DOM_MUTATION_EPOCH:
-            id_map = id_index[1]
-        else:
-            _bump_dom_epoch()
+        rd = root.__dict__
+        id_index = rd.get("_id_index")
+        if id_index is not None:
+            _bump_structure_epoch()
+            if id_index[0] == _DOM_MUTATION_EPOCH:
+                id_map = id_index[1]
+            else:
+                _bump_dom_epoch()
+        elif "_dom_index" in rd:
+            _bump_structure_epoch()
     is_connected = isinstance(root, Document)
     owner = root if is_connected else getattr(node, "_ownerDocument", None)
     registry = _get_custom_element_registry()
@@ -785,12 +789,16 @@ def _connect_tree(node: "Node") -> None:
 def _disconnect_tree(node: "Node") -> None:
     id_map: "dict[str, Any] | None" = None
     if _ID_INDEXING_ON:
-        _bump_structure_epoch()
-        id_index = node.rootNode.__dict__.get("_id_index")
-        if id_index is not None and id_index[0] == _DOM_MUTATION_EPOCH:
-            id_map = id_index[1]
-        else:
-            _bump_dom_epoch()
+        rd = node.rootNode.__dict__
+        id_index = rd.get("_id_index")
+        if id_index is not None:
+            _bump_structure_epoch()
+            if id_index[0] == _DOM_MUTATION_EPOCH:
+                id_map = id_index[1]
+            else:
+                _bump_dom_epoch()
+        elif "_dom_index" in rd:
+            _bump_structure_epoch()
     for current in _iter_dom_nodes(node):
         current.isConnected = False
         if id_map is not None:
