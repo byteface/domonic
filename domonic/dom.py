@@ -7244,7 +7244,9 @@ class Document(Element):
         Returns:
             TreeWalker: A new TreeWalker object.
         """
-        whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
+        if not isinstance(root, Node):
+            raise TypeError("createTreeWalker: root must be a Node")
+        whatToShow = NodeFilter.SHOW_ALL if whatToShow is None else whatToShow
         return TreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 
     @staticmethod
@@ -7305,7 +7307,9 @@ class Document(Element):
     @staticmethod
     def createNodeIterator(root: Node, whatToShow: int | None = None, filter: Any = None) -> NodeIterator:
         """Creates a NodeIterator that can be used to traverse the document tree or subtree under root."""
-        whatToShow = NodeFilter.SHOW_ALL if whatToShow == None else whatToShow
+        if not isinstance(root, Node):
+            raise TypeError("createNodeIterator: root must be a Node")
+        whatToShow = NodeFilter.SHOW_ALL if whatToShow is None else whatToShow
         return NodeIterator(root, whatToShow, filter)
 
         # @staticmethod
@@ -9368,19 +9372,29 @@ class NodeIterator:
     def filter(self) -> Any:
         return self._filter
 
+    def toString(self) -> str:
+        return "[object NodeIterator]"
+
+    def __str__(self) -> str:
+        return "[object NodeIterator]"
+
+    def __repr__(self) -> str:
+        return "[object NodeIterator]"
+
     # def expandEntityReferences(self, expand):
     # Is a boolean value indicating if,
     # when discarding an EntityReference its whole sub-tree must be discarded at the same time.
 
+    @property
     def referenceNode(self) -> Node:
-        """Returns the Node that is being iterated over."""
+        """The node the iterator is currently anchored to (DOM spec: a
+        read-only attribute, not a method)."""
         return self.node
 
+    @property
     def pointerBeforeReferenceNode(self) -> bool:
-        """Returns a boolean flag that indicates whether the NodeIterator
-        is anchored before, the flag being true,
-        or after, the flag being false, the anchor node.
-        """
+        """``True`` while the iterator sits *before* ``referenceNode``, ``False``
+        while it sits after it (DOM spec: a read-only attribute)."""
         return self.pointer < 0
 
     def detach(self) -> None:
@@ -9546,20 +9560,6 @@ class TreeWalker:
 
         self._filter = _filter
 
-        def acceptNode(node: Node) -> int:
-            nonlocal _filter
-            # result
-            # if active:
-            #     raise Exception('DOMException: INVALID_STATE_ERR')
-
-            # active = True
-            result = _filter(node)
-            # active = False
-            return result
-
-        if self._filter is not None:
-            NodeFilter.acceptNode = acceptNode  # type: ignore[attr-defined]
-
         self.last = None
         self.parent = None
         self.previous = None
@@ -9576,6 +9576,20 @@ class TreeWalker:
     def root(self) -> Node:
         """Returns a Node representing the root node as specified when the TreeWalker was created."""
         return self._root
+
+    @property
+    def filter(self) -> Any:
+        """The ``NodeFilter`` / callable given at construction (``None`` if none)."""
+        return self._filter
+
+    def toString(self) -> str:
+        return "[object TreeWalker]"
+
+    def __str__(self) -> str:
+        return "[object TreeWalker]"
+
+    def __repr__(self) -> str:
+        return "[object TreeWalker]"
 
     # def filter(self, options):
     #     """ Returns a NodeFilter object that can be used to filter the nodes that the TreeWalker visits. """
