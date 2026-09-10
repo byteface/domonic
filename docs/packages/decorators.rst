@@ -141,6 +141,25 @@ strip print statements later. Configure logging to see it on the console:
     # Exited somefunc
 
 
+as_json
+--------------------------------
+
+``as_json`` serialises a function's return value to a JSON string, so a view can
+just return a Python ``dict`` or ``list``:
+
+.. code-block :: python
+
+    from domonic.decorators import as_json
+
+    @as_json
+    def response():
+        return {"hello": "world", "items": [1, 2, 3]}
+
+    print(response())
+    # {"hello": "world", "items": [1, 2, 3]}
+
+See :doc:`JSON` for turning JSON data into HTML tables or CSV and back.
+
 
 .. autoclass:: domonic.decorators
     :members:
