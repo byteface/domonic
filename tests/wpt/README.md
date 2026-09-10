@@ -18,7 +18,8 @@ pytest tests/wpt/
 
 ## Ported so far
 
-`Node-isEqualNode`, `Node-nodeValue`, `Node-contains`, `ChildNode-replaceWith`
+`Node-isEqualNode`, `Node-nodeValue`, `Node-contains`, `Document-getElementById`,
+`ChildNode-replaceWith`
 / `-before` / `-after`, `Node-childNodes`, `Node-compareDocumentPosition` (+
 `getRootNode`), `Node-appendChild` / `-insertBefore` / `-replaceChild`
 (pre-insertion validity), `Element-classlist`, `Element-getElementsByTagName`
