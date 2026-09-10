@@ -7240,7 +7240,14 @@ class Document(Element):
 
     @staticmethod
     def createProcessingInstruction(target: str, data: str) -> ProcessingInstruction:
-        """Creates a ProcessingInstruction node with the specified target and data"""
+        """Creates a ProcessingInstruction node with the specified target and data.
+
+        Per https://dom.spec.whatwg.org/#dom-document-createprocessinginstruction
+        the target must be a valid name and the data must not contain ``"?>"``.
+        """
+        _validate_xml_name(target)
+        if "?>" in str(data):
+            raise DOMException("The data provided must not contain '?>'.", "InvalidCharacterError")
         return ProcessingInstruction(target, data)
 
     @staticmethod

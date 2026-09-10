@@ -49,5 +49,27 @@ class DocumentCreateElement(unittest.TestCase):
         self.assertEqual(ctx.exception.name, "InvalidCharacterError")
 
 
+class DocumentCreateOtherNodes(unittest.TestCase):
+    """Ported from wpt/dom/nodes/Document-createProcessingInstruction.html"""
+
+    def test_createattribute_rejects_an_invalid_name(self):
+        assert_throws_dom("InvalidCharacterError", lambda: document.createAttribute("1abc"))
+        assert_throws_dom("InvalidCharacterError", lambda: document.createAttribute("a b"))
+
+    def test_createprocessinginstruction_rejects_an_invalid_target(self):
+        assert_throws_dom("InvalidCharacterError", lambda: document.createProcessingInstruction("1abc", "x"))
+
+    def test_createprocessinginstruction_rejects_data_containing_the_terminator(self):
+        assert_throws_dom(
+            "InvalidCharacterError",
+            lambda: document.createProcessingInstruction("target", "abc ?> def"),
+        )
+
+    def test_createprocessinginstruction_accepts_a_valid_pair(self):
+        pi = document.createProcessingInstruction("xml-stylesheet", 'href="a.css"')
+        self.assertEqual(pi.target, "xml-stylesheet")
+        self.assertEqual(pi.data, 'href="a.css"')
+
+
 if __name__ == "__main__":
     unittest.main()
