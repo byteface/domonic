@@ -639,23 +639,36 @@ def _validate_xml_name(name: Any, *, qualified: bool = False) -> str:
     raise DOMException(f"The name provided ('{text}') is not a valid name.", "InvalidCharacterError")
 
 
-# The id-index machinery below is completely dormant until the first
-# ``getElementById`` call sets ``_ID_INDEXING_ON``. Code that never calls
-# getElementById (e.g. the bs4 layer, pure serialisation) pays nothing:
-# _connect_tree / _disconnect_tree / _queue_mutation_record all short-circuit
-# on this flag.
+# The element-index machinery below is completely dormant until the first
+# getElementById / getElementsByTagName / getElementsByClassName call sets
+# ``_ID_INDEXING_ON``. Code that never calls those (e.g. the bs4 layer, pure
+# serialisation) pays nothing: _connect_tree / _disconnect_tree /
+# _queue_mutation_record all short-circuit on this flag.
 _ID_INDEXING_ON: bool = False
 
-# A process-wide monotonic counter bumped on every tracked DOM mutation once
-# indexing is on (structure via _connect_tree / _disconnect_tree / the ``args``
-# setter, an ``id`` attribute via _queue_mutation_record). Every id index caches
-# the epoch it was built at and rebuilds when it has moved.
+# Two process-wide monotonic counters, each stamped onto the index it guards:
+#  - _DOM_MUTATION_EPOCH: the id index. Bumped only when it cannot be kept in
+#    sync incrementally (an id-bearing subtree removed, an ``id`` attribute
+#    changed, an untracked structural change). id-less appends do not bump it.
+#  - _STRUCTURE_EPOCH: the tag/class index (which cannot be spliced in order).
+#    Bumped on every structural change and every ``class`` attribute change.
 _DOM_MUTATION_EPOCH: int = 0
+_STRUCTURE_EPOCH: int = 0
 
 
 def _bump_dom_epoch() -> None:
     global _DOM_MUTATION_EPOCH
     _DOM_MUTATION_EPOCH += 1
+
+
+def _bump_structure_epoch() -> None:
+    global _STRUCTURE_EPOCH
+    _STRUCTURE_EPOCH += 1
+
+
+def _enable_id_indexing() -> None:
+    global _ID_INDEXING_ON
+    _ID_INDEXING_ON = True
 
 
 def _detach_node_for_insertion(node: Any) -> "Document | None":
@@ -740,10 +753,12 @@ def _connect_tree(node: "Node") -> None:
     # the subtree being connected, so resolve it once.
     root = node.rootNode
     # Keep a live id index in sync incrementally: splice the joining subtree's
-    # ids in and leave the epoch alone, so an id-less append stays O(1).
-    # Entirely skipped until some code has called getElementById.
+    # ids in and leave the id epoch alone, so an id-less append stays O(1).
+    # The tag/class index can't be spliced in order, so bump its epoch.
+    # Entirely skipped until some code has called an indexed lookup.
     id_map = None
     if _ID_INDEXING_ON:
+        _bump_structure_epoch()
         id_index = root.__dict__.get("_id_index")
         if id_index is not None and id_index[0] == _DOM_MUTATION_EPOCH:
             id_map = id_index[1]
@@ -770,6 +785,7 @@ def _connect_tree(node: "Node") -> None:
 def _disconnect_tree(node: "Node") -> None:
     id_map: "dict[str, Any] | None" = None
     if _ID_INDEXING_ON:
+        _bump_structure_epoch()
         id_index = node.rootNode.__dict__.get("_id_index")
         if id_index is not None and id_index[0] == _DOM_MUTATION_EPOCH:
             id_map = id_index[1]
@@ -880,7 +896,9 @@ def _dom_config_render_fingerprint() -> tuple:
 
 
 def _child_nodes_for_walk(node: Any) -> list:
-    return [c for c in node.__dict__.get("args", ()) if type(c) is not str]
+    # only real Nodes -- args can also hold raw strings, and occasionally
+    # dicts/other junk (e.g. JSON.tablify rows).
+    return [c for c in node.__dict__.get("args", ()) if isinstance(c, Node)]
 
 
 def _walk_descendants_for_id(root: "Node", _id: str) -> "Element | None":
@@ -909,13 +927,86 @@ def _collect_id_index(root: "Node") -> dict[str, "Element"]:
     return index
 
 
+def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
+    """A ``{"tag": {name: [el]}, "class": {token: [el]}, "name": {name: [el]}}``
+    index of ``root``'s descendant elements in tree order, cached on ``root``
+    and rebuilt only when the structure epoch has moved. Backs
+    ``getElementsByTagName`` / ``-ClassName`` / ``-Name`` and the document
+    collection accessors."""
+    if not _ID_INDEXING_ON:
+        _enable_id_indexing()
+    cached = root.__dict__.get("_dom_index")
+    if cached is not None and cached[0] == _STRUCTURE_EPOCH:
+        return cached[1]
+    tags: "dict[str, list[Element]]" = {"*": []}
+    classes: "dict[str, list[Element]]" = {}
+    names: "dict[str, list[Element]]" = {}
+    all_tag = tags["*"]
+    stack: list[Any] = list(reversed(_child_nodes_for_walk(root)))
+    while stack:
+        node = stack.pop()
+        if isinstance(node, Element):
+            all_tag.append(node)
+            kw = node.__dict__.get("kwargs", {})
+            tag = str(getattr(node, "name", "") or "").lower()
+            bucket = tags.get(tag)
+            if bucket is None:
+                tags[tag] = [node]
+            else:
+                bucket.append(node)
+            cls = kw.get("_class")
+            if cls:
+                for token in str(cls).split():
+                    cbucket = classes.get(token)
+                    if cbucket is None:
+                        classes[token] = [node]
+                    else:
+                        cbucket.append(node)
+            nm = kw.get("_name")
+            if nm is not None:
+                nbucket = names.get(nm)
+                if nbucket is None:
+                    names[nm] = [node]
+                else:
+                    nbucket.append(node)
+        stack.extend(reversed(_child_nodes_for_walk(node)))
+    maps = {"tag": tags, "class": classes, "name": names}
+    root.__dict__["_dom_index"] = (_STRUCTURE_EPOCH, maps)
+    return maps
+
+
+def _elements_by_tag_name(root: "Node", tag_name: str) -> "list[Element]":
+    return list(_root_element_index(root)["tag"].get(tag_name.lower(), ()))
+
+
+def _elements_by_name(root: "Node", name: str) -> "list[Element]":
+    return list(_root_element_index(root)["name"].get(name, ()))
+
+
+def _elements_by_class_name(root: "Node", tokens: "frozenset[str]") -> "list[Element]":
+    class_map = _root_element_index(root)["class"]
+    buckets: "list[list[Element]]" = []
+    for token in tokens:
+        bucket = class_map.get(token)
+        if bucket is None:  # a required class no element has -> no matches
+            return []
+        buckets.append(bucket)
+    if not buckets:
+        return []
+    buckets.sort(key=len)
+    smallest = buckets[0]
+    if len(buckets) == 1:
+        return list(smallest)
+    others = [{id(el) for el in bucket} for bucket in buckets[1:]]
+    return [el for el in smallest if all(id(el) in seen for seen in others)]
+
+
 def _element_by_id_via_index(root: "Node", _id: str) -> "Element | None":
     """``getElementById`` backed by a lazily-built id -> element index that is
     rebuilt only when the global mutation epoch has moved. A fresh index is
     authoritative, so a miss is O(1) (no fallback walk)."""
-    global _ID_INDEXING_ON
     if not _ID_INDEXING_ON:
-        _ID_INDEXING_ON = True
+        _enable_id_indexing()
     cached = root.__dict__.get("_id_index")
     if cached is None or cached[0] != _DOM_MUTATION_EPOCH:
         cached = (_DOM_MUTATION_EPOCH, _collect_id_index(root))
@@ -953,13 +1044,15 @@ def _queue_mutation_record(
     attribute_namespace: str | None = None,
     old_value: str | None = None,
 ) -> None:
-    # Structural changes bump the id-index epoch through _connect_tree /
-    # _disconnect_tree (incrementally where possible). Here we only need to
-    # catch an ``id`` attribute changing (and only once indexing is on).
+    # Structural changes bump the index epochs through _connect_tree /
+    # _disconnect_tree. Here we catch an ``id`` change (id index) or a
+    # ``class`` change (tag/class index), and only once indexing is on.
     if _ID_INDEXING_ON and record_type == "attributes":
         name = attribute_name[1:] if attribute_name and attribute_name[:1] == "_" else attribute_name
         if name == "id":
             _bump_dom_epoch()
+        elif name == "class" or name == "name":
+            _bump_structure_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
         _invalidate_render_cache(target)
     try:
@@ -1948,8 +2041,9 @@ class Node(EventTarget):
         if name == "args":
             super().__setattr__(name, value)
             self._update_parents()
-            if _ID_INDEXING_ON:  # structure changed -> id index may be stale
+            if _ID_INDEXING_ON:  # structure changed -> both indexes may be stale
                 _bump_dom_epoch()
+                _bump_structure_epoch()
             return
         super().__setattr__(name, value)
 
@@ -5229,14 +5323,8 @@ class Element(Node):
         Returns:
             HTMLCollection: All child elements with the specified class name.
         """
-        required = {token for token in str(className).split() if token}
-        if not required:
-            return _LiveHTMLCollection(self, lambda el: False)
-
-        def matcher(el: "Element") -> bool:
-            return required.issubset(set(str(el.getAttribute("class") or "").split()))
-
-        return _LiveHTMLCollection(self, matcher)
+        required = frozenset(token for token in str(className).split() if token)
+        return _LiveHTMLCollection(self, classes=required)
 
     def getElementById(self, _id: str) -> Element | None:
         """Returns the descendant element whose id matches the supplied value.
@@ -5286,22 +5374,11 @@ class Element(Node):
         Returns:
             HTMLCollection: A live HTMLCollection of elements with the given tag name.
         """
-        tagName = str(tagName)
-
-        if tagName == "*":
-            return _LiveHTMLCollection(self, lambda el: True)
-
         # getElementsByTagName does not validate its argument and is not a
         # selector engine: it matches the qualified name literally (ASCII
         # case-insensitively). Anything that is not a real tag name -- "",
         # "a.b", "has space" -- simply matches nothing.
-        wanted = tagName.lower()
-
-        def matcher(el: "Element") -> bool:
-            name = el.tagName
-            return isinstance(name, str) and name.lower() == wanted
-
-        return _LiveHTMLCollection(self, matcher)
+        return _LiveHTMLCollection(self, tag=str(tagName).lower())
 
     def __contains__(self, item: Any) -> bool:
         """``x in element``.
@@ -7135,7 +7212,7 @@ class Document(Element):
     @property
     def anchors(self):
         """A live ``HTMLCollection`` of the document's ``<a name>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "a" and el.hasAttribute("name"))
+        return _LiveHTMLCollection(self, lambda el: el.hasAttribute("name"), tag="a")
 
     @property
     def applets(self):
@@ -7631,14 +7708,14 @@ class Document(Element):
     @property
     def embeds(self):
         """A live ``HTMLCollection`` of the document's ``<embed>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "embed")
+        return _LiveHTMLCollection(self, tag="embed")
 
     plugins = embeds
 
     @property
     def forms(self):
         """A live ``HTMLCollection`` of the document's ``<form>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "form")
+        return _LiveHTMLCollection(self, tag="form")
 
     def fullscreenElement(self):
         """Returns the current element that is displayed in fullscreen mode"""
@@ -7671,7 +7748,7 @@ class Document(Element):
         Returns:
             HTMLCollection: The matching elements.
         """
-        return _LiveHTMLCollection(self, lambda el: el.getAttribute("name") == name)
+        return _LiveHTMLCollection(self, named=str(name))
 
     # def hasFocus():
     # '''Returns a Boolean value indicating whether the document has focus'''
@@ -7703,7 +7780,7 @@ class Document(Element):
     @property
     def images(self):
         """A live ``HTMLCollection`` of the document's ``<img>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "img")
+        return _LiveHTMLCollection(self, tag="img")
 
     @property
     def implementation(self):
@@ -7849,7 +7926,7 @@ class Document(Element):
     @property
     def scripts(self):
         """A live ``HTMLCollection`` of the document's ``<script>`` elements."""
-        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "script")
+        return _LiveHTMLCollection(self, tag="script")
 
     def strictErrorChecking(self):
         """Returns a Boolean value indicating whether to stop on the first error"""
@@ -8414,18 +8491,43 @@ class _LiveHTMLCollection(HTMLCollection):
     / ``getElementsByName`` return per the DOM spec.
     """
 
-    def __init__(self, root: "Node", matcher: Callable[["Element"], bool]) -> None:
+    def __init__(
+        self,
+        root: "Node",
+        matcher: "Callable[[Element], bool] | None" = None,
+        *,
+        tag: "str | None" = None,
+        classes: "frozenset[str] | None" = None,
+        named: "str | None" = None,
+    ) -> None:
         self._root = root
         self._matcher = matcher
+        self._tag = tag  # a lower-case tag name, or "*"
+        self._classes = classes  # required class tokens (empty set -> match none)
+        self._named = named  # a value for the ``name`` attribute
         super().__init__()
 
     def _elements(self) -> list:
+        matcher = self._matcher
+        # Index-backed fast paths. A matcher alongside ``tag`` / ``named``
+        # post-filters the (already narrow) index result.
+        if self._tag is not None:
+            hits = _elements_by_tag_name(self._root, self._tag)
+            return [el for el in hits if matcher(el)] if matcher is not None else hits
+        if self._named is not None:
+            hits = _elements_by_name(self._root, self._named)
+            return [el for el in hits if matcher(el)] if matcher is not None else hits
+        if self._classes is not None:
+            return _elements_by_class_name(self._root, self._classes) if self._classes else []
+
+        if matcher is None:
+            return []
         out: list = []
 
         def walk(node: Any) -> None:
             for child in list(getattr(node, "args", ())):
                 if isinstance(child, Element):
-                    if self._matcher(child):
+                    if matcher(child):
                         out.append(child)
                     walk(child)
 
