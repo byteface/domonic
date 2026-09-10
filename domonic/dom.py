@@ -4707,7 +4707,6 @@ class Element(Node):
     def innerHTML(self, value):
         if value is not None:
             self.replaceChildren(*self._parse_html_fragment(value))
-        return self.content
 
     @property
     def outerHTML(self):
@@ -12351,7 +12350,12 @@ class HTMLTemplateElement(HTMLElement):
 
     @property
     def content(self):
-        return DocumentFragment(*self.args)
+        # A view of the template's children as a DocumentFragment. Built
+        # without the fragment constructor because that would reparent (steal)
+        # the children out of the template.
+        frag = DocumentFragment()
+        frag.__dict__["args"] = tuple(self.args)
+        return frag
 
     @content.setter
     def content(self, ignore):
