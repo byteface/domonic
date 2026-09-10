@@ -4971,6 +4971,15 @@ class Element(Node):
         """Returns the value of the specified attribute"""
         return self.getAttribute(localName)
 
+    def hasAttributeNS(self, namespaceURI, localName) -> bool:
+        """Whether the element has the given attribute.
+
+        domonic does not track per-attribute namespaces (see the
+        ``domonic-wpt-conformance`` notes), so the namespace argument is
+        ignored and this is equivalent to ``hasAttribute(localName)``.
+        """
+        return self.hasAttribute(localName)
+
     def removeAttributeNS(self, namespaceURI, localName):
         """Removes an attribute from an element"""
         if localName in self.attributes:

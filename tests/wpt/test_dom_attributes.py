@@ -27,8 +27,10 @@ class ToggleAttribute(unittest.TestCase):
         el = document.createElement("div")
         assert_true(el.toggleAttribute("ALIGN"))
         assert_true(el.hasAttribute("align"))
+        assert_true(el.hasAttributeNS("", "align"))
         assert_false(el.toggleAttribute("ALIGN"))
         assert_false(el.hasAttribute("align"))
+        assert_false(el.hasAttributeNS("", "align"))
 
     def test_no_force_toggles(self):
         el = document.createElement("div")
