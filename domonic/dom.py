@@ -8023,10 +8023,30 @@ class Text(CharacterData):
 
     @property
     def wholeText(self):
-        """Returns a DOMString containing all the text content of the node and its descendants."""
-        if self.args and isinstance(self.args[0], str):
-            return self.args[0]
-        return ""
+        """The concatenated ``data`` of this node and the ``Text`` nodes
+        contiguous with it (https://dom.spec.whatwg.org/#dom-text-wholetext) --
+        walking siblings both ways until a non-text node breaks the run.
+        domonic's raw-string children count as text for this purpose.
+        """
+        parent = self.parentNode
+        if parent is None or not hasattr(parent, "args"):
+            return self.data
+        kids = list(parent.args)
+        try:
+            index = next(i for i, kid in enumerate(kids) if kid is self)
+        except StopIteration:
+            return self.data
+
+        def _is_text(node: Any) -> bool:
+            return type(node) is str or isinstance(node, Text)
+
+        start = index
+        while start > 0 and _is_text(kids[start - 1]):
+            start -= 1
+        end = index
+        while end + 1 < len(kids) and _is_text(kids[end + 1]):
+            end += 1
+        return "".join(kid if type(kid) is str else kid.data for kid in kids[start : end + 1])
 
     def splitText(self, offset: int):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
