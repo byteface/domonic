@@ -10216,8 +10216,20 @@ class MathMLElement(Element):
         self.setAttribute("nonce", value)
 
 
+_FORM_ASSOCIATED_TAGS = frozenset({"button", "fieldset", "input", "object", "output", "select", "textarea"})
+
+
 class HTMLElement(Element):
     name = ""
+
+    @property
+    def form(self) -> "HTMLFormElement | None":
+        """The ``<form>`` this form-associated control belongs to (via a
+        ``form=`` attribute pointing at a form id, or the nearest ancestor
+        ``<form>``), or ``None`` (https://html.spec.whatwg.org/#dom-fae-form)."""
+        if (self.tagName or "").lower() not in _FORM_ASSOCIATED_TAGS:
+            return None
+        return _form_owner(self)
 
     @property
     def validity(self) -> ValidityState:
