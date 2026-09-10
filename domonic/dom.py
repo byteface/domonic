@@ -4147,7 +4147,8 @@ class Element(Node):
         # construction-time cost. Left out entirely; ``getAttribute("lang"/
         # "dir")`` already returns None for an element with no such
         # attribute, so behaviour is unchanged.
-        self.tabIndex = None
+        # ``tabIndex`` is a reflecting property (default -1); no instance
+        # attribute needed.
         self.style = None  # Style(self)  # = #'test'#Style()
         self.shadowRoot = None
         super().__init__(*args, **kwargs)
@@ -4834,8 +4835,10 @@ class Element(Node):
 
     @property
     def className(self):
-        """Sets or returns the value of the className attribute of an element"""
-        return self.getAttribute("class")
+        """The element's ``class`` content attribute reflected as a string --
+        ``""`` when absent (IDL string reflection, never ``None``)."""
+        value = self.getAttribute("class")
+        return value if isinstance(value, str) else ""
 
     @className.setter
     def className(self, newname: str):
@@ -5236,9 +5239,41 @@ class Element(Node):
             return False
 
     @property
-    def id(self) -> str | None:
-        """Sets or returns the value of the id attribute of an element"""
-        return self.getAttribute("id")
+    def hidden(self) -> bool:
+        """Reflects the boolean ``hidden`` content attribute."""
+        return self.hasAttribute("hidden")
+
+    @hidden.setter
+    def hidden(self, value: Any) -> None:
+        if value:
+            self.setAttribute("hidden", "")
+        else:
+            self.removeAttribute("hidden")
+
+    @property
+    def tabIndex(self) -> int:
+        """Reflects ``tabindex`` as an integer; ``-1`` when absent or invalid."""
+        raw = self.getAttribute("tabindex")
+        try:
+            return int(str(raw))
+        except (TypeError, ValueError):
+            return -1
+
+    @tabIndex.setter
+    def tabIndex(self, value: Any) -> None:
+        if value is None:
+            if self.hasAttribute("tabindex"):
+                self.removeAttribute("tabindex")
+            return
+        self.setAttribute("tabindex", str(int(value)))
+
+    @property
+    def id(self) -> str:
+        """The element's ``id`` content attribute reflected as a string --
+        ``""`` when the attribute is absent (IDL string reflection, never
+        ``None``)."""
+        value = self.getAttribute("id")
+        return value if isinstance(value, str) else ""
 
     @id.setter
     def id(self, newid: str):
@@ -7088,6 +7123,12 @@ class Document(Element):
     @property
     def hidden(self) -> bool:
         return self.visibilityState != "visible"
+
+    @hidden.setter
+    def hidden(self, value: Any) -> None:
+        # a Document's hidden state is derived from visibilityState, not a
+        # content attribute -- assignment is ignored.
+        return None
 
     @staticmethod
     def createAttribute(name: str) -> Attr:
