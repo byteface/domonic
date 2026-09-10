@@ -25,7 +25,11 @@ pytest tests/wpt/
 / `-getElementsByClassName` / `getElementsByName`, `Document-createElement` /
 `-createProcessingInstruction`, `attributes.html` (toggleAttribute /
 setAttribute), `insert-adjacent`, `DOMImplementation-createHTMLDocument` /
-`-createDocumentType`, `Text-wholeText` / `-splitText`.
+`-createDocumentType`, `Text-wholeText` / `-splitText`, `TreeWalker-basic` /
+`TreeWalker-acceptNode-filter`, `NodeIterator`, `Range-attributes` /
+`-collapse` / `-comparePoint` / `-isPointInRange` / `-selectNode`, and a batch
+of `dom/events/` (EventTarget add/remove, dispatch order and phases,
+propagation, once, handleEvent, CustomEvent).
 
 ## When a port fails
 
