@@ -29,7 +29,11 @@ setAttribute), `insert-adjacent`, `DOMImplementation-createHTMLDocument` /
 `TreeWalker-acceptNode-filter`, `NodeIterator`, `Range-attributes` /
 `-collapse` / `-comparePoint` / `-isPointInRange` / `-selectNode`, and a batch
 of `dom/events/` (EventTarget add/remove, dispatch order and phases,
-propagation, once, handleEvent, CustomEvent).
+propagation, once, handleEvent, CustomEvent), `ParentNode-append` /
+`-prepend` / `-replaceChildren` (Element / Document / DocumentFragment),
+`Node-cloneNode` / `Document-importNode` / `Document-adoptNode`,
+`Node-properties` (parentElement, sibling elements), and the WHATWG
+fragment-serialisation checks for `innerHTML` / `outerHTML`.
 
 ## When a port fails
 
