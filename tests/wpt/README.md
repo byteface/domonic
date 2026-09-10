@@ -16,6 +16,17 @@ reads like the original.
 pytest tests/wpt/
 ```
 
+## Ported so far
+
+`Node-isEqualNode`, `Node-nodeValue`, `Node-contains`, `ChildNode-replaceWith`
+/ `-before` / `-after`, `Node-childNodes`, `Node-compareDocumentPosition` (+
+`getRootNode`), `Node-appendChild` / `-insertBefore` / `-replaceChild`
+(pre-insertion validity), `Element-classlist`, `Element-getElementsByTagName`
+/ `-getElementsByClassName` / `getElementsByName`, `Document-createElement` /
+`-createProcessingInstruction`, `attributes.html` (toggleAttribute /
+setAttribute), `insert-adjacent`, `DOMImplementation-createHTMLDocument` /
+`-createDocumentType`, `Text-wholeText` / `-splitText`.
+
 ## When a port fails
 
 It's one of two things:
