@@ -15,6 +15,7 @@ import re
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 
+from domonic import dom as _dom
 from domonic import domonic
 from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text
 
@@ -109,7 +110,7 @@ def _descendants(node: Any) -> Iterator[Any]:
     # the root (invalidated by every mutation helper, like ``_bs4_tag_index``),
     # but only once a consumer has actually walked the whole thing -- an
     # early-exiting caller (``find(..., limit=1)``) must stay lazy.
-    if node is _root_for_index(node):
+    if node is _fresh_root(node):
         cache = node.__dict__.get("_bs4_all_nodes")
         if cache is not None:
             return iter(cache)
@@ -160,7 +161,7 @@ def _element_descendants(node: Any) -> Iterator[Element]:
     # If a prior ``find_all`` already built the tag index, its "*" list is every
     # element in document order -- reuse it. Don't *force* a build here: a lazy
     # ``select_one`` / ``find(limit=1)`` on the root would pay for a full walk.
-    if node is _root_for_index(node):
+    if node is _fresh_root(node):
         cached = node.__dict__.get("_bs4_tag_index")
         if cached is not None:
             return iter(cached["*"])
@@ -218,7 +219,7 @@ def _id_index(node: Any) -> dict[str, Element]:
     Reuses the tag index's ordered element list when it is already warm;
     otherwise pays one walk (as ``_tag_index`` does for the first ``find_all``).
     """
-    root = _root_for_index(node)
+    root = _fresh_root(node)
     if root is None:
         return {}
     cached = root.__dict__.get("_bs4_id_index")
@@ -257,19 +258,44 @@ def _root_for_index(node: Any) -> Node | None:
     return root if isinstance(root, Node) else None
 
 
+_BS4_INDEX_KEYS = (
+    "_bs4_tag_index",
+    "_bs4_all_nodes",
+    "_bs4_id_index",
+    "_bs4_class_index",
+    "_bs4_attr_index",
+)
+
+
 def _invalidate_index(node: Any) -> None:
     root = _root_for_index(node)
     if root is not None:
         d = root.__dict__
-        d.pop("_bs4_tag_index", None)
-        d.pop("_bs4_all_nodes", None)
-        d.pop("_bs4_id_index", None)
-        d.pop("_bs4_class_index", None)
-        d.pop("_bs4_attr_index", None)
+        for key in _BS4_INDEX_KEYS:
+            d.pop(key, None)
+        d.pop("_bs4_index_epoch", None)
+    # a bs4-side mutation must also stale domonic's own tag/class index
+    _dom._bump_structure_epoch()
+
+
+def _fresh_root(node: Any) -> "Node | None":
+    """``_root_for_index`` plus: drop the cached bs4 indexes if a *domonic*-side
+    mutation (which does not go through ``_invalidate_index``) has moved the
+    shared structure epoch since they were built."""
+    _dom._enable_id_indexing()  # so domonic mutation paths start bumping the epoch
+    root = _root_for_index(node)
+    if root is not None:
+        d = root.__dict__
+        cur = _dom._STRUCTURE_EPOCH
+        if d.get("_bs4_index_epoch") != cur:
+            for key in _BS4_INDEX_KEYS:
+                d.pop(key, None)
+            d["_bs4_index_epoch"] = cur
+    return root
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
-    root = _root_for_index(node)
+    root = _fresh_root(node)
     if root is None:
         return {}
     cached = root.__dict__.get("_bs4_tag_index")
@@ -288,7 +314,7 @@ def _class_index(node: Any) -> dict[str, list[Element]]:
     """``{class token: [elements in tree order]}`` for the whole tree, cached on
     the root and invalidated alongside ``_bs4_tag_index``. Built off the tag
     index's ordered element list when that is warm, else one walk."""
-    root = _root_for_index(node)
+    root = _fresh_root(node)
     if root is None:
         return {}
     cached = root.__dict__.get("_bs4_class_index")
@@ -309,7 +335,7 @@ def _class_index(node: Any) -> dict[str, list[Element]]:
 def _attr_index(node: Any) -> dict[str, list[Element]]:
     """``{attribute name: [elements in tree order]}`` -- every element listed
     once per attribute it carries. Cached / invalidated like the others."""
-    root = _root_for_index(node)
+    root = _fresh_root(node)
     if root is None:
         return {}
     cached = root.__dict__.get("_bs4_attr_index")

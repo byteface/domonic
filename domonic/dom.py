@@ -666,6 +666,23 @@ def _bump_structure_epoch() -> None:
     _STRUCTURE_EPOCH += 1
 
 
+# Every structural (tag / class / attr / name) index -- domonic's own and the
+# ones the bs4 layer caches on the same root -- is stamped with
+# ``_STRUCTURE_EPOCH`` and rebuilt when it moves. A structural mutation only
+# needs to bump the epoch when the root actually holds one of these.
+_STRUCTURE_INDEX_KEYS = (
+    "_dom_index",
+    "_bs4_tag_index",
+    "_bs4_class_index",
+    "_bs4_attr_index",
+    "_bs4_all_nodes",
+)
+
+
+def _root_holds_structure_index(root_dict: dict) -> bool:
+    return any(key in root_dict for key in _STRUCTURE_INDEX_KEYS)
+
+
 def _enable_id_indexing() -> None:
     global _ID_INDEXING_ON
     _ID_INDEXING_ON = True
@@ -766,8 +783,9 @@ def _connect_tree(node: "Node") -> None:
                 id_map = id_index[1]
             else:
                 _bump_dom_epoch()
-        elif "_dom_index" in rd:
+        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
             _bump_structure_epoch()
+            _bump_dom_epoch()
     is_connected = isinstance(root, Document)
     owner = root if is_connected else getattr(node, "_ownerDocument", None)
     registry = _get_custom_element_registry()
@@ -797,8 +815,9 @@ def _disconnect_tree(node: "Node") -> None:
                 id_map = id_index[1]
             else:
                 _bump_dom_epoch()
-        elif "_dom_index" in rd:
+        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
             _bump_structure_epoch()
+            _bump_dom_epoch()
     for current in _iter_dom_nodes(node):
         current.isConnected = False
         if id_map is not None:
@@ -1062,6 +1081,7 @@ def _queue_mutation_record(
         name = attribute_name[1:] if attribute_name and attribute_name[:1] == "_" else attribute_name
         if name == "id":
             _bump_dom_epoch()
+            _bump_structure_epoch()  # bs4's _id_index keys on the structure epoch
         elif name == "class" or name == "name":
             _bump_structure_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
