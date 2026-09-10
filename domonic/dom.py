@@ -320,6 +320,27 @@ _HTML_RAWTEXT_ELEMENTS = frozenset(
     }
 )
 
+# Elements whose end tag ``str(node)`` omits unless RENDER_OPTIONAL_CLOSING_TAGS
+# is set. Module-level so Element.stream() does not rebuild the set per call.
+_OPTIONAL_CLOSING_TAGS = frozenset(
+    {
+        "html",
+        "head",
+        "body",
+        "p",
+        "dt",
+        "dd",
+        "li",
+        "option",
+        "thead",
+        "th",
+        "tbody",
+        "tr",
+        "td",
+        "tfoot",
+        "colgroup",
+    }
+)
 # Attribute names domonic exposes with a Python-unfriendly spelling (a real
 # hyphen, or a name that collides with a Python keyword). Used by
 # Element.__attributes__, which runs once per attribute on every render --
@@ -1575,47 +1596,50 @@ class Node(EventTarget):
 
     @property
     def __attributes__(self):
-        def format_attr(key, value):
-            escape_attribute = bool(self.__dict__.get("_escape_attributes_on_render", False))
-            if value is True:
-                value = "true"
-            if value is False:
-                value = "false"
-            key = key.split("_", 1)[1]
-            key = _ATTRIBUTE_NAME_REMAP.get(key, key)
-
-            if DOMConfig.HTMX_ENABLED:
-                htmx_attribute = _normalize_htmx_attribute(key)
-                if htmx_attribute is not None:
-                    return f""" {htmx_attribute}=""" f"""{_render_attribute_value(
-                            value,
-                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-                        )}"""
-
-            if DOMConfig.ALPINE_ENABLED:
-                alpine_attribute = _normalize_alpine_attribute(key)
-                if alpine_attribute is not None:
-                    return f""" {alpine_attribute}=""" f"""{_render_attribute_value(
-                            value,
-                            DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-                        )}"""
-
-            # lets us have boolean attributes
-            if key in _BOOLEAN_ATTRIBUTES:
-                if value == "" or value == key:
-                    return f""" {key}"""
-            return f""" {key}={_render_attribute_value(
-                value,
-                DOMConfig.GLOBAL_AUTOESCAPE or escape_attribute,
-            )}"""
-
+        kwargs = self.kwargs
+        if not kwargs:
+            return ""
+        # Constants that do not vary between this element's attributes are read
+        # once here rather than on every iteration of the old per-attr closure.
+        escape = DOMConfig.GLOBAL_AUTOESCAPE or bool(self.__dict__.get("_escape_attributes_on_render", False))
+        htmx = DOMConfig.HTMX_ENABLED
+        alpine = DOMConfig.ALPINE_ENABLED
+        extensions = htmx or alpine
+        remap = _ATTRIBUTE_NAME_REMAP
+        boolean_attrs = _BOOLEAN_ATTRIBUTES
+        render_value = _render_attribute_value
+        parts: list[str] = []
         try:
-            return "".join([format_attr(key, value) for key, value in self.kwargs.items()])
+            for key, value in kwargs.items():
+                if value is True:
+                    value = "true"
+                elif value is False:
+                    value = "false"
+                key = key.split("_", 1)[1]
+                key = remap.get(key, key)
+
+                if extensions:
+                    if htmx:
+                        htmx_attribute = _normalize_htmx_attribute(key)
+                        if htmx_attribute is not None:
+                            parts.append(f" {htmx_attribute}={render_value(value, escape)}")
+                            continue
+                    if alpine:
+                        alpine_attribute = _normalize_alpine_attribute(key)
+                        if alpine_attribute is not None:
+                            parts.append(f" {alpine_attribute}={render_value(value, escape)}")
+                            continue
+
+                # lets us have boolean attributes
+                if key in boolean_attrs and (value == "" or value == key):
+                    parts.append(f" {key}")
+                    continue
+                parts.append(f" {key}={render_value(value, escape)}")
         except IndexError as e:
             from domonic.html import TemplateError
 
             raise TemplateError(e)
-        # except Exception as e:
+        return "".join(parts)
 
     @__attributes__.setter
     def __attributes__(self, ignore):
@@ -1683,50 +1707,35 @@ class Node(EventTarget):
 
     def stream(self) -> Iterator[str]:
         """Yield rendered HTML chunks without materialising the full subtree."""
-        optional_closing_tags = {
-            "html",
-            "head",
-            "body",
-            "p",
-            "dt",
-            "dd",
-            "li",
-            "option",
-            "thead",
-            "th",
-            "tbody",
-            "tr",
-            "td",
-            "tfoot",
-            "colgroup",
-        }
-        stack: list[tuple[str, Any]] = [("value", self)]
+        # Config is read once per top-level render: a single serialization is
+        # atomic, and threading these locals through the loop avoids a
+        # DOMConfig attribute lookup per node.
+        autoescape = DOMConfig.GLOBAL_AUTOESCAPE
+        render_optional = DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
+        optional_closing_tags = _OPTIONAL_CLOSING_TAGS
+        rawtext = _HTML_RAWTEXT_ELEMENTS
+        escape_html = _escape_html
+        node_stream = Node.stream
+        stack: list[tuple[bool, Any]] = [(False, self)]
         while stack:
-            kind, value = stack.pop()
-            if kind == "close":
-                yield f"</{value.name}>"
-                continue
-            if kind == "iter":
-                try:
-                    child = next(value)
-                except StopIteration:
-                    continue
-                stack.append(("iter", value))
-                stack.append(("value", child))
+            is_close, value = stack.pop()
+
+            if is_close:
+                yield value  # already-rendered "</name>" string
                 continue
 
             if callable(value) and not isinstance(value, (Node, str)):
                 value = value()
 
             if isinstance(value, Text):
-                escape_text = DOMConfig.GLOBAL_AUTOESCAPE or bool(getattr(value, "_escape_text_on_render", False))
-                value = str(value.textContent)
-                yield _escape_html(value) if escape_text else value
+                escape_text = autoescape or bool(getattr(value, "_escape_text_on_render", False))
+                text = str(value.textContent)
+                yield escape_html(text) if escape_text else text
                 continue
 
             if isinstance(value, Node):
                 custom_stream = getattr(type(value), "stream", None)
-                if custom_stream is not None and custom_stream is not Node.stream:
+                if custom_stream is not None and custom_stream is not node_stream:
                     yield from value.stream()
                     continue
 
@@ -1734,8 +1743,9 @@ class Node(EventTarget):
                     doctype = value.doctype
                     if doctype is not None and not any(child is doctype for child in value.args):
                         yield str(doctype)
-                yield f"<{value.name}{value.__attributes__}>"
-                if value.name in _HTML_RAWTEXT_ELEMENTS:
+                name = value.name
+                yield f"<{name}{value.__attributes__}>"
+                if name in rawtext:
                     # raw-text elements (<script>, <style>, ...): content is
                     # serialised verbatim, never entity-escaped
                     for child in value.args:
@@ -1745,25 +1755,32 @@ class Node(EventTarget):
                             yield from child.stream()
                         else:
                             yield str(child)
-                    yield f"</{value.name}>"
+                    yield f"</{name}>"
                     continue
-                if DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS or value.name not in optional_closing_tags:
-                    stack.append(("close", value))
-                stack.append(("iter", iter(value.args)))
+                if render_optional or name not in optional_closing_tags:
+                    stack.append((True, f"</{name}>"))
+                # Push children in reverse so they pop in document order --
+                # cheaper than wrapping each element's args in an iterator and
+                # cycling it back through the stack one child at a time.
+                args = value.args
+                for i in range(len(args) - 1, -1, -1):
+                    stack.append((False, args[i]))
                 continue
 
             # See the matching check in _stream_value: concrete types first,
             # since the ABC instancecheck is measurably slower and plain str
             # children would otherwise always pay for it.
             if not isinstance(value, (str, bytes, bytearray, dict)) and isinstance(value, IterableABC):
-                stack.append(("iter", iter(value)))
+                items = list(value)
+                for i in range(len(items) - 1, -1, -1):
+                    stack.append((False, items[i]))
                 continue
 
             if isinstance(value, RawHTML):
                 yield str(value)
                 continue
             value = str(value)
-            yield _escape_html(value) if DOMConfig.GLOBAL_AUTOESCAPE else value
+            yield escape_html(value) if autoescape else value
 
     def __mul__(self, other):
         """

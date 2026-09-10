@@ -351,6 +351,65 @@ def _attr_index(node: Any) -> dict[str, list[Element]]:
     return index
 
 
+def _exact_index_pool(
+    self: Any,
+    name: Any,
+    merged_attrs: dict[str, Any],
+    recursive: bool,
+    string: Any,
+) -> "list[Element] | None":
+    """The exact, document-ordered result for a ``find_all`` that reduces to a
+    tag (or list of tags) plus attribute-*presence* filters -- served straight
+    from the indexes with no per-element re-check.
+
+    Returns ``None`` (defer to the CSS path / node scan) whenever a filter the
+    index can't fully resolve is present: a concrete attribute value, a regex or
+    callable ``name``, ``string=``, ``recursive=False`` or a non-root context.
+    """
+    if not recursive or string is not None:
+        return None
+    if isinstance(name, (list, tuple, set)):
+        if not all(isinstance(item, str) for item in name):
+            return None
+        names: "set[str] | None" = {item.lower() for item in name}
+    elif isinstance(name, str):
+        names = {name.lower()}
+    elif name is None or name is True:
+        names = None
+    else:  # regex, callable, ...
+        return None
+    if merged_attrs and not all(value is True for value in merged_attrs.values()):
+        return None
+    attr_names = [_attribute_name(a) for a in merged_attrs]
+    if "class" in attr_names:
+        # ``class_=True`` is token-truthiness, not attribute presence: an element
+        # carrying ``class=""`` has the attribute but no tokens, so BS4 does not
+        # match it. Leave that to the general scan.
+        return None
+    if self is not _root_for_index(self):
+        return None
+
+    if attr_names:
+        attr_map = _attr_index(self)
+        pools = sorted((attr_map.get(a) or [] for a in attr_names), key=len)
+        if not pools[0]:
+            return []
+        out = list(pools[0])
+        for other in pools[1:]:
+            keep = set(other)
+            out = [e for e in out if e in keep]
+        if names is not None:
+            out = [e for e in out if e.name.lower() in names]
+        return out
+
+    tag_map = _tag_index(self)
+    if names is None:
+        return list(tag_map.get("*", ()))
+    if len(names) == 1:
+        return list(tag_map.get(next(iter(names)), ()))
+    return [e for e in tag_map.get("*", ()) if e.name.lower() in names]
+
+
 def _indexed_candidates(
     node: Any,
     name: Any = None,
@@ -650,6 +709,9 @@ def _find_all(
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
     merged_attrs = _merge_attrs(attrs, kwargs)
+    exact = _exact_index_pool(self, name, merged_attrs, recursive, string)
+    if exact is not None:
+        return _limit(iter(exact), limit)
     if string is None and not merged_attrs and (name is True or name is None):
         # ``find_all(True)`` / ``find_all()`` -- every tag, no filtering
         if recursive:
@@ -1586,7 +1648,11 @@ def _subtree_forward(node: Any, skip_self: bool = False) -> Iterator[Any]:
 
 
 def _subtree_backward(node: Any) -> Iterator[Any]:
-    """Nodes of ``node``'s subtree in reverse document order (``node`` last)."""
+    """Nodes of ``node``'s subtree in reverse document order (``node`` last).
+
+    Lazy on purpose: ``find_previous`` (limit=1) usually finds its match a few
+    nodes back and must not pay to walk the whole preceding subtree.
+    """
     stack: list[tuple[Any, bool]] = [(node, False)]
     while stack:
         cur, expanded = stack.pop()
