@@ -4733,6 +4733,10 @@ class Element(Node):
             return nodes
         if not isinstance(value, str):
             return [value]
+        if value == "":
+            # parsing the empty string yields an empty fragment -- no child,
+            # not an empty text node
+            return []
         if "<" not in value or ">" not in value:
             return [value]
 
