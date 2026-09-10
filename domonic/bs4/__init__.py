@@ -1091,6 +1091,62 @@ def _selector_candidates(
     yield from _element_descendants(context)
 
 
+def _descendant_index_candidates(root: Any, parsed: dict[str, Any]) -> "list[Element] | None":
+    """The elements matching one simple selector, straight from the tag / class
+    index, or ``None`` when the selector needs the general walk."""
+    if parsed["id"] is not None or parsed["attributes"] or parsed.get("pseudos"):
+        return None
+    if root is not _root_for_index(root):
+        return None
+    tag = parsed["tag"].lower() if parsed["tag"] != "*" else None
+    classes = parsed["classes"]
+    if classes:
+        class_map = _class_index(root)
+        buckets = sorted((class_map.get(t, ()) for t in classes), key=len)
+        out = list(buckets[0])
+        for other in buckets[1:]:
+            ids = {id(e) for e in other}
+            out = [e for e in out if id(e) in ids]
+        if tag is not None:
+            out = [e for e in out if e.name.lower() == tag]
+        return out
+    return list(_tag_index(root).get(tag or "*", ()))
+
+
+def _match_descendant_chain(
+    root: Any, parsed_chain: "list[dict[str, Any]]", limit: int | None
+) -> "list[Element] | None":
+    rightmost = _descendant_index_candidates(root, parsed_chain[-1])
+    if rightmost is None:
+        return None
+    # Each ancestor part becomes an id-set of the elements it matches (also from
+    # the index), so the ancestor walk is O(1) per step. Bail if any part is not
+    # index-servable.
+    ancestor_sets: list[set[int]] = []
+    for part in parsed_chain[:-1]:
+        cands = _descendant_index_candidates(root, part)
+        if cands is None:
+            return None
+        ancestor_sets.append({id(e) for e in cands})
+
+    result: list[Element] = []
+    depth = len(ancestor_sets) - 1
+    for element in rightmost:
+        # satisfy ancestor_sets right-to-left; the chain need not be contiguous
+        # ("div span a" matches an <a> whose <span> ancestor has a <div> ancestor)
+        need = depth
+        node = getattr(element, "parentNode", None)
+        while node is not None and node is not root and need >= 0:
+            if id(node) in ancestor_sets[need]:
+                need -= 1
+            node = getattr(node, "parentNode", None)
+        if need < 0:
+            result.append(element)
+            if limit is not None and len(result) >= limit:
+                break
+    return result
+
+
 def _select_fast(
     self: Node,
     selector: str,
@@ -1162,6 +1218,18 @@ def _select_fast(
         parsed_parts.append((combinator, Element._parse_simple_selector(simple), pseudo))
     if any(parsed is None for _, parsed, _ in parsed_parts):
         return None
+
+    # Pure descendant chain ("A B C", no >/+/~, no pseudos): match from the
+    # rightmost selector (served by the index) and verify each element's
+    # ancestor chain, instead of walking every A's whole subtree for B.
+    if (
+        len(parsed_parts) >= 2
+        and all(c in (None, " ") for c, _, _ in parsed_parts)
+        and all(p is None for _, _, p in parsed_parts)
+    ):
+        matched = _match_descendant_chain(self, [pp[1] for pp in parsed_parts], limit)
+        if matched is not None:
+            return matched
 
     contexts: list[Any] = [self]
     last_index = len(parsed_parts) - 1
