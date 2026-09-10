@@ -263,6 +263,7 @@ def _invalidate_index(node: Any) -> None:
         d.pop("_bs4_tag_index", None)
         d.pop("_bs4_all_nodes", None)
         d.pop("_bs4_id_index", None)
+        d.pop("_bs4_class_index", None)
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
@@ -278,6 +279,28 @@ def _tag_index(node: Any) -> dict[str, list[Element]]:
         index["*"].append(element)
         index.setdefault(element.name.lower(), []).append(element)
     root.__dict__["_bs4_tag_index"] = index
+    return index
+
+
+def _class_index(node: Any) -> dict[str, list[Element]]:
+    """``{class token: [elements in tree order]}`` for the whole tree, cached on
+    the root and invalidated alongside ``_bs4_tag_index``. Built off the tag
+    index's ordered element list when that is warm, else one walk."""
+    root = _root_for_index(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_class_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, list[Element]] = {}
+    for element in source:
+        cls = _get_attribute(element, "class")
+        if cls:
+            for token in str(cls).split():
+                index.setdefault(token, []).append(element)
+    root.__dict__["_bs4_class_index"] = index
     return index
 
 
@@ -1038,8 +1061,29 @@ def _selector_candidates(
         if isinstance(found, Element):
             yield found
         return
-    if parsed["tag"] != "*":
-        tag_name = parsed["tag"].lower()
+
+    at_root = context is _root_for_index(context)
+    tag_name = parsed["tag"].lower() if parsed["tag"] != "*" else None
+    class_tokens = parsed["classes"]
+
+    # Whole-tree tag / class selectors -> serve straight from the index.
+    if at_root and (tag_name is not None or class_tokens):
+        if class_tokens:
+            class_map = _class_index(context)
+            buckets = [class_map.get(tok, ()) for tok in class_tokens]
+            buckets = sorted(buckets, key=len)
+            base: Iterable[Element] = buckets[0]
+            if len(buckets) > 1:
+                others = [{id(e) for e in b} for b in buckets[1:]]
+                base = [e for e in base if all(id(e) in seen for seen in others)]
+            if tag_name is not None:
+                base = [e for e in base if e.name.lower() == tag_name]
+        else:
+            base = _tag_index(context).get(tag_name or "*", ())
+        yield from base
+        return
+
+    if tag_name is not None:
         for candidate in _element_descendants(context):
             if candidate.name.lower() == tag_name:
                 yield candidate
