@@ -2155,6 +2155,14 @@ class Node(EventTarget):
         self._baseURI = "" if value is None else str(value)
 
     @property
+    def parentElement(self) -> "Node | None":
+        """This node's parent, but only if that parent is an element -- a
+        ``Document`` or ``DocumentFragment`` parent yields ``None``
+        (https://dom.spec.whatwg.org/#dom-node-parentelement)."""
+        parent = self.parentNode
+        return parent if getattr(parent, "nodeType", None) == Node.ELEMENT_NODE else None
+
+    @property
     def ownerDocument(self) -> "Node | None":
         """Returns the root element (document object) for an element"""
         root = self.rootNode
@@ -5426,11 +5434,6 @@ class Element(Node):
     def offsetTop(self) -> float:
         """Returns the vertical offset position of an element"""
         return Element._style_number(self.style.top)
-
-    @property
-    def parentElement(self) -> Node | None:
-        """Returns the parent element node of an element"""
-        return self.parentNode
 
     # @property
     # def previousSibling(self):
