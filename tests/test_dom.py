@@ -2307,7 +2307,9 @@ class DOMTest(unittest.TestCase):
         # HTML-parsed elements: tagName / nodeName upper-case, localName stays
         # lower-case, matching a browser in an HTML document
         page = domonic.parseString("<div><p>hi</p><svg><circle/></svg></div>")
-        div_el = page
+        # turbohtml / lxml / html.parser hand back the <div> itself; html5lib
+        # wraps a single root in a DocumentFragment -- accept either shape.
+        div_el = page if getattr(page, "tagName", None) == "DIV" else page.querySelector("div")
         p_el = page.querySelector("p")
         self.assertEqual(div_el.tagName, "DIV")
         self.assertEqual(p_el.tagName, "P")
