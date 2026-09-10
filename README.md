@@ -31,10 +31,6 @@ Use and learn real HTML, DOM and JavaScript-style APIs using Python code!
 HTML/SVG/XML generation, multiple HTML parsers, CSS selectors, XPath, and a large
 slice of the JavaScript and Web API surface — all as ordinary Python objects.
 
-🚀 And it's built to be **fast** — parsing, repeated querying, and first-request
-server rendering are all significantly quicker than the obvious approaches. See
-<a href="#why-its-fast">Why it's fast</a>.
-
 ```python
 from domonic.html import *
 
@@ -124,8 +120,8 @@ More task guides: <a href="https://domonic.readthedocs.io/guides/scrape-html/" t
 | --------------------------- | --------------------------------------------------------------------------------------------------------- |
 | 🏗️ **Markup generation**   | HTML5, SVG, XML, MathML, RSS, Atom, ODF, A-Frame, X3D and custom elements                                 |
 | 🌳 **DOM**                  | Document, Element, Node, NodeList, fragments, ranges, events, traversal, observers, shadow DOM and more   |
-| 🔎 **Querying**             | CSS selectors and XPath — 🚀 index-backed, so repeated queries stay fast                                  |
-| 📥 **Parsing**              | 🚀 multiple interchangeable backends, adapted straight into the DOM                                       |
+| 🔎 **Querying**             | CSS selectors and XPath, index-backed for repeated queries                                                |
+| 📥 **Parsing**              | Multiple interchangeable parser backends                                                                  |
 | 🌐 **Web APIs**             | URL, URLPattern, storage, messaging, workers, crypto, performance, permissions and more                   |
 | 🟨 **JavaScript-like APIs** | Array, Date, Math, String, Number, Promise, timers, typed arrays and JSON helpers                         |
 | ⚡ **CLI**                   | Query URLs, files or piped HTML with CSS and XPath                                                        |
@@ -133,34 +129,6 @@ More task guides: <a href="https://domonic.readthedocs.io/guides/scrape-html/" t
 
 Not every API is browser-complete — the goal is to keep moving closer to the real
 standards. Python `3.10+`.
-
----
-
-## Why it's fast
-
-🚀 domonic is built so the common workloads stay quick:
-
-- **Parsing** — the native and pure-Python backends adapt straight into a domonic
-  DOM. There's no second wrapped tree and no re-serialise/re-parse round trip, so
-  parsing a page is significantly faster than a parse-then-wrap library.
-- **Querying** — `getElementById`, `getElementsBy*`, `querySelector*` and the
-  BeautifulSlop `find` / `select` family are index-backed. The first lookup over
-  a tree builds `id` / tag / class / attribute maps on the root; every lookup
-  after that is answered from those maps instead of walking the tree, so
-  query-heavy scraping is *dramatically* faster on repeated calls. The indexes
-  invalidate themselves on any mutation, so results are always current.
-- **Rendering** — `str(node)` streams the tree once with no intermediate
-  structures, and `page.stream()` yields chunks so a huge response never
-  materialises as one string.
-- **Compiled server rendering** — `@compiled` turns an HTML-only view into a
-  string builder at import time. No DOM is constructed per request and there's no
-  warm-up, so the **first** request is as fast as the millionth. See the
-  <a href="https://domonic.readthedocs.io/guides/compiled-rendering/" target="_blank" rel="noopener">compiled-rendering guide</a>.
-
-Run `python scripts/benchmark_bs4.py` and `python scripts/benchmark_parsers.py`
-to see the numbers on your own machine; the
-<a href="https://domonic.readthedocs.io/guides/parser-performance/" target="_blank" rel="noopener">parser performance guide</a>
-has the full picture.
 
 ---
 
@@ -253,12 +221,9 @@ domonic -x https://example.com '//a/@href'
 curl -s https://example.com | domonic -q 'a.cta' --attr href
 ```
 
-🚀 `getElementById`, `getElementsBy*` and `querySelector*` are index-backed: the
-first call over a tree builds lookup maps on the root, every call after that is
-answered from those maps instead of a fresh walk, and any mutation invalidates
-them automatically. Repeated queries over one document are *dramatically* faster
-than re-scanning. See the
-<a href="https://domonic.readthedocs.io/guides/parser-performance/" target="_blank" rel="noopener">parser performance guide</a>.
+The first lookup builds an index on the tree; the rest are map hits, not walks.
+Mutations invalidate it automatically. 🚀
+<a href="https://domonic.readthedocs.io/guides/parser-performance/" target="_blank" rel="noopener">Parser performance</a>.
 
 ---
 
@@ -274,10 +239,9 @@ print(page.querySelector("h1"))
 To fetch and parse a live URL in one step, assign `window.location` (see the
 <a href="https://domonic.readthedocs.io/packages/html/" target="_blank" rel="noopener">html docs</a>).
 
-🚀 Every backend adapts its native tree **straight into a domonic DOM** — no
-second wrapped tree, no re-serialise/re-parse step — so parsing is significantly
-faster than a parse-then-wrap library. Pick one for zero dependencies,
-malformed-HTML repair, or raw speed:
+Each backend adapts its native tree straight into the domonic DOM — no second
+tree, no reparse. Pick one for zero dependencies, malformed-HTML repair, or
+speed:
 
 | Backend | Notes |
 | --- | --- |
@@ -480,9 +444,9 @@ domonic elements are Python objects that render to markup, so they drop into
 FastAPI, Flask, Django, Sanic and others — see the
 <a href="https://domonic.readthedocs.io/packages/servers/" target="_blank" rel="noopener">servers documentation</a>.
 
-🚀 For views that only return HTML, `@compiled` turns the function into a string
-renderer at import time — no DOM is constructed per request and there's no
-warm-up, so the **first** request is served as fast as every one after it:
+For views that only return HTML, `@compiled` turns the function into a string
+renderer at import time — no DOM is built per request, no warm-up, the first
+request as fast as the rest: 🚀
 
 ```python
 from domonic import compiled
