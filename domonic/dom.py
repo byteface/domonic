@@ -7046,6 +7046,37 @@ class Document(Element):
         """Returns the character encoding for the document"""
         return "UTF-8"
 
+    @property
+    def inputEncoding(self):
+        """Legacy alias of ``characterSet``."""
+        return self.characterSet
+
+    @property
+    def contentType(self) -> str:
+        """The document's MIME type -- ``application/xml`` for an
+        ``XMLDocument``, ``text/html`` otherwise."""
+        return "application/xml" if isinstance(self, XMLDocument) else "text/html"
+
+    @property
+    def compatMode(self) -> str:
+        """``"CSS1Compat"`` (standards mode) -- domonic never emulates quirks
+        mode, so this is constant."""
+        return "CSS1Compat"
+
+    @property
+    def readyState(self) -> str:
+        """A programmatically built or fully parsed document is ``"complete"``."""
+        return getattr(self, "_readyState", "complete")
+
+    @property
+    def documentURI(self) -> str:
+        """Same as ``URL`` for a document (the location of the document)."""
+        return getattr(self, "URL", "") or ""
+
+    @property
+    def hidden(self) -> bool:
+        return self.visibilityState != "visible"
+
     @staticmethod
     def createAttribute(name: str) -> Attr:
         """Creates an attribute node"""
