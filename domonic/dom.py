@@ -5690,6 +5690,8 @@ class Element(Node):
 
     def setAttribute(self, attribute, value):
         """Sets or changes the specified attribute, to the specified value"""
+        if str(attribute) == "":
+            raise DOMException("The qualified name provided is empty.", "InvalidCharacterError")
         attribute = self._attr_key(attribute)
         try:
             kwargs = object.__getattribute__(self, "kwargs")
@@ -5721,12 +5723,22 @@ class Element(Node):
             object.__setattr__(self, "_syncing_style_attr", False)
 
     def toggleAttribute(self, attribute: str, force: bool | None = None) -> bool:
-        """Adds or removes an attribute and returns whether it is present afterwards."""
-        should_add = bool(force) if force is not None else not self.hasAttribute(attribute)
+        """Adds or removes an attribute and returns whether it is present afterwards.
+
+        A ``force`` call that is a no-op (forcing on an attribute that is
+        already set, or off one that is absent) does not touch the attribute --
+        in particular it does not blank an existing value (DOM spec).
+        """
+        if str(attribute) == "":
+            raise DOMException("The qualified name provided is empty.", "InvalidCharacterError")
+        present = self.hasAttribute(attribute)
+        should_add = (not present) if force is None else bool(force)
         if should_add:
-            self.setAttribute(attribute, "")
+            if not present:
+                self.setAttribute(attribute, "")
             return True
-        self.removeAttribute(attribute)
+        if present:
+            self.removeAttribute(attribute)
         return False
 
     def setAttributeNode(self, attr):
