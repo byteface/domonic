@@ -101,6 +101,38 @@ browser JavaScript, tests, scraping scripts, and domonic server-side rendering.
 See the examples folder for other uses of the Python virtual DOM.
 
 
+Tree mutation errors
+--------------------
+
+``appendChild()``, ``insertBefore()`` and ``replaceChild()`` reject an
+insertion that would place a node inside itself or inside one of its own
+descendants -- that would build a cycle and hang every later traversal. The
+rejection is a ``DOMException`` whose ``name`` is ``"HierarchyRequestError"``,
+matching the browser. ``insertBefore()`` with a reference node that is not a
+child raises a ``DOMException`` named ``"NotFoundError"``.
+
+.. code-block :: python
+
+	from domonic.dom import Document, DOMException
+
+	doc = Document()
+	parent = doc.createElement("parent")
+	child = doc.createElement("child")
+	parent.appendChild(child)
+
+	try:
+		child.appendChild(parent)
+	except DOMException as exc:
+		print(exc.name)   # HierarchyRequestError
+		print(exc.code)   # 3  (the legacy numeric code is still available)
+
+``DOMException`` subclasses ``ValueError`` for backwards compatibility --
+domonic historically raised a plain ``ValueError`` here -- so existing
+``except ValueError`` code keeps working. It can be constructed either
+browser-style, ``DOMException(message, name)``, or with the legacy
+``DOMException(code, message)`` form.
+
+
 Serialising: str() vs innerHTML / outerHTML
 -------------------------------------------
 

@@ -22,7 +22,9 @@ It's one of two things:
 
 - **A real discrepancy** — fix it in `domonic/dom.py` and the test goes green.
   (`Node-isEqualNode` was `str(a) == str(b)`; the port drove it to a proper
-  per-interface comparison.)
+  per-interface comparison. `Node-appendChild`/`insertBefore`/`replaceChild`
+  drove the "pre-insertion validity" cycle check — inserting a node into its
+  own subtree used to hang — and typed `DOMException` names.)
 - **A deliberate domonic deviation** — mark the method
   `@pytest.mark.xfail(reason=…, strict=True)` with the reason, so the gap is
   tracked rather than silently passing or failing. Known ones:

@@ -595,6 +595,27 @@ def _coerce_replacement_nodes(*nodes: Any) -> tuple[Any, ...]:
     return _coerce_insertion_nodes(*nodes)
 
 
+def _ensure_pre_insertion_validity(parent: Any, *nodes: Any) -> None:
+    """Reject an insertion that would put a node inside itself or inside one of
+    its own descendants (https://dom.spec.whatwg.org/#concept-node-ensure-pre-insertion-validity).
+
+    domonic only guards the part of the algorithm that would otherwise build a
+    cycle in the tree and hang every traversal; the WebIDL / document-shape
+    clauses are left permissive.
+    """
+    ancestors = None
+    for node in nodes:
+        if not isinstance(node, Node):
+            continue
+        if ancestors is None:
+            ancestors = set(map(id, _iter_ancestors_inclusive(parent)))
+        if id(node) in ancestors:
+            raise DOMException(
+                DOMException.HIERARCHY_REQUEST_ERR,
+                "Failed to execute insert: The new child element contains the parent.",
+            )
+
+
 def _detach_node_for_insertion(node: Any) -> "Document | None":
     if not isinstance(node, Node):
         return None
@@ -1920,6 +1941,7 @@ class Node(EventTarget):
             aChild (Node): The Node to add.
         """
         items = _coerce_insertion_nodes(aChild)
+        _ensure_pre_insertion_validity(self, *items)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
         self.__dict__["args"] = self.args + items
@@ -2169,9 +2191,10 @@ class Node(EventTarget):
         # Validate the reference child before touching anything else: a bad
         # reference must raise without detaching new_node from its old parent.
         if reference_node not in self.args:
-            raise ValueError("reference_node is not a child of this node")
+            raise DOMException(DOMException.NOT_FOUND_ERR, "reference_node is not a child of this node")
 
         items = _coerce_insertion_nodes(new_node)
+        _ensure_pre_insertion_validity(self, *items)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         # _detach may have removed a preceding sibling of the reference node,
         # so re-find its index; if new_node contained it, fall back to append.
@@ -2254,6 +2277,7 @@ class Node(EventTarget):
             return oldChild
 
         items = _coerce_insertion_nodes(newChild)
+        _ensure_pre_insertion_validity(self, *items)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         try:
             count = list(self.args).index(oldChild)
@@ -8490,8 +8514,14 @@ class PerformanceObserver:
             observer._flush()
 
 
-class DOMException(Exception):
-    """The DOMException interface represents an anormal event related to the DOM."""
+class DOMException(ValueError):
+    """The DOMException interface represents an anormal event related to the DOM.
+
+    Subclasses ``ValueError`` for backwards compatibility: domonic historically
+    raised a plain ``ValueError`` for tree-mutation failures, so code that
+    catches ``ValueError`` keeps working while new code can branch on ``.name``
+    (``"HierarchyRequestError"``, ``"NotFoundError"``, ...) as in the browser.
+    """
 
     INDEX_SIZE_ERR: int = 1
     DOMSTRING_SIZE_ERR: int = 2
@@ -8519,10 +8549,44 @@ class DOMException(Exception):
     INVALID_NODE_TYPE_ERR: int = 24
     DATA_CLONE_ERR: int = 25
 
-    def __init__(self, code, message: str | None = None) -> None:
-        self.code = code
-        self.message: str = message or ""
-        self.name = "DOMException"
+    # legacy numeric code -> modern DOMException name
+    _CODE_NAMES: dict[int, str] = {
+        1: "IndexSizeError",
+        3: "HierarchyRequestError",
+        4: "WrongDocumentError",
+        5: "InvalidCharacterError",
+        7: "NoModificationAllowedError",
+        8: "NotFoundError",
+        9: "NotSupportedError",
+        10: "InUseAttributeError",
+        11: "InvalidStateError",
+        12: "SyntaxError",
+        13: "InvalidModificationError",
+        14: "NamespaceError",
+        15: "InvalidAccessError",
+        17: "TypeMismatchError",
+        18: "SecurityError",
+        19: "NetworkError",
+        20: "AbortError",
+        21: "URLMismatchError",
+        22: "QuotaExceededError",
+        23: "TimeoutError",
+        24: "InvalidNodeTypeError",
+        25: "DataCloneError",
+    }
+    _NAME_CODES: dict[str, int] = {name: code for code, name in _CODE_NAMES.items()}
+
+    def __init__(self, code: "int | str | None" = None, message: str | None = None) -> None:
+        # Modern form ``DOMException(message, name)`` -- the first argument is a
+        # string.  Legacy form ``DOMException(code, message)`` -- an int code.
+        if isinstance(code, str):
+            self.name: str = message or "Error"
+            self.message: str = code
+            self.code: int = self._NAME_CODES.get(self.name, 0)
+        else:
+            self.code = code or 0
+            self.message = message or ""
+            self.name = self._CODE_NAMES.get(self.code, "DOMException")
 
     def __str__(self) -> str:
         return self.message
