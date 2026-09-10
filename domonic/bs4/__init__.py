@@ -1219,6 +1219,13 @@ def _select_fast(
     if any(parsed is None for _, parsed, _ in parsed_parts):
         return None
 
+    # Single simple selector, no pseudo, index-servable -> return the index
+    # list straight, skipping the per-candidate re-match loop below.
+    if len(parsed_parts) == 1 and parsed_parts[0][2] is None:
+        direct = _descendant_index_candidates(self, parsed_parts[0][1])
+        if direct is not None:
+            return direct if limit is None else direct[:limit]
+
     # Pure descendant chain ("A B C", no >/+/~, no pseudos): match from the
     # rightmost selector (served by the index) and verify each element's
     # ancestor chain, instead of walking every A's whole subtree for B.
