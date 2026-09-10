@@ -5727,6 +5727,14 @@ class Element(Node):
 
         class_match = re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query)
         tag_match = re.match(r"^(\*|[A-Za-z][\w-]*)$", query)
+        # Single tag / class selector -> the index-backed collection (shared
+        # with getElementsBy* / querySelectorAll and usually already warm).
+        if tag_match:
+            hits = _elements_by_tag_name(self, query)
+            return hits[0] if hits else None
+        if class_match:
+            hits = _elements_by_class_name(self, frozenset(query.split(".")[1:]))
+            return hits[0] if hits else None
         # Only a single compound selector (no descendant/child/sibling step) is
         # safe for the in-line stack walk below; with a combinator present
         # ``_parse_simple_selector`` mis-parses (e.g. it folds the space in
