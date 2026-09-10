@@ -4659,7 +4659,13 @@ class Element(Node):
 
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
-        mode = (obj or {}).get("mode", "open")
+        options = obj or {}
+        mode = options.get("mode", "open")
+        if mode not in ("open", "closed"):
+            raise TypeError("attachShadow: mode must be 'open' or 'closed'")
+        if getattr(self, "shadowRoot", None) is not None:
+            # DOM spec: an element can host at most one shadow root.
+            raise DOMException("The element already hosts a shadow tree.", "NotSupportedError")
         self.shadowRoot = ShadowRoot(self, mode)
         return self.shadowRoot
 
