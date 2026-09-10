@@ -616,6 +616,29 @@ def _ensure_pre_insertion_validity(parent: Any, *nodes: Any) -> None:
             )
 
 
+# A pragmatic check for the XML ``Name`` production. domonic only rejects the
+# clearly-broken cases -- an empty string, a leading digit, ASCII whitespace and
+# the markup characters ``<>&"'/=`` -- which is what ``createElement`` and
+# ``createAttribute`` guard against (a browser throws ``InvalidCharacterError``,
+# and domonic used to emit unparseable markup like ``<a b></a b>``).
+_BAD_NAME_CHARS = set(" \t\n\r\f<>&\"'/=")
+
+
+def _validate_xml_name(name: Any, *, qualified: bool = False) -> str:
+    """Raise ``InvalidCharacterError`` if ``name`` is not a usable element or
+    attribute name (https://dom.spec.whatwg.org/#dom-document-createelement --
+    "If localName does not match the Name production ...").
+    """
+    text = str(name)
+    ok = bool(text) and not (text[0].isdigit() or text[0] in ".-")
+    ok = ok and not any(ch in _BAD_NAME_CHARS for ch in text)
+    if qualified:
+        ok = ok and text.count(":") <= 1 and not text.startswith(":") and not text.endswith(":")
+    if ok:
+        return text
+    raise DOMException(f"The name provided ('{text}') is not a valid name.", "InvalidCharacterError")
+
+
 def _detach_node_for_insertion(node: Any) -> "Document | None":
     if not isinstance(node, Node):
         return None
@@ -6981,6 +7004,7 @@ class Document(Element):
     @staticmethod
     def createAttribute(name: str) -> Attr:
         """Creates an attribute node"""
+        _validate_xml_name(name)
         return Attr(name)
 
     @staticmethod
@@ -7030,6 +7054,7 @@ class Document(Element):
         if is_value is not None:
             kwargs["_is"] = is_value
 
+        _validate_xml_name(_type)
         el = create_element(_type, *args, **kwargs)
         if isinstance(el, Element):
             _upgrade_custom_element_instance(el)
@@ -7041,6 +7066,7 @@ class Document(Element):
         # el = type(qualifiedName, (Element,), {'name': qualifiedName})
         from domonic.html import create_element
 
+        _validate_xml_name(qualifiedName, qualified=True)
         local_name = str(qualifiedName).split(":", 1)[-1]
         if namespaceURI == MATHML_NAMESPACE:
             element_type = type(local_name, (MathMLElement,), {"name": local_name})
