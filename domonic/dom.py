@@ -4414,6 +4414,14 @@ class Element(Node):
         """
         selectors = [selector.strip() for selector in str(s).split(",") if selector.strip()]
         for selector in selectors:
+            # In matches() / closest() the :scope pseudo-class refers to this
+            # element itself (there is no separate scoping element). Strip it
+            # from a lone compound selector -- combinator selectors keep it and
+            # fall through to the querySelectorAll path.
+            if ":scope" in selector and not any(c in selector for c in " >+~"):
+                selector = selector.replace(":scope", "").strip()
+                if selector == "":
+                    return True
             if self._matchElement(self, selector):
                 return True
             # combinator selectors: match right-to-left up the ancestor / sibling
