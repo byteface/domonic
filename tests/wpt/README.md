@@ -31,7 +31,10 @@ It's one of two things:
   `Node-childNodes` drove out-of-range indexed access returning `None`.
   `Node-compareDocumentPosition` drove the combined bitmasks
   (`CONTAINS | PRECEDING`, `CONTAINED_BY | FOLLOWING`, and
-  `DISCONNECTED | IMPLEMENTATION_SPECIFIC | direction` for separate trees).)
+  `DISCONNECTED | IMPLEMENTATION_SPECIFIC | direction` for separate trees).
+  `Element-getElementsByTagName` drove a real `_LiveHTMLCollection` for
+  `getElementsByTagName`/`-ClassName`/`-Name` — they used to return a static
+  snapshot.)
 - **A deliberate domonic deviation** — mark the method
   `@pytest.mark.xfail(reason=…, strict=True)` with the reason, so the gap is
   tracked rather than silently passing or failing. Known ones:
@@ -39,6 +42,11 @@ It's one of two things:
   - `document.createElement(...).tagName` stays lower-case (see the
     `domonic-serialization` note — `createElement` is a `@staticmethod` with no
     HTML document to consult).
+  - `getElementsByTagName` normalises names to lower case, so the
+    foreign-namespace / prefixed-name case-sensitivity rows from the upstream
+    shared helper are not ported.
+  - `replaceChild` returns `oldChild` unchanged when it is not a child instead
+    of throwing `NotFoundError`; `removeChild` returns `None` in the same case.
 
 ## Adding a port
 

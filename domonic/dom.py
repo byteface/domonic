@@ -5066,21 +5066,12 @@ class Element(Node):
         """
         required = {token for token in str(className).split() if token}
         if not required:
-            return HTMLCollection()
+            return _LiveHTMLCollection(self, lambda el: False)
 
-        elements = HTMLCollection()
+        def matcher(el: "Element") -> bool:
+            return required.issubset(set(str(el.getAttribute("class") or "").split()))
 
-        def anon(el):
-            if el is self:
-                return
-            if not isinstance(el, Element):
-                return
-            class_tokens = set(str(el.getAttribute("class") or "").split())
-            if required.issubset(class_tokens):
-                elements.append(el)
-
-        self._iterate(self, anon)
-        return elements
+        return _LiveHTMLCollection(self, matcher)
 
     def getElementById(self, _id: str) -> Element | None:
         """Returns the descendant element whose id matches the supplied value."""
@@ -5132,36 +5123,22 @@ class Element(Node):
         Returns:
             HTMLCollection: A live HTMLCollection of elements with the given tag name.
         """
-        elements = HTMLCollection()
         tagName = str(tagName)
 
         if tagName == "*":
+            return _LiveHTMLCollection(self, lambda el: True)
 
-            def anon(el):
-                if el is not self and isinstance(el, Element):
-                    elements.append(el)
+        # getElementsByTagName does not validate its argument and is not a
+        # selector engine: it matches the qualified name literally (ASCII
+        # case-insensitively). Anything that is not a real tag name -- "",
+        # "a.b", "has space" -- simply matches nothing.
+        wanted = tagName.lower()
 
-            self._iterate(self, anon)
-            return elements
+        def matcher(el: "Element") -> bool:
+            name = el.tagName
+            return isinstance(name, str) and name.lower() == wanted
 
-        if re.match(r"^[A-Za-z_][\w:-]*$", tagName):
-            wanted = tagName.lower()
-
-            def anon(el):
-                if el is not self and isinstance(el, Element) and el.tagName.lower() == wanted:
-                    elements.append(el)
-
-            self._iterate(self, anon)
-            return elements
-
-        def _collect(el):
-            if el is self:
-                return
-            if self._matchElement(el, tagName):
-                elements.append(el)
-
-        self._iterate(self, _collect)
-        return elements
+        return _LiveHTMLCollection(self, matcher)
 
     def __contains__(self, item: Any) -> bool:
         """``x in element``.
@@ -7429,19 +7406,7 @@ class Document(Element):
         Returns:
             HTMLCollection: The matching elements.
         """
-        matches = HTMLCollection()
-
-        def walk(node):
-            if not isinstance(node, Element):
-                return
-            if node.getAttribute("name") == name:
-                matches.append(node)
-            for child in getattr(node, "childNodes", []):
-                walk(child)
-
-        for each in self.childNodes:
-            walk(each)
-        return matches
+        return _LiveHTMLCollection(self, lambda el: el.getAttribute("name") == name)
 
     # def hasFocus():
     # '''Returns a Boolean value indicating whether the document has focus'''
@@ -8153,6 +8118,85 @@ class HTMLCollection(list):
             return current
         else:
             return super().__getitem__(index)
+
+
+class _LiveHTMLCollection(HTMLCollection):
+    """A live ``HTMLCollection``: it re-scans ``root``'s descendant elements in
+    tree order on every access, so it reflects tree mutations made after it was
+    handed out. This is what ``getElementsByTagName`` / ``getElementsByClassName``
+    / ``getElementsByName`` return per the DOM spec.
+    """
+
+    def __init__(self, root: "Node", matcher: Callable[["Element"], bool]) -> None:
+        self._root = root
+        self._matcher = matcher
+        super().__init__()
+
+    def _elements(self) -> list:
+        out: list = []
+
+        def walk(node: Any) -> None:
+            for child in list(getattr(node, "args", ())):
+                if isinstance(child, Element):
+                    if self._matcher(child):
+                        out.append(child)
+                    walk(child)
+
+        walk(self._root)
+        return out
+
+    @property
+    def length(self) -> int:
+        return len(self._elements())
+
+    def __len__(self) -> int:
+        return len(self._elements())
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter(self._elements())
+
+    def __reversed__(self) -> Iterator[Any]:
+        return reversed(self._elements())
+
+    def __bool__(self) -> bool:
+        return bool(self._elements())
+
+    def __contains__(self, item: Any) -> bool:
+        return any(el is item for el in self._elements())
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, _LiveHTMLCollection):
+            other = other._elements()
+        return self._elements() == list(other) if isinstance(other, IterableABC) else NotImplemented
+
+    def __ne__(self, other: Any) -> bool:
+        result = self.__eq__(other)
+        return result if result is NotImplemented else not result
+
+    __hash__ = None  # type: ignore[assignment]
+
+    def __repr__(self) -> str:
+        return repr(self._elements())
+
+    def __getitem__(self, index: Any):
+        if isinstance(index, str):
+            return HTMLCollection.__getitem__(self._snapshot(), index)
+        elements = self._elements()
+        if isinstance(index, int):
+            return elements[index] if 0 <= index < len(elements) else None
+        return elements[index]
+
+    def _snapshot(self) -> "HTMLCollection":
+        snap = HTMLCollection()
+        snap.extend(self._elements())
+        return snap
+
+    def item(self, index: int) -> Node | None:
+        elements = self._elements()
+        return elements[index] if 0 <= index < len(elements) else None
+
+    def namedItem(self, name: str) -> Node | None:
+        return HTMLCollection.namedItem(self._snapshot(), name)
 
 
 MutationCallback = Callable[[list["MutationRecord"], "MutationObserver"], Any]

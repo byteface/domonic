@@ -100,6 +100,15 @@ browser JavaScript, tests, scraping scripts, and domonic server-side rendering.
 
 See the examples folder for other uses of the Python virtual DOM.
 
+``querySelectorAll`` returns a static list -- a snapshot. The collections from
+``getElementsByTagName``, ``getElementsByTagName("*")``,
+``getElementsByClassName`` and ``getElementsByName`` are **live**: they re-scan
+the tree on every access, so a collection handed out early reflects elements
+added or removed afterwards (DOM spec). ``getElementsByTagName`` matches the
+qualified name literally (ASCII case-insensitively) and never raises -- an
+argument that is not a tag name, such as ``"a.b"`` or ``""``, just matches
+nothing. Out-of-range indexing returns ``None``.
+
 
 Tree mutation errors
 --------------------
