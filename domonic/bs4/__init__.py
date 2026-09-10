@@ -210,6 +210,30 @@ def _next_element_sibling(node: Any, cache: dict[int, Any] | None = None) -> Ele
     return kids[idx + 1] if idx + 1 < len(kids) else None
 
 
+def _id_index(node: Any) -> dict[str, Element]:
+    """``{id: first element in tree order}`` for the whole tree, cached on the
+    root alongside ``_bs4_tag_index`` and invalidated the same way.
+
+    Reuses the tag index's ordered element list when it is already warm;
+    otherwise pays one walk (as ``_tag_index`` does for the first ``find_all``).
+    """
+    root = _root_for_index(node)
+    if root is None:
+        return {}
+    cached = root.__dict__.get("_bs4_id_index")
+    if cached is not None:
+        return cached
+    tag_index = root.__dict__.get("_bs4_tag_index")
+    source: Iterable[Element] = tag_index["*"] if tag_index is not None else _walk_element_descendants(root)
+    index: dict[str, Element] = {}
+    for element in source:
+        eid = _get_attribute(element, "id")
+        if eid is not None and eid not in index:
+            index[eid] = element
+    root.__dict__["_bs4_id_index"] = index
+    return index
+
+
 def _find_element_by_id(
     node: Any,
     element_id: str,
@@ -217,6 +241,10 @@ def _find_element_by_id(
 ) -> Element | None:
     if include_self and isinstance(node, Element) and _get_attribute(node, "id") == element_id:
         return node
+    # Whole-tree lookup (context *is* the root) -> O(1) via the id index.
+    if node is _root_for_index(node):
+        return _id_index(node).get(element_id)
+    # Scoped lookup -> the match must be a descendant of ``node``.
     for child in _element_descendants(node):
         if _get_attribute(child, "id") == element_id:
             return child
@@ -234,6 +262,7 @@ def _invalidate_index(node: Any) -> None:
         d = root.__dict__
         d.pop("_bs4_tag_index", None)
         d.pop("_bs4_all_nodes", None)
+        d.pop("_bs4_id_index", None)
 
 
 def _tag_index(node: Any) -> dict[str, list[Element]]:
