@@ -37,8 +37,11 @@ fragment-serialisation checks for `innerHTML` / `outerHTML`, `dom/abort/`
 (`AbortSignal.abort` / `.timeout` / `.any`), `DOMParser` / `XMLSerializer`,
 `Document-*` metadata (compatMode / contentType / readyState),
 `attributes-namednodemap`, DocumentFragment insertion (appendChild /
-insertBefore / replaceChild), and `shadow-dom/Element-interface-attachShadow`
-+ shadow-including `getRootNode`.
+insertBefore / replaceChild), `shadow-dom/Element-interface-attachShadow`
++ shadow-including `getRootNode`, `Element-matches` / `Element-closest`
+(including `:scope`), the `<template>` element's `.content`, and the live
+`document.forms` / `images` / `links` / `scripts` / `anchors` / `embeds`
+accessors.
 
 ## When a port fails
 
