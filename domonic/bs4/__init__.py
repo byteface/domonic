@@ -1105,8 +1105,8 @@ def _descendant_index_candidates(root: Any, parsed: dict[str, Any]) -> "list[Ele
         buckets = sorted((class_map.get(t, ()) for t in classes), key=len)
         out = list(buckets[0])
         for other in buckets[1:]:
-            ids = {id(e) for e in other}
-            out = [e for e in out if id(e) in ids]
+            keep = set(other)
+            out = [e for e in out if e in keep]
         if tag is not None:
             out = [e for e in out if e.name.lower() == tag]
         return out
@@ -1119,27 +1119,70 @@ def _match_descendant_chain(
     rightmost = _descendant_index_candidates(root, parsed_chain[-1])
     if rightmost is None:
         return None
-    # Each ancestor part becomes an id-set of the elements it matches (also from
-    # the index), so the ancestor walk is O(1) per step. Bail if any part is not
-    # index-servable.
-    ancestor_sets: list[set[int]] = []
+    # Each ancestor part becomes a cheap predicate: a lower-case tag string
+    # (compared directly, no set built), or -- for a class selector -- an
+    # identity set of the elements the index says match.
+    checks: "list[tuple[str | None, set[Element] | None]]" = []
     for part in parsed_chain[:-1]:
-        cands = _descendant_index_candidates(root, part)
-        if cands is None:
-            return None
-        ancestor_sets.append({id(e) for e in cands})
+        if part["id"] is not None or part["attributes"] or part.get("pseudos") or part["classes"]:
+            cands = _descendant_index_candidates(root, part)
+            if cands is None:
+                return None
+            if not cands:  # a required ancestor selector matches nothing
+                return []
+            checks.append((None, set(cands)))
+        elif part["tag"] != "*":
+            tag = part["tag"].lower()
+            if not _tag_index(root).get(tag):  # no element with this tag anywhere
+                return []
+            checks.append((tag, None))
+        else:
+            checks.append((None, None))  # bare "*" ancestor -> any element
 
     result: list[Element] = []
-    depth = len(ancestor_sets) - 1
+
+    if len(checks) == 1:
+        # "A B": memoise whether a node (or an ancestor) satisfies A, so a run
+        # of siblings sharing a container is walked once, not once each.
+        want_tag, want_set = checks[0]
+        memo: "dict[int, bool]" = {}
+        for element in rightmost:
+            node = element.__dict__.get("parentNode")
+            path: "list[int]" = []
+            hit = False
+            while node is not None and node is not root:
+                nid = id(node)
+                cached = memo.get(nid)
+                if cached is not None:
+                    hit = cached
+                    break
+                path.append(nid)
+                if node in want_set if want_set is not None else (want_tag is None or node.name.lower() == want_tag):
+                    hit = True
+                    break
+                node = node.__dict__.get("parentNode")
+            for nid in path:
+                memo[nid] = hit
+            if hit:
+                result.append(element)
+                if limit is not None and len(result) >= limit:
+                    break
+        return result
+
+    depth = len(checks) - 1
     for element in rightmost:
-        # satisfy ancestor_sets right-to-left; the chain need not be contiguous
+        # satisfy ``checks`` right-to-left; the chain need not be contiguous
         # ("div span a" matches an <a> whose <span> ancestor has a <div> ancestor)
         need = depth
-        node = getattr(element, "parentNode", None)
+        node = element.__dict__.get("parentNode")
         while node is not None and node is not root and need >= 0:
-            if id(node) in ancestor_sets[need]:
+            want_tag, want_set = checks[need]
+            if want_set is not None:
+                if node in want_set:
+                    need -= 1
+            elif want_tag is None or node.name.lower() == want_tag:
                 need -= 1
-            node = getattr(node, "parentNode", None)
+            node = node.__dict__.get("parentNode")
         if need < 0:
             result.append(element)
             if limit is not None and len(result) >= limit:
