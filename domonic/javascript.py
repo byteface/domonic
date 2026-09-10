@@ -143,6 +143,8 @@ false: bool = False
 null: object = None
 undefined: object = None
 
+_MISSING = object()  # internal "not present" sentinel for dict.pop() default
+
 # def typeof(v):
 #     return type(v).__name__
 
@@ -205,9 +207,23 @@ def _invoke_js_callback(callback: Callable[..., Any], *args: Any) -> Any:
     return callback(*args[: len(positional)])
 
 
+@functools.lru_cache(maxsize=512)
+def _positional_arity_cached(fn: Any, cap: int) -> "int | None":
+    return _positional_arity_uncached(fn, cap)
+
+
 def _positional_arity(fn: Any, cap: int) -> "int | None":
     """Number of positional params ``fn`` declares (capped at ``cap``), or
-    ``None`` if it takes ``*args`` / its signature can't be read."""
+    ``None`` if it takes ``*args`` / its signature can't be read. Cached by
+    identity -- reusing the same callback across ``map`` / ``filter`` / ...
+    calls avoids re-running ``inspect.signature`` (~microseconds) each time."""
+    try:
+        return _positional_arity_cached(fn, cap)
+    except TypeError:  # unhashable fn (rare) -- fall back to the direct read
+        return _positional_arity_uncached(fn, cap)
+
+
+def _positional_arity_uncached(fn: Any, cap: int) -> "int | None":
     try:
         params = list(inspect.signature(fn).parameters.values())
     except (_PyTypeError, ValueError):
@@ -248,6 +264,30 @@ def _js_iteratee(fn: Any) -> "Callable[[Any, int, Any], Any]":
     if n == 1:
         return lambda v, i, a: fn(v)
     return lambda v, i, a: fn()
+
+
+def _resolve_iteratee(fn: Any) -> "tuple[int | None, Callable[..., Any]]":
+    """``(declared_arity, callback)`` for a JS array iteration callback -- raises
+    a JS-style TypeError for a non-callable, so the returned callback is never
+    ``None``."""
+    _require_callback(fn)
+    return _positional_arity(fn, 3), fn
+
+
+def _js_each_result(fn: Any, args: "list[Any]") -> "Iterator[Any]":
+    """Yield ``fn(...)`` for every element of ``args``, calling ``fn`` with the
+    number of arguments it actually declares (``v`` / ``v, i`` / ``v, i, a``).
+    The 1-arg case -- by far the most common -- skips the wrapper indirection
+    that :func:`_js_iteratee` would add."""
+    _require_callback(fn)
+    n = _positional_arity(fn, 3)
+    if n == 1:
+        return (fn(v) for v in args)
+    if n is None or n >= 3:
+        return (fn(v, i, args) for i, v in enumerate(args))
+    if n == 2:
+        return (fn(v, i) for i, v in enumerate(args))
+    return (fn() for _ in args)
 
 
 def _js_reducer(fn: Any) -> "Callable[[Any, Any, int, Any], Any]":
@@ -935,7 +975,7 @@ class Map:
         elif isinstance(collection, dict):
             entries = list(collection.items())
         elif isinstance(collection, Map):
-            entries = list(zip(collection._order, collection.values()))
+            entries = list(collection._dict.items())
         elif hasattr(collection, "__iter__"):
             for item in collection:
                 if isinstance(item, (list, tuple)) and not isinstance(item, str) and len(item) == 2:
@@ -945,15 +985,11 @@ class Map:
         else:
             raise TypeError("Map requires an iterable of pairs or a dict.")
 
-        self.collection = dict(entries)
-        self._data: dict[str, Any] = {}
-        self._order: list[str] = []
-        self._dict = self._data
+        # a plain dict already preserves insertion order and gives O(1)
+        # get / set / delete -- no parallel ``_order`` list to keep in step.
+        self._dict: dict[str, Any] = {}
         for key, value in entries:
-            normalized_key = str(key)
-            if normalized_key not in self._dict:
-                self._order.append(normalized_key)
-            self._dict[normalized_key] = value
+            self._dict[str(key)] = value
 
     def __contains__(self, key: str) -> bool:
         return str(key) in self._dict
@@ -962,41 +998,28 @@ class Map:
         return self._dict[str(key)]
 
     def __setitem__(self, key: str, value: Any) -> None:
-        key = str(key)
-        if key not in self._dict:
-            self._order.append(key)
-        self._dict[key] = value
+        self._dict[str(key)] = value
 
     def __delitem__(self, key: str) -> None:
-        key = str(key)
-        self._order.remove(key)
-        del self._dict[key]
+        del self._dict[str(key)]
 
     def __len__(self) -> int:
-        return len(self._order)
+        return len(self._dict)
 
     @property
     def size(self) -> int:
         """The number of entries (``map.size`` -- a property, like JS)."""
-        return len(self._order)
+        return len(self._dict)
 
     def clear(self) -> None:
         """Removes all key-value pairs from the Map object."""
-        self._data = {}
-        self._dict = self._data
-        self._order = []
+        self._dict = {}
 
     def delete(self, key: str) -> bool:
         """Returns true if an element in the Map object existed and has been removed,
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards.
         """
-        key = str(key)
-        try:
-            self._order.remove(key)
-            del self._dict[key]
-            return True
-        except Exception:
-            return False
+        return self._dict.pop(str(key), _MISSING) is not _MISSING
 
     def get(self, key: str, default: Any = None) -> Any:
         """Returns the value associated to the key, or undefined if there is none."""
@@ -1012,11 +1035,10 @@ class Map:
         return self
 
     def iterkeys(self) -> Iterator[str]:
-        return iter(self._order)
+        return iter(self._dict)
 
     def iteritems(self) -> Iterator[tuple[str, Any]]:
-        for key in self._order:
-            yield key, self._dict[key]
+        yield from self._dict.items()
 
     def keys(self) -> list[str]:
         """Returns a new Iterator object that contains the keys
@@ -1026,24 +1048,24 @@ class Map:
     def values(self) -> list[Any]:
         """Returns a new Iterator object that contains the values
         for each element in the Map object in insertion order."""
-        return [self._dict[key] for key in self._order]
+        return list(self._dict.values())
 
     def entries(self) -> list[tuple[str, Any]]:
         """Returns a new Iterator object that contains an array of [key, value]
         for each element in the Map object in insertion order."""
-        return [(x, self._dict[x]) for x in self._order]
+        return list(self._dict.items())
 
     def forEach(self, callbackFn: Callable[[Any, Any, "Map"], Any], thisArg: Any = None) -> None:
         """Call callbackFn once for each key/value pair in insertion order."""
-        for key in list(self._order):
-            _invoke_js_callback(callbackFn, self._dict[key], key, self)
+        for key, value in list(self._dict.items()):
+            _invoke_js_callback(callbackFn, value, key, self)
 
     def update(self, ordered_dict: Any) -> None:
         for key, value in ordered_dict.items():
             self[key] = value
 
     def __str__(self) -> str:
-        return str([(x, self._dict[x]) for x in self._order])
+        return str(list(self._dict.items()))
 
 
 class FormData:
@@ -3180,6 +3202,9 @@ window = Window
 Global.window = window
 
 
+_LIST_ATTRS = frozenset(dir(list))
+
+
 class Array:
     """javascript array"""
 
@@ -3249,13 +3274,14 @@ class Array:
         # (a negative index is not a valid array index in JS -- use ``.at()``).
         return self.args[index] if 0 <= index < len(self.args) else undefined
 
-    def __getattribute__(self, name: str) -> Any:
-        try:
-            return super().__getattribute__(name)
-        except AttributeError:
-            # if its a list method get it from args
-            if name in dir(list):
-                return getattr(self.args, name)
+    def __getattr__(self, name: str) -> Any:
+        # Only reached when normal lookup misses (so every real Array attribute
+        # keeps the C fast path). A domonic convenience: unknown names that are
+        # ``list`` methods (``append``, ``insert``, ``count``, ...) are served
+        # from the backing list.
+        if name in _LIST_ATTRS:
+            return getattr(object.__getattribute__(self, "args"), name)
+        raise AttributeError(name)
 
     def __setitem__(self, index: int, value: Any) -> None:
         self.args[index] = value
@@ -3545,13 +3571,19 @@ class Array:
         Returns:
             list: A new array.
         """
-        it = _js_iteratee(func)
-        return [it(value, i, self.args) for i, value in enumerate(self.args)]
+        n, fn = _resolve_iteratee(func)
+        args = self.args
+        if n == 1:
+            return [fn(v) for v in args]
+        if n is None or n >= 3:
+            return [fn(v, i, args) for i, v in enumerate(args)]
+        if n == 2:
+            return [fn(v, i) for i, v in enumerate(args)]
+        return [fn() for _ in args]
 
     def some(self, func: Callable[..., bool] | None = None) -> bool:
         """Checks if any of the elements in an array pass a test"""
-        it = _js_iteratee(func)
-        return any(it(value, i, self.args) for i, value in enumerate(self.args))
+        return any(_js_each_result(func, self.args))
 
     def sort(self, func: Callable[..., Any] | None = None) -> list[Any]:
         """Sorts the elements of an array"""
@@ -3616,8 +3648,11 @@ class Array:
         acc = initialValue
         n = _positional_arity(callback, 4)
         if n == 2:  # the common `(acc, value) => ...`
-            for i in range(offset, len(arguments)):
-                acc = callback(acc, arguments[i])
+            it = iter(arguments)
+            if offset:
+                next(it, None)
+            for x in it:
+                acc = callback(acc, x)
         elif n is None or n >= 4:
             for i in range(offset, len(arguments)):
                 acc = callback(acc, arguments[i], i, self.args)
@@ -3652,14 +3687,15 @@ class Array:
         Creates a new array with every element in an array that pass a test
         i.e. even_numbers = someArr.filter( lambda x: x % 2 == 0 )
         """
-        # written by .ai (https://6b.eleuther.ai/)
-        # filtered = []
-        # for value in self.args:
-        #     if func(value):
-        #         filtered.append(value)
-        # return filtered
-        it = _js_iteratee(func)
-        return [v for i, v in enumerate(self.args) if it(v, i, self.args)]
+        n, fn = _resolve_iteratee(func)
+        args = self.args
+        if n == 1:
+            return [v for v in args if fn(v)]
+        if n is None or n >= 3:
+            return [v for i, v in enumerate(args) if fn(v, i, args)]
+        if n == 2:
+            return [v for i, v in enumerate(args) if fn(v, i)]
+        return [v for v in args if fn()]
 
     def find(self, func: Callable[..., bool] | None = None) -> Any:
         """Returns the value of the first element in an array that pass a test"""
@@ -3684,9 +3720,9 @@ class Array:
 
     def forEach(self, func: Callable[..., Any] | None = None) -> None:
         """Calls a function for each array element"""
-        it = _js_iteratee(func)
-        for index, value in enumerate(list(self.args)):
-            it(value, index, self.args)
+        # snapshot so elements pushed by the callback are not visited (JS)
+        for _ in _js_each_result(func, list(self.args)):
+            pass
 
     def keys(self) -> Iterator[Any]:
         """Returns a Array Iteration Object, containing the keys of the original array"""
@@ -3729,8 +3765,7 @@ class Array:
 
     def every(self, func: Callable[..., bool] | None = None) -> bool:
         """Checks if every element in an array pass a test."""
-        it = _js_iteratee(func)
-        return all(it(value, i, self.args) for i, value in enumerate(self.args))
+        return all(_js_each_result(func, self.args))
 
     def at(self, index: int) -> Any:
         """Takes an integer value and returns the item at that index,
@@ -3754,10 +3789,46 @@ class Array:
 Array.prototype = Array  # type: ignore[assignment]
 
 
+_SET_NAN_KEY = object()  # SameValueZero: every NaN is the same Set member
+
+
+def _js_set_key(value: Any) -> Any:
+    """A dict key with JS Set (SameValueZero) identity semantics: NaN collapses
+    to one key, ``True`` stays distinct from ``1``, ``1``/``1.0``/``Number(1)``
+    collide, other value types compare by ``==``, and objects compare by
+    reference. Returns a hashable key -- objects/unhashables key on ``id()``
+    (the Set holds the value, so the id stays live)."""
+    t = type(value)
+    if t is str or t is int:
+        return value  # plain str / int -- dict already collides 1 and 1.0
+    if t is float:
+        return _SET_NAN_KEY if value != value else value
+    if t is bool:
+        return (bool, value)
+    # subclasses (String is a str, Number is an *unhashable* float) and the rest
+    if isinstance(value, bool):
+        return (bool, value)
+    if _is_js_number(value):
+        if value != value:
+            return _SET_NAN_KEY
+        try:
+            return float(value)  # Number(1) -> 1.0, collides with 1 / 1.0
+        except (OverflowError, TypeError):
+            return (id(value),)
+    if _is_js_value_type(value):
+        try:
+            hash(value)
+            return value
+        except TypeError:
+            pass
+    return (id(value),)
+
+
 class Set:
     def __init__(self, *args: Any) -> None:
         """Store unique values of any type in insertion order."""
-        self.args: list[Any] = []
+        # key -> value; dict preserves insertion order and gives O(1) membership
+        self._store: dict[Any, Any] = {}
         values = args
         if (
             len(args) == 1
@@ -3768,20 +3839,25 @@ class Set:
         for value in values:
             self.add(value)
 
+    @property
+    def args(self) -> list[Any]:
+        """The Set's values as a list, in insertion order (legacy accessor)."""
+        return list(self._store.values())
+
     def __iter__(self) -> Iterator[Any]:
-        return iter(self.args)
+        return iter(self._store.values())
 
     def __len__(self) -> int:
-        return len(self.args)
+        return len(self._store)
 
     def __contains__(self, item: Any) -> bool:
-        return self.has(item)
+        return (item if type(item) is str else _js_set_key(item)) in self._store
 
     def __repr__(self) -> str:
-        return repr(self.args)
+        return repr(list(self._store.values()))
 
     def __str__(self) -> str:
-        return str(self.args)
+        return str(list(self._store.values()))
 
     @property
     def species(self) -> Any:
@@ -3791,27 +3867,22 @@ class Set:
     @property
     def size(self) -> int:
         """Returns the number of values in the Set object."""
-        return len(self.args)
+        return len(self._store)
 
     def add(self, value: Any) -> "Set":
         """Append a value and return this Set."""
-        if not self.has(value):
-            self.args.append(value)
+        self._store.setdefault(value if type(value) is str else _js_set_key(value), value)
         return self
 
     def clear(self) -> None:
         """Removes all elements from the Set object."""
-        self.args.clear()
+        self._store.clear()
 
     def delete(self, value: Any) -> bool:
         """Removes the element associated to the value
         returns a boolean asserting whether an element was successfully removed or not.
         """
-        for index, item in enumerate(self.args):
-            if _js_set_same_value_zero(item, value):
-                del self.args[index]
-                return True
-        return False
+        return self._store.pop(_js_set_key(value), _MISSING) is not _MISSING
 
     def remove(self, value: Any) -> None:
         """Remove a value using Python set semantics."""
@@ -3820,7 +3891,7 @@ class Set:
 
     def has(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
-        return any(_js_set_same_value_zero(item, value) for item in self.args)
+        return (value if type(value) is str else _js_set_key(value)) in self._store
 
     def contains(self, value: Any) -> bool:
         """Returns a boolean asserting whether an element is present with the given value in the Set object or not."""
@@ -3832,7 +3903,7 @@ class Set:
     def values(self) -> Iterator[Any]:
         """Returns a new iterator object that yields the values for each element
         in the Set object in insertion order."""
-        return iter(self.args)
+        return iter(list(self._store.values()))
 
     def keys(self) -> Iterator[Any]:
         """Alias for values, matching JavaScript Set."""

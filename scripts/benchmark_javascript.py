@@ -7,6 +7,7 @@ code-unit work or per-call signature inspection) stands out.
 
     python scripts/benchmark_javascript.py
 """
+
 from __future__ import annotations
 
 import re
@@ -18,7 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from domonic.javascript import Array, Number, RegExp, String
+from domonic.javascript import Array, Map, Number, RegExp, Set, String
 
 
 @dataclass
@@ -58,7 +59,7 @@ def bench(label, js_fn, py_fn=None, iterations=2000, inner=1):
 # String -- the UTF-16 code-unit path
 # ---------------------------------------------------------------------------
 BMP = "the quick brown fox jumps over the lazy dog. " * 400  # ~18 KB, pure BMP
-ASTRAL = ("hello 😀 world 汉字 " * 200)                        # astral chars
+ASTRAL = "hello 😀 world 汉字 " * 200  # astral chars
 S_BMP = String(BMP)
 S_ASTRAL = String(ASTRAL)
 
@@ -165,6 +166,8 @@ bench(
     iterations=200,
     inner=len(NUMS),
 )
+
+
 def _push_many():
     a = Array()
     for i in range(1000):
@@ -185,6 +188,90 @@ bench(
     _push_many_py,
     iterations=200,
     inner=1000,
+)
+
+
+# ---------------------------------------------------------------------------
+# Set / Map -- membership + build
+# ---------------------------------------------------------------------------
+SET_KEYS = [f"k{i}" for i in range(2000)]
+S_BUILT = Set(SET_KEYS)
+PY_SET = set(SET_KEYS)
+
+
+def _set_build():
+    s = Set()
+    for k in SET_KEYS:
+        s.add(k)
+    return s
+
+
+def _set_build_py():
+    s = set()
+    for k in SET_KEYS:
+        s.add(k)
+    return s
+
+
+bench("Set build (2000 adds, fresh)", _set_build, _set_build_py, iterations=100, inner=len(SET_KEYS))
+bench(
+    "Set.has hit (2000-entry, reused)",
+    lambda: S_BUILT.has("k1999"),
+    lambda: "k1999" in PY_SET,
+    iterations=50000,
+)
+bench(
+    "Set.has miss (2000-entry, reused)",
+    lambda: S_BUILT.has("nope"),
+    lambda: "nope" in PY_SET,
+    iterations=50000,
+)
+bench(
+    "Set(iterable) construct + dedup",
+    lambda: Set(SET_KEYS).size,
+    lambda: len(set(SET_KEYS)),
+    iterations=200,
+    inner=len(SET_KEYS),
+)
+
+MAP_PAIRS = [[f"k{i}", i] for i in range(2000)]
+M_BUILT = Map(MAP_PAIRS)
+PY_DICT = {f"k{i}": i for i in range(2000)}
+
+
+def _map_build():
+    m = Map()
+    for k, v in MAP_PAIRS:
+        m.set(k, v)
+    return m
+
+
+def _map_build_py():
+    d = {}
+    for k, v in MAP_PAIRS:
+        d[k] = v
+    return d
+
+
+bench("Map build (2000 sets, fresh)", _map_build, _map_build_py, iterations=100, inner=len(MAP_PAIRS))
+bench(
+    "Map.get hit (2000-entry, reused)",
+    lambda: M_BUILT.get("k1999"),
+    lambda: PY_DICT.get("k1999"),
+    iterations=50000,
+)
+bench(
+    "Map.has hit (2000-entry, reused)",
+    lambda: M_BUILT.has("k1999"),
+    lambda: "k1999" in PY_DICT,
+    iterations=50000,
+)
+bench(
+    "Map(pairs) construct",
+    lambda: Map(MAP_PAIRS).size,
+    lambda: len(dict(map(tuple, MAP_PAIRS))),
+    iterations=200,
+    inner=len(MAP_PAIRS),
 )
 
 
@@ -225,7 +312,9 @@ bench(
 # Number
 # ---------------------------------------------------------------------------
 bench("Number(x).toFixed(2)", lambda: Number(3.14159).toFixed(2), lambda: f"{3.14159:.2f}", iterations=20000)
-bench("Number(x).toString(16)", lambda: Number(0xDEADBEEF).toString(16), lambda: format(0xDEADBEEF, "x"), iterations=20000)
+bench(
+    "Number(x).toString(16)", lambda: Number(0xDEADBEEF).toString(16), lambda: format(0xDEADBEEF, "x"), iterations=20000
+)
 bench("Number arithmetic (a+b)", lambda: Number(2) + Number(3), lambda: 2 + 3, iterations=50000)
 
 
