@@ -221,8 +221,7 @@ domonic -x https://example.com '//a/@href'
 curl -s https://example.com | domonic -q 'a.cta' --attr href
 ```
 
-The first lookup builds an index on the tree; the rest are map hits, not walks.
-Mutations invalidate it automatically. 🚀
+Repeated queries over the same page are significantly faster. 🚀
 <a href="https://domonic.readthedocs.io/guides/parser-performance/" target="_blank" rel="noopener">Parser performance</a>.
 
 ---
@@ -239,9 +238,8 @@ print(page.querySelector("h1"))
 To fetch and parse a live URL in one step, assign `window.location` (see the
 <a href="https://domonic.readthedocs.io/packages/html/" target="_blank" rel="noopener">html docs</a>).
 
-Each backend adapts its native tree straight into the domonic DOM — no second
-tree, no reparse. Pick one for zero dependencies, malformed-HTML repair, or
-speed:
+Parsing is fast. 🚀 Pick a backend for zero dependencies, malformed-HTML repair,
+or raw speed:
 
 | Backend | Notes |
 | --- | --- |
@@ -444,9 +442,8 @@ domonic elements are Python objects that render to markup, so they drop into
 FastAPI, Flask, Django, Sanic and others — see the
 <a href="https://domonic.readthedocs.io/packages/servers/" target="_blank" rel="noopener">servers documentation</a>.
 
-For views that only return HTML, `@compiled` turns the function into a string
-renderer at import time — no DOM is built per request, no warm-up, the first
-request as fast as the rest: 🚀
+For views that only return HTML, `@compiled` makes rendering significantly
+faster — every request, including the very first: 🚀
 
 ```python
 from domonic import compiled
