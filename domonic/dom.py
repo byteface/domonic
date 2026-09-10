@@ -6966,7 +6966,7 @@ class Document(Element):
     def currentScript(self) -> Element | None:
         if self._currentScript is not None:
             return self._currentScript
-        scripts = self.scripts
+        scripts = list(self.scripts)
         return scripts[-1] if scripts else None
 
     @currentScript.setter
@@ -6998,11 +6998,8 @@ class Document(Element):
 
     @property
     def anchors(self):
-        """Returns the anchors in the document."""
-        # only the ones with a name
-        tags = self.querySelectorAll("a")
-        tags = [tag for tag in tags if tag.hasAttribute("name")]
-        return tags
+        """A live ``HTMLCollection`` of the document's ``<a name>`` elements."""
+        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "a" and el.hasAttribute("name"))
 
     @property
     def applets(self):
@@ -7491,21 +7488,15 @@ class Document(Element):
 
     @property
     def embeds(self):
-        """Returns a collection of all <embed> elements in the document.
+        """A live ``HTMLCollection`` of the document's ``<embed>`` elements."""
+        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "embed")
 
-        Returns:
-            HTMLCollection: All <embed> elements in the document.
-        """
-        return self.querySelectorAll("embed")
-
-        # def execCommand(self):
-        """Invokes the specified clipboard operation on the element currently having focus."""
-        # return
+    plugins = embeds
 
     @property
     def forms(self):
-        """Returns a collection of all <form> elements in the document"""
-        return self.querySelectorAll("form")
+        """A live ``HTMLCollection`` of the document's ``<form>`` elements."""
+        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "form")
 
     def fullscreenElement(self):
         """Returns the current element that is displayed in fullscreen mode"""
@@ -7573,8 +7564,8 @@ class Document(Element):
 
     @property
     def images(self):
-        """Returns a collection of all <img> elements in the document"""
-        return self.querySelectorAll("img")
+        """A live ``HTMLCollection`` of the document's ``<img>`` elements."""
+        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "img")
 
     @property
     def implementation(self):
@@ -7623,10 +7614,12 @@ class Document(Element):
 
     @property
     def links(self):
-        """Returns a collection of all <a> and <area> elements in the document that have a href attribute"""
-        anchors = [node for node in self.getElementsByTagName("a") if node.getAttribute("href") is not None]
-        areas = [node for node in self.getElementsByTagName("area") if node.getAttribute("href") is not None]
-        return anchors + areas
+        """A live ``HTMLCollection`` of the document's ``<a href>`` and
+        ``<area href>`` elements."""
+        return _LiveHTMLCollection(
+            self,
+            lambda el: (el.tagName or "").lower() in ("a", "area") and el.getAttribute("href") is not None,
+        )
 
     # @property
     # def nodeType(self):
@@ -7717,12 +7710,8 @@ class Document(Element):
 
     @property
     def scripts(self):
-        """Returns a collection of <script> elements in the document.
-
-        Returns:
-            HTMLCollection: All <script> elements in the document.
-        """
-        return self.querySelectorAll("script")
+        """A live ``HTMLCollection`` of the document's ``<script>`` elements."""
+        return _LiveHTMLCollection(self, lambda el: (el.tagName or "").lower() == "script")
 
     def strictErrorChecking(self):
         """Returns a Boolean value indicating whether to stop on the first error"""
