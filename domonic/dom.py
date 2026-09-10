@@ -997,8 +997,11 @@ def _elements_by_class_name(root: "Node", tokens: "frozenset[str]") -> "list[Ele
     smallest = buckets[0]
     if len(buckets) == 1:
         return list(smallest)
-    others = [{id(el) for el in bucket} for bucket in buckets[1:]]
-    return [el for el in smallest if all(id(el) in seen for seen in others)]
+    if len(buckets) == 2:  # the common ``.a.b`` case -- one membership test
+        other = set(buckets[1])
+        return [el for el in smallest if el in other]
+    others = [set(bucket) for bucket in buckets[1:]]
+    return [el for el in smallest if all(el in seen for seen in others)]
 
 
 def _element_by_id_via_index(root: "Node", _id: str) -> "Element | None":
