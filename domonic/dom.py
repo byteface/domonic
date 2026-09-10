@@ -6672,11 +6672,9 @@ class Range(AbastractRange):
         return new_range
 
     def detach(self) -> None:
-        self.startContainer = None
-        self.endContainer = None
-        self.startOffset = 0
-        self.endOffset = 0
-        self._update_state()
+        """A no-op, kept for legacy compatibility
+        (https://dom.spec.whatwg.org/#dom-range-detach)."""
+        return None
 
     def createContextualFragment(self, fragment: Any) -> "DocumentFragment":
         if isinstance(fragment, DocumentFragment):
@@ -6717,6 +6715,8 @@ class Range(AbastractRange):
     def comparePoint(self, refNode: Node, offset: int) -> int:
         if self.startContainer is None or self.endContainer is None:
             raise Exception("Range has no boundaries")
+        if self._path_to_root(refNode)[-1] is not self._path_to_root(self.startContainer)[-1]:
+            raise DOMException("The node is not in the same tree as the Range.", "WrongDocumentError")
         offset = self._validate_boundary_point(refNode, offset)
         if self._compare_points(refNode, offset, self.startContainer, self.startOffset) < 0:
             return -1
@@ -6725,6 +6725,11 @@ class Range(AbastractRange):
         return 0
 
     def isPointInRange(self, refNode: Node, offset: int) -> bool:
+        if self.startContainer is None or self.endContainer is None:
+            return False
+        if self._path_to_root(refNode)[-1] is not self._path_to_root(self.startContainer)[-1]:
+            # DOM spec: a point in a different tree is simply not in the range
+            return False
         return self.comparePoint(refNode, offset) == 0
 
     def intersectsNode(self, refNode: Node) -> bool:
@@ -7299,10 +7304,18 @@ class Document(Element):
     #     """ Creates an Attr node with the specified namespace URI and qualified name """
     #     return Attr(qualifiedName)
 
-    @staticmethod
-    def createRange() -> Range:
-        """Creates a Range"""
-        return Range()
+    def createRange(self: "Document | None" = None) -> Range:
+        """Creates a Range.
+
+        Per the DOM spec a fresh range is anchored at ``(document, 0)`` for
+        both boundary points. Called unbound (``Document.createRange()``) it
+        still returns a bare, unanchored ``Range`` for backwards compatibility.
+        """
+        rng = Range()
+        if isinstance(self, Node):
+            rng.setStart(self, 0)
+            rng.setEnd(self, 0)
+        return rng
 
     @staticmethod
     def createNodeIterator(root: Node, whatToShow: int | None = None, filter: Any = None) -> NodeIterator:
