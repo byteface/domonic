@@ -5857,10 +5857,11 @@ class Element(Node):
             return list(self.getElementsByTagName(query))
 
         # The native CSS engine shared with BeautifulSlop resolves descendant /
-        # child combinators, classes, attribute selectors and simple pseudos
-        # several times faster than the cssselect -> XPath -> elementpath path.
-        # It returns ``None`` for selectors it does not support (``+``, ``~``,
-        # complex pseudo-classes), which then fall through to the XPath engine.
+        # child / adjacent (``+``) / general-sibling (``~``) combinators,
+        # classes, attribute selectors and the common pseudo-classes several
+        # times faster than the cssselect -> XPath -> elementpath path. It
+        # returns ``None`` for the rarer selectors it does not support, which
+        # then fall through to the XPath engine.
         try:
             from domonic.bs4 import _select_fast
 

@@ -167,11 +167,36 @@ The important practical distinction is parse-only versus parse-plus-query.
 BeautifulSlop is built to win query-heavy workflows because it keeps a real
 domonic DOM and avoids a second wrapped tree.
 
-``querySelector`` / ``querySelectorAll`` resolve descendant and child
-combinators, classes, attribute selectors and simple pseudo-classes with a
-native engine (shared with BeautifulSlop); only selectors it cannot handle
-(``+``, ``~``, complex pseudo-classes) fall back to the slower
-cssselect -> XPath path.
+``querySelector`` / ``querySelectorAll`` resolve descendant, child, adjacent
+(``+``) and general-sibling (``~``) combinators, classes, attribute selectors
+and the common pseudo-classes (``:first-child``, ``:last-child``,
+``:nth-child``, ``:not(...)``) with a native engine shared with BeautifulSlop.
+Only the rarer pseudo-classes fall back to the slower cssselect -> XPath path.
+
+Index-backed queries
+--------------------
+
+Read queries against an unchanged tree are served from lazily-built indexes
+rather than a fresh walk, so repeated lookups over one parsed document are the
+common fast path:
+
+- ``getElementById`` builds an ``id -> element`` map on first use and answers in
+  constant time thereafter.
+- ``getElementsByTagName`` / ``-ClassName`` / ``-Name``, ``querySelector`` /
+  ``querySelectorAll``, and BeautifulSlop's ``select`` / ``find`` / ``find_all``
+  consult tag, class and attribute indexes built on the tree's root.
+- ``find_all`` calls that reduce to a tag (or list of tags) plus
+  attribute-presence filters (``find_all(["a", "span"])``,
+  ``find_all("a", href=True)``) are served straight from those indexes with no
+  per-element re-check.
+
+The indexes are invalidated automatically. Any structural change
+(``appendChild``, ``removeChild``, ``innerHTML =``, ...) or attribute change
+(``setAttribute``, ``classList`` edits, ``el.id =``) made through the DOM API --
+or through a BeautifulSlop mutation method -- marks them stale, and the next
+query rebuilds. Results always reflect the current tree; the index is a cache,
+never a snapshot. Trees that are only built and serialised, never queried, pay
+nothing for the machinery.
 
 Next Steps
 ----------

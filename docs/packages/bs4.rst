@@ -208,8 +208,15 @@ CSS Selectors
    soup.select("ul > li:nth-child(2)")
    soup.select("p:first-child, p:last-child")
 
-Complex CSS and repeated selector workflows are a good fit for Slop because the
-objects remain domonic nodes and common selector paths avoid a second CSS engine.
+Repeated selector workflows are a good fit for Slop: the objects remain domonic
+nodes, common selector paths avoid a second CSS engine, and queries over an
+unchanged tree are served from lazily-built tag / class / attribute indexes on
+the root rather than a fresh walk. ``find_all`` calls that reduce to a tag (or
+list of tags) plus attribute-presence filters -- ``find_all(["a", "span"])``,
+``find_all("a", href=True)``, ``find_all(attrs={"data-role": True})`` -- come
+straight from those indexes. The indexes rebuild automatically after any
+mutation, whether through a Slop method or the underlying DOM API. See
+:doc:`../guides/parser-performance`.
 
 Navigation
 ----------

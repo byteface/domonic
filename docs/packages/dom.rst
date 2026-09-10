@@ -109,6 +109,15 @@ qualified name literally (ASCII case-insensitively) and never raises -- an
 argument that is not a tag name, such as ``"a.b"`` or ``""``, just matches
 nothing. Out-of-range indexing returns ``None``.
 
+Behind these, ``getElementById``, ``getElementsBy*`` and ``querySelector`` /
+``querySelectorAll`` are backed by lazily-built indexes: the first call over a
+tree builds an ``id`` map and tag / class / attribute maps on the root, and
+later calls answer from those until a mutation invalidates them. This is
+transparent -- results always reflect the current tree, live collections stay
+live -- and a tree that is only built and rendered, never queried, builds no
+index. See :doc:`../guides/parser-performance` for the query-performance
+picture.
+
 
 Tree mutation errors
 --------------------
