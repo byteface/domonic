@@ -654,7 +654,8 @@ class Event:
 
 
 class AbortSignal(EventTarget):
-    """Signal object used to communicate cancellation."""
+    """Signal object used to communicate cancellation
+    (https://dom.spec.whatwg.org/#interface-AbortSignal)."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -662,16 +663,75 @@ class AbortSignal(EventTarget):
         self.reason: Any = None
         self.onabort = None
 
+    @staticmethod
+    def _default_reason() -> Any:
+        from domonic.dom import DOMException
+
+        return DOMException("signal is aborted without reason", "AbortError")
+
+    @staticmethod
+    def abort(reason: Any = None) -> "AbortSignal":
+        """Return an ``AbortSignal`` that is already aborted."""
+        signal = AbortSignal()
+        signal.aborted = True
+        signal.reason = reason if reason is not None else AbortSignal._default_reason()
+        return signal
+
+    @staticmethod
+    def timeout(milliseconds: float) -> "AbortSignal":
+        """Return a signal that aborts with a ``TimeoutError`` after
+        ``milliseconds``. The timer runs on a daemon thread."""
+        import threading
+
+        from domonic.dom import DOMException
+
+        signal = AbortSignal()
+
+        def _fire() -> None:
+            signal._signal_abort(DOMException("The operation timed out.", "TimeoutError"))
+
+        timer = threading.Timer(max(0.0, float(milliseconds)) / 1000.0, _fire)
+        timer.daemon = True
+        timer.start()
+        return signal
+
+    @staticmethod
+    def any(signals: Any) -> "AbortSignal":
+        """Return a signal that aborts as soon as any signal in ``signals``
+        aborts, adopting that signal's ``reason``."""
+        result = AbortSignal()
+        collected = list(signals)
+        for source in collected:
+            if getattr(source, "aborted", False):
+                result._signal_abort(getattr(source, "reason", None))
+                return result
+
+        def _make_handler(src: Any) -> Any:
+            def _handler(event: Any = None) -> None:
+                result._signal_abort(getattr(src, "reason", None))
+
+            return _handler
+
+        for source in collected:
+            if hasattr(source, "addEventListener"):
+                source.addEventListener("abort", _make_handler(source), {"once": True})
+        return result
+
     def _signal_abort(self, reason: Any = None) -> None:
         if self.aborted:
             return
         self.aborted = True
-        self.reason = reason
+        self.reason = reason if reason is not None else self._default_reason()
         self.dispatchEvent(Event(Event.ABORT))
 
     def throwIfAborted(self) -> None:
-        if self.aborted:
-            raise RuntimeError(self.reason if self.reason is not None else "Signal already aborted")
+        """Raise this signal's ``reason`` if it is aborted -- the reason itself
+        when it is an exception, otherwise wrapped in ``RuntimeError``."""
+        if not self.aborted:
+            return
+        if isinstance(self.reason, BaseException):
+            raise self.reason
+        raise RuntimeError("Signal already aborted" if self.reason is None else str(self.reason))
 
 
 class AbortController:
