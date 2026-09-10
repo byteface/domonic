@@ -35,8 +35,10 @@ propagation, once, handleEvent, CustomEvent), `ParentNode-append` /
 `Node-properties` (parentElement, sibling elements), the WHATWG
 fragment-serialisation checks for `innerHTML` / `outerHTML`, `dom/abort/`
 (`AbortSignal.abort` / `.timeout` / `.any`), `DOMParser` / `XMLSerializer`,
-`Document-*` metadata (compatMode / contentType / readyState), and
-`attributes-namednodemap`.
+`Document-*` metadata (compatMode / contentType / readyState),
+`attributes-namednodemap`, DocumentFragment insertion (appendChild /
+insertBefore / replaceChild), and `shadow-dom/Element-interface-attachShadow`
++ shadow-including `getRootNode`.
 
 ## When a port fails
 
