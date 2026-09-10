@@ -9783,12 +9783,24 @@ class DOMParser:
     """``new DOMParser().parseFromString(markup, mimeType)`` -- parse a string
     into a document, mirroring the browser API."""
 
+    _PARSERERROR_NS = "http://www.mozilla.org/newlayout/xml/parsererror.xml"
+
     def parseFromString(self, string: str, mimeType: str = "text/html") -> "Node":
         from domonic import domonic
 
         mime = (mimeType or "text/html").lower()
         if "xml" in mime or "svg" in mime:
-            return domonic.parseString(str(string), parser="expat")
+            try:
+                return domonic.parseString(str(string), parser="expat")
+            except Exception as exc:
+                # DOM spec: an XML well-formedness error produces a document
+                # whose root is a <parsererror> element -- it does not throw.
+                doc = XMLDocument()
+                err = doc.createElementNS(self._PARSERERROR_NS, "parsererror")
+                err.appendChild(doc.createTextNode(f"XML parsing error: {exc}"))
+                doc.appendChild(err)
+                doc.documentElement = err
+                return doc
         return domonic.parseString(str(string), document=True)
 
 
