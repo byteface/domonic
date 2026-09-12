@@ -8,6 +8,103 @@ Scrape HTML
 Use domonic when you want to parse real HTML, query it with CSS selectors or
 XPath, mutate the tree, and render the result back out.
 
+Fetch And Query
+---------------
+
+``domonic.scrape()`` pulls a URL and hands back a parsed DOM, ready to query.
+
+.. code-block:: python
+
+   from domonic import scrape
+
+   page = scrape("https://example.com")
+   print(page.querySelector("h1").textContent)
+
+The argument is a URL string or a ``domonic.webapi.fetch.Request``, so you can
+build the request up front when you need more control:
+
+.. code-block:: python
+
+   from domonic.webapi.fetch import Request
+
+   req = Request("https://example.com/api", init={"method": "POST", "json": {"q": "x"}})
+   data = scrape(req, to="json")
+
+What you get back
+~~~~~~~~~~~~~~~~~~
+
+By default the return value is the parsed DOM. ``to=`` swaps it for something
+else:
+
+- ``to="text"`` -- the raw response body
+- ``to="json"`` -- the body decoded as JSON
+- ``to="pyml"`` -- the body as PyML
+- ``to="dom"`` -- the parsed DOM (the default)
+
+``selector=`` runs a CSS query against the DOM and returns the first match (or
+``None``); ``all=True`` returns every match as a list.
+
+.. code-block:: python
+
+   heading = scrape("https://example.com", selector="h1")
+   links = scrape("https://example.com", selector="a[href]", all=True)
+   markup = scrape("https://example.com", to="text")
+
+The response
+~~~~~~~~~~~~
+
+``response=True`` returns ``(response, result)``. ``response`` is a
+``domonic.webapi.fetch.Response`` -- ``.status``, ``.statusText``, ``.headers``,
+``.ok``, ``.url``, ``.redirected``, plus ``.text()`` and ``.json()``.
+
+.. code-block:: python
+
+   response, page = scrape("https://example.com", response=True)
+   print(response.status, response.headers.get("content-type"))
+
+Many URLs at once
+~~~~~~~~~~~~~~~~~~
+
+Pass an iterable of URLs or ``Request`` objects and ``scrape()`` fetches them
+concurrently through a thread pool (``domonic.webapi.fetch.fetch_pooled``). The
+result is a list of whatever a single URL would have returned, in the same order
+as the input.
+
+.. code-block:: python
+
+   for page in scrape(["https://example.com", "https://iana.org"]):
+       print(page.querySelector("title").textContent)
+
+   # with response=True, each item is a (response, result) pair
+   for response, page in scrape(urls, selector="h1", response=True):
+       print(response.status, page.textContent)
+
+Parser and request options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``parser=`` picks the backend used to build the DOM, exactly as in
+``parseString`` (see `Choose a Parser`_ below).
+
+``method``, ``headers`` and any keyword argument that names a ``Request`` field
+(``body``, ``json``, ``credentials``, ``redirect``, ``mode``, ...) build the
+request. ``params``, ``timeout`` (default 30 seconds) and everything else are
+forwarded to ``requests``.
+
+.. code-block:: python
+
+   page = scrape(
+       "https://example.com",
+       parser="selectolax",
+       headers={"User-Agent": "domonic"},
+       params={"q": "python"},
+       timeout=10,
+   )
+
+   data = scrape("https://example.com/api", to="json", method="POST", json={"q": "python"})
+
+A single-URL fetch that fails raises the underlying exception; in a batch, the
+first failure is raised.
+
 Parse To A DOM
 --------------
 

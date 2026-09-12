@@ -162,6 +162,35 @@ unlayered rule beats any layer).
 	p = page.querySelector("p")
 	window.getComputedStyle(p).getPropertyValue("color")   # rgb(0, 0, 255)  (theme layer is later)
 
+The layout boundary
+--------------------
+
+``getComputedStyle`` reports **used** values -- it guesses at a containing
+block to turn ``%`` into a px string. A layout engine needs the opposite:
+lengths resolved, but ``%``, ``auto``, and anything layout-dependent left
+alone. ``domonic.layout.layout_style(element)`` returns that -- one typed
+value per layout property, ready for a layout engine to consume.
+
+.. code-block :: python
+
+	from domonic.dom import document
+	from domonic.layout import layout_style
+
+	box = document.createElement("div")
+	box.setAttribute("style", "display: flex; width: 50%; margin: 10px auto; gap: 8px")
+
+	style = layout_style(box)
+	style.display   # Keyword('flex')
+	style.width     # Percent(0.5)
+	style.margin    # Edges(top=Length(10.0), right=AUTO, bottom=Length(10.0), left=AUTO)
+	style.gap       # Gap(row=Length(8.0), column=Length(8.0))
+
+Once an engine has computed a box for an element, ``element.set_layout_box(box)``
+(a ``domonic.layout.LayoutBox``) makes ``getBoundingClientRect``,
+``clientWidth``/``clientHeight``, ``clientTop``/``clientLeft``, and
+``offsetWidth``/``offsetHeight``/``offsetLeft``/``offsetTop`` report it;
+with no box attached they keep their existing behaviour.
+
 CSS custom properties and ``var()``
 -----------------------------------
 

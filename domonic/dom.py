@@ -46,6 +46,7 @@ from domonic import _fontmetrics
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
 from domonic.javascript import undefined
+from domonic.layout import get_layout_box as _get_layout_box
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
@@ -624,6 +625,14 @@ def _ensure_pre_insertion_validity(parent: Any, *nodes: Any) -> None:
     cycle in the tree and hang every traversal; the WebIDL / document-shape
     clauses are left permissive.
     """
+    # Text, Comment, ProcessingInstruction and CDATASection are CharacterData:
+    # per spec they can never have children, of any kind.
+    if isinstance(parent, (Text, Comment, ProcessingInstruction, CDATASection)):
+        raise DOMException(
+            DOMException.HIERARCHY_REQUEST_ERR,
+            f"{type(parent).__name__} nodes cannot have children.",
+        )
+
     ancestors = None
     for node in nodes:
         if not isinstance(node, Node):
@@ -740,16 +749,26 @@ def _connect_inserted_node(
 
 
 def _deepcopy_subtree(node: "Node") -> "Node":
-    """``copy.deepcopy`` of a node without dragging in its parent chain -- a bare
-    ``deepcopy`` follows ``parentNode`` and copies the whole document."""
+    """``copy.deepcopy`` of a node without dragging in its parent chain -- a
+    bare ``deepcopy`` follows ``parentNode`` *and* every descendant's
+    ``_ownerDocument`` and copies the whole document (its ``localStorage``,
+    loggers, and anything else reachable from it -- some of which, like a
+    thread lock, ``copy.deepcopy`` cannot even copy, and used to recurse
+    forever through ``Storage.__getattr__`` trying).
+    """
     import copy
 
     saved_parent = node.__dict__.get("parentNode")
+    saved_owners = [(current, current.__dict__.get("_ownerDocument")) for current in _iter_dom_nodes(node)]
     node.__dict__["parentNode"] = None
+    for current, _owner in saved_owners:
+        current.__dict__["_ownerDocument"] = None
     try:
         return copy.deepcopy(node)
     finally:
         node.__dict__["parentNode"] = saved_parent
+        for current, owner in saved_owners:
+            current.__dict__["_ownerDocument"] = owner
 
 
 def _prepare_detached_clone(
@@ -2673,11 +2692,16 @@ class Node(EventTarget):
         return root
 
     def isDefaultNamespace(self, ns):
-        """Checks if a namespace is the default namespace"""
-        if ns == self.namespaceURI:
-            return True
-        else:
-            return False
+        """https://dom.spec.whatwg.org/#dom-node-isdefaultnamespace
+
+        Compares against the namespace *in scope* at this node (what
+        ``lookupNamespaceURI(None)`` resolves to) -- not this node's own
+        ``namespaceURI``, which is a different question (e.g. every node
+        defaults to the HTML namespace at construction, including a
+        DocumentFragment, which should never report itself as being in it)."""
+        if ns == "":
+            ns = None
+        return self.lookupNamespaceURI(None) == ns
 
     def lookupNamespaceURI(self, ns: str):
         """Returns the namespace URI for a given prefix
@@ -3025,6 +3049,12 @@ class Attr(Node):
     def __init__(self, name: str, value="", *args, **kwargs) -> None:
         self.name: str = name
         self.value = value
+        # A detached Attr (document.createAttribute()) has no owner element;
+        # whoever attaches it (setAttributeNode et al) is responsible for
+        # setting this. Not the full Node.__init__ -- it sets namespaceURI /
+        # prefix as plain instance attributes, which would permanently shadow
+        # the properties below.
+        self.parentNode: "Element | None" = None
         # self.nodeType: int = Node.ATTRIBUTE_NODE
 
     def __repr__(self) -> str:
@@ -3032,6 +3062,47 @@ class Attr(Node):
 
     def __str__(self) -> str:
         return "" if self.value is None else str(self.value)
+
+    @property
+    def ownerElement(self) -> "Element | None":
+        """https://dom.spec.whatwg.org/#dom-attr-ownerelement -- the element
+        this attribute is attached to (via setAttributeNode et al), or None
+        for a detached Attr made with document.createAttribute()."""
+        return self.parentNode
+
+    @property
+    def localName(self) -> str:
+        # Node.localName defaults to None for anything that isn't an Element;
+        # override it here since an Attr's local name is meaningful (the
+        # qualified name minus any "prefix:", same derivation Element uses).
+        prefix = self.prefix
+        if prefix and self.name.startswith(prefix + ":"):
+            return self.name[len(prefix) + 1 :]
+        return self.name
+
+    @property
+    def prefix(self) -> str | None:  # type: ignore[override]
+        # domonic does not track a namespace prefix separately from the
+        # qualified name (setAttributeNS ignores the namespace -- see
+        # domonic-wpt-conformance); derived from the name string instead of
+        # a real prefix/namespace pair. Read-only here (unlike Node.prefix,
+        # a plain writeable attribute set once in Node.__init__, which Attr
+        # deliberately skips -- see Attr.__init__).
+        if ":" in self.name:
+            return self.name.split(":", 1)[0]
+        return None
+
+    @property
+    def namespaceURI(self) -> str | None:  # type: ignore[override]
+        # Always None: domonic's setAttributeNS() does not record a
+        # namespace against the attribute, a known, documented gap.
+        return None
+
+    @property
+    def specified(self) -> bool:
+        """Legacy attribute the spec keeps only for compatibility -- it
+        always returns True (https://dom.spec.whatwg.org/#dom-attr-specified)."""
+        return True
 
     @property
     def isId(self) -> bool:
@@ -4447,8 +4518,21 @@ class Element(Node):
 
     @staticmethod
     def _read_simple_selector_token(selector: str, start: int) -> tuple[str, int]:
+        # ``:`` is never a literal identifier character in CSS -- it always
+        # starts a pseudo-class/-element -- so an id/class token must stop
+        # there too, or ``.foo:empty`` reads back as the class "foo:empty"
+        # instead of class "foo" plus the ``:empty`` pseudo. A backslash
+        # escapes the next character regardless of what it is (``.foo\:bar``
+        # is the single class "foo:bar"), so it can never itself end the
+        # token; the caller CSS-unescapes the raw (still-escaped) result.
         end = start
-        while end < len(selector) and selector[end] not in ".#[":
+        while end < len(selector):
+            char = selector[end]
+            if char == "\\" and end + 1 < len(selector):
+                end += 2
+                continue
+            if char in ".#[:":
+                break
             end += 1
         return selector[start:end], end
 
@@ -4476,6 +4560,41 @@ class Element(Node):
         return value
 
     @staticmethod
+    def _css_unescape(raw: str) -> str:
+        """Decode CSS escapes in an identifier or attribute value: ``\\``
+        followed by 1-6 hex digits (and then one optional whitespace
+        character) is that Unicode code point; ``\\`` followed by anything
+        else is that character literally (used to smuggle punctuation --
+        ``:``, ``.``, ``[`` -- into a name that would otherwise end the
+        token early)."""
+        if "\\" not in raw:
+            return raw
+        out = []
+        i, n = 0, len(raw)
+        hex_digits_set = "0123456789abcdefABCDEF"
+        while i < n:
+            char = raw[i]
+            if char != "\\" or i + 1 >= n:
+                out.append(char)
+                i += 1
+                continue
+            i += 1
+            nxt = raw[i]
+            if nxt in hex_digits_set:
+                digits = nxt
+                i += 1
+                while i < n and len(digits) < 6 and raw[i] in hex_digits_set:
+                    digits += raw[i]
+                    i += 1
+                if i < n and raw[i] in " \t\n\r\f":
+                    i += 1
+                out.append(chr(int(digits, 16)))
+            else:
+                out.append(nxt)
+                i += 1
+        return "".join(out)
+
+    @staticmethod
     def _parse_simple_selector(query: str):
         selector = query.strip()
         if not selector:
@@ -4498,13 +4617,13 @@ class Element(Node):
                 token, position = Element._read_simple_selector_token(selector, position + 1)
                 if not token:
                     return None
-                parsed["id"] = token
+                parsed["id"] = Element._css_unescape(token)
                 continue
             if char == ".":
                 token, position = Element._read_simple_selector_token(selector, position + 1)
                 if not token:
                     return None
-                parsed["classes"].append(token)
+                parsed["classes"].append(Element._css_unescape(token))
                 continue
             if char == "[":
                 end = Element._find_selector_bracket(selector, position)
@@ -4519,9 +4638,9 @@ class Element(Node):
                     return None
                 parsed["attributes"].append(
                     (
-                        attribute.group(1),
+                        Element._css_unescape(attribute.group(1)),
                         attribute.group(2) or "",
-                        Element._strip_selector_quotes(attribute.group(3) or ""),
+                        Element._css_unescape(Element._strip_selector_quotes(attribute.group(3) or "")),
                     )
                 )
                 position = end + 1
@@ -4568,14 +4687,19 @@ class Element(Node):
             return not parent_is_element
 
         if pseudo == "empty":
+            # Per spec, only element nodes and *non-empty* text content count
+            # against emptiness -- whitespace-only text still counts (unlike
+            # ``:blank``), but comments and processing instructions never do.
+            # Deliberately not ``.strip()``: that would wrongly call a
+            # whitespace-only text child empty.
             for child in element.__dict__.get("args", ()):
                 if getattr(child, "nodeType", None) == Node.ELEMENT_NODE:
                     return False
-                if isinstance(child, str) and str(child).strip():
+                if isinstance(child, str) and child != "":
                     return False
                 if (
                     getattr(child, "nodeType", None) == Node.TEXT_NODE
-                    and str(getattr(child, "textContent", "") or "").strip()
+                    and str(getattr(child, "textContent", "") or "") != ""
                 ):
                     return False
             return True
@@ -4614,6 +4738,12 @@ class Element(Node):
             return value in attr_value.split()
         if operator == "|=":
             return attr_value == value or attr_value.startswith(value + "-")
+        # Per spec, an empty value never matches with these three operators --
+        # ``str.startswith("")`` / ``endswith("")`` / ``"" in str`` are all
+        # trivially true in Python, which would otherwise make ``[x^=""]``
+        # match every element that merely has an ``x`` attribute.
+        if operator in ("^=", "$=", "*=") and value == "":
+            return False
         if operator == "^=":
             return attr_value.startswith(value)
         if operator == "$=":
@@ -4694,6 +4824,9 @@ class Element(Node):
                         return False
         return False
 
+    # The legacy, prefixed alias every browser still ships alongside matches().
+    webkitMatchesSelector = matches
+
     def _matches_selector_chain(self, selector: str):
         """``True`` / ``False`` if a combinator selector matches this element,
         or ``None`` if the selector is too complex for the fast matcher."""
@@ -4702,6 +4835,7 @@ class Element(Node):
                 _element_children,
                 _match_parsed_selector,
                 _match_simple_pseudo,
+                _parse_stripped_selector,
                 _split_simple_selector_chain,
                 _strip_simple_pseudo,
             )
@@ -4716,7 +4850,7 @@ class Element(Node):
             if stripped is None:
                 return None
             simple_sel, pseudo = stripped
-            compound = Element._parse_simple_selector(simple_sel)
+            compound = _parse_stripped_selector(simple_sel)
             if compound is None:
                 return None
             parsed.append((combinator, compound, pseudo))
@@ -5130,6 +5264,9 @@ class Element(Node):
     @property
     def clientHeight(self):
         """Returns the height of an element, including padding"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.client_height
         return (
             Element._style_number(self.style.height)
             + Element._style_number(self.style.paddingTop)
@@ -5139,16 +5276,25 @@ class Element(Node):
     @property
     def clientLeft(self):
         """Returns the width of the left border of an element"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.border_left
         return Element._style_number(self.style.left)
 
     @property
     def clientTop(self):
         """Returns the width of the top border of an element"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.border_top
         return Element._style_number(self.style.top)
 
     @property
     def clientWidth(self):
         """Returns the width of an element, including padding"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.client_width
         return (
             Element._style_number(self.style.width)
             + Element._style_number(self.style.paddingLeft)
@@ -5302,14 +5448,35 @@ class Element(Node):
             return None
         return Attr(attribute.lstrip("_"), value)
 
+    def set_layout_box(self, box) -> None:
+        """Attach the box a layout engine computed for this element.
+
+        Once set, ``getBoundingClientRect``/``clientWidth``/``clientHeight``/
+        ``clientTop``/``clientLeft``/``offsetWidth``/``offsetHeight``/
+        ``offsetLeft``/``offsetTop`` report it instead of falling back to
+        their inline-style heuristic. See ``domonic.layout.LayoutBox``.
+        """
+        from domonic.layout import set_layout_box
+
+        set_layout_box(self, box)
+
+    def get_layout_box(self):
+        """The ``domonic.layout.LayoutBox`` last set on this element, or
+        ``None`` if no layout engine has supplied one yet."""
+        return _get_layout_box(self)
+
     def getBoundingClientRect(self):
         """Returns the size of an element and its position relative to the viewport"""
-        rect = DOMRect(
-            Element._style_number(self.style.left),
-            Element._style_number(self.style.top),
-            self.offsetWidth(),
-            self.offsetHeight(),
-        )
+        box = _get_layout_box(self)
+        if box is not None:
+            rect = DOMRect(box.x, box.y, box.width, box.height)
+        else:
+            rect = DOMRect(
+                Element._style_number(self.style.left),
+                Element._style_number(self.style.top),
+                self.offsetWidth(),
+                self.offsetHeight(),
+            )
         _process_observer_notifications(self, rect)
         return rect
 
@@ -5698,6 +5865,9 @@ class Element(Node):
 
     def offsetHeight(self) -> float:
         """Returns the height of an element, including padding, border and scrollbar"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.height
         return (
             self.clientHeight
             + Element._style_number(self.style.borderTopWidth)
@@ -5706,6 +5876,9 @@ class Element(Node):
 
     def offsetWidth(self) -> float:
         """Returns the width of an element, including padding, border and scrollbar"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.width
         return (
             self.clientWidth
             + Element._style_number(self.style.borderLeftWidth)
@@ -5714,6 +5887,9 @@ class Element(Node):
 
     def offsetLeft(self) -> float:
         """Returns the horizontal offset position of an element"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.x
         return Element._style_number(self.style.left)
 
     def offsetParent(self) -> Node | None:
@@ -5722,6 +5898,9 @@ class Element(Node):
 
     def offsetTop(self) -> float:
         """Returns the vertical offset position of an element"""
+        box = _get_layout_box(self)
+        if box is not None:
+            return box.y
         return Element._style_number(self.style.top)
 
     # @property
@@ -6064,6 +6243,12 @@ class Element(Node):
             attr (Attr): An Attr object.
         """
         self.setAttribute(attr.name, attr.value)
+        # So attr.ownerElement (and Attr.getNamedItem/setNamedItem/removeNamedItem,
+        # which already assume it) resolve correctly. domonic's attribute
+        # storage doesn't otherwise track a stable Attr identity per slot -- a
+        # deeper "live" Attr (value changes propagate both ways, replacing an
+        # existing node returns and detaches it) is a separate, bigger gap.
+        attr.parentNode = self
 
     @property
     def style(self):
@@ -6288,10 +6473,82 @@ class DOMImplementation:
         return True
 
 
-class ProcessingInstruction(ChildNode):
+class _CharacterDataOnAttr:
+    """The ``CharacterData`` interface (``.data``, ``appendData``,
+    ``deleteData``, ``insertData``, ``replaceData``, ``substringData``,
+    ``.length``), for a class that stores its text on ``self._data`` rather
+    than in ``self.args`` (``Text``'s storage, shared with ``Node``'s
+    children model). ``Comment`` and ``ProcessingInstruction`` are
+    ``CharacterData`` per spec but are not implemented as real subclasses
+    here, since the two storage models do not mix -- this mixin gives them
+    the same behaviour (including the same DOMString/None coercion of a
+    directly-assigned ``.data``) without that.
+
+    A host class stores into a ``_data`` slot (not ``data`` -- a ``data``
+    slot declared directly on that class would shadow this mixin's ``data``
+    property, since a class's own attributes always win over an inherited
+    one regardless of base order).
+    """
+
+    __slots__ = ()
+
+    @property
+    def data(self) -> str:
+        return self._data
+
+    @data.setter
+    def data(self, value: Any) -> None:
+        # [LegacyNullToEmptyString]: None -> "" (matching Text.data); anything
+        # else DOMString-coerces rather than requiring a str.
+        self._data = _cdata_coerce_string(value)  # type: ignore[misc]  # slot lives on the concrete subclass
+
+    def appendData(self, data: Any) -> str:
+        old_value = self.data
+        self.data = old_value + _cdata_coerce_string(data)
+        _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
+        return self.data
+
+    def deleteData(self, offset: int, count: int) -> str:
+        old_value = self.data
+        valid_offset, valid_count = _cdata_validate_range(old_value, offset, count)
+        assert valid_count is not None  # count was passed, so it comes back non-None
+        self.data = old_value[:valid_offset] + old_value[valid_offset + valid_count :]
+        _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
+        return self.data
+
+    def insertData(self, offset: int, data: Any) -> str:
+        old_value = self.data
+        valid_offset, _count = _cdata_validate_range(old_value, offset)
+        self.data = old_value[:valid_offset] + _cdata_coerce_string(data) + old_value[valid_offset:]
+        _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
+        return self.data
+
+    def replaceData(self, offset: int, count: int, data: Any) -> str:
+        old_value = self.data
+        valid_offset, valid_count = _cdata_validate_range(old_value, offset, count)
+        assert valid_count is not None  # count was passed, so it comes back non-None
+        self.data = old_value[:valid_offset] + _cdata_coerce_string(data) + old_value[valid_offset + valid_count :]
+        _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
+        return self.data
+
+    def substringData(self, offset: int, length: int) -> str:
+        data = self.data
+        valid_offset, valid_length = _cdata_validate_range(data, offset, length)
+        assert valid_length is not None  # length was passed, so it comes back non-None
+        return data[valid_offset : valid_offset + valid_length]
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def length(self) -> int:
+        return len(self.data)
+
+
+class ProcessingInstruction(_CharacterDataOnAttr, ChildNode):
 
     nodeType: int = Node.PROCESSING_INSTRUCTION_NODE
-    __slots__ = ("target", "data")
+    __slots__ = ("target", "_data")
 
     def __init__(self, target, data) -> None:
         super().__init__()
@@ -6317,11 +6574,11 @@ class ProcessingInstruction(ChildNode):
         yield self.toString()
 
 
-class Comment(ChildNode):
+class Comment(_CharacterDataOnAttr, ChildNode):
 
     nodeType: int = Node.COMMENT_NODE
     nodeName: str = "#comment"
-    __slots__ = "data"
+    __slots__ = "_data"
 
     def __init__(self, *data) -> None:
         self.data = "".join(str(part) for part in data)
@@ -6356,13 +6613,13 @@ class Comment(ChildNode):
         return len(self.data)
 
 
-class CDATASection(ChildNode):
+class CDATASection(_CharacterDataOnAttr, ChildNode):
     """The CDATASection interface represents a CDATA section that can be used within XML
     to include extended portions of unescaped text, such that the symbols < and & do not
     need escaping as they normally do within XML when used as text."""
 
     nodeType: int = Node.CDATA_SECTION_NODE
-    __slots__ = "data"
+    __slots__ = "_data"
 
     def __init__(self, data) -> None:
         self.data = data
@@ -6612,10 +6869,17 @@ class Range(AbastractRange):
 
     @staticmethod
     def _container_length(node: Node | None) -> int:
+        """https://dom.spec.whatwg.org/#concept-node-length
+
+        A CharacterData node's length is its data's length, not a child
+        count -- and that means every CharacterData node, not just Text:
+        Comment and ProcessingInstruction are boundary-addressable by
+        character offset too (``range.setEnd(comment, 2)`` is valid).
+        """
         if node is None:
             return 0
-        if isinstance(node, Text):
-            return len(node.textContent)
+        if isinstance(node, (Text, Comment, ProcessingInstruction, CDATASection)):
+            return len(node.data)
         return len(getattr(node, "childNodes", []))
 
     @staticmethod
@@ -6628,7 +6892,21 @@ class Range(AbastractRange):
         return path
 
     @staticmethod
+    def _child_index(node: Node) -> int:
+        parent = getattr(node, "parentNode", None)
+        siblings = list(getattr(parent, "childNodes", [])) if parent is not None else []
+        try:
+            return siblings.index(node)
+        except ValueError:
+            return -1
+
+    @staticmethod
     def _compare_points(node_a: Node, offset_a: int, node_b: Node, offset_b: int) -> int:
+        """https://dom.spec.whatwg.org/#concept-range-bp-position
+
+        -1/0/1 for (node_a, offset_a) before/equal/after (node_b, offset_b).
+        Assumes both points share a root.
+        """
         if node_a is node_b:
             if offset_a < offset_b:
                 return -1
@@ -6636,8 +6914,25 @@ class Range(AbastractRange):
                 return 1
             return 0
 
-        path_a = Range._path_to_root(node_a)
+        path_a = Range._path_to_root(node_a)  # [node_a, parent, ..., root]
         path_b = Range._path_to_root(node_b)
+
+        # One of the two points' nodes is an ancestor of the other's: this is
+        # not the general sibling-subtree case below, it needs its own rule
+        # (a plain "walk up from both and compare sibling index" degenerates
+        # here, since one path is a strict prefix-continuation of the other,
+        # not a divergence at some common ancestor's *children*).
+        if node_a in path_b:
+            # node_a is an ancestor of node_b: locate node_a's child that
+            # (node_b is, or descends from) -- offset_a is a slot between
+            # node_a's children, so A is before B unless that slot is past
+            # the child leading to B.
+            child = path_b[path_b.index(node_a) - 1]
+            return -1 if offset_a <= Range._child_index(child) else 1
+        if node_b in path_a:
+            child = path_a[path_a.index(node_b) - 1]
+            return 1 if offset_b <= Range._child_index(child) else -1
+
         common = None
         while path_a and path_b and path_a[-1] is path_b[-1]:
             common = path_a.pop()
@@ -7000,21 +7295,51 @@ class Range(AbastractRange):
             return DocumentFragment(fragment)
         return DocumentFragment(fragment)
 
+    def _collect_range_text(self, node: Node, start_container: Node, end_container: Node, parts: list[str]) -> None:
+        """Appends the text this range spans from ``node``'s children onto
+        ``parts``, recursing into whichever children the range's boundaries
+        fall inside. A raw string child (domonic's ``div("hello")`` shorthand
+        for a Text node) can never itself hold a boundary -- nothing can
+        address a position inside it -- so once its slot overlaps at all, it
+        is included whole, same as a fully-contained Text node.
+        """
+        children = node.__dict__.get("args", ())
+        for index, child in enumerate(children):
+            if self._compare_points(node, index + 1, start_container, self.startOffset) <= 0:
+                continue  # this child's whole slot is at or before the range start
+            if self._compare_points(node, index, end_container, self.endOffset) >= 0:
+                continue  # this child's whole slot is at or after the range end
+            if isinstance(child, str):
+                parts.append(child)
+            elif isinstance(child, Text):
+                text = child.textContent
+                lo = self.startOffset if child is start_container else 0
+                hi = self.endOffset if child is end_container else len(text)
+                parts.append(text[lo:hi])
+            elif isinstance(child, Node):
+                self._collect_range_text(child, start_container, end_container, parts)
+
     def toString(self) -> str:
-        if self.startContainer is None:
+        """https://dom.spec.whatwg.org/#dom-range-stringifier
+
+        Concatenates the *data of Text node descendants* (and, for domonic's
+        raw-string child shorthand, plain string children) the range spans --
+        not ``str()``/markup of whatever nodes happen to sit between the
+        boundaries. A range spanning ``<p>hi</p><p>bye</p>`` stringifies to
+        ``"hibye"``, not ``"<p>hi</p><p>bye</p>"``.
+        """
+        start_container = self.startContainer
+        end_container = self.endContainer
+        if start_container is None or end_container is None:
             return ""
-        if isinstance(self.startContainer, Text) and self.startContainer == self.endContainer:
-            return self.startContainer.textContent[self.startOffset : self.endOffset]
-        if self.startContainer == self.endContainer:
-            container = self.startContainer
-            children = list(container.childNodes)
-            return "".join(str(child) for child in children[self.startOffset : self.endOffset])
-        child_slice = self._common_ancestor_child_slice()
-        if child_slice is not None:
-            container, start_index, end_index = child_slice
-            children = list(container.childNodes)
-            return "".join(str(child) for child in children[start_index:end_index])
-        return ""
+        if isinstance(start_container, Text) and start_container is end_container:
+            return start_container.textContent[self.startOffset : self.endOffset]
+        root = self.commonAncestorContainer
+        if root is None:
+            return ""
+        parts: list[str] = []
+        self._collect_range_text(root, start_container, end_container, parts)
+        return "".join(parts)
 
     def comparePoint(self, refNode: Node, offset: int) -> int:
         if self.startContainer is None or self.endContainer is None:
@@ -8171,6 +8496,42 @@ class DocumentFragment(Node):
             yield from self._stream_value(child)
 
 
+def _cdata_validate_range(data: str, offset: int, count: int | None = None) -> tuple[int, int | None]:
+    """The bounds-checking shared by every ``CharacterData`` range method
+    (``Text``, and -- since domonic does not make ``Comment`` /
+    ``ProcessingInstruction`` real ``CharacterData`` subclasses, storage
+    model differences aside -- their own ``appendData`` etc. too).
+
+    ``offset``/``count`` are coerced the way the spec's ``unsigned long`` IDL
+    type coerces a JS number: a negative value wraps modulo 2**32
+    (``ToUint32``) rather than being rejected outright, so e.g.
+    ``insertData(-0x100000000 + 2, "X")`` is offset 2, not an error -- it
+    only ends up out of bounds if the wrapped value actually is (the huge
+    end of the range, in practice).
+    """
+    if not isinstance(offset, int):
+        raise TypeError("offset must be an integer")
+    offset &= 0xFFFFFFFF
+    if offset > len(data):
+        raise IndexError("CharacterData offset is out of bounds")
+    if count is not None:
+        if not isinstance(count, int):
+            raise TypeError("count must be an integer")
+        count &= 0xFFFFFFFF
+    return offset, count
+
+
+def _cdata_coerce_string(value: Any) -> str:
+    # A range method's data parameter is a plain DOMString (unlike the
+    # [LegacyNullToEmptyString] `.data` attribute setter) -- but domonic
+    # treats a Python None as "no value" everywhere else on these classes, so
+    # it is coerced the same way here rather than raising or producing the
+    # JS-specific string "null".
+    if value is None:
+        return ""
+    return value if isinstance(value, str) else str(value)
+
+
 class CharacterData(Node):
     """
     The CharacterData abstract interface represents a Node object that contains characters.
@@ -8202,18 +8563,14 @@ class CharacterData(Node):
     def length(self) -> int:
         return len(self)
 
-    def _validate_data_range(self, offset: int, count: int | None = None) -> str:
-        if not isinstance(offset, int):
-            raise TypeError("offset must be an integer")
+    def _validate_data_range(self, offset: int, count: int | None = None) -> tuple[str, int, int | None]:
+        """Returns ``(data, offset, count)`` -- see ``_cdata_validate_range``
+        for the offset/count coercion rules."""
         data = self.args[0] if self.args else ""
-        if offset < 0 or offset > len(data):
-            raise IndexError("CharacterData offset is out of bounds")
-        if count is not None:
-            if not isinstance(count, int):
-                raise TypeError("count must be an integer")
-            if count < 0:
-                raise IndexError("CharacterData count is out of bounds")
-        return data
+        offset, count = _cdata_validate_range(data, offset, count)
+        return data, offset, count
+
+    _coerce_data_string = staticmethod(_cdata_coerce_string)
 
     @property
     def nodeValue(self) -> str:
@@ -8235,7 +8592,7 @@ class CharacterData(Node):
         """Appends the given DOMString to the CharacterData.data string; when this method returns,
         data contains the concatenated DOMString."""
         old_value = self.args[0] if self.args else ""
-        updated = old_value + data
+        updated = old_value + self._coerce_data_string(data)
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -8244,8 +8601,9 @@ class CharacterData(Node):
         """Removes the specified amount of characters, starting at the specified offset,
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString.
         """
-        old_value = self._validate_data_range(offset, count)
-        updated = old_value[:offset] + old_value[offset + count :]
+        old_value, valid_offset, valid_count = self._validate_data_range(offset, count)
+        assert valid_count is not None  # count was passed, so it comes back non-None
+        updated = old_value[:valid_offset] + old_value[valid_offset + valid_count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -8253,8 +8611,8 @@ class CharacterData(Node):
     def insertData(self, offset: int, data):
         """Inserts the specified characters, at the specified offset, in the CharacterData.data string;
         when this method returns, data contains the modified DOMString."""
-        old_value = self._validate_data_range(offset)
-        updated = old_value[:offset] + data + old_value[offset:]
+        old_value, valid_offset, _count = self._validate_data_range(offset)
+        updated = old_value[:valid_offset] + self._coerce_data_string(data) + old_value[valid_offset:]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -8262,8 +8620,9 @@ class CharacterData(Node):
     def replaceData(self, offset: int, count: int, data):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
-        old_value = self._validate_data_range(offset, count)
-        updated = old_value[:offset] + data + old_value[offset + count :]
+        old_value, valid_offset, valid_count = self._validate_data_range(offset, count)
+        assert valid_count is not None  # count was passed, so it comes back non-None
+        updated = old_value[:valid_offset] + self._coerce_data_string(data) + old_value[valid_offset + valid_count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
         return updated
@@ -8275,8 +8634,9 @@ class CharacterData(Node):
     def substringData(self, offset: int, length: int):
         """Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset."""
-        data = self._validate_data_range(offset, length)
-        return data[offset : offset + length]
+        data, valid_offset, valid_length = self._validate_data_range(offset, length)
+        assert valid_length is not None  # length was passed, so it comes back non-None
+        return data[valid_offset : valid_offset + valid_length]
 
 
 class EntityReference(Node):
@@ -8417,8 +8777,7 @@ class Text(CharacterData):
         """Splits the Text node into two Text nodes at the specified offset, keeping both in the tree as siblings.
         The first node is returned, while the second node is discarded and exists outside the tree.
         """
-        self._validate_data_range(offset)
-        current = self.args[0] if self.args else ""
+        current, offset, _count = self._validate_data_range(offset)
         head = current[:offset]
         tail = current[offset:]
         self.args = (head,)
@@ -8446,8 +8805,9 @@ class Text(CharacterData):
 
     @data.setter
     def data(self, data):
-        if not isinstance(data, str):
-            raise ValueError("Data must be a string.")
+        # [LegacyNullToEmptyString]: None -> "" (matching nodeValue/textContent
+        # above); anything else DOMString-coerces rather than requiring a str.
+        data = _cdata_coerce_string(data)
         old_value = self.args[0] if self.args else ""
         self.args = (data,)
         _queue_mutation_record("characterData", self, old_value=old_value)
@@ -8465,6 +8825,11 @@ class Text(CharacterData):
     @property
     def firstChild(self):
         return None
+
+    lastChild = firstChild
+
+    def hasChildNodes(self) -> bool:
+        return False
 
     # @property
     # def firstChild(self):
@@ -9950,6 +10315,20 @@ class TreeWalker:
         self.expandEntityReferences = expandEntityReferences
 
     @property
+    def currentNode(self) -> Node:
+        """The Node the TreeWalker is currently positioned on."""
+        return self._currentNode
+
+    @currentNode.setter
+    def currentNode(self, value: Node) -> None:
+        # https://dom.spec.whatwg.org/#dom-treewalker-currentnode -- a plain
+        # attribute in IDL, but typed `Node`, so a non-Node value is a
+        # WebIDL type error, not silently accepted.
+        if not isinstance(value, Node):
+            raise TypeError("TreeWalker.currentNode must be a Node")
+        self._currentNode = value
+
+    @property
     def root(self) -> Node:
         """Returns a Node representing the root node as specified when the TreeWalker was created."""
         return self._root
@@ -10040,6 +10419,11 @@ class TreeWalker:
                 if result == NodeFilter.FILTER_ACCEPT:
                     self.currentNode = node
                     return node
+                # Per spec: try the (possibly-descended-into) node's previous
+                # sibling next. Without this the loop never advances past a
+                # rejected/skipped candidate and spins on the same `sibling`
+                # forever -- a real hang, not just a wrong answer.
+                sibling = node.previousSibling
             if node == self.root or node.parentNode == None:
                 return None
             node = node.parentNode
@@ -11185,6 +11569,13 @@ class XMLDocument(Document):
 class HTMLDocument(Document):
     name = "html"
     contentType: str = "text/html"
+
+    @staticmethod
+    def createCDATASection(data: str) -> CDATASection:
+        """https://dom.spec.whatwg.org/#dom-document-createcdatasection --
+        CDATA sections are an XML-only construct; an HTML document must
+        refuse to create one."""
+        raise DOMException("CDATASection nodes are not supported in HTML documents.", "NotSupportedError")
 
 
 class HTMLEmbedElement(HTMLElement):

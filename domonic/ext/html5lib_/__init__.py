@@ -128,10 +128,14 @@ def getDomBuilder(ignore: object):
             if isinstance(name, tuple):
                 raise NotImplementedError
             else:
-                try:
-                    return self.element.attributes[name].value
-                except Exception as e:
-                    return ""
+                # MutableMapping's default __contains__ (and so `in`/`not in`)
+                # works by calling __getitem__ and catching KeyError -- it must
+                # propagate, not be swallowed, or every "x not in element.attributes"
+                # check (used by html5lib's insertHtmlElement -> startTagHtml to
+                # merge a later <html ...> tag's attributes onto the already-
+                # inserted root) sees every name as already present and never
+                # copies the attribute across.
+                return self.element.attributes[name].value
 
         def __delitem__(self, name):
             if isinstance(name, tuple):

@@ -1306,6 +1306,27 @@ class TestCase(unittest.TestCase):
         self.assertEqual(c.getPropertyValue("border-top-color"), "rgb(10, 20, 30)")
         self.assertEqual(c.getPropertyValue("border-top"), "1px solid rgb(10, 20, 30)")
 
+    def test_grid_column_row_shorthand_splits_on_slash_not_whitespace(self):
+        # grid-column/grid-row is "<start> / <end>" -- unlike gap/overflow,
+        # each <grid-line> can itself contain a space ("span 3"), so the
+        # separator has to be the slash, not whitespace.
+        e = document.createElement("div")
+        e.setAttribute("style", "grid-column: 2 / span 3; grid-row: auto / 4")
+        c = ComputedStyleDeclaration(e)
+        self.assertEqual(c.getPropertyValue("grid-column-start"), "2")
+        self.assertEqual(c.getPropertyValue("grid-column-end"), "span 3")
+        self.assertEqual(c.getPropertyValue("grid-row-start"), "auto")
+        self.assertEqual(c.getPropertyValue("grid-row-end"), "4")
+        self.assertEqual(c.getPropertyValue("grid-column"), "2 / span 3")
+
+    def test_grid_column_single_value_leaves_end_auto(self):
+        e = document.createElement("div")
+        e.setAttribute("style", "grid-column: 3")
+        c = ComputedStyleDeclaration(e)
+        self.assertEqual(c.getPropertyValue("grid-column-start"), "3")
+        self.assertEqual(c.getPropertyValue("grid-column-end"), "auto")
+        self.assertEqual(c.getPropertyValue("grid-column"), "3")
+
     def test_get_computed_style_for_pseudo_element(self):
         from domonic.dom import Document
         from domonic.style import CSSStyleSheet, ComputedStyleDeclaration

@@ -1128,6 +1128,10 @@ class DOMTest(unittest.TestCase):
         self.assertEqual([node.tagName for node in combined], ["div", "span", "p"])
 
     def test_class_selectors_match_literal_class_tokens(self):
+        # A bare "+" / "~" is always a sibling combinator in CSS (matching
+        # every browser and the WPT Selectors-API suite) -- "div+p" is
+        # exactly "div + p" whether or not it has surrounding whitespace.
+        # A literal "+" in a class *name* needs the CSS escape, "\+".
         page = html(
             body(
                 div("literal", _class="foo+bar widget"),
@@ -1136,13 +1140,13 @@ class DOMTest(unittest.TestCase):
             )
         )
 
-        matches = page.querySelectorAll(".foo+bar")
+        matches = page.querySelectorAll(r".foo\+bar")
         self.assertEqual([node.textContent for node in matches], ["literal", "multi"])
         self.assertEqual(
-            [node.textContent for node in page.querySelectorAll("div.foo+bar")],
+            [node.textContent for node in page.querySelectorAll(r"div.foo\+bar")],
             ["literal"],
         )
-        self.assertEqual(page.querySelectorAll(".foo+bar.missing"), [])
+        self.assertEqual(page.querySelectorAll(r".foo\+bar.missing"), [])
 
     def test_attribute_selectors_match_literal_tokens(self):
         page = html(
@@ -1497,7 +1501,7 @@ class DOMTest(unittest.TestCase):
         r = Range()
         r.setStart(container, 1)
         r.setEnd(container, 3)
-        self.assertEqual(r.toString(), "<span>b</span><span>c</span>")
+        self.assertEqual(r.toString(), "bc")  # text content only, not markup -- see the DOM spec stringifier
 
         clone = r.cloneContents()
         self.assertEqual(str(clone), "<span>b</span><span>c</span>")
@@ -1546,10 +1550,7 @@ class DOMTest(unittest.TestCase):
         r.setStartBefore(first)
         r.setEndAfter(third)
 
-        self.assertEqual(
-            r.toString(),
-            '<span id="first">a</span><span id="second">b</span><span id="third">c</span>',
-        )
+        self.assertEqual(r.toString(), "abc")  # text content only, not markup
         self.assertEqual(str(r.cloneContents()), str(r.extractContents()))
         self.assertEqual(str(container), "<div></div>")
 
@@ -1674,10 +1675,7 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(shadow_selection.rangeCount, 1)
         self.assertIs(shadow_button.getRootNode(), shadow)
         self.assertIs(shadow_button.getRootNode({"composed": True}), page)
-        self.assertEqual(
-            shadow_selection.getRangeAt(0).toString(),
-            '<button id="shadow-button" style="left: 0px; top: 0px; width: 40px; height: 20px;">go</button>',
-        )
+        self.assertEqual(shadow_selection.getRangeAt(0).toString(), "go")  # text content only, not markup
 
     def test_custom_elements_registry_and_upgrade(self):
         from domonic import domonic as domonic_module
@@ -3482,17 +3480,22 @@ class DOMTest(unittest.TestCase):
         for method, args in (
             (text.substringData, (-1, 1)),
             (text.substringData, (99, 1)),
-            (text.substringData, (0, -1)),
             (text.insertData, (-1, "x")),
             (text.deleteData, (-1, 1)),
-            (text.deleteData, (0, -1)),
             (text.replaceData, (-1, 1, "x")),
-            (text.replaceData, (0, -1, "x")),
             (text.splitText, (-1,)),
             (text.splitText, (99,)),
         ):
             with self.assertRaises(IndexError):
                 method(*args)
+
+        # offset/count are WebIDL `unsigned long`: a negative Python int wraps
+        # modulo 2**32 (matching JS's ToUint32) rather than being rejected
+        # outright, so e.g. a small negative count clamps to "the rest of the
+        # string" instead of raising.
+        self.assertEqual(Text("abcdef").substringData(0, -1), "abcdef")
+        self.assertEqual(Text("abcdef").deleteData(0, -1), "")
+        self.assertEqual(Text("abcdef").replaceData(0, -1, "x"), "x")
 
         for method, args in (
             (text.substringData, ("0", 1)),

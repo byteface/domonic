@@ -61,6 +61,17 @@ class Storage:
         return iter(self.storage)
 
     def __getattr__(self, key: str) -> str | None:
+        # A dunder name is never a Web Storage key -- and NOT excluding it
+        # here is actively dangerous: probing for one (e.g. copy.deepcopy /
+        # pickle checking for __setstate__ / __reduce__, as happens on any
+        # node holding a reference to this object, directly or via
+        # ownerDocument.localStorage) reaches into ``self.storage`` before
+        # __init__ has set it, which resolves through this same __getattr__
+        # again -- infinite recursion. Raising here is also just correct:
+        # __getattr__ is only consulted when normal lookup already failed,
+        # so a missing dunder should 404 like any other missing attribute.
+        if key.startswith("__") and key.endswith("__"):
+            raise AttributeError(key)
         return self.getItem(key)
 
     def __setattr__(self, key: str, value: str) -> None:

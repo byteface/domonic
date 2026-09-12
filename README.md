@@ -68,18 +68,20 @@ New here? Start with the <a href="https://domonic.readthedocs.io/guides/examples
 
 ## Recipes
 
-**Scrape a page, keep a real DOM** — Beautiful Soup ergonomics, domonic nodes underneath:
+**Scrape a page** — fetch and query in one call, real DOM underneath:
 
 ```python
-from domonic.bs4 import BeautifulSlop
+from domonic import scrape
 
-soup = BeautifulSlop("<main><a href='/docs'>Docs</a></main>", "html.parser")
-
-for link in soup.find_all("a", href=True):
-    print(link.text, link["href"])                       # Docs /docs
-
-print(soup.querySelector("a").getAttribute("href"))       # same object, full DOM API
+page = scrape("https://example.com")
+print(page.querySelector("h1").textContent)
+print([a.href for a in page.querySelectorAll("a[href]")])
 ```
+
+`scrape()` also takes a CSS `selector=`, a list of URLs, or `to="text" | "json" | "pyml"` —
+see the <a href="https://domonic.readthedocs.io/guides/scrape-html/" target="_blank" rel="noopener">scraping guide</a>.
+Porting Beautiful Soup code? `from domonic.bs4 import BeautifulSlop` wraps the same nodes with
+`find_all`, `select` and `get_text`.
 
 **Build a server-side component** — functions that return DOM trees:
 
@@ -235,8 +237,8 @@ page = domonic.parseString("<!doctype html><article><h1>Hello from HTML</h1></ar
 print(page.querySelector("h1"))
 ```
 
-To fetch and parse a live URL in one step, assign `window.location` (see the
-<a href="https://domonic.readthedocs.io/packages/html/" target="_blank" rel="noopener">html docs</a>).
+To fetch and parse a live URL in one step, use
+<a href="https://domonic.readthedocs.io/guides/scrape-html/" target="_blank" rel="noopener">`scrape()`</a>.
 
 Parsing is fast. 🚀 Pick a backend for zero dependencies, malformed-HTML repair,
 or raw speed:
@@ -282,8 +284,7 @@ See the <a href="https://domonic.readthedocs.io/packages/dom/" target="_blank" r
 
 ## More in domonic
 
-Each of these is a package with its own docs — a taste here, the full surface a
-click away.
+Each of these is a package with its own docs
 
 <details>
 <summary><strong>JavaScript-style APIs</strong> — <code>Math</code>, <code>Array</code>, <code>Date</code>, <code>URL</code>, <code>Promise</code>, timers…</summary>

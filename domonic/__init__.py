@@ -1797,6 +1797,8 @@ set_default_parser = domonic.set_default_parser
 get_default_parser = domonic.get_default_parser
 from domonic.html import render
 from domonic.ssr import compile, compiled
+from domonic._scrape import scrape
 
 domonic.compile = staticmethod(compile)
 domonic.compiled = staticmethod(compiled)
+domonic.scrape = staticmethod(scrape)

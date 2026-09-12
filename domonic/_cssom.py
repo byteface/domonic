@@ -645,6 +645,18 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             basis = "0%"
         return [("flex-grow", grow), ("flex-shrink", shrink), ("flex-basis", basis)]
 
+    if name in ("grid-column", "grid-row"):
+        # <grid-line> [ / <grid-line> ]? -- the slash, not whitespace, is the
+        # separator (each <grid-line> can itself contain a space: "span 3").
+        parts = [p.strip() for p in value.split("/")]
+        if len(parts) == 1:
+            # no end line given: per spec this leaves -end as auto unless
+            # -start names a line, a narrower case domonic doesn't track.
+            return [(longs[0], parts[0]), (longs[1], "auto")]
+        if len(parts) == 2:
+            return list(zip(longs, parts))
+        return None
+
     if name in (
         "overflow",
         "gap",
@@ -653,8 +665,6 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         "place-self",
         "flex-flow",
         "columns",
-        "grid-column",
-        "grid-row",
     ):
         parts = value.split()
         if len(parts) == 1:
@@ -827,6 +837,14 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
         c = get("border-top-color")
         return " ".join(x for x in (w, s, c) if x and x not in ("medium", "currentcolor")) or s
 
+    if name in ("grid-column", "grid-row"):
+        start, end = (get(long) for long in longs)
+        if start == "" or end == "":
+            return ""
+        if end == "auto":
+            return start
+        return f"{start} / {end}"
+
     if name in (
         "overflow",
         "gap",
@@ -835,8 +853,6 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
         "place-items",
         "place-self",
         "columns",
-        "grid-column",
-        "grid-row",
     ):
         vals = [get(long) for long in longs]
         if any(v == "" for v in vals):

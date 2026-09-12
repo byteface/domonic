@@ -801,6 +801,7 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     paren_depth = 0
     quote: str | None = None
     pending_space = False
+    escaped_next = False
 
     for char in selector.strip():
         if quote:
@@ -808,10 +809,56 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
             if char == quote:
                 quote = None
             continue
+        # A backslash escapes the very next character, unconditionally --
+        # combinator, bracket, paren, quote or space -- so ``.foo\+bar`` is
+        # one class token, never a class ``.foo`` and a ``+`` combinator.
+        # Left raw (still escaped) here; Element._css_unescape decodes it.
+        if escaped_next:
+            token.append(char)
+            escaped_next = False
+            continue
+        if char == "\\":
+            token.append(char)
+            escaped_next = True
+            continue
         if char in ("'", '"'):
             token.append(char)
             quote = char
             continue
+
+        # Combinators only start at the top level, between compounds -- never
+        # while inside ``[...]`` / ``(...)``. Checked before the bracket/paren
+        # handling below so a descendant combinator followed directly by a
+        # bracket or paren (``#id [attr]``, ``#id :not(...)``) is still
+        # recognised as a combinator instead of being folded into the
+        # previous compound's token.
+        if not bracket_depth and not paren_depth:
+            # ``>``, ``+`` and ``~`` are always combinators at the top level --
+            # whitespace around them is optional in CSS (``div+p`` is exactly
+            # ``div + p``). A literal ``+``/``~`` can never occur unescaped in
+            # a class/id/tag name, so there is no ambiguity to guard against.
+            if char in (">", "+", "~"):
+                current = "".join(token).strip()
+                if not current:
+                    return None
+                parts.append((combinator, current))
+                token = []
+                combinator = char
+                pending_space = False
+                continue
+            if char.isspace():
+                if token:
+                    pending_space = True
+                continue
+            if pending_space:
+                current = "".join(token).strip()
+                if not current:
+                    return None
+                parts.append((combinator, current))
+                token = []
+                combinator = " "
+                pending_space = False
+
         if char == "[":
             bracket_depth += 1
             token.append(char)
@@ -832,32 +879,6 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
                 return None
             token.append(char)
             continue
-        if bracket_depth or paren_depth:
-            token.append(char)
-            continue
-        # ``>`` is always a combinator; ``+`` / ``~`` only when whitespace-
-        # separated, so a literal class token such as ``.foo+bar`` is preserved.
-        if char == ">" or (char in ("+", "~") and pending_space):
-            current = "".join(token).strip()
-            if not current:
-                return None
-            parts.append((combinator, current))
-            token = []
-            combinator = char
-            pending_space = False
-            continue
-        if char.isspace():
-            if token:
-                pending_space = True
-            continue
-        if pending_space:
-            current = "".join(token).strip()
-            if not current:
-                return None
-            parts.append((combinator, current))
-            token = []
-            combinator = " "
-            pending_space = False
         token.append(char)
 
     current = "".join(token).strip()
@@ -887,6 +908,14 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
         if formula is None:
             return None  # unparseable formula -> XPath
         return selector[: match.start()], (match.group(1), formula)
+    # :lang() -- matches the element's own ``lang`` attribute, or the nearest
+    # ancestor's if it has none itself (``lang`` inherits).
+    match = re.search(r":lang\(([^()]+)\)$", selector)
+    if match:
+        lang = match.group(1).strip().strip("'\"").lower()
+        if not lang:
+            return None
+        return selector[: match.start()], ("lang", lang)
     # :is() / :where() -- a comma-separated list of compound selectors; match if
     # any branch matches. (:where() differs from :is() only in specificity,
     # which isn't computed here.) A combinator inside a branch bails to XPath.
@@ -935,6 +964,16 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
         if inner_parsed is None:
             return None
         return selector[: match.start()], ("not", inner_parsed)
+    # A structural pseudo that Element._parse_simple_selector already
+    # understands as part of any compound (``:root``, ``:empty``,
+    # ``:only-child``, ``:first-of-type``, ``:last-of-type``,
+    # ``:only-of-type`` -- bare or type-qualified, e.g. ``p:empty``) needs no
+    # separate extraction: hand the whole compound back unchanged and let the
+    # simple-selector parser see the pseudo itself, rather than falling
+    # through to the (buggier, slower) XPath engine for something the fast
+    # path already supports.
+    if Element._parse_simple_selector(selector) is not None:
+        return selector, None
     return None
 
 
@@ -989,6 +1028,21 @@ def _split_selector_groups(selector: str) -> list[str] | None:
         return None
     groups.append(group)
     return groups
+
+
+# A compound selector that is *only* a pseudo-class (``:nth-child(3)``,
+# ``:not(div)``, ...) leaves nothing behind once ``_strip_simple_pseudo``
+# strips the pseudo suffix off. That empty remainder means "no further
+# constraint" (the universal selector), not "unparseable" --
+# ``Element._parse_simple_selector("")`` returns ``None`` for the latter, so
+# callers must special-case it rather than feeding it the empty string.
+_UNIVERSAL_SELECTOR: dict[str, Any] = {"tag": "*", "id": None, "classes": [], "attributes": [], "pseudos": []}
+
+
+def _parse_stripped_selector(simple: str) -> dict[str, Any] | None:
+    if simple == "":
+        return _UNIVERSAL_SELECTOR
+    return Element._parse_simple_selector(simple)
 
 
 def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
@@ -1107,6 +1161,19 @@ def _match_simple_pseudo(
         combinator, parsed = value
         scope = _element_children(element) if combinator == ">" else _element_descendants(element)
         return any(_match_parsed_selector(node, parsed) for node in scope)
+    if name == "lang":
+        # ``isinstance(node, Element)``, not a nodeType check: domonic's
+        # HTMLDocument doubles as the <html> element (nodeType DOCUMENT_NODE,
+        # not ELEMENT_NODE) when it was itself the root of a parsed page, and
+        # <html lang="..."> is exactly where a page's language usually lives.
+        node: Any = element
+        while isinstance(node, Element):
+            declared = _get_attribute(node, "lang")
+            if declared:
+                declared = str(declared).lower()
+                return declared == value or declared.startswith(value + "-")
+            node = getattr(node, "parentNode", None)
+        return False
     parent = getattr(element, "parentNode", None)
     if parent is None:
         return False
@@ -1344,7 +1411,7 @@ def _parse_selector_chain(selector: str) -> "tuple[tuple[str | None, dict[str, A
         if pseudo_result is None:
             return None
         simple, pseudo = pseudo_result
-        parsed = Element._parse_simple_selector(simple)
+        parsed = _parse_stripped_selector(simple)
         if parsed is None:
             return None
         out.append((combinator, parsed, pseudo))
@@ -1371,7 +1438,7 @@ def _select_fast(
                 simple = _strip_simple_pseudo(parts[0][1])
                 if simple is None or simple[1] is not None:
                     break
-                parsed = Element._parse_simple_selector(simple[0])
+                parsed = _parse_stripped_selector(simple[0])
                 if parsed is None:
                     break
                 parsed_groups.append(parsed)
