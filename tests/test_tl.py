@@ -93,6 +93,13 @@ def test_declaration_after_comment_and_inside_script():
     assert page.textContent == '""'
 
 
+def test_doctype_extraction_handles_many_leading_comments_linearly():
+    comments = "<!-- -->" * 200
+    page = parse(comments + '<!doctypish html><p>x</p>')
+    assert page.__dict__.get("_doctype") is None
+    assert page.querySelector("p").textContent == "x"
+
+
 def test_default_and_mutation():
     old = domonic.get_default_parser()
     try:

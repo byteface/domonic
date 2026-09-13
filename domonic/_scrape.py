@@ -48,6 +48,24 @@ def _request_fields() -> set[str]:
     return _REQUEST_FIELDS
 
 
+def _fetch_stylesheet_text(href: str, request_kwargs: dict[str, Any]) -> str | None:
+    try:
+        response = _fetch_one(href, {"method": "GET"}, request_kwargs)
+    except Exception:
+        return None
+    if getattr(response, "ok", True) is False:
+        return None
+    return response.text()
+
+
+def _replace_stylesheet_rules(sheet: Any, css_text: str) -> bool:
+    try:
+        sheet.replaceSync(css_text)
+    except Exception:
+        return False
+    return True
+
+
 def _load_external_stylesheets(document: Any, request_kwargs: dict[str, Any] | None = None) -> None:
     sheets = document.styleSheets
     fetch_kwargs = dict(request_kwargs or {})
@@ -66,17 +84,9 @@ def _load_external_stylesheets(document: Any, request_kwargs: dict[str, Any] | N
         sheet._resolved_href = resolved_href
         sheet.href = resolved_href
 
-        try:
-            response = _fetch_one(resolved_href, {"method": "GET"}, fetch_kwargs)
-        except Exception:
-            continue
-        if getattr(response, "ok", True) is False:
-            continue
-
-        try:
-            sheet.replaceSync(response.text())
-        except Exception:
-            continue
+        css_text = _fetch_stylesheet_text(resolved_href, fetch_kwargs)
+        if css_text is not None:
+            _replace_stylesheet_rules(sheet, css_text)
 
 
 def _parse(

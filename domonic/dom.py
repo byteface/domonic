@@ -6542,7 +6542,8 @@ class _CharacterDataOnAttr:
     def deleteData(self, offset: int, count: int) -> str:
         old_value = self.data
         valid_offset, valid_count = _cdata_validate_range(old_value, offset, count)
-        assert valid_count is not None  # count was passed, so it comes back non-None
+        if valid_count is None:
+            raise RuntimeError("CharacterData count was not validated")
         self.data = old_value[:valid_offset] + old_value[valid_offset + valid_count :]
         _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
         return self.data
@@ -6557,7 +6558,8 @@ class _CharacterDataOnAttr:
     def replaceData(self, offset: int, count: int, data: Any) -> str:
         old_value = self.data
         valid_offset, valid_count = _cdata_validate_range(old_value, offset, count)
-        assert valid_count is not None  # count was passed, so it comes back non-None
+        if valid_count is None:
+            raise RuntimeError("CharacterData count was not validated")
         self.data = old_value[:valid_offset] + _cdata_coerce_string(data) + old_value[valid_offset + valid_count :]
         _queue_mutation_record("characterData", self, old_value=old_value)  # type: ignore[arg-type]
         return self.data
@@ -6565,7 +6567,8 @@ class _CharacterDataOnAttr:
     def substringData(self, offset: int, length: int) -> str:
         data = self.data
         valid_offset, valid_length = _cdata_validate_range(data, offset, length)
-        assert valid_length is not None  # length was passed, so it comes back non-None
+        if valid_length is None:
+            raise RuntimeError("CharacterData length was not validated")
         return data[valid_offset : valid_offset + valid_length]
 
     def __len__(self) -> int:
@@ -8633,7 +8636,8 @@ class CharacterData(Node):
         from the CharacterData.data string; when this method returns, data contains the shortened DOMString.
         """
         old_value, valid_offset, valid_count = self._validate_data_range(offset, count)
-        assert valid_count is not None  # count was passed, so it comes back non-None
+        if valid_count is None:
+            raise RuntimeError("CharacterData count was not validated")
         updated = old_value[:valid_offset] + old_value[valid_offset + valid_count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
@@ -8652,7 +8656,8 @@ class CharacterData(Node):
         """Replaces the specified amount of characters, starting at the specified offset, with the specified DOMString;
         when this method returns, data contains the modified DOMString."""
         old_value, valid_offset, valid_count = self._validate_data_range(offset, count)
-        assert valid_count is not None  # count was passed, so it comes back non-None
+        if valid_count is None:
+            raise RuntimeError("CharacterData count was not validated")
         updated = old_value[:valid_offset] + self._coerce_data_string(data) + old_value[valid_offset + valid_count :]
         self.args = (updated,)
         _queue_mutation_record("characterData", self, old_value=old_value)
@@ -8666,7 +8671,8 @@ class CharacterData(Node):
         """Returns a DOMString containing the part of CharacterData.data of the specified length and
         starting at the specified offset."""
         data, valid_offset, valid_length = self._validate_data_range(offset, length)
-        assert valid_length is not None  # length was passed, so it comes back non-None
+        if valid_length is None:
+            raise RuntimeError("CharacterData length was not validated")
         return data[valid_offset : valid_offset + valid_length]
 
 

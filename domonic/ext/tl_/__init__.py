@@ -22,15 +22,58 @@ from domonic.ext._rawdom import (
 )
 
 _RAW_TEXT = {"script", "style", "xmp", "iframe", "noembed", "noframes", "plaintext"}
-# The comment body is a tempered ``[\s\S]`` rather than ``.*?``: a lazy ``.*?``
-# under DOTALL can match across ``-->`` boundaries, so a run of leading comments
-# ``<!-- --><!-- -->...`` has exponentially many parses and a trailing near-miss
-# doctype triggers catastrophic backtracking (ReDoS). ``(?:(?!-->)[\s\S])*``
-# cannot cross a ``-->`` and keeps the match linear.
-_DOCTYPE = re.compile(
-    r"""\A\s*(?:<!--(?:(?!-->)[\s\S])*-->\s*)*""" r"""(<!doctype\s+(?:[^>"']|"[^"]*"|'[^']*')*>)""",
-    re.IGNORECASE | re.DOTALL,
-)
+
+
+def _skip_leading_space_and_comments(source: str) -> int:
+    """Return the first non-space/comment index at the start of *source*."""
+    index = 0
+    length = len(source)
+    while True:
+        while index < length and source[index].isspace():
+            index += 1
+        if not source.startswith("<!--", index):
+            return index
+        close = source.find("-->", index + 4)
+        if close == -1:
+            return index
+        index = close + 3
+
+
+def _read_quoted_markup(source: str, start: int) -> int:
+    """Return the index after a markup declaration's closing ``>``.
+
+    Quotes are respected so ``>`` inside PUBLIC/SYSTEM identifiers does not end
+    the declaration. Returns ``-1`` for an unterminated declaration.
+    """
+    quote = None
+    for index in range(start, len(source)):
+        char = source[index]
+        if quote is not None:
+            if char == quote:
+                quote = None
+            continue
+        if char in ("'", '"'):
+            quote = char
+            continue
+        if char == ">":
+            return index + 1
+    return -1
+
+
+def _extract_leading_doctype(source: str) -> tuple[str, int, int] | None:
+    start = _skip_leading_space_and_comments(source)
+    if not source.startswith("<!", start):
+        return None
+    name_start = start + 2
+    if source[name_start : name_start + 7].lower() != "doctype":
+        return None
+    name_end = name_start + 7
+    if name_end < len(source) and not source[name_end].isspace() and source[name_end] != ">":
+        return None
+    end = _read_quoted_markup(source, start)
+    if end == -1:
+        return None
+    return source[start:end], start, end
 
 
 def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
@@ -48,9 +91,9 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
     # tl does not expose doctype nodes, and its version detector only consumes
     # part of PUBLIC/SYSTEM declarations. Preserve the complete declaration
     # and exclude it from the input to avoid introducing spurious text nodes.
-    match = _DOCTYPE.match(source)
-    if match:
-        declaration = match.group(1)
+    doctype_match = _extract_leading_doctype(source)
+    if doctype_match:
+        declaration, start, end = doctype_match
         doctype = _create_doctype_raw(declaration)
         tokens = re.findall(r""""[^"]*"|'[^']*'|[^\s<>]+""", declaration)
         if len(tokens) >= 4:
@@ -62,7 +105,7 @@ def parse(html: Any, return_root: bool = True, **kwargs: Any) -> dom.Node:
             elif kind == "SYSTEM":
                 doctype.systemId = tokens[3][1:-1]
         document.doctype = doctype
-        source = source[: match.start(1)] + source[match.end(1) :]
+        source = source[:start] + source[end:]
     parsed = tl.parse(source)
 
     # Iterator frames finalize args once per element, without Python recursion.
