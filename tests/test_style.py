@@ -1476,7 +1476,7 @@ class TestCase(unittest.TestCase):
         inner.setAttribute(
             "style",
             "font-size: 1.5em; margin: 1em; padding: 2rem 10px; "
-            "line-height: 2; border-top-width: 0.25rem; width: 50%",
+            "line-height: 2; border-top-style: solid; border-top-width: 0.25rem; width: 50%",
         )
         outer.appendChild(inner)
         document.createElement("div").appendChild(outer)
@@ -1572,6 +1572,357 @@ class TestCase(unittest.TestCase):
         self.assertTrue(CSS.supports("at-rule(@container)"))
         self.assertFalse(CSS.supports(" display", "grid"))
         self.assertFalse(CSS.supports("display", "grid !important"))
+
+    # -- computed-style cache invalidation ---------------------------------
+    #
+    # ComputedStyleDeclaration caches its resolved cascade on the element
+    # (see domonic-css-performance notes) instead of redoing it on every
+    # getComputedStyle() call. Each of these mutates one specific input and
+    # checks the *next* read reflects it -- a narrower invalidation gap would
+    # make one of these silently see a stale value.
+
+    def test_repeated_computed_style_reads_agree(self):
+        document = Document()
+        from domonic.window import window
+
+        el = document.createElement("div")
+        el.setAttribute("style", "color: red")
+        document.appendChild(el)
+        first = window.getComputedStyle(el).getPropertyValue("color")
+        second = window.getComputedStyle(el).getPropertyValue("color")
+        self.assertEqual(first, "rgb(255, 0, 0)")
+        self.assertEqual(second, first)
+
+    def test_css_property_name_normalization_is_cached(self):
+        from domonic.style import _css_property_name
+        from domonic.utils import Utils
+
+        _css_property_name.cache_clear()
+        Utils.case_kebab.cache_clear()
+        for _ in range(5):
+            self.assertEqual(_css_property_name("backgroundColor"), "background-color")
+        property_info = _css_property_name.cache_info()
+        kebab_info = Utils.case_kebab.cache_info()
+        self.assertEqual(property_info.misses, 1)
+        self.assertGreaterEqual(property_info.hits, 4)
+        self.assertEqual(kebab_info.misses, 1)
+
+    def test_author_rule_selector_parsing_is_cached_across_elements(self):
+        from domonic.bs4 import _parse_selector_chain, _split_simple_selector_chain
+
+        _split_simple_selector_chain.cache_clear()
+        _parse_selector_chain.cache_clear()
+        Element._parse_simple_selector.cache_clear()
+
+        document = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".item > span.label { color: green }")
+        document.adoptedStyleSheets = [sheet]
+
+        for _ in range(5):
+            parent = document.createElement("div")
+            parent.setAttribute("class", "item")
+            child = document.createElement("span")
+            child.setAttribute("class", "label")
+            parent.appendChild(child)
+            document.appendChild(parent)
+            self.assertEqual(ComputedStyleDeclaration(child).getPropertyValue("color"), "rgb(0, 128, 0)")
+
+        chain_info = _split_simple_selector_chain.cache_info()
+        simple_info = Element._parse_simple_selector.cache_info()
+        self.assertLessEqual(chain_info.misses, 2)
+        self.assertGreaterEqual(chain_info.hits, 4)
+        self.assertLessEqual(simple_info.misses, 4)
+        self.assertGreaterEqual(simple_info.hits, 4)
+
+    def test_inline_style_change_invalidates_cached_style(self):
+        document = Document()
+        from domonic.window import window
+
+        el = document.createElement("div")
+        el.setAttribute("style", "color: red")
+        document.appendChild(el)
+        window.getComputedStyle(el).getPropertyValue("color")
+        el.setAttribute("style", "color: blue")
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 0, 255)")
+
+    def test_class_change_invalidates_cached_style(self):
+        document = Document()
+        from domonic.window import window
+
+        el = document.createElement("div")
+        document.appendChild(el)
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".hot { color: green }")
+        document.adoptedStyleSheets = [sheet]
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 0, 0)")
+        el.setAttribute("class", "hot")
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 128, 0)")
+
+    def test_stylesheet_rule_mutation_invalidates_cached_style(self):
+        document = Document()
+        from domonic.window import window
+
+        el = document.createElement("div")
+        el.setAttribute("class", "hot")
+        document.appendChild(el)
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".hot { color: green }")
+        document.adoptedStyleSheets = [sheet]
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 128, 0)")
+        sheet.insertRule(".hot { color: purple }", 1)
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(128, 0, 128)")
+        sheet.deleteRule(1)
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 128, 0)")
+
+    def test_reassigning_adopted_stylesheets_invalidates_cached_style(self):
+        document = Document()
+        from domonic.window import window
+
+        el = document.createElement("div")
+        el.setAttribute("class", "hot")
+        document.appendChild(el)
+        sheet_a = CSSStyleSheet()
+        sheet_a.replaceSync(".hot { color: green }")
+        document.adoptedStyleSheets = [sheet_a]
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 128, 0)")
+        sheet_b = CSSStyleSheet()
+        sheet_b.replaceSync(".hot { color: orange }")
+        document.adoptedStyleSheets = [sheet_b]
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("color"), "rgb(255, 165, 0)")
+
+    def test_reparenting_invalidates_cached_inherited_value(self):
+        document = Document()
+        from domonic.window import window
+
+        parent_a = document.createElement("div")
+        parent_a.setAttribute("style", "color: red")
+        parent_b = document.createElement("div")
+        parent_b.setAttribute("style", "color: teal")
+        child = document.createElement("span")
+        parent_a.appendChild(child)
+        document.appendChild(parent_a)
+        document.appendChild(parent_b)
+        self.assertEqual(window.getComputedStyle(child).getPropertyValue("color"), "rgb(255, 0, 0)")
+        parent_a.removeChild(child)
+        parent_b.appendChild(child)
+        self.assertEqual(window.getComputedStyle(child).getPropertyValue("color"), "rgb(0, 128, 128)")
+
+    def test_clone_node_after_computing_style_is_unaffected(self):
+        document = Document()
+        from domonic.window import window
+
+        root = document.createElement("div")
+        root.setAttribute("style", "color: red")
+        document.appendChild(root)
+        window.getComputedStyle(root).getPropertyValue("color")  # populate the cache
+        clone = root.cloneNode(True)
+        self.assertEqual(window.getComputedStyle(clone).getPropertyValue("color"), "rgb(255, 0, 0)")
+        self.assertIsNot(clone.__dict__.get("_computed_style_cache"), root.__dict__.get("_computed_style_cache"))
+
+    def test_viewport_resize_changes_the_computed_style_cache_key(self):
+        from domonic.style import _computed_style_cache_key
+        from domonic.window import Window
+
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        win = Window(doc=document)
+        win.resizeTo(1000, 800)
+        wide_key = _computed_style_cache_key(el)
+        win.resizeTo(400, 800)
+        narrow_key = _computed_style_cache_key(el)
+        self.assertNotEqual(wide_key, narrow_key)
+
+    # -- border-width / min-size / layout-box-driven used values -----------
+
+    def test_border_width_is_zero_when_style_is_none_or_hidden(self):
+        document = Document()
+        for style in ("none", "hidden"):
+            with self.subTest(border_style=style):
+                el = document.createElement("div")
+                el.setAttribute("style", f"border-style: {style}; border-width: 5px")
+                document.appendChild(el)
+                computed = ComputedStyleDeclaration(el)
+                self.assertEqual(computed.getPropertyValue("border-top-width"), "0px")
+                self.assertEqual(computed.getPropertyValue("border-right-width"), "0px")
+
+    def test_border_width_unset_defaults_to_zero(self):
+        # border-style's initial value is "none", so with nothing declared at
+        # all the computed border-top-width is 0px, not the raw "medium" (or
+        # whatever length) sitting in border-width.
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("border-top-width"), "0px")
+
+    def test_border_width_kept_when_style_is_set(self):
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "border-style: solid; border-width: 5px")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("border-top-width"), "5px")
+
+    def test_border_shorthand_reflects_the_zeroed_width(self):
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("border-top"), "0px none rgb(0, 0, 0)")
+
+    def test_min_width_and_min_height_normalise_auto_to_zero(self):
+        # Matches Chrome: min-width/min-height's initial "auto" is reported
+        # as 0px, not the literal keyword.
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("min-width"), "0px")
+        self.assertEqual(computed.getPropertyValue("min-height"), "0px")
+
+    def test_max_width_and_max_height_are_unaffected(self):
+        # max-width/max-height's initial value is "none", not "auto" -- the
+        # min-size normalisation must not touch them.
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("max-width"), "none")
+        self.assertEqual(computed.getPropertyValue("max-height"), "none")
+
+    def test_explicit_min_width_percent_is_untouched_without_a_layout_box(self):
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "min-width: 50%")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("min-width"), "50%")
+
+    def test_layout_box_resolves_auto_width_height_and_margin(self):
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "width: auto; height: auto; margin: auto")
+        document.appendChild(el)
+        set_layout_box(
+            el,
+            LayoutBox(content_width=200.0, content_height=80.0, margin_left=12.0, margin_right=12.0),
+        )
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("width"), "200px")
+        self.assertEqual(computed.getPropertyValue("height"), "80px")
+        self.assertEqual(computed.getPropertyValue("margin-left"), "12px")
+        self.assertEqual(computed.getPropertyValue("margin-right"), "12px")
+
+    def test_layout_box_reports_box_size_when_content_size_unset(self):
+        # A layout engine naturally computes a concrete box. When it does not
+        # provide content_width/content_height separately, getComputedStyle
+        # reports that real used geometry instead of falling back to auto/0px.
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "width: auto; height: auto; padding: 10px; border-style: solid; border-width: 5px")
+        document.appendChild(el)
+        set_layout_box(el, LayoutBox(width=220.0, height=120.0))
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("width"), "220px")
+        self.assertEqual(computed.getPropertyValue("height"), "120px")
+
+    def test_layout_box_regression_reports_real_width_from_external_layout(self):
+        from domonic.dom import DOMParser
+        from domonic.layout import LayoutBox
+
+        doc = DOMParser().parseFromString(
+            '<html><body><div id="x" style="padding:20px;"></div></body></html>',
+            "text/html",
+        )
+        el = doc.getElementById("x")
+        el.set_layout_box(
+            LayoutBox(
+                x=0,
+                y=0,
+                width=752,
+                height=265,
+                client_width=712,
+                client_height=225,
+                border_top=0,
+                border_left=0,
+            )
+        )
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("width"), "752px")
+        self.assertEqual(computed.getPropertyValue("height"), "265px")
+
+    def test_layout_box_explicit_content_size_wins_over_derivation(self):
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "width: auto; padding: 10px")
+        document.appendChild(el)
+        set_layout_box(el, LayoutBox(width=220.0, content_width=150.0))
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("width"), "150px")
+
+    def test_layout_box_percent_resolves_against_parents_derived_content_box(self):
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        parent = document.createElement("div")
+        parent.setAttribute("style", "padding: 20px")
+        document.appendChild(parent)
+        child = document.createElement("div")
+        child.setAttribute("style", "width: 50%")
+        parent.appendChild(child)
+        set_layout_box(parent, LayoutBox(width=400.0))
+        self.assertEqual(ComputedStyleDeclaration(child).getPropertyValue("width"), "200px")
+
+    def test_min_width_and_min_height_auto_stay_zero_even_with_a_layout_box(self):
+        # Matches a real browser: min-width/min-height:auto normalises to
+        # 0px unconditionally (see test_min_width_and_min_height_normalise_
+        # auto_to_zero) -- attaching a layout box does not change that, since
+        # there is no general "automatic minimum size" a plain border box
+        # implies. An explicit, non-auto min-width still resolves normally
+        # (percentages against the parent's box, as tested elsewhere).
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        el = document.createElement("div")
+        document.appendChild(el)
+        set_layout_box(el, LayoutBox(width=220.0, height=120.0))
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("min-width"), "0px")
+        self.assertEqual(computed.getPropertyValue("min-height"), "0px")
+
+    def test_layout_box_resolves_percent_width_against_the_parent_box(self):
+        from domonic.layout import LayoutBox, clear_layout_box, set_layout_box
+
+        document = Document()
+        parent = document.createElement("div")
+        document.appendChild(parent)
+        child = document.createElement("div")
+        child.setAttribute("style", "width: 50%")
+        parent.appendChild(child)
+
+        set_layout_box(parent, LayoutBox(content_width=400.0))
+        self.assertEqual(ComputedStyleDeclaration(child).getPropertyValue("width"), "200px")
+
+        clear_layout_box(parent)
+        self.assertEqual(ComputedStyleDeclaration(child).getPropertyValue("width"), "50%")
+
+    def test_layout_box_change_invalidates_the_cached_used_value(self):
+        from domonic.window import window
+        from domonic.layout import LayoutBox, clear_layout_box, set_layout_box
+
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "margin-left: auto")
+        document.appendChild(el)
+        set_layout_box(el, LayoutBox(margin_left=10.0))
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("margin-left"), "10px")
+        set_layout_box(el, LayoutBox(margin_left=25.0))
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("margin-left"), "25px")
+        clear_layout_box(el)
+        self.assertEqual(window.getComputedStyle(el).getPropertyValue("margin-left"), "auto")
 
 
 if __name__ == "__main__":

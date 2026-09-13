@@ -18,6 +18,7 @@ as ``domonic.scrape`` and ``from domonic import scrape``.
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import urljoin
 
 _TO_CHOICES = ("text", "json", "pyml", "dom")
 
@@ -47,18 +48,74 @@ def _request_fields() -> set[str]:
     return _REQUEST_FIELDS
 
 
-def _parse(response: Any, parser: str | None) -> Any:
+def _load_external_stylesheets(document: Any, request_kwargs: dict[str, Any] | None = None) -> None:
+    sheets = document.styleSheets
+    fetch_kwargs = dict(request_kwargs or {})
+    fetch_kwargs.pop("params", None)
+
+    for sheet in sheets:
+        href = getattr(sheet, "href", None)
+        owner_node = getattr(sheet, "ownerNode", None)
+        if not href or getattr(owner_node, "tagName", "").lower() != "link":
+            continue
+        if len(getattr(sheet, "cssRules", ()) or ()):
+            continue
+
+        resolved_href = urljoin(getattr(document, "URL", "") or getattr(document, "baseURI", "") or "", href)
+        sheet._original_href = href
+        sheet._resolved_href = resolved_href
+        sheet.href = resolved_href
+
+        try:
+            response = _fetch_one(resolved_href, {"method": "GET"}, fetch_kwargs)
+        except Exception:
+            continue
+        if getattr(response, "ok", True) is False:
+            continue
+
+        try:
+            sheet.replaceSync(response.text())
+        except Exception:
+            continue
+
+
+def _parse(
+    response: Any,
+    parser: str | None,
+    *,
+    css: bool = False,
+    attach: bool = False,
+    request_kwargs: dict[str, Any] | None = None,
+) -> Any:
     from domonic import domonic
 
-    return domonic.parseString(response.text(), parser=parser, document=True)
+    document = domonic.parseString(response.text(), parser=parser, document=True)
+    document.URL = getattr(response, "url", "") or getattr(document, "URL", "")
+    if css:
+        _load_external_stylesheets(document, request_kwargs)
+    if attach:
+        from domonic.window import Window
+
+        Window().attach(document)
+    return document
 
 
-def _result(response: Any, to: str | None, selector: str | None, all_: bool, parser: str | None) -> Any:
+def _result(
+    response: Any,
+    to: str | None,
+    selector: str | None,
+    all_: bool,
+    parser: str | None,
+    *,
+    css: bool = False,
+    attach: bool = False,
+    request_kwargs: dict[str, Any] | None = None,
+) -> Any:
     if selector is not None:
-        dom = _parse(response, parser)
+        dom = _parse(response, parser, css=css, attach=attach, request_kwargs=request_kwargs)
         return dom.querySelectorAll(selector) if all_ else dom.querySelector(selector)
     if to is None or to == "dom":
-        return _parse(response, parser)
+        return _parse(response, parser, css=css, attach=attach, request_kwargs=request_kwargs)
     if to == "text":
         return response.text()
     if to == "json":
@@ -102,6 +159,8 @@ def scrape(
     params: Any = None,
     timeout: Any = 30,
     method: str = "GET",
+    css: bool = False,
+    attach: bool = False,
     **kwargs: Any,
 ) -> Any:
     """Fetch one or more web resources and return their content directly.
@@ -113,6 +172,10 @@ def scrape(
     ``.querySelector(...)``.
 
     ``scrape(url, to="text" | "json" | "pyml" | "dom")`` returns just that.
+
+    ``css=True`` eagerly populates ``document.styleSheets`` for DOM results.
+    ``attach=True`` attaches DOM results to a new :class:`domonic.window.Window`
+    so ``document.defaultView`` and ``window.getComputedStyle(...)`` are ready.
 
     ``scrape(url, selector="article")`` returns the matched element (or
     ``None``); add ``all=True`` for every match.
@@ -155,9 +218,12 @@ def scrape(
 
     if isinstance(url, (str, Request)):
         resp = _fetch_one(url, init, request_kwargs)
-        result = _result(resp, to, selector, all, parser)
+        result = _result(resp, to, selector, all, parser, css=css, attach=attach, request_kwargs=request_kwargs)
         return (resp, result) if response else result
 
     responses = _fetch_many(url, init, request_kwargs)
-    results = [_result(resp, to, selector, all, parser) for resp in responses]
+    results = [
+        _result(resp, to, selector, all, parser, css=css, attach=attach, request_kwargs=request_kwargs)
+        for resp in responses
+    ]
     return list(zip(responses, results)) if response else results

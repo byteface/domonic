@@ -19,6 +19,16 @@ HTML = (
     "</main></body></html>"
 )
 
+STYLE_HTML = (
+    "<html><head><style>p { color: green; }</style></head>"
+    "<body><p id='x'>hello</p></body></html>"
+)
+
+LINK_HTML = (
+    "<html><head><link rel='stylesheet' href='static/css/styles.css'></head>"
+    "<body><p id='x'>hello</p></body></html>"
+)
+
 
 def _html_response(method, url, **kwargs):
     return SimpleNamespace(
@@ -42,11 +52,77 @@ def _json_response(method, url, **kwargs):
     )
 
 
+def _style_response(method, url, **kwargs):
+    return SimpleNamespace(
+        url=url,
+        status_code=200,
+        reason="OK",
+        headers={"Content-Type": "text/html"},
+        content=STYLE_HTML.encode("utf-8"),
+        history=[],
+    )
+
+
+def _link_response(method, url, **kwargs):
+    body = "p { color: green; }" if url == "https://example.com/static/css/styles.css" else LINK_HTML
+    content_type = "text/css" if url.endswith(".css") else "text/html"
+    return SimpleNamespace(
+        url=url,
+        status_code=200,
+        reason="OK",
+        headers={"Content-Type": content_type},
+        content=body.encode("utf-8"),
+        history=[],
+    )
+
+
 class TestScrape(unittest.TestCase):
     def test_single_url_returns_dom(self):
         with patch("requests.request", side_effect=_html_response):
             dom = scrape("https://example.com")
         self.assertEqual(dom.querySelector("h1").textContent, "Release")
+        self.assertIsNone(dom.defaultView)
+
+    def test_attach_returns_document_with_default_view(self):
+        with patch("requests.request", side_effect=_html_response):
+            dom = scrape("https://example.com", attach=True)
+        self.assertIsNotNone(dom.defaultView)
+        self.assertIs(dom.defaultView.document, dom)
+
+    def test_css_attach_supports_computed_style(self):
+        with patch("requests.request", side_effect=_style_response):
+            dom = scrape("https://example.com", css=True, attach=True)
+        p = dom.getElementById("x")
+        self.assertEqual(dom.defaultView.getComputedStyle(p).color, "rgb(0, 128, 0)")
+
+    def test_css_without_attach_populates_stylesheets_but_stays_detached(self):
+        with patch("requests.request", side_effect=_style_response):
+            dom = scrape("https://example.com", css=True)
+        self.assertIsNone(dom.defaultView)
+        self.assertEqual(dom.styleSheets.length, 1)
+
+    def test_css_true_loads_external_stylesheet_rules(self):
+        with patch("requests.request", side_effect=_link_response) as mock:
+            dom = scrape("https://example.com/page", css=True)
+        sheet = dom.styleSheets[0]
+        self.assertEqual(sheet.href, "https://example.com/static/css/styles.css")
+        self.assertEqual(sheet._original_href, "static/css/styles.css")
+        self.assertEqual(sheet._resolved_href, "https://example.com/static/css/styles.css")
+        self.assertGreater(len(sheet.cssRules), 0)
+        self.assertEqual(mock.call_count, 2)
+
+    def test_css_true_external_rules_feed_attached_computed_style(self):
+        with patch("requests.request", side_effect=_link_response):
+            dom = scrape("https://example.com/page", css=True, attach=True)
+        p = dom.getElementById("x")
+        self.assertEqual(dom.defaultView.getComputedStyle(p).color, "rgb(0, 128, 0)")
+
+    def test_css_false_does_not_fetch_external_stylesheets(self):
+        with patch("requests.request", side_effect=_link_response) as mock:
+            dom = scrape("https://example.com/page")
+        self.assertEqual(dom.styleSheets.length, 1)
+        self.assertEqual(len(dom.styleSheets[0].cssRules), 0)
+        self.assertEqual(mock.call_count, 1)
 
     def test_response_flag_returns_pair(self):
         with patch("requests.request", side_effect=_html_response):

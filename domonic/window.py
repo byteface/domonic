@@ -564,9 +564,9 @@ class Window(JavaScriptWindow, EventTarget):
         self._navigator: Navigator = Navigator()
         self._navigator.gamepads.eventTarget = self
         self._screen: Screen = self._navigator._screen
-        self._document: Document = doc if doc is not None else document
-        self._document.defaultView = self
         self._location: Location = Location(url or "https://eventual.technology")
+        self._document: Document = doc if doc is not None else document
+        self.attach(self._document)
         self._document.URL = self._location.href
         self._console: Console = Console()
         self.cookieStore: CookieStore = CookieStore(self._document._cookie_store)
@@ -609,8 +609,7 @@ class Window(JavaScriptWindow, EventTarget):
 
     def _set_document(self, doc: Document, referrer: str | None = None) -> Document:
         previous_document = getattr(self, "_document", None)
-        self._document = doc
-        self._document.defaultView = self
+        self.attach(doc)
         self._document.URL = self._location.href
         if hasattr(self, "cookieStore"):
             self.cookieStore = CookieStore(self._document._cookie_store)
@@ -621,6 +620,23 @@ class Window(JavaScriptWindow, EventTarget):
             self._document.referrer = getattr(previous_document, "URL", "") or ""
 
         return self._document
+
+    def attach(self, document: Document) -> Document:
+        """Attach ``document`` to this browsing context and return it."""
+        previous_document = getattr(self, "_document", None)
+        if previous_document is not None and previous_document is not document:
+            if getattr(previous_document, "defaultView", None) is self:
+                previous_document.defaultView = None
+
+        previous_window = getattr(document, "defaultView", None)
+        if previous_window is not None and previous_window is not self:
+            if getattr(previous_window, "_document", None) is document:
+                previous_window._document = None
+            document.defaultView = None
+
+        self._document = document
+        document.defaultView = self
+        return document
 
     def _fetch_document(self, url: str) -> Document | None:
         try:

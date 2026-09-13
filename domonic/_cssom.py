@@ -1141,3 +1141,62 @@ def normalize_color(value: str) -> str | None:
         return _fmt_rgb(*_hsl_to_rgb(h, s, ll), alpha)
     except (ValueError, IndexError):
         return None
+
+
+# --- style-resolution cache epochs -----------------------------------------
+#
+# Three independent, process-wide monotonic counters a cascade/computed-style
+# cache uses to tell "have my inputs changed" from "recompute everything".
+# They are kept separate because they change at very different rates: DOM
+# structure and attributes (including inline ``style``) change constantly
+# during ordinary use, while stylesheet rules are usually set up once and
+# rarely touched again, and layout geometry only exists at all once a layout
+# engine is attached. Folding all three into one counter would mean a single
+# ``classList.toggle()`` forces every stylesheet's selectors to be re-parsed
+# and re-indexed on the next style read, not just that element's cascade to
+# be redone -- this module, ``domonic.dom``, and ``domonic.layout`` all import
+# this leaf module, so it is the natural place for a counter all three reach.
+_DOM_STYLE_EPOCH: int = 0
+_STYLESHEET_EPOCH: int = 0
+_LAYOUT_EPOCH: int = 0
+
+
+def bump_dom_style_epoch() -> None:
+    """Call whenever a DOM mutation could change what a selector matches or
+    what an element inherits: an attribute (including inline ``style``)
+    changing, or the tree shape around any element changing. Invalidates
+    every element's cached cascade, but leaves stylesheets' parsed rule
+    index alone."""
+    global _DOM_STYLE_EPOCH
+    _DOM_STYLE_EPOCH += 1
+
+
+def dom_style_epoch() -> int:
+    return _DOM_STYLE_EPOCH
+
+
+def bump_stylesheet_epoch() -> None:
+    """Call whenever a stylesheet's own rules change (``insertRule`` /
+    ``deleteRule`` / ``replace`` / ``replaceSync``) -- invalidates every
+    document's cached rule index (and, transitively, every cascade, since a
+    changed rule can change what any element resolves to)."""
+    global _STYLESHEET_EPOCH
+    _STYLESHEET_EPOCH += 1
+
+
+def stylesheet_epoch() -> int:
+    return _STYLESHEET_EPOCH
+
+
+def bump_layout_epoch() -> None:
+    """Call whenever a layout engine attaches, replaces, or clears the box it
+    computed for an element (``domonic.layout.set_layout_box`` /
+    ``clear_layout_box``) -- invalidates every cached computed style, since
+    ``width``/``height``/``margin`` etc. resolve differently once real
+    geometry is available (see ``ComputedStyleDeclaration._to_used_length``)."""
+    global _LAYOUT_EPOCH
+    _LAYOUT_EPOCH += 1
+
+
+def layout_epoch() -> int:
+    return _LAYOUT_EPOCH

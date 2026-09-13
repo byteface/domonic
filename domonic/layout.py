@@ -30,6 +30,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Union
 
+from . import _cssom
 from .style import ComputedStyleDeclaration, _eval_calc_to_px, _length_string_to_px
 
 __all__ = [
@@ -437,10 +438,21 @@ class LayoutBox:
     """The box a layout engine computed for one element, in CSS pixels.
 
     ``x``/``y``/``width``/``height`` are the border box (what
-    ``getBoundingClientRect``/``offsetWidth``/``offsetHeight`` report);
-    ``client_width``/``client_height`` are the padding box (``clientWidth``/
-    ``clientHeight``); ``border_top``/``border_left`` are the resolved
-    border widths (``clientTop``/``clientLeft``).
+    ``getBoundingClientRect``/``offsetWidth``/``offsetHeight`` report, and
+    what any layout engine naturally produces per node); ``client_width``/
+    ``client_height`` are the padding box (``clientWidth``/``clientHeight``);
+    ``border_top``/``border_left`` are the resolved border widths
+    (``clientTop``/``clientLeft``); ``margin_*`` are the resolved margins,
+    used by ``getComputedStyle`` to report a real used pixel value for
+    ``margin`` wherever it was ``auto``.
+
+    ``content_width``/``content_height`` default to ``None`` rather than
+    ``0.0``: leave them unset and ``getComputedStyle`` reports the concrete
+    ``width``/``height`` geometry supplied by the layout engine for
+    ``width:auto``/``height:auto``. Set them explicitly when the engine wants
+    computed style to report a separate content size. Percentages on children
+    resolve against an explicitly supplied parent content size when present,
+    otherwise against the parent's concrete box size.
     """
 
     x: float = 0.0
@@ -451,6 +463,12 @@ class LayoutBox:
     client_height: float = 0.0
     border_top: float = 0.0
     border_left: float = 0.0
+    content_width: "float | None" = None
+    content_height: "float | None" = None
+    margin_top: float = 0.0
+    margin_right: float = 0.0
+    margin_bottom: float = 0.0
+    margin_left: float = 0.0
 
 
 def get_layout_box(element: Any) -> "LayoutBox | None":
@@ -463,9 +481,11 @@ def get_layout_box(element: Any) -> "LayoutBox | None":
 def set_layout_box(element: Any, box: LayoutBox) -> None:
     """Attach the box a layout engine computed for *element*."""
     element._layout_box = box
+    _cssom.bump_layout_epoch()
 
 
 def clear_layout_box(element: Any) -> None:
     """Detach any layout box previously set on *element*."""
     if "_layout_box" in getattr(element, "__dict__", {}):
         del element.__dict__["_layout_box"]
+        _cssom.bump_layout_epoch()

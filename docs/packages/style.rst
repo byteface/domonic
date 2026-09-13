@@ -142,8 +142,19 @@ list, are reported the browser way too:
 	c.getPropertyValue("width")      # 200px      (50% of the 400px container)
 	c.getPropertyValue("transform")  # matrix(0, 1, -1, 0, 0, 0)
 
+A border's width computes to ``0px`` whenever its style is ``none``/``hidden``
+(the default), and ``min-width``/``min-height`` normalise ``auto`` to
+``0px``, matching a real browser. A ``width``/``height``/``margin`` that's
+still ``auto``, or a ``%`` with no resolvable containing block, is reported
+once a layout engine attaches real geometry via ``domonic.layout``'s
+``set_layout_box``.
+
 Pass a pseudo-element to read its style: ``window.getComputedStyle(el,
 "::before")``.
+
+Reading it repeatedly is cheap: the resolved cascade is cached on the element
+and reused until something that could change it does -- an attribute, a
+stylesheet rule, a layout box, or the viewport.
 
 The cascade understands modern selector specificity: ``:where()`` contributes
 zero, ``:is()`` / ``:not()`` / ``:has()`` take the specificity of their most

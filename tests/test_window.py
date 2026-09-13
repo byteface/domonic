@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch
 
 from domonic.events import CloseEvent
+from domonic.dom import Document
 from domonic.html import body, div
 from domonic.webapi.crypto import Crypto
 from domonic.webapi.scheduler import Scheduler
@@ -26,6 +27,22 @@ class TestCase(unittest.TestCase):
         self.assertFalse(win.closed)
         self.assertIsInstance(win.crypto, Crypto)
         self.assertIsInstance(win.scheduler, Scheduler)
+
+    def test_window_attach_rewires_document_relationships(self):
+        win = Window()
+        old_doc = win.document
+        new_doc = Document()
+
+        self.assertIs(win.attach(new_doc), new_doc)
+        self.assertIs(win.document, new_doc)
+        self.assertIs(new_doc.defaultView, win)
+        self.assertIsNone(old_doc.defaultView)
+
+        other = Window()
+        self.assertIs(other.attach(new_doc), new_doc)
+        self.assertIs(other.document, new_doc)
+        self.assertIs(new_doc.defaultView, other)
+        self.assertIsNone(win.document)
 
     def test_window_focus_close_and_name(self):
         win = Window()

@@ -14,6 +14,7 @@ web-platform concepts rather than a small HTML helper tree.
 from __future__ import annotations
 
 import copy
+import functools
 import math
 import os
 import re
@@ -42,7 +43,7 @@ def _escape_html(value: str, quote: bool = True) -> str:
 
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
-from domonic import _fontmetrics
+from domonic import _cssom, _fontmetrics
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
 from domonic.javascript import undefined
@@ -748,6 +749,9 @@ def _connect_inserted_node(
     _connect_tree(node)
 
 
+_DEEPCOPY_MISSING = object()
+
+
 def _deepcopy_subtree(node: "Node") -> "Node":
     """``copy.deepcopy`` of a node without dragging in its parent chain -- a
     bare ``deepcopy`` follows ``parentNode`` *and* every descendant's
@@ -755,11 +759,21 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     loggers, and anything else reachable from it -- some of which, like a
     thread lock, ``copy.deepcopy`` cannot even copy, and used to recurse
     forever through ``Storage.__getattr__`` trying).
+
+    A cached computed style (``_computed_style_cache``, see
+    ``ComputedStyleDeclaration``) escapes the subtree the same way: it chains
+    through ancestor ``ComputedStyleDeclaration`` instances up to the
+    document. A clone has no use for the *original* node's cached style
+    anyway (it starts uncached and resolves its own on first read), so this
+    drops the cache entirely on both sides rather than copying it.
     """
     import copy
 
     saved_parent = node.__dict__.get("parentNode")
     saved_owners = [(current, current.__dict__.get("_ownerDocument")) for current in _iter_dom_nodes(node)]
+    saved_style_caches = [
+        (current, current.__dict__.pop("_computed_style_cache", _DEEPCOPY_MISSING)) for current in _iter_dom_nodes(node)
+    ]
     node.__dict__["parentNode"] = None
     for current, _owner in saved_owners:
         current.__dict__["_ownerDocument"] = None
@@ -769,6 +783,9 @@ def _deepcopy_subtree(node: "Node") -> "Node":
         node.__dict__["parentNode"] = saved_parent
         for current, owner in saved_owners:
             current.__dict__["_ownerDocument"] = owner
+        for current, cache in saved_style_caches:
+            if cache is not _DEEPCOPY_MISSING:
+                current.__dict__["_computed_style_cache"] = cache
 
 
 def _prepare_detached_clone(
@@ -1131,6 +1148,14 @@ def _queue_mutation_record(
         if name == "id":
             _bump_dom_epoch()
         _bump_structure_epoch()
+    # Every mutation this function sees -- structural, attribute (inline
+    # ``style`` included, since it is set via setAttribute), or character
+    # data -- can change what a cascade produces, so it invalidates every
+    # element's cached computed style. Unlike the indices above this runs
+    # unconditionally: it is a single int increment, cheaper than the id/tag
+    # index bookkeeping it sits next to, so there is no dormant-until-first-use
+    # gate to earn here.
+    _cssom.bump_dom_style_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
         _invalidate_render_cache(target)
     try:
@@ -4595,7 +4620,13 @@ class Element(Node):
         return "".join(out)
 
     @staticmethod
+    @functools.lru_cache(maxsize=2048)
     def _parse_simple_selector(query: str):
+        # Pure function of the selector text -- the same rule's selector gets
+        # parsed on every element it's tested against, every time a cascade is
+        # resolved, so caching this turns an O(elements x resolutions) cost
+        # into an O(distinct selectors) one. The returned dict is shared
+        # across callers via the cache: treat it as read-only.
         selector = query.strip()
         if not selector:
             return None

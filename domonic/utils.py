@@ -9,6 +9,7 @@ import random
 import re
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 from itertools import chain, islice
 from numbers import Real
 from re import sub
@@ -253,6 +254,7 @@ class Utils:
         return "_".join(sub("([A-Z][a-z]+)", r" \1", sub("([A-Z]+)", r" \1", s.replace("-", " "))).split()).lower()
 
     @staticmethod
+    @lru_cache(maxsize=2048)
     def case_kebab(s: str) -> str:
         """Convert a camelCase or snake_case string to kebab-case."""
         return "-".join(

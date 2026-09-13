@@ -793,7 +793,14 @@ def _find_children(
     )
 
 
+@functools.lru_cache(maxsize=2048)
 def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] | None:
+    # Pure function of the selector text -- cached for the same reason
+    # Element._parse_simple_selector is: a rule's selector is re-tested
+    # against every candidate element on every cascade resolution, so caching
+    # the parse turns repeated work into a one-time cost per distinct
+    # selector. The returned list is shared across callers: treat it (and its
+    # tuples) as read-only.
     parts: list[tuple[str | None, str]] = []
     token = []
     combinator: str | None = None

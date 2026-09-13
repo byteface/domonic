@@ -76,9 +76,14 @@ from domonic import scrape
 page = scrape("https://example.com")
 print(page.querySelector("h1").textContent)
 print([a.href for a in page.querySelectorAll("a[href]")])
+
+# Load external CSS into document.styleSheets and attach a Window when needed.
+page = scrape("https://example.com", css=True, attach=True)
+style = page.defaultView.getComputedStyle(page.querySelector("body"))
 ```
 
-`scrape()` also takes a CSS `selector=`, a list of URLs, or `to="text" | "json" | "pyml"` —
+`scrape()` also takes a CSS `selector=`, a list of URLs, `css=True` to fetch and parse linked stylesheets,
+`attach=True` to wire `document.defaultView`, or `to="text" | "json" | "pyml"` —
 see the <a href="https://domonic.readthedocs.io/guides/scrape-html/" target="_blank" rel="noopener">scraping guide</a>.
 Porting Beautiful Soup code? `from domonic.bs4 import BeautifulSlop` wraps the same nodes with
 `find_all`, `select` and `get_text`.

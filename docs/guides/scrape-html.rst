@@ -62,6 +62,58 @@ The response
    response, page = scrape("https://example.com", response=True)
    print(response.status, response.headers.get("content-type"))
 
+CSS and Window context
+~~~~~~~~~~~~~~~~~~~~~~
+
+By default, ``scrape()`` returns a detached document and does not fetch linked
+stylesheets. This keeps the ordinary scraping path fast and preserves
+``parseString()``-style behaviour.
+
+Pass ``css=True`` when you want stylesheet data as part of the loaded page:
+
+.. code-block:: python
+
+   page = scrape("https://example.com", css=True)
+
+   for sheet in page.styleSheets:
+       print(sheet.href, len(sheet.cssRules))
+
+``css=True`` first discovers sheets through ``document.styleSheets``. Inline
+``<style>`` blocks are parsed as before. External
+``<link rel="stylesheet" href="...">`` sheets are resolved against
+``document.URL``, fetched, and parsed into the existing ``CSSStyleSheet`` object
+with domonic's CSSOM parser. Successfully loaded external sheets therefore have
+populated ``cssRules`` instead of an empty placeholder.
+
+For example, if the document URL is ``https://example.com/`` and a stylesheet
+link uses ``static/css/styles.css``, domonic loads
+``https://example.com/static/css/styles.css``. The sheet keeps the resolved URL
+on ``sheet.href`` and also records ``sheet._original_href`` and
+``sheet._resolved_href`` for code that needs to resolve later CSS resources.
+
+Pass ``attach=True`` when you want the returned document wired to a browsing
+context:
+
+.. code-block:: python
+
+   page = scrape("https://example.com", attach=True)
+
+   assert page.defaultView is not None
+   assert page.defaultView.document is page
+
+``attach=True`` creates a ``domonic.window.Window`` and attaches the parsed
+document to it. That sets ``window.document`` and ``document.defaultView``.
+
+Use both flags together for a browserless page context where computed styles can
+see loaded stylesheet rules:
+
+.. code-block:: python
+
+   page = scrape("https://example.com", css=True, attach=True)
+
+   body = page.querySelector("body")
+   style = page.defaultView.getComputedStyle(body)
+
 Many URLs at once
 ~~~~~~~~~~~~~~~~~~
 

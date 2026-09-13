@@ -12,6 +12,7 @@ documents.
 from __future__ import annotations
 
 import ast
+import functools
 import math
 import re
 from re import M, findall, finditer
@@ -178,8 +179,15 @@ _ADDITIONAL_CSS_PROPERTY_NAMES = {
 }
 
 
+@functools.lru_cache(maxsize=1024)
 def _css_property_name(name: str) -> str:
-    """Normalize DOM style names to CSS property names."""
+    """Normalize DOM style names to CSS property names.
+
+    Pure function of *name* over a small, fixed universe of property/attribute
+    spellings, called on every style read (``getPropertyValue``, the ``style``
+    IDL, ``getComputedStyle``) -- cached so the regex-driven case conversion
+    it delegates to only ever runs once per distinct name.
+    """
     if name in ("cssFloat", "float"):
         return "float"
     if name.startswith("--"):
@@ -187,8 +195,10 @@ def _css_property_name(name: str) -> str:
     return Utils.case_kebab(name)
 
 
+@functools.lru_cache(maxsize=1024)
 def _css_attribute_name(name: str) -> str:
-    """Normalize CSS property names to DOM style attribute names."""
+    """Normalize CSS property names to DOM style attribute names. See
+    ``_css_property_name`` -- cached for the same reason."""
     if name == "float":
         return "cssFloat"
     if name.startswith("--"):
@@ -946,6 +956,7 @@ class CSSGroupingRule(CSSRule):
         if index < 0 or index >= len(self.cssRules):
             raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         del self.cssRules[index]
+        _cssom.bump_stylesheet_epoch()
 
     def insertRule(self, rule: str, index: int | None = None):
         """Inserts a child rule into this grouping rule."""
@@ -961,6 +972,7 @@ class CSSGroupingRule(CSSRule):
         if index < 0 or index > len(self.cssRules):
             raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         self.cssRules.insert(index, rules[0])
+        _cssom.bump_stylesheet_epoch()
         return index
 
     # @property
@@ -1278,6 +1290,7 @@ class CSSStyleSheet(StyleSheet):
             raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         del self.cssRules[index]
         self.rules = self.cssRules
+        _cssom.bump_stylesheet_epoch()
 
     def insertRule(self, rule: str, index: int | None = None):
         """Inserts a new rule at the specified position in the stylesheet,
@@ -1295,6 +1308,7 @@ class CSSStyleSheet(StyleSheet):
             raise DOMException(DOMException.INDEX_SIZE_ERR, "Index is out of range.")
         self.cssRules.insert(index, rules[0])
         self.rules = self.cssRules
+        _cssom.bump_stylesheet_epoch()
         return index
 
     def replace(self, text: str):
@@ -1309,6 +1323,7 @@ class CSSStyleSheet(StyleSheet):
         """Synchronously replaces the content of the stylesheet."""
         self.cssRules = CSSParser.parseFromString(self, text)
         self.rules = self.cssRules
+        _cssom.bump_stylesheet_epoch()
 
     # @property
     # def rules(self):
@@ -5669,6 +5684,22 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
             yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=layer)
 
 
+def _computed_style_cache_key(element) -> tuple:
+    """Everything that can make a previously resolved computed style stale:
+    the DOM epoch (any attribute/structure change anywhere), the stylesheet
+    epoch (any rule change anywhere), the layout epoch (any element anywhere
+    gaining, losing, or getting a new layout box -- since that changes how
+    ``auto``/``%`` resolve well beyond just the element it was set on, see
+    ``_to_used_length``), and the viewport (a resize can flip which
+    ``@media`` rules apply). Deliberately whole-document/whole-process
+    granularity, not per-element -- a conservative but correct starting point
+    (see the domonic-css-performance notes for the narrower alternative)."""
+    document = getattr(element, "ownerDocument", None) or getattr(element, "rootNode", None)
+    window = getattr(document, "defaultView", None) if document is not None else None
+    viewport = (getattr(window, "innerWidth", None), getattr(window, "innerHeight", None))
+    return (_cssom.dom_style_epoch(), _cssom.stylesheet_epoch(), _cssom.layout_epoch(), viewport)
+
+
 class ComputedStyleDeclaration(CSSStyleDeclaration):
     """Read-only ``CSSStyleDeclaration`` returned by ``window.getComputedStyle``.
 
@@ -5685,6 +5716,24 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     _chain_cache: dict
 
     def __init__(self, element, pseudo=None, _chain_cache=None):
+        # Repeated getComputedStyle() calls on an unchanged element (the
+        # common case for a layout engine, or anything polling geometry every
+        # frame) would otherwise redo the whole cascade -- selector matching,
+        # shorthand expansion, inheritance walk up to the root -- from
+        # scratch every time. Cache the resolved state on the element itself,
+        # keyed by everything that can make it stale; a hit just copies the
+        # previous state across instead of recomputing it. This also makes
+        # resolving an ancestor's style cheap the second time any sibling
+        # queries it, since _parent_computed()/_root_font_size_px() below
+        # construct ancestor instances through this same __init__.
+        cache_key = _computed_style_cache_key(element)
+        element_dict = getattr(element, "__dict__", None)
+        store = element_dict.setdefault("_computed_style_cache", {}) if element_dict is not None else None
+        cached = store.get(pseudo) if store is not None else None
+        if cached is not None and cached[0] == cache_key:
+            self.__dict__.update(cached[1])
+            return
+
         # Deliberately skip ``Style.__init__`` (its ~380 attribute assignments):
         # this class overrides the whole read surface, so all it needs is the
         # handful of internal fields the CSSOM helpers look for.
@@ -5701,6 +5750,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         # tree stays linear rather than O(depth^2)
         state["_chain_cache"] = {} if _chain_cache is None else _chain_cache
         state["_resolved"] = self._resolve()
+        if store is not None:
+            store[pseudo] = (cache_key, state)
 
     # -- cascade ---------------------------------------------------------
     def _collect_author_declarations(self):
@@ -5730,18 +5781,26 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             getattr(window, "innerHeight", None),
         )
 
+        # The parsed index is keyed on everything that could make it stale: the
+        # stylesheet epoch (bumped by insertRule/deleteRule/replace(Sync) on
+        # any stylesheet), the viewport (a resize can change which @media
+        # rules apply), and the identity of the sheets actually in play (so
+        # reassigning document.adoptedStyleSheets, or adding a <style>
+        # element, is picked up without a dedicated hook for either).
+        rule_cache_key = (_cssom.stylesheet_epoch(), viewport, tuple(id(sheet) for sheet in sheet_list))
         cache = self._chain_cache
-        index = cache.get("__rule_index__")
-        if index is None and document is not None:
-            index = getattr(document, "_cssom_rule_index", None)
-        if index is None:
-            index = _build_rule_index(sheet_list, viewport)
+        entry = cache.get("__rule_index__")
+        if entry is None and document is not None:
+            entry = getattr(document, "_cssom_rule_index", None)
+        if entry is None or entry[0] != rule_cache_key:
+            entry = (rule_cache_key, _build_rule_index(sheet_list, viewport))
             if document is not None:
                 try:
-                    document._cssom_rule_index = index
+                    document._cssom_rule_index = entry
                 except Exception:  # nosec B110 - index cache is best-effort; cache["__rule_index__"] still set below
                     pass
-        cache["__rule_index__"] = index
+        cache["__rule_index__"] = entry
+        index = entry[1]
         if not index:
             return {}
 
@@ -5829,6 +5888,37 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
+        # This instance is immutable once resolved (it's a read-only snapshot
+        # -- see the class docstring), so the used value for a given longhand
+        # never changes across repeated reads. Memoize it: a caller that asks
+        # for the same property more than once (or a shorthand that rebuilds
+        # itself from the same longhands `getPropertyValue` recurses into
+        # below) does the unit/colour/keyword conversion once, not every time.
+        # Lives in ``self.__dict__`` alongside ``_resolved`` and
+        # ``_font_size_px_cache``, so it rides along whenever this instance is
+        # reused from the per-element computed-style cache too.
+        cache = self.__dict__.get("_property_value_cache")
+        if cache is None:
+            cache = {}
+            self.__dict__["_property_value_cache"] = cache
+        elif target in cache:
+            return cache[target]
+        value = self._compute_property_value(target)
+        cache[target] = value
+        return value
+
+    def _compute_property_value(self, target: str) -> str:
+        # A border's width computes to 0 when its style is none/hidden --
+        # the width is never actually rendered, so a browser doesn't report
+        # whatever length happens to be sitting in border-width (per spec,
+        # and matching the default: border-style's initial value is "none",
+        # so an element with no border styling at all reports 0px here, not
+        # "medium").
+        style_prop = _BORDER_WIDTH_TO_STYLE.get(target)
+        if style_prop is not None:
+            border_style = (self._resolved.get(style_prop) or "").strip().lower()
+            if border_style in ("none", "hidden"):
+                return "0px"
         # a shorthand is rebuilt from its (already used-value-resolved) longhands
         if (
             _cssom.is_shorthand(target)
@@ -5838,6 +5928,11 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             if built:
                 return built
         value = self._resolved.get(target)
+        # min-width/min-height's initial (and only auto) value never actually
+        # behaves as "no minimum" in a browser -- Chrome (and every other
+        # engine) reports it as 0px rather than the literal keyword.
+        if target in _MIN_SIZE_PROPERTIES and (value or "auto").strip().lower() == "auto":
+            return "0px"
         if value:
             if not target.startswith("--") and "var(" in value:
                 value = _expand_var_references(value, self._custom_property).strip()
@@ -5928,6 +6023,22 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         if target == "font-size":
             return _px_str(self._font_size_px())
 
+        # Once a layout engine has attached geometry to this element, its own
+        # box holds the real used value for whichever of these was "auto" --
+        # not a guess. (A percentage is handled separately below, against
+        # the *parent's* box -- resolving it doesn't need this element's own
+        # geometry, only its containing block's.)
+        auto_field = _AUTO_BOX_FIELDS.get(target)
+        if auto_field is not None and value.strip().lower() == "auto":
+            box = _element_layout_box(self._element)
+            if box is not None:
+                if target in ("width", "height"):
+                    used = self._content_size_from_box(box, vertical=(target == "height"))
+                else:
+                    used = getattr(box, auto_field, None)
+                if used is not None:
+                    return _px_str(used)
+
         font_px = self._font_size_px()
 
         if "calc(" in value.lower():
@@ -5961,6 +6072,18 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 changed = True
                 parts.append(_px_str(px))
         return " ".join(parts) if changed else value
+
+    def _content_size_from_box(self, box: Any, vertical: bool) -> "float | None":
+        """The width/height a ``LayoutBox`` contributes to getComputedStyle.
+
+        ``box.content_width``/``content_height`` is used directly when the
+        layout engine set it explicitly. Otherwise, fall back to the concrete
+        box dimensions the engine handed back so consumers can round-trip real
+        layout geometry without also calculating content dimensions."""
+        explicit = box.content_height if vertical else box.content_width
+        if explicit is not None:
+            return explicit
+        return box.height if vertical else box.width
 
     #: two-value ``display`` syntax -> the legacy single keyword a browser
     #: reports (CSS Display 3 "computed value" column)
@@ -6001,14 +6124,24 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         return display
 
     def _percent_base_px(self, target: str) -> "float | None":
-        """The px a ``%`` resolves against for *target*, when it can be found
-        without full layout: the used inline size of the containing block --
-        approximated by the nearest ancestor with an explicit px ``width`` (or
-        ``height`` for the vertical box-sizing properties), else the viewport
-        for a root-level element."""
+        """The px a ``%`` resolves against for *target*: the used inline size
+        of the containing block. Once a layout engine has attached a box to
+        the parent, its actual content size is used -- exact, and correct
+        for any percentage-eligible property, not just the ones
+        ``_to_used_length`` special-cases for ``auto``. Failing that, this
+        falls back to an approximation found without full layout: the
+        nearest ancestor with an explicit px ``width`` (or ``height`` for the
+        vertical properties), else the viewport for a root-level element."""
         vertical = target in ("height", "min-height", "max-height", "top", "bottom")
         prop = "height" if vertical else "width"
         node = getattr(self._element, "parentNode", None)
+        parent_box = _element_layout_box(node)
+        if parent_box is not None:
+            parent_computed = self._parent_computed()
+            if parent_computed is not None:
+                used = parent_computed._content_size_from_box(parent_box, vertical)
+                if used is not None:
+                    return used
         cache = self._chain_cache
         while node is not None and getattr(node, "nodeType", None) == 1:
             declared = _parse_css_declarations(getattr(node, "getAttribute", lambda *_: "")("style") or "")
@@ -6070,6 +6203,46 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 #: properties whose computed value getComputedStyle reports as a used <length>
 #: in px. ``%`` / ``auto`` / ``calc()`` / keywords are left untouched (they need
 #: layout); only font-relative and absolute units are resolved.
+#: a border-*-width longhand -> the border-*-style longhand that gates it
+#: (its computed value is 0 whenever that style is "none"/"hidden")
+_BORDER_WIDTH_TO_STYLE = {
+    "border-top-width": "border-top-style",
+    "border-right-width": "border-right-style",
+    "border-bottom-width": "border-bottom-style",
+    "border-left-width": "border-left-style",
+}
+
+#: min-width/min-height's initial value is "auto", but no engine treats an
+#: unresolved "auto" as the reported computed value -- see _compute_property_value
+_MIN_SIZE_PROPERTIES = frozenset({"min-width", "min-height"})
+
+#: an "auto" longhand -> the LayoutBox field holding its real used value,
+#: once a layout engine has attached one (see _to_used_length)
+_AUTO_BOX_FIELDS = {
+    "width": "content_width",
+    "height": "content_height",
+    "margin-top": "margin_top",
+    "margin-right": "margin_right",
+    "margin-bottom": "margin_bottom",
+    "margin-left": "margin_left",
+}
+
+
+def _element_layout_box(element):
+    """The ``domonic.layout.LayoutBox`` attached to *element*, or ``None``
+    if no layout engine has supplied one (or *element* is ``None``, e.g. a
+    root element's parent). A lazy import: ``domonic.layout`` imports this
+    module for the cascade, so importing it back at module scope here would
+    be circular."""
+    if element is None:
+        return None
+    try:
+        from domonic.layout import get_layout_box
+    except ImportError:  # pragma: no cover - domonic.layout always ships with domonic
+        return None
+    return get_layout_box(element)
+
+
 _USED_LENGTH_PROPERTIES = frozenset(
     {
         "font-size",
@@ -6169,6 +6342,20 @@ def _px_str(px: float) -> str:
     if rounded == int(rounded):
         return f"{int(rounded)}px"
     return f"{rounded}px"
+
+
+_PX_VALUE_RE = re.compile(r"^(-?\d+\.?\d*)px$")
+
+
+def _px_value(value: "str | None") -> "float | None":
+    """The number out of an already-resolved ``"Npx"`` string, or ``None`` if
+    *value* isn't one (used-value resolution failed, or it's still a keyword/
+    percentage) -- lets ``_content_size_from_box`` bail out to the ordinary
+    fallback instead of raising."""
+    if not value:
+        return None
+    match = _PX_VALUE_RE.match(value.strip())
+    return float(match.group(1)) if match else None
 
 
 def _angle_to_deg(token: str) -> "float | None":
