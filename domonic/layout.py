@@ -31,7 +31,14 @@ from dataclasses import dataclass, field
 from typing import Any, Union
 
 from . import _cssom
-from .style import ComputedStyleDeclaration, _eval_calc_to_px, _length_string_to_px
+from .style import (
+    ComputedStyleDeclaration,
+    _BORDER_WIDTH_KEYWORD_PX,
+    _BORDER_WIDTH_TO_STYLE,
+    _eval_calc_to_px,
+    _expand_var_references,
+    _length_string_to_px,
+)
 
 __all__ = [
     "Auto",
@@ -195,6 +202,14 @@ def _parse_length_or_percent(
             return Percent(float(percent_match.group(1)) / 100.0)
         return Keyword(text)
     if "calc(" in low:
+        # this reads the raw cascaded string, not getComputedStyle's own
+        # resolved accessors (which already expand var() -- see
+        # _compute_property_value), so a var() reference is still literal
+        # text here and needs expanding before the evaluator below can make
+        # sense of it.
+        if "var(" in text:
+            text = _expand_var_references(text, computed._custom_property).strip()
+            low = text.lower()
         if "%" in text:
             # mixes a percentage in -- needs the containing block, which is
             # layout's job, not the cascade's.
@@ -346,7 +361,14 @@ class LayoutStyle:
     element: Any = field(repr=False, compare=False, default=None)
 
     @classmethod
-    def _from_computed(cls, computed: ComputedStyleDeclaration) -> "LayoutStyle":
+    def from_computed(cls, computed: ComputedStyleDeclaration) -> "LayoutStyle":
+        """Build a ``LayoutStyle`` from a ``ComputedStyleDeclaration`` the
+        caller already has, instead of ``layout_style()`` building its own.
+
+        Lets a caller that needs both a ``LayoutStyle`` (for layout) and the
+        ``ComputedStyleDeclaration`` itself (for anything ``LayoutStyle``
+        deliberately excludes, e.g. colours for painting) share one
+        resolved cascade for the element instead of resolving it twice."""
         # the raw cascaded (author + inline, shorthand-expanded, inherited)
         # string for a longhand -- *not* getComputedStyle's used value.
         raw = computed._resolved.get
@@ -359,6 +381,25 @@ class LayoutStyle:
 
         def edges(top: str, right: str, bottom: str, left: str, **kwargs: Any) -> Edges:
             return Edges(dim(top, **kwargs), dim(right, **kwargs), dim(bottom, **kwargs), dim(left, **kwargs))
+
+        def border_width_dim(name: str) -> Any:
+            # a side's used border-width is 0 whenever its border-style is
+            # none/hidden, regardless of what border-width itself says; this
+            # reads the raw cascade directly (unlike getComputedStyle, this
+            # function has no other style-aware gate), so both that and the
+            # thin/medium/thick keywords need resolving here explicitly.
+            style_prop = _BORDER_WIDTH_TO_STYLE[name]
+            if (raw(style_prop) or "").strip().lower() in ("none", "hidden"):
+                return Length(0.0)
+            keyword_px = _BORDER_WIDTH_KEYWORD_PX.get((raw(name) or "").strip().lower())
+            if keyword_px is not None:
+                return Length(keyword_px)
+            return dim(name, allow_auto=False, allow_percent=False)
+
+        def border_width_edges(top: str, right: str, bottom: str, left: str) -> Edges:
+            return Edges(
+                border_width_dim(top), border_width_dim(right), border_width_dim(bottom), border_width_dim(left)
+            )
 
         def tracks(name: str) -> list:
             return _parse_track_list(raw(name), computed)
@@ -382,13 +423,11 @@ class LayoutStyle:
             maxHeight=dim("max-height"),
             margin=edges("margin-top", "margin-right", "margin-bottom", "margin-left"),
             padding=edges("padding-top", "padding-right", "padding-bottom", "padding-left", allow_auto=False),
-            borderWidth=edges(
+            borderWidth=border_width_edges(
                 "border-top-width",
                 "border-right-width",
                 "border-bottom-width",
                 "border-left-width",
-                allow_auto=False,
-                allow_percent=False,
             ),
             gap=Gap(
                 dim("row-gap", allow_auto=False),
@@ -417,17 +456,25 @@ class LayoutStyle:
         )
 
 
-def layout_style(element: Any) -> LayoutStyle:
+def layout_style(element: Any, computed: "ComputedStyleDeclaration | None" = None) -> LayoutStyle:
     """Layout-ready cascaded style for *element*.
 
     Runs the same cascade ``getComputedStyle`` does (author rules, inline
     style, inheritance, initial values) but stops short of used-value
     resolution: percentages, ``auto``, and anything layout-dependent come
     back as typed placeholders instead of a guessed px string. Works on a
-    detached element -- it builds its own ``ComputedStyleDeclaration``
-    rather than going through ``window.getComputedStyle``.
+    detached element -- by default it builds its own
+    ``ComputedStyleDeclaration`` rather than going through
+    ``window.getComputedStyle``.
+
+    Pass an already-resolved *computed* (e.g. one also needed for something
+    ``LayoutStyle`` excludes, like paint-only colours) to reuse it instead of
+    resolving the element's cascade a second time -- ``getComputedStyle()``
+    itself already caches per element, so this is also just
+    ``LayoutStyle.from_computed(window.getComputedStyle(element))`` for a
+    caller that has a window handy.
     """
-    return LayoutStyle._from_computed(ComputedStyleDeclaration(element))
+    return LayoutStyle.from_computed(computed if computed is not None else ComputedStyleDeclaration(element))
 
 
 # -- geometry hand-back -------------------------------------------------------

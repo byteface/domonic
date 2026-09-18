@@ -6049,5 +6049,29 @@ class RenderCacheTest(unittest.TestCase):
         self.assertEqual(uncached, cached)
 
 
+class MeasureTextTest(unittest.TestCase):
+    def test_measure_text_works_on_plain_html_elements(self):
+        # getBBox() stays SVG-only per spec (a real browser doesn't have it
+        # on plain HTML) -- measureText() is the public, HTML-facing way to
+        # get real font-metrics-based text measurement for any element.
+        node = p("hello world", _style="font-size: 20px")
+        width, height, ascent, descent = node.measureText()
+        self.assertGreater(width, 0)
+        self.assertGreater(height, 0)
+        self.assertGreater(ascent, 0)
+        self.assertGreater(descent, 0)
+
+    def test_measure_text_honours_an_explicit_override(self):
+        node = p("hello world", _style="font-size: 20px")
+        whole_width = node.measureText()[0]
+        short_width = node.measureText("hi")[0]
+        self.assertLess(short_width, whole_width)
+
+    def test_measure_text_scales_with_font_size(self):
+        small = p("hello", _style="font-size: 10px")
+        large = p("hello", _style="font-size: 40px")
+        self.assertLess(small.measureText()[0], large.measureText()[0])
+
+
 if __name__ == "__main__":
     unittest.main()

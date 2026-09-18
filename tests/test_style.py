@@ -614,6 +614,19 @@ class TestCase(unittest.TestCase):
         self.assertEqual(sheets.item(1).cssRules[0].selectorText, "div")
         self.assertIsNone(sheets.item(2))
 
+    def test_stylesheet_list_strips_cdata_wrapper(self):
+        # a <style> element's content wrapped in a CDATA section is valid,
+        # common XHTML practice (needed for strict XML well-formedness); the
+        # markers survive as literal text in textContent since domonic's
+        # HTML parser has no CDATA-section mode, so replaceSync must strip
+        # them itself rather than handing them to the CSS parser as-is.
+        page = html(head(style("<![CDATA[\ndiv { color: red; }\n]]>")))
+        sheets = StyleSheetList()
+        sheets._populate_stylesheets_from_document(page)
+
+        self.assertEqual(sheets.item(0).cssRules[0].selectorText, "div")
+        self.assertEqual(sheets.item(0).cssRules[0].style.getPropertyValue("color"), "red")
+
     def test_css_parser_strips_comments(self):
         sheet = CSSStyleSheet()
         rules = CSSParser.parseFromString(
@@ -1196,6 +1209,35 @@ class TestCase(unittest.TestCase):
         self.assertEqual(display_of("display: block flow"), "block")
         self.assertEqual(display_of("display: inline flow-root"), "inline-block")
 
+    def test_ua_stylesheet_defaults_non_content_tags_to_display_none(self):
+        # a real browser's UA stylesheet gives these tags display:none
+        # outright -- nothing about them is content -- so an element with no
+        # author/inline `display` declared at all must report "none" here,
+        # not the same "inline" any unrecognised tag falls back to.
+        for tag in ("head", "title", "script", "style", "meta", "link", "noscript", "template"):
+            with self.subTest(tag=tag):
+                el = document.createElement(tag)
+                self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("display"), "none")
+        # an ordinary tag is unaffected
+        self.assertEqual(
+            ComputedStyleDeclaration(document.createElement("div")).getPropertyValue("display"), "inline"
+        )
+
+    def test_ua_display_none_default_loses_to_any_explicit_display(self):
+        # the UA stylesheet is the weakest-priority origin -- an inline
+        # style or an author rule must still win, exactly like overriding
+        # any other UA default.
+        el = document.createElement("script")
+        el.setAttribute("style", "display: block")
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("display"), "block")
+
+        el2 = document.createElement("script")
+        sheet = CSSStyleSheet()
+        sheet.replaceSync("script { display: block; }")
+        document.adoptedStyleSheets = [sheet]
+        document.appendChild(el2)
+        self.assertEqual(ComputedStyleDeclaration(el2).getPropertyValue("display"), "block")
+
     def test_computed_percentage_lengths(self):
         outer = document.createElement("div")
         outer.setAttribute("style", "width: 400px")
@@ -1346,6 +1388,33 @@ class TestCase(unittest.TestCase):
         self.assertEqual(before.getPropertyValue("content"), '"* "')
         # the element's own style is unaffected by ::before rules
         self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("content"), "")
+
+    def test_pseudo_element_inherits_from_its_own_element_not_the_dom_parent(self):
+        # per CSS Pseudo-Elements, a generated box's parent is the element
+        # its pseudo is attached to -- an inherited property the element's
+        # own rules set (e.g. Font Awesome's `.fas { font-family: ... }`)
+        # must reach its ::before/::after, not be skipped in favour of
+        # whatever the element's *DOM parent* happens to inherit.
+        from domonic.dom import Document
+        from domonic.style import CSSStyleSheet, ComputedStyleDeclaration
+
+        doc = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(
+            'body { font-family: Arial; } '
+            '.icon { font-family: "Icon Font"; } '
+            '.icon::before { content: "x"; }'
+        )
+        doc.adoptedStyleSheets = [sheet]
+
+        body = doc.createElement("body")
+        icon = doc.createElement("i")
+        icon.setAttribute("class", "icon")
+        body.appendChild(icon)
+        icon._ownerDocument = doc
+
+        before = ComputedStyleDeclaration(icon, "::before")
+        self.assertEqual(before.getPropertyValue("font-family"), '"Icon Font"')
 
     def test_adopted_stylesheets_feed_the_cascade(self):
         from domonic.dom import Document
@@ -1734,6 +1803,31 @@ class TestCase(unittest.TestCase):
         narrow_key = _computed_style_cache_key(el)
         self.assertNotEqual(wide_key, narrow_key)
 
+    def test_media_query_rules_only_apply_at_the_matching_viewport(self):
+        # a @media condition must be evaluated for real against the actual
+        # viewport, not treated as always matching regardless of width.
+        from domonic.window import Window
+
+        page = html(
+            head(
+                style(
+                    "@media (max-width: 600px) { .box { color: red; } }"
+                    "@media (min-width: 601px) { .box { color: blue; } }"
+                )
+            ),
+            body(div(_class="box")),
+        )
+        document = Document()
+        document.appendChild(page)
+        win = Window(doc=document)
+        el = document.getElementsByClassName("box")[0]
+
+        win.resizeTo(500, 800)
+        self.assertEqual(win.getComputedStyle(el).getPropertyValue("color"), "rgb(255, 0, 0)")
+
+        win.resizeTo(1000, 800)
+        self.assertEqual(win.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 0, 255)")
+
     # -- border-width / min-size / layout-box-driven used values -----------
 
     def test_border_width_is_zero_when_style_is_none_or_hidden(self):
@@ -1762,6 +1856,111 @@ class TestCase(unittest.TestCase):
         el.setAttribute("style", "border-style: solid; border-width: 5px")
         document.appendChild(el)
         self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("border-top-width"), "5px")
+
+    def test_logical_padding_and_margin_properties_expand_to_physical(self):
+        # padding-inline/-block (and their single-side -start/-end longhands)
+        # are Tailwind v4's generated CSS for essentially every spacing
+        # value -- domonic's cascade only ever competes on physical longhand
+        # names, so these must be expanded before the declaration reaches it.
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "padding-inline: 10px; padding-block: 8px; margin-inline-start: 5px")
+        document.appendChild(el)
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("padding-top"), "8px")
+        self.assertEqual(computed.getPropertyValue("padding-right"), "10px")
+        self.assertEqual(computed.getPropertyValue("padding-bottom"), "8px")
+        self.assertEqual(computed.getPropertyValue("padding-left"), "10px")
+        self.assertEqual(computed.getPropertyValue("margin-left"), "5px")
+
+    def test_logical_property_wins_the_cascade_by_source_order(self):
+        # a logical declaration must compete on the *same* physical longhand
+        # name as an unrelated reset rule, at its own position in the
+        # cascade -- not lose just because the reset's physical longhand
+        # already has a value by the time anyone looks.
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "padding: 0; padding-inline: 20px")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("padding-left"), "20px")
+
+    def test_later_shorthand_overrides_an_earlier_one_for_a_shared_longhand(self):
+        # `border: solid 1em blue; border-top: none;` in the same rule -- the
+        # later `border-top` must win border-top-style/-width/-color back to
+        # none/medium/currentcolor for the top side only, not lose to
+        # `border`'s own expansion just because it's processed first.
+        document = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".t { border: solid 1em blue; border-top: none; }")
+        document.adoptedStyleSheets = [sheet]
+        el = document.createElement("div")
+        el.setAttribute("class", "t")
+        document.appendChild(el)
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(computed.getPropertyValue("border-top-style"), "none")
+        self.assertEqual(computed.getPropertyValue("border-top-width"), "0px")
+        self.assertEqual(computed.getPropertyValue("border-right-style"), "solid")
+
+    def test_repeated_longhand_in_one_rule_keeps_the_later_value(self):
+        # a stylesheet rule's declarations all share one cascade "order" (see
+        # _build_rule_index), so two same-name entries don't naturally
+        # compete by position -- the later one must still win.
+        document = Document()
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(".t { padding-left: 10px; padding-left: 5px; }")
+        document.adoptedStyleSheets = [sheet]
+        el = document.createElement("div")
+        el.setAttribute("class", "t")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("padding-left"), "5px")
+
+    def test_later_shorthand_in_a_separate_stylesheet_beats_an_earlier_longhand(self):
+        # two same-specificity, same-origin/layer <style> blocks -- the
+        # *later* one wins outright regardless of which form (shorthand or
+        # longhand) either is written in. A common reset pattern
+        # (`* { margin: 0; padding: 0; }`) relies on exactly this to clear a
+        # longhand set anywhere earlier in the document.
+        document = Document()
+        early = CSSStyleSheet()
+        early.replaceSync("ul { padding-left: 40px; }")
+        later = CSSStyleSheet()
+        later.replaceSync("ul { padding: 0; }")
+        document.adoptedStyleSheets = [early, later]
+        el = document.createElement("ul")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("padding-left"), "0px")
+
+    def test_negative_padding_declaration_is_dropped_not_applied(self):
+        # CSS 2.1 8.4: negative padding is invalid -- an invalid declaration
+        # is dropped entirely, as if never written, not applied literally.
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "padding-left: -1px")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("padding-left"), "0px")
+
+    def test_invalid_second_declaration_leaves_the_earlier_valid_one(self):
+        # the same property declared twice, the second one invalid: the
+        # invalid one must not simply clamp to the initial value (0) -- the
+        # earlier, still-valid 8px must survive, exactly as a real cascade
+        # (the invalid declaration never entering it at all) would leave it.
+        document = Document()
+        el = document.createElement("div")
+        el.setAttribute("style", "padding: 8px; padding: -8px")
+        document.appendChild(el)
+        self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("padding-left"), "8px")
+
+    def test_border_width_keyword_resolves_to_px(self):
+        # thin/medium/thick (CSS 2.1 8.5.3) are lengths, not passthrough
+        # keywords -- every browser resolves them to 1px/3px/5px once a
+        # border-style actually draws that side.
+        document = Document()
+        for keyword, px in (("thin", "1px"), ("medium", "3px"), ("thick", "5px")):
+            with self.subTest(border_width=keyword):
+                el = document.createElement("div")
+                el.setAttribute("style", f"border-style: solid; border-width: {keyword}")
+                document.appendChild(el)
+                self.assertEqual(ComputedStyleDeclaration(el).getPropertyValue("border-top-width"), px)
 
     def test_border_shorthand_reflects_the_zeroed_width(self):
         document = Document()

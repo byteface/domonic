@@ -962,7 +962,14 @@ class Function(Object):
 
 
 class Map:
-    """Map holds key-value pairs and remembers the original insertion order of the keys."""
+    """Map holds key-value pairs and remembers the original insertion order of the keys.
+
+    Keys are compared by SameValueZero, exactly like a real JS ``Map`` --
+    ``1`` and ``"1"`` are different keys, objects compare by reference, and
+    every ``NaN`` collapses to one key -- not by stringifying every key
+    (which would make ``1`` and ``"1"`` collide, and turn an object key into
+    unreliable, possibly non-unique ``repr()`` noise).
+    """
 
     def __init__(self, collection: "list[Any] | dict[str, Any] | None" = None) -> None:
         """Create a Map. ``collection`` may be omitted (``new Map()``), a dict,
@@ -975,7 +982,7 @@ class Map:
         elif isinstance(collection, dict):
             entries = list(collection.items())
         elif isinstance(collection, Map):
-            entries = list(collection._dict.items())
+            entries = list(collection.entries())
         elif hasattr(collection, "__iter__"):
             for item in collection:
                 if isinstance(item, (list, tuple)) and not isinstance(item, str) and len(item) == 2:
@@ -985,23 +992,26 @@ class Map:
         else:
             raise TypeError("Map requires an iterable of pairs or a dict.")
 
-        # a plain dict already preserves insertion order and gives O(1)
-        # get / set / delete -- no parallel ``_order`` list to keep in step.
-        self._dict: dict[str, Any] = {}
+        # normalized-key (SameValueZero) -> (original key, value) -- a plain
+        # dict already preserves insertion order and gives O(1) get/set/
+        # delete; the original key is kept alongside the value so iteration
+        # (keys/entries/forEach) reports it back exactly as given, not the
+        # normalized form used for lookup identity.
+        self._dict: dict[Any, tuple[Any, Any]] = {}
         for key, value in entries:
-            self._dict[str(key)] = value
+            self._dict[_js_set_key(key)] = (key, value)
 
-    def __contains__(self, key: str) -> bool:
-        return str(key) in self._dict
+    def __contains__(self, key: Any) -> bool:
+        return _js_set_key(key) in self._dict
 
-    def __getitem__(self, key: str) -> Any:
-        return self._dict[str(key)]
+    def __getitem__(self, key: Any) -> Any:
+        return self._dict[_js_set_key(key)][1]
 
-    def __setitem__(self, key: str, value: Any) -> None:
-        self._dict[str(key)] = value
+    def __setitem__(self, key: Any, value: Any) -> None:
+        self._dict[_js_set_key(key)] = (key, value)
 
-    def __delitem__(self, key: str) -> None:
-        del self._dict[str(key)]
+    def __delitem__(self, key: Any) -> None:
+        del self._dict[_js_set_key(key)]
 
     def __len__(self) -> int:
         return len(self._dict)
@@ -1015,32 +1025,33 @@ class Map:
         """Removes all key-value pairs from the Map object."""
         self._dict = {}
 
-    def delete(self, key: str) -> bool:
+    def delete(self, key: Any) -> bool:
         """Returns true if an element in the Map object existed and has been removed,
         or false if the element does not exist. Map.prototype.has(key) will return false afterwards.
         """
-        return self._dict.pop(str(key), _MISSING) is not _MISSING
+        return self._dict.pop(_js_set_key(key), _MISSING) is not _MISSING
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: Any, default: Any = None) -> Any:
         """Returns the value associated to the key, or undefined if there is none."""
-        return self._dict.get(str(key), default)
+        entry = self._dict.get(_js_set_key(key), _MISSING)
+        return default if entry is _MISSING else entry[1]
 
-    def has(self, key: str) -> bool:
+    def has(self, key: Any) -> bool:
         """Returns a boolean asserting whether a value has been associated to the key in the Map object or not."""
-        return str(key) in self._dict
+        return _js_set_key(key) in self._dict
 
-    def set(self, key: str, value: Any) -> Map:
+    def set(self, key: Any, value: Any) -> Map:
         """Sets the value for the key in the Map object. Returns the Map object."""
-        self[str(key)] = value
+        self[key] = value
         return self
 
-    def iterkeys(self) -> Iterator[str]:
-        return iter(self._dict)
+    def iterkeys(self) -> Iterator[Any]:
+        return (original_key for original_key, _ in self._dict.values())
 
-    def iteritems(self) -> Iterator[tuple[str, Any]]:
-        yield from self._dict.items()
+    def iteritems(self) -> Iterator[tuple[Any, Any]]:
+        yield from self._dict.values()
 
-    def keys(self) -> list[str]:
+    def keys(self) -> list[Any]:
         """Returns a new Iterator object that contains the keys
         for each element in the Map object in insertion order."""
         return list(self.iterkeys())
@@ -1048,16 +1059,16 @@ class Map:
     def values(self) -> list[Any]:
         """Returns a new Iterator object that contains the values
         for each element in the Map object in insertion order."""
-        return list(self._dict.values())
+        return [value for _, value in self._dict.values()]
 
-    def entries(self) -> list[tuple[str, Any]]:
+    def entries(self) -> list[tuple[Any, Any]]:
         """Returns a new Iterator object that contains an array of [key, value]
         for each element in the Map object in insertion order."""
-        return list(self._dict.items())
+        return list(self._dict.values())
 
     def forEach(self, callbackFn: Callable[[Any, Any, "Map"], Any], thisArg: Any = None) -> None:
         """Call callbackFn once for each key/value pair in insertion order."""
-        for key, value in list(self._dict.items()):
+        for key, value in list(self._dict.values()):
             _invoke_js_callback(callbackFn, value, key, self)
 
     def update(self, ordered_dict: Any) -> None:
@@ -1065,7 +1076,7 @@ class Map:
             self[key] = value
 
     def __str__(self) -> str:
-        return str(list(self._dict.items()))
+        return str(self.entries())
 
 
 class FormData:
@@ -1208,10 +1219,18 @@ class Math(Object):
     def cbrt(x: float) -> float:
         """Returns the cube root of a number."""
         if hasattr(math, "cbrt"):
-            return math.cbrt(x)
-        if x == 0:
+            r = math.cbrt(x)
+        elif x == 0:
             return 0.0
-        return math.copysign(abs(x) ** (1 / 3), x)
+        else:
+            r = math.copysign(abs(x) ** (1 / 3), x)
+        # glibc's cbrt isn't correctly rounded for every input (e.g.
+        # cbrt(27) comes back a ULP high on Linux, where macOS's libm and
+        # V8 both give exactly 3) -- snap back to the exact value whenever
+        # it provably cubes back to x, leaving genuinely irrational results
+        # (where no such exact snap exists) untouched.
+        snapped = round(r)
+        return float(snapped) if snapped**3 == x else r
 
     @staticmethod
     @_force_number
@@ -1363,7 +1382,12 @@ class Math(Object):
     @_force_number
     def log2(x: float) -> float:
         """Return the base 2 logarithm of a number."""
-        return math.log2(x)
+        r = math.log2(x)
+        # see Math.cbrt -- libm isn't correctly rounded for every input on
+        # every platform; snap back to the exact integer result whenever it
+        # provably exponentiates back to x.
+        snapped = round(r)
+        return float(snapped) if 2.0**snapped == x else r
 
     @staticmethod
     @_force_number
@@ -1381,7 +1405,11 @@ class Math(Object):
     @_force_number
     def log10(x: float) -> float:
         """function returns the base 10 logarithm of a number, that is"""
-        return math.log10(x)
+        r = math.log10(x)
+        # see Math.cbrt -- snap back to the exact integer result whenever it
+        # provably exponentiates back to x.
+        snapped = round(r)
+        return float(snapped) if 10.0**snapped == x else r
 
     @staticmethod
     @_force_number
@@ -4743,7 +4771,10 @@ class String(str):
             return _js_sub(compiled, str(new), self.x, count)
         if callable(new):
             return re.sub(re.escape(str(old)), _js_replacer(new), self.x, count=1)
-        return self.x.replace(str(old), str(new), 1)
+        # a plain-string search still expands $$/$&/$`/$' in the replacement
+        # (ECMA-262 GetSubstitution applies regardless of search type -- a
+        # string search just has no capture groups, so $1.. stays literal).
+        return _js_sub(re.compile(re.escape(str(old))), str(new), self.x, 1)
 
     def replaceAll(self, old: str | RegExp, new: str | Callable[..., str]) -> str:
         """returns a new string where the specified values are replaced. ES2021
@@ -4760,7 +4791,9 @@ class String(str):
             if callable(new):
                 return compiled.sub(_js_replacer(new), self.x)
             return _js_sub(compiled, str(new), self.x, 0)
-        return self.x.replace(str(old), str(new))
+        if callable(new):
+            return re.sub(re.escape(str(old)), _js_replacer(new), self.x)
+        return _js_sub(re.compile(re.escape(str(old))), str(new), self.x, 0)
 
     # def localeCompare():
     # """ Compares two strings in the current locale """
@@ -6012,6 +6045,13 @@ class TypedArray:
 
     # def __setitem__(self, index, value):
     #     self.buffer[index] = value
+
+    # NONSTANDARD: lets a typed array work with Python's own len() the way
+    # its .length property already works with JS's -- real typed arrays
+    # have no Python len() protocol to match, so this is purely for the
+    # Python side of the port.
+    def __len__(self) -> int:
+        return self.length
 
     # // getter type (unsigned long index);
     def __getitem__(self, index: int | None) -> Any:

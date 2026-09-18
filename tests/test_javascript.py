@@ -861,6 +861,36 @@ class TestCase(unittest.TestCase):
         self.assertTrue(numeric.delete(1))
         self.assertFalse(numeric.has(1))
 
+    def test_javascript_map_keys_are_samevaluezero_not_stringified(self):
+        # a number key and a string key are different keys in real JS --
+        # Map must not stringify every key the way it used to (which made
+        # 1 and "1" collide, and would turn an object key into repr() noise).
+        mixed = Map([[1, "int-key"], ["1", "str-key"]])
+        self.assertEqual(mixed.size, 2)
+        self.assertEqual(mixed.get(1), "int-key")
+        self.assertEqual(mixed.get("1"), "str-key")
+        self.assertTrue(mixed.has(1))
+        self.assertTrue(mixed.has("1"))
+
+        # object keys compare by reference, not by stringified representation
+        class Node:
+            pass
+
+        a, b = Node(), Node()
+        by_object = Map()
+        by_object.set(a, "first")
+        by_object.set(b, "second")
+        self.assertEqual(by_object.get(a), "first")
+        self.assertEqual(by_object.get(b), "second")
+        self.assertEqual(by_object.size, 2)
+        self.assertIsNone(by_object.get(Node()))
+
+        # keys()/entries()/forEach report the original key, not a stringified one
+        self.assertEqual(mixed.keys(), [1, "1"])
+        visited_keys = []
+        mixed.forEach(lambda value, key, owner: visited_keys.append(key))
+        self.assertEqual(visited_keys, [1, "1"])
+
     def test_javascript_interval(self):
         callback = Mock()
         test = window.setInterval(callback, 10)
@@ -1553,6 +1583,17 @@ class TestCase(unittest.TestCase):
             RegExp(r"(\w+)\s(\w+)").replace("Some String", "$2 $1"), "String Some"
         )
 
+    def test_replace_dollar_patterns(self):
+        # $` / $' (the substring before/after the match) with a RegExp search
+        self.assertEqual(String("abc").replace(RegExp("b"), "$`"), "aac")
+        self.assertEqual(String("abc").replace(RegExp("b"), "$'"), "acc")
+        # $$ -> a literal $, and $&/$$ still expand for a plain-string search
+        # too (ECMA-262 GetSubstitution applies regardless of search type --
+        # a string search just has no capture groups).
+        self.assertEqual(String("a$b").replace("$", "$$"), "a$b")
+        self.assertEqual(String("x").replace("x", "$&"), "x")
+        self.assertEqual(String("xx").replaceAll("x", "$&$&"), "xxxx")
+
     def test_regexp_sticky_flag_and_last_index(self):
         r = RegExp(r"\d+", "y")
         r.lastIndex = 0
@@ -1996,6 +2037,7 @@ class TestCase(unittest.TestCase):
 
         clamped = Uint8ClampedArray([300, -5, 128])
         self.assertEqual([clamped[i] for i in range(clamped.length)], [255, 0, 128])
+        self.assertEqual(len(clamped), clamped.length)
 
         float32 = Float32Array([1.5, 2.25])
         self.assertAlmostEqual(float32[0], 1.5, places=6)

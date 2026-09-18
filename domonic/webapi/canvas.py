@@ -76,16 +76,25 @@ class TextMetrics:
 
 
 class ImageData:
-    """Pixel buffer for canvas image APIs."""
+    """Pixel buffer for canvas image APIs.
+
+    ``data`` is a ``Uint8ClampedArray``, matching a real browser's
+    ``ImageData.data`` -- it coerces and clamps on assignment (``d[i] = 3.7``
+    stores ``4``, ``d[i] = 300`` stores ``255``) rather than raising, so
+    ordinary arithmetic writes (which, through the JS interpreter, are
+    always Python ``float`` -- there's one JS number type) don't silently
+    no-op the way they did against a plain ``bytearray``.
+    """
 
     def __init__(self, width: int, height: int, data: Any | None = None) -> None:
+        from domonic.javascript import Uint8ClampedArray
+
         self.width = int(width)
         self.height = int(height)
         size = max(0, self.width * self.height * 4)
         data_bytes = _bytes_from_any(data) if data is not None else b""
-        self.data = bytearray(data_bytes[:size])
-        if len(self.data) < size:
-            self.data.extend(b"\x00" * (size - len(self.data)))
+        padded = bytes(data_bytes[:size]) + b"\x00" * max(0, size - len(data_bytes))
+        self.data = Uint8ClampedArray(list(padded))
 
 
 class CanvasGradient:

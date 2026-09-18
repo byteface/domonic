@@ -42,6 +42,20 @@ class LayoutStyleLengthsAndKeywords(unittest.TestCase):
     def test_px_length_resolves(self):
         self.assertEqual(layout_style(_styled("width: 200px")).width, Length(200.0))
 
+    def test_layout_style_reuses_a_supplied_computed_style(self):
+        # a caller that also needs the ComputedStyleDeclaration itself (for
+        # something LayoutStyle excludes, e.g. paint-only colours) should be
+        # able to resolve the cascade once and share it, via either the
+        # layout_style(element, computed=...) parameter or the public
+        # LayoutStyle.from_computed() classmethod directly.
+        from domonic.layout import LayoutStyle
+        from domonic.style import ComputedStyleDeclaration
+
+        el = _styled("width: 100px; color: red")
+        computed = ComputedStyleDeclaration(el)
+        self.assertEqual(layout_style(el, computed=computed).width, Length(100.0))
+        self.assertEqual(LayoutStyle.from_computed(computed).width, Length(100.0))
+
     def test_em_resolves_against_font_size(self):
         el = _styled("font-size: 20px; width: 2em")
         self.assertEqual(layout_style(el).width, Length(40.0))
@@ -66,6 +80,15 @@ class LayoutStyleLengthsAndKeywords(unittest.TestCase):
     def test_calc_mixing_in_a_percent_is_left_alone(self):
         style = layout_style(_styled("width: calc(100% - 20px)"))
         self.assertEqual(style.width, Keyword("calc(100% - 20px)"))
+
+    def test_calc_referencing_a_custom_property_resolves(self):
+        # Tailwind v4's spacing scale is exactly this shape
+        # (calc(var(--spacing)*N)) on essentially every length value; the raw
+        # cascaded string still has the var() reference in it here (unlike
+        # getComputedStyle, which expands var() before it ever reaches a
+        # calc() evaluator), so this needs the same expansion done first.
+        style = layout_style(_styled("--spacing: 4px; height: calc(var(--spacing)*16)"))
+        self.assertEqual(style.height, Length(64.0))
 
     def test_intrinsic_sizing_keyword_passes_through(self):
         self.assertEqual(layout_style(_styled("width: min-content")).width, Keyword("min-content"))
@@ -101,11 +124,21 @@ class LayoutStyleEdges(unittest.TestCase):
         self.assertEqual(style.padding.top, Keyword("auto"))
 
     def test_border_width_keyword(self):
+        # thin/medium/thick resolve to a real px length once a border-style
+        # actually draws that side.
+        style = layout_style(_styled("border-top-style: solid"))
+        self.assertEqual(style.borderWidth.top, Length(3.0))
+
+    def test_border_width_zero_when_style_none(self):
+        # a side's used border-width is 0 whenever its border-style is
+        # none/hidden, regardless of what border-width itself says -- an
+        # unstyled element (border-style's initial value is "none") reports
+        # 0, not the "medium" default width.
         style = layout_style(_styled(""))
-        self.assertEqual(style.borderWidth.top, Keyword("medium"))
+        self.assertEqual(style.borderWidth.top, Length(0.0))
 
     def test_border_width_rejects_percent(self):
-        style = layout_style(_styled("border-top-width: 10%"))
+        style = layout_style(_styled("border-top-style: solid; border-top-width: 10%"))
         self.assertEqual(style.borderWidth.top, Keyword("10%"))
 
     def test_inset(self):

@@ -6,7 +6,7 @@ Python DOM, HTML, SVG, XML, Web API, and JavaScript-like runtime toolkit.
 
 """
 
-__version__ = "1.8.1"
+__version__ = "1.8.2"
 __license__ = "MIT"
 __author__ = "@byteface"
 
@@ -1790,6 +1790,7 @@ class domonic:
 
 parseString = domonic.parseString
 parse = domonic.parse
+get_active_parser = domonic.get_active_parser
 register_parser = domonic.register_parser
 unregister_parser = domonic.unregister_parser
 registered_parsers = domonic.registered_parsers

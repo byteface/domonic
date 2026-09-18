@@ -300,6 +300,20 @@ _id="one", _class="two",
              "markupever", "selectolax", "turbohtml", "expat"},
         )
 
+    def test_get_active_parser_is_reachable_from_the_top_level_package(self):
+        # domonic/__init__.py defines an inner `domonic` class and then
+        # re-exports its staticmethods at package level (`parseString =
+        # domonic.parseString`, etc.) so `import domonic; domonic.parseString(...)`
+        # works without reaching into the class directly -- get_active_parser
+        # was missing from that re-export list, so `import domonic;
+        # domonic.get_active_parser()` (exactly what its own docstring tells
+        # a caller to do) raised AttributeError even though the class-level
+        # `domonic.domonic.get_active_parser()` worked fine.
+        import domonic as domonic_package
+
+        domonic_package.parseString("<p>x</p>", parser="html.parser")
+        self.assertEqual(domonic_package.get_active_parser(), "html.parser")
+
     def test_parse_string_auto_logs_skipped_backends(self):
         with self.assertLogs("domonic.parser", level="DEBUG") as captured:
             domonic.parseString("<p>x</p>", parser="auto")

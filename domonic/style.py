@@ -245,8 +245,99 @@ def _split_css_declarations(css_text: str) -> list[str]:
     return declarations
 
 
+#: each 2-value logical axis shorthand ("start end", or one value for both)
+#: -> its two physical longhands, in start-then-end order. Only LTR,
+#: horizontal writing-mode is modelled (inline -> left/right, block ->
+#: top/bottom), matching this project's existing lack of RTL/bidi support.
+_LOGICAL_AXIS_SHORTHANDS: dict[str, tuple[str, str]] = {
+    "padding-inline": ("padding-left", "padding-right"),
+    "padding-block": ("padding-top", "padding-bottom"),
+    "margin-inline": ("margin-left", "margin-right"),
+    "margin-block": ("margin-top", "margin-bottom"),
+    "inset-inline": ("left", "right"),
+    "inset-block": ("top", "bottom"),
+}
+
+#: each single-value logical longhand -> the one physical longhand it aliases.
+_LOGICAL_ALIAS_LONGHANDS: dict[str, str] = {
+    "padding-inline-start": "padding-left",
+    "padding-inline-end": "padding-right",
+    "padding-block-start": "padding-top",
+    "padding-block-end": "padding-bottom",
+    "margin-inline-start": "margin-left",
+    "margin-inline-end": "margin-right",
+    "margin-block-start": "margin-top",
+    "margin-block-end": "margin-bottom",
+    "inset-inline-start": "left",
+    "inset-inline-end": "right",
+    "inset-block-start": "top",
+    "inset-block-end": "bottom",
+}
+
+
+#: properties whose value CSS 2.1 requires to be non-negative (8.4's
+#: "Negative values for padding are not allowed", 8.5.3's own words for
+#: border-width, and each property's own definition for the rest). A
+#: syntactically invalid value is dropped per the cascade -- as if that one
+#: declaration were never written -- not applied literally or clamped.
+_NON_NEGATIVE_LENGTH_PROPERTIES = frozenset(
+    {
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+        "padding-inline",
+        "padding-block",
+        "padding-inline-start",
+        "padding-inline-end",
+        "padding-block-start",
+        "padding-block-end",
+        "border-width",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
+        "outline-width",
+        "width",
+        "height",
+        "min-width",
+        "min-height",
+        "font-size",
+    }
+)
+#: a single token that is unambiguously a negative length/percentage (not
+#: ``var()``/``calc()``, which need substitution before they can be judged).
+_NEGATIVE_LENGTH_TOKEN_RE = re.compile(
+    r"^-(?:\d+\.?\d*|\.\d+)(px|em|rem|%|in|cm|mm|q|pt|pc|vw|vh|vmin|vmax|ch|ex)?$", re.I
+)
+
+
+def _is_invalid_non_negative_declaration(name: str, value: str) -> bool:
+    if name not in _NON_NEGATIVE_LENGTH_PROPERTIES:
+        return False
+    low = value.lower()
+    if "var(" in low or "calc(" in low:
+        return False
+    return any(_NEGATIVE_LENGTH_TOKEN_RE.match(token) for token in value.split())
+
+
 def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
     entries: list[tuple[str, str, str]] = []
+    index_by_name: dict[str, int] = {}
+
+    def emit(name: str, value: str, priority: str) -> None:
+        # a later declaration for the same (already-physical) name replaces
+        # an earlier one rather than sitting alongside it, keeping its first
+        # position -- e.g. a repeated ``padding-inline`` in the same rule, or
+        # a plain longhand and the logical property that aliases it.
+        existing = index_by_name.get(name)
+        if existing is None:
+            index_by_name[name] = len(entries)
+            entries.append((name, value, priority))
+        else:
+            entries[existing] = (name, value, priority)
+
     for declaration in _split_css_declarations(css_text):
         if ":" not in declaration:
             continue
@@ -259,7 +350,33 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
         if _IMPORTANT_RE.search(value):
             value = _IMPORTANT_RE.sub("", value).strip()
             priority = "important"
-        entries.append((name, value, priority))
+        # a syntactically invalid declaration is dropped entirely -- the
+        # cascade behaves as if it were never written, leaving whatever the
+        # property's next-highest-priority declaration (or initial value)
+        # was, not this literal invalid value.
+        if _is_invalid_non_negative_declaration(name, value):
+            continue
+        # logical properties are expanded into their physical longhand(s)
+        # here, at the tokenizer level, so the expansion rides on the same
+        # cascade priority (source order, !important) as the declaration it
+        # came from, rather than a physical longhand from some unrelated,
+        # lower-priority rule winning just by already having a value.
+        axis = _LOGICAL_AXIS_SHORTHANDS.get(name)
+        if axis is not None:
+            parts = value.split()
+            if len(parts) == 1:
+                emit(axis[0], parts[0], priority)
+                emit(axis[1], parts[0], priority)
+                continue
+            if len(parts) == 2:
+                emit(axis[0], parts[0], priority)
+                emit(axis[1], parts[1], priority)
+                continue
+            # unrecognised shape -- keep verbatim rather than guess
+            emit(name, value, priority)
+            continue
+        alias = _LOGICAL_ALIAS_LONGHANDS.get(name)
+        emit(alias if alias is not None else name, value, priority)
     return entries
 
 
@@ -1250,6 +1367,21 @@ class CSSRuleList(list):
             return None
 
 
+#: an XHTML ``<style>`` element's text wrapped in exactly one CDATA section
+#: (``<![CDATA[ ... ]]>``) -- valid, common XHTML practice for keeping a
+#: stylesheet well-formed as XML. domonic's HTML parser has no CDATA-section
+#: mode, so the markers survive as literal text in the element's
+#: ``textContent`` instead of being stripped as markup; ordinary CSS never
+#: both starts with ``<![CDATA[`` and ends with ``]]>``, so stripping it here
+#: is safe.
+_CDATA_WRAPPER_RE = re.compile(r"^\s*<!\[CDATA\[(.*)\]\]>\s*$", re.S)
+
+
+def _strip_cdata_wrapper(text: str) -> str:
+    match = _CDATA_WRAPPER_RE.match(text)
+    return match.group(1) if match else text
+
+
 class CSSStyleSheet(StyleSheet):
     """Creates a new CSSStyleSheet object."""
 
@@ -1321,7 +1453,7 @@ class CSSStyleSheet(StyleSheet):
 
     def replaceSync(self, text: str):
         """Synchronously replaces the content of the stylesheet."""
-        self.cssRules = CSSParser.parseFromString(self, text)
+        self.cssRules = CSSParser.parseFromString(self, _strip_cdata_wrapper(text or ""))
         self.rules = self.cssRules
         _cssom.bump_stylesheet_epoch()
 
@@ -5629,6 +5761,63 @@ def _layer_sort_key(layer: int, important: bool) -> tuple[int, int]:
     return (1, 0) if layer == 0 else (0, layer)
 
 
+def _has_paren_internal_whitespace(value: str) -> bool:
+    """Whether *value* has whitespace nested inside a function call's
+    parens -- e.g. the space after ``var(--missing,`` in ``var(--missing,
+    4px)``, as opposed to ``var(--gap)`` (no comma/space inside at all) or
+    plain top-level whitespace like ``1px solid red``."""
+    depth = 0
+    for char in value:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth = max(depth - 1, 0)
+        elif char.isspace() and depth > 0:
+            return True
+    return False
+
+
+def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
+    """A cascade-only, fully-longhand view of one rule's declarations.
+
+    ``_collect_author_declarations`` picks a single winning declaration per
+    *property name* across all matching rules -- but a shorthand
+    (``border``) and one of its own longhands (``border-top``) are different
+    names, so without this they never actually compete for a longhand they
+    both cover (``border-top-style``); whichever one happens to be expanded
+    first in ``_resolve()`` wins regardless of which was really later in the
+    rule. Expanding every shorthand to physical longhands here -- before
+    that per-name competition ever runs -- lets it decide correctly, the
+    same way it already does for two declarations of the same longhand.
+
+    This is separate from ``CSSStyleRule.style``'s own declarations
+    (``entries``, as authored) so ``cssText``/``getPropertyValue``/
+    ``setProperty`` keep reporting the shorthand exactly as written --
+    only the copy used for property-vs-property cascade matching changes."""
+    result: list[tuple[str, str, str]] = []
+    index_by_name: dict[str, int] = {}
+    for name, value, priority in entries:
+        pairs = None
+        # the box/border/font/background splitters below tokenize on bare
+        # whitespace -- safe for an unresolved var() reference with no
+        # fallback (``var(--gap)``, one token, splits the same as any other
+        # single value), but not for one with a fallback (``var(--missing,
+        # 4px)``): the space after its comma isn't a real token boundary,
+        # and naively splitting there would scatter one value's fallback
+        # across unrelated longhands. Left as the single shorthand entry in
+        # that case, exactly as authored, its var() substituted later.
+        if _cssom.is_shorthand(name) and not _has_paren_internal_whitespace(value):
+            pairs = _cssom.expand_shorthand(name, value)
+        for long_name, long_value in pairs if pairs is not None else ((name, value),):
+            existing = index_by_name.get(long_name)
+            if existing is None:
+                index_by_name[long_name] = len(result)
+                result.append((long_name, long_value, priority))
+            else:
+                result[existing] = (long_name, long_value, priority)
+    return tuple(result)
+
+
 def _build_rule_index(sheet_list, viewport):
     """``{bucket_key: [(selector, specificity, order, layer, entries)]}`` for
     fast element-vs-rule matching in getComputedStyle."""
@@ -5637,7 +5826,7 @@ def _build_rule_index(sheet_list, viewport):
     layers: dict[int, int] = {}  # id(CSSLayerBlockRule) -> layer number
     for sheet in sheet_list:
         for rule, layer in _iter_style_rules(getattr(sheet, "cssRules", None), viewport=viewport, layers=layers):
-            entries = tuple(rule.style._property_entries())
+            entries = _expand_shorthands_for_cascade(rule.style._property_entries())
             if not entries:
                 continue
             for selector in str(rule.selectorText or "").split(","):
@@ -5675,13 +5864,29 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
             child_layer = layers.setdefault(layer_name, len(layers) + 1)
             yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=child_layer)
             continue
-        condition = getattr(rule, "conditionText", None) or getattr(rule, "media", None)
-        if condition is not None and hasattr(condition, "matches"):
-            matches = condition.matches
-        else:
-            matches = True
-        if matches:
+        if _condition_rule_matches(rule, viewport):
             yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=layer)
+
+
+def _condition_rule_matches(rule, viewport) -> bool:
+    """Whether a conditional group rule (``@media``, ``@supports``, ...)
+    currently applies. ``@media`` is evaluated through its parsed ``MediaList``
+    against the real viewport, the same matcher ``window.matchMedia()`` uses --
+    ``neither ``conditionText`` (a plain string) nor ``MediaList`` (a plain
+    list) ever had a ``.matches`` attribute, so the previous
+    ``hasattr(condition, "matches")`` check was always false and every
+    conditional block was treated as always matching. Other condition rules
+    (``@supports``, ``@when``, ``@else``) have no evaluator here yet and keep
+    the previous always-match behaviour."""
+    if isinstance(rule, CSSMediaRule):
+        media_text = rule.media.mediaText if rule.media else ""
+        if not media_text:
+            return True
+        from domonic.window import MediaQueryList
+
+        width, height = viewport
+        return MediaQueryList._evaluate(media_text, width=width or 0, height=height or 0)
+    return True
 
 
 def _computed_style_cache_key(element) -> tuple:
@@ -5847,38 +6052,57 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
     def _resolve(self):
         element = self._element
-        resolved: dict[str, str] = {}
 
         # 1 + 2: author rules then the inline style attribute. Per the cascade,
         # normal inline beats normal author but loses to important author;
-        # important inline beats everything here.
+        # important inline beats everything here. Author declarations already
+        # arrive fully expanded to physical longhands (``_build_rule_index``
+        # expands every shorthand before its own per-name cascade competition
+        # runs), so only the inline attribute -- not indexed the same way --
+        # still needs its own shorthands expanded here. Merging author-then-
+        # inline and expanding together (rather than as two separate passes)
+        # means a later inline shorthand/longhand correctly overrides an
+        # earlier author one for a longhand they both cover, the same way a
+        # later declaration always beats an earlier one for the same property.
         author = self._collect_author_declarations()
         important_author = {name for name, (_, imp) in author.items() if imp}
-        for name, (value, _) in author.items():
-            resolved[name] = value
+        merged: list[tuple[str, str, str]] = [
+            (name, value, "important" if imp else "") for name, (value, imp) in author.items()
+        ]
         inline = getattr(element, "getAttribute", lambda *_: "")("style") or ""
         for name, value, priority in _parse_css_declarations(inline):
             if priority != "important":
                 covering = _cssom.LONGHAND_TO_SHORTHANDS.get(name, ())
                 if name in important_author or any(shorthand in important_author for shorthand in covering):
                     continue
-            resolved[name] = value
+            merged.append((name, value, priority))
 
-        # expand shorthands so longhand lookups work
-        for name in list(resolved):
-            if _cssom.is_shorthand(name):
-                for long_name, long_value in _cssom.expand_shorthand(name, resolved[name]) or []:
-                    resolved.setdefault(long_name, long_value)
+        resolved: dict[str, str] = {
+            name: value for name, value, _ in _expand_shorthands_for_cascade(tuple(merged))
+        }
 
-        # 3: inherited values from the parent's computed style
-        parent = getattr(element, "parentNode", None)
+        # 3: inherited values from the parent's computed style. A pseudo-
+        # element has no DOM node of its own -- ``element`` is still the real
+        # element it's attached to -- so per CSS Pseudo-Elements ("the parent
+        # of a generated box is the element to whose box tree the
+        # pseudo-element is attached"), a ::before/::after inherits from
+        # *that* element's own computed style, not its DOM parent's (which
+        # would skip right over any inherited property, e.g. font-family,
+        # that the element's own rules set).
+        cache = self._chain_cache
         parent_computed = None
-        if parent is not None and getattr(parent, "nodeType", None) == 1:
-            cache = self._chain_cache
-            parent_computed = cache.get(id(parent))
+        if self._pseudo:
+            parent_computed = cache.get(id(element))
             if parent_computed is None:
-                parent_computed = ComputedStyleDeclaration(parent, None, _chain_cache=cache)
-                cache[id(parent)] = parent_computed
+                parent_computed = ComputedStyleDeclaration(element, None, _chain_cache=cache)
+                cache[id(element)] = parent_computed
+        else:
+            parent = getattr(element, "parentNode", None)
+            if parent is not None and getattr(parent, "nodeType", None) == 1:
+                parent_computed = cache.get(id(parent))
+                if parent_computed is None:
+                    parent_computed = ComputedStyleDeclaration(parent, None, _chain_cache=cache)
+                    cache[id(parent)] = parent_computed
         return _ResolvedView(resolved, parent_computed)
 
     # -- read-only CSSOM surface --------------------------------------
@@ -5919,10 +6143,33 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             border_style = (self._resolved.get(style_prop) or "").strip().lower()
             if border_style in ("none", "hidden"):
                 return "0px"
+        # a minimal UA-stylesheet default: these tags are never content, so
+        # a real browser's UA stylesheet gives them display:none outright --
+        # it's why a <script> tag's source text never shows up as a
+        # paragraph on the page. Weakest possible priority, exactly like a
+        # real UA stylesheet: only applies when nothing (author rule,
+        # inline style) ever declared `display` at all, so any actual
+        # cascade value for it is completely unaffected.
+        if (
+            target == "display"
+            and not self._pseudo
+            and "display" not in self._resolved._declared
+            and (getattr(self._element, "tagName", "") or "").lower() in _UA_DISPLAY_NONE_TAGS
+        ):
+            return "none"
         # a shorthand is rebuilt from its (already used-value-resolved) longhands
+        # -- but only once its own raw value has no unresolved var() left in
+        # it: a fallback's internal comma/space isn't safe to split into
+        # per-longhand pieces (see _has_paren_internal_whitespace), so this
+        # shorthand's own longhands were never actually given a real,
+        # correctly-substituted value to rebuild from -- each one falls back
+        # to its bare initial value instead, which "rebuilds" into a
+        # confidently wrong result rather than the real one below.
+        raw_target_value = self._resolved.get(target) or ""
         if (
             _cssom.is_shorthand(target)
-            and _cssom.expand_shorthand(target, self._resolved.get(target) or "") is not None
+            and "var(" not in raw_target_value.lower()
+            and _cssom.expand_shorthand(target, raw_target_value) is not None
         ):
             built = _cssom.build_shorthand(target, self.getPropertyValue)
             if built:
@@ -6022,6 +6269,15 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     def _to_used_length(self, target: str, value: str) -> str:
         if target == "font-size":
             return _px_str(self._font_size_px())
+
+        # border-width's keywords (thin/medium/thick) resolve to a fixed px
+        # length; a "none"/"hidden" border-style already short-circuits to
+        # "0px" in _compute_property_value before this is reached, so a
+        # keyword seen here always belongs to a style that actually draws.
+        if target in _BORDER_WIDTH_TO_STYLE:
+            keyword_px = _BORDER_WIDTH_KEYWORD_PX.get(value.strip().lower())
+            if keyword_px is not None:
+                return _px_str(keyword_px)
 
         # Once a layout engine has attached geometry to this element, its own
         # box holds the real used value for whichever of these was "auto" --
@@ -6211,6 +6467,15 @@ _BORDER_WIDTH_TO_STYLE = {
     "border-bottom-width": "border-bottom-style",
     "border-left-width": "border-left-style",
 }
+
+#: border-width's three keywords, CSS 2.1 8.5.3 -- the spec leaves their
+#: exact widths up to the UA beyond "thin < medium < thick"; 1px/3px/5px is
+#: the convention every browser (Chrome included) uses.
+_BORDER_WIDTH_KEYWORD_PX = {"thin": 1.0, "medium": 3.0, "thick": 5.0}
+
+#: tags a real browser's UA stylesheet gives display:none outright, since
+#: nothing about them is content.
+_UA_DISPLAY_NONE_TAGS = frozenset({"head", "title", "script", "style", "meta", "link", "noscript", "template"})
 
 #: min-width/min-height's initial value is "auto", but no engine treats an
 #: unresolved "auto" as the reported computed value -- see _compute_property_value

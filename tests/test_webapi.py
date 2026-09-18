@@ -726,6 +726,20 @@ class TestCase(unittest.TestCase):
         self.assertEqual(len(ctx.getImageData(0, 0, 2, 2).data), 16)
         self.assertIsNone(surface.getContext("webgl"))
 
+        # ImageData.data is a Uint8ClampedArray, matching a real browser --
+        # it coerces/clamps on assignment (a JS interpreter's arithmetic is
+        # always float, since JS has one number type) rather than raising
+        # or silently no-opping the way a plain bytearray would.
+        pixels = ctx.createImageData(1, 1).data
+        pixels[0] = (7.0 * 7) % 256
+        self.assertEqual(pixels[0], 49)
+        pixels[1] = 300
+        self.assertEqual(pixels[1], 255)
+        pixels[2] = -10
+        self.assertEqual(pixels[2], 0)
+        pixels[3] = 3.7
+        self.assertEqual(pixels[3], 4)
+
         blob = surface.toBlob()
         self.assertIsInstance(blob, Blob)
         self.assertEqual(blob.type, "image/png")

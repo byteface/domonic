@@ -5511,6 +5511,23 @@ class Element(Node):
         _process_observer_notifications(self, rect)
         return rect
 
+    def measureText(self, text: "str | None" = None) -> tuple[float, float, float, float]:
+        """``(width, height, ascent, descent)`` in px for *text* (this
+        element's own ``textContent`` by default) set in this element's
+        computed ``font-size``/``font-weight``.
+
+        The same bundled font metrics table ``getComputedTextLength()`` uses
+        for SVG ``<text>``, but exposed for any element -- ``getBBox()`` stays
+        SVG-only per spec (a real browser doesn't have it on plain HTML), so
+        this is the public, HTML-facing way to get real text measurements
+        (e.g. for a layout engine adapter sizing a text leaf) without
+        reaching into ``domonic._fontmetrics`` directly.
+        """
+        if text is None:
+            text = _svg_text_content(self)
+        size, bold, _root = _svg_resolve_font(self)
+        return _fontmetrics.text_extent(text, size, bold)
+
     # -- SVG geometry (SVGGraphicsElement / SVGTextContentElement) ---------
     def getBBox(self) -> "DOMRect":
         """The tight geometry box of this element in its own user space.
