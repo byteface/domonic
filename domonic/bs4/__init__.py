@@ -306,6 +306,12 @@ def _tag_index(node: Any) -> dict[str, list[Element]]:
     for element in _walk_element_descendants(root):
         index["*"].append(element)
         index.setdefault(element.name.lower(), []).append(element)
+        # also index by local name -- a bare CSS type selector ("svg")
+        # matches any namespace by local name (CSS Namespaces L3 3), unlike
+        # the qualified-name-only entry above.
+        local_name = Element._selector_local_name(element.name.lower())
+        if local_name != element.name.lower():
+            index.setdefault(local_name, []).append(element)
     root.__dict__["_bs4_tag_index"] = index
     return index
 
@@ -1054,7 +1060,7 @@ def _parse_stripped_selector(simple: str) -> dict[str, Any] | None:
 
 def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
     tag_name = parsed["tag"]
-    if tag_name != "*" and element.name.lower() != tag_name.lower():
+    if tag_name != "*" and Element._selector_local_name(element.name).lower() != tag_name.lower():
         return False
     if parsed["id"] is not None and _get_attribute(element, "id") != parsed["id"]:
         return False
@@ -1274,7 +1280,7 @@ def _selector_candidates(
 
     if tag_name is not None:
         for candidate in _element_descendants(context):
-            if candidate.name.lower() == tag_name:
+            if Element._selector_local_name(candidate.name.lower()) == tag_name:
                 yield candidate
         return
     yield from _element_descendants(context)
@@ -1308,7 +1314,7 @@ def _index_candidate_pool(root: Any, parsed: dict[str, Any]) -> "list[Element]":
         keep = set(other)
         out = [e for e in out if e in keep]
     if tag is not None:
-        out = [e for e in out if e.name.lower() == tag]
+        out = [e for e in out if Element._selector_local_name(e.name.lower()) == tag]
     return out
 
 

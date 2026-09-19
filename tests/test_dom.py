@@ -2897,6 +2897,15 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(str(entity), "&amp;")
         self.assertEqual(EntityReference.fromOrdinal(38), "&")
 
+        # CDATASection.__init__ skipped Node's own init (unlike Comment's,
+        # which calls super().__init__()), so a bare CDATASection had no
+        # .name/.parentNode -- any generic Node code (starting with __repr__
+        # itself) raised AttributeError instead of working like every other
+        # character-data node.
+        self.assertEqual(repr(cdata), "<CDATASection>")
+        self.assertIsNone(cdata.parentNode)
+        self.assertEqual(cdata.nodeName, "#cdata-section")
+
     def test_dom_html_element_constructor_helpers(self):
         cases = [
             (
@@ -5894,6 +5903,35 @@ class TestDomTokenList(unittest.TestCase):
                     page.querySelector("mi").namespaceURI,
                     "http://www.w3.org/1998/Math/MathML",
                 )
+
+    def test_bare_type_selector_matches_a_namespace_prefixed_tag_by_local_name(self):
+        # per CSS Namespaces L3 3, a type selector with no namespace prefix
+        # matches by local name in any namespace when the style sheet has
+        # declared no default namespace (via @namespace) -- which domonic
+        # never does. getElementsByTagName is a different, DOM-Level-1 API
+        # that must keep matching the qualified name literally.
+        page = domonic.parseString(
+            '<html><head><style>svg{height:100px;width:200px}</style></head>'
+            '<body><svg:svg class="icon"></svg:svg><svg></svg></body></html>'
+        )
+        prefixed = page.getElementsByTagName("svg:svg")[0]
+        plain = page.getElementsByTagName("svg")[0]
+
+        self.assertTrue(prefixed.matches("svg"))
+        self.assertTrue(prefixed.matches("svg.icon"))
+        self.assertEqual(page.querySelectorAll("svg"), [prefixed, plain])
+        self.assertIs(page.querySelector("svg"), prefixed)
+
+        from domonic.window import window
+
+        computed = window.getComputedStyle(prefixed)
+        self.assertEqual(computed.getPropertyValue("height"), "100px")
+        self.assertEqual(computed.getPropertyValue("width"), "200px")
+
+        # getElementsByTagName keeps its own, spec-mandated qualified-name-
+        # only matching -- unaffected by the CSS-selector fix above.
+        self.assertEqual(len(page.getElementsByTagName("svg")), 1)
+        self.assertIs(page.getElementsByTagName("svg")[0], plain)
 
     def test_annotation_xml_html_encoding_switches_children_to_html_namespace(self):
         parsers = ["html.parser", "lxml_html", "selectolax", "turbohtml", "html5lib"]

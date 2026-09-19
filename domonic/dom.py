@@ -1031,6 +1031,7 @@ def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
     if cached is not None and cached[0] == _STRUCTURE_EPOCH:
         return cached[1]
     tags: "dict[str, list[Element]]" = {"*": []}
+    local_tags: "dict[str, list[Element]]" = {}
     classes: "dict[str, list[Element]]" = {}
     names: "dict[str, list[Element]]" = {}
     all_tag = tags["*"]
@@ -1046,6 +1047,18 @@ def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
                 tags[tag] = [node]
             else:
                 bucket.append(node)
+            # ``tags`` is the qualified name, used by getElementsByTagName
+            # per spec. ``local_tags`` is the unprefixed local name -- e.g.
+            # both "svg:svg" and "local" for an <svg:svg> element -- used by
+            # CSS type-selector matching (querySelectorAll("svg")), which per
+            # CSS Namespaces L3 3 matches any namespace by local name when no
+            # default namespace is declared (domonic never declares one).
+            local_tag = tag.rpartition(":")[2] or tag
+            local_bucket = local_tags.get(local_tag)
+            if local_bucket is None:
+                local_tags[local_tag] = [node]
+            else:
+                local_bucket.append(node)
             cls = kw.get("_class")
             if cls:
                 for token in str(cls).split():
@@ -1062,13 +1075,20 @@ def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
                 else:
                     nbucket.append(node)
         stack.extend(reversed(_child_nodes_for_walk(node)))
-    maps = {"tag": tags, "class": classes, "name": names}
+    maps = {"tag": tags, "local_tag": local_tags, "class": classes, "name": names}
     root.__dict__["_dom_index"] = (_STRUCTURE_EPOCH, maps)
     return maps
 
 
 def _elements_by_tag_name(root: "Node", tag_name: str) -> "list[Element]":
     return list(_root_element_index(root)["tag"].get(tag_name.lower(), ()))
+
+
+def _elements_by_local_tag_name(root: "Node", tag_name: str) -> "list[Element]":
+    """Like ``_elements_by_tag_name``, but by local name (CSS type-selector
+    semantics) rather than full qualified name (``getElementsByTagName``'s
+    own, spec-mandated semantics) -- see ``_root_element_index``."""
+    return list(_root_element_index(root)["local_tag"].get(tag_name.lower(), ()))
 
 
 def _elements_by_name(root: "Node", name: str) -> "list[Element]":
@@ -4783,6 +4803,19 @@ class Element(Node):
             return value in attr_value
         return False
 
+    @staticmethod
+    def _selector_local_name(name: str) -> str:
+        """The unprefixed part of a qualified tag name (``"svg"`` from
+        ``"svg:svg"``), for type-selector matching.
+
+        Per CSS Namespaces L3 3, a type selector with no namespace prefix
+        matches by local name in any namespace when the style sheet has
+        declared no default namespace (via ``@namespace``) -- which domonic
+        never does, since it's HTML-first and namespace-prefixed tags only
+        show up from parsing foreign markup (an ``<svg:svg>`` root, etc.), so
+        a bare author rule like ``svg { ... }`` should still apply to it."""
+        return name.rpartition(":")[2] or name
+
     def _matchElement(self, element, query):
         """
         Matches an element against a simple selector.
@@ -4799,7 +4832,7 @@ class Element(Node):
             return False
 
         tag_name = parsed["tag"]
-        if tag_name != "*" and element.tagName.lower() != tag_name.lower():
+        if tag_name != "*" and Element._selector_local_name(element.tagName).lower() != tag_name.lower():
             return False
         if parsed["id"] is not None and element.getAttribute("id") != parsed["id"]:
             return False
@@ -6017,7 +6050,8 @@ class Element(Node):
         warm = self.__dict__.get("_dom_index")
         if warm is not None and warm[0] == _STRUCTURE_EPOCH:
             if tag_match:
-                hits = warm[1]["tag"].get(query.lower(), ())
+                key = "tag" if query == "*" else "local_tag"
+                hits = warm[1][key].get(query.lower(), ())
                 return hits[0] if hits else None
             if class_match:
                 hits = _elements_by_class_name(self, frozenset(query.split(".")[1:]))
@@ -6046,7 +6080,7 @@ class Element(Node):
                         if required_classes.issubset(class_tokens):
                             return node
                     elif wanted_tag is not None:
-                        if node.tagName.lower() == wanted_tag:
+                        if Element._selector_local_name(node.tagName.lower()) == wanted_tag:
                             return node
                     elif wanted_tag is None and tag_match:
                         return node
@@ -6081,7 +6115,12 @@ class Element(Node):
         if re.match(r"^\.[\w-]+(?:\.[\w-]+)*$", query):
             return list(self.getElementsByClassName(" ".join(query.split(".")[1:])))
         if re.match(r"^(\*|[A-Za-z][\w-]*)$", query):
-            return list(self.getElementsByTagName(query))
+            if query == "*":
+                return list(self.getElementsByTagName(query))
+            # a bare type selector matches by local name in any namespace
+            # (CSS Namespaces L3 3), unlike getElementsByTagName's own
+            # qualified-name-only semantics -- see _elements_by_local_tag_name.
+            return _elements_by_local_tag_name(self, query)
 
         # The native CSS engine shared with BeautifulSlop resolves descendant /
         # child / adjacent (``+``) / general-sibling (``~``) combinators,
@@ -6670,10 +6709,12 @@ class CDATASection(_CharacterDataOnAttr, ChildNode):
     need escaping as they normally do within XML when used as text."""
 
     nodeType: int = Node.CDATA_SECTION_NODE
+    nodeName: str = "#cdata-section"
     __slots__ = "_data"
 
     def __init__(self, data) -> None:
         self.data = data
+        super().__init__()
 
     @property
     def nodeValue(self) -> str:

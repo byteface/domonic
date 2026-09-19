@@ -56,6 +56,30 @@ class TestParsers(unittest.TestCase):
     def test_dent_handles_single_line_pyml(self):
         self.assertEqual(dent("div(span())"), "div(\n    span(\n    )\n)")
 
+    def test_expat_parses_cdata_in_a_real_xhtml_document(self):
+        # a <style>/<script> wrapped in CDATA is the standard way real XHTML
+        # protects embedded CSS/JS from XML processing. domonic's <html> tag
+        # doubles as its own document (the last html() created becomes the
+        # active document), so by the time the expat/XML parser reaches this
+        # CDATA section, self.document is an HTMLDocument-derived instance --
+        # whose createCDATASection() correctly refuses CDATA per the DOM
+        # spec's HTML-document rule. That rule doesn't apply to input parsed
+        # as XML, so the expat builder must not route through it.
+        from domonic import domonic
+        from domonic.dom import CDATASection
+
+        xhtml = (
+            '<html xmlns="http://www.w3.org/1999/xhtml"><head>'
+            '<style type="text/css"><![CDATA[.a{color:red}]]></style>'
+            "</head><body><div class=\"a\">x</div></body></html>"
+        )
+        page = domonic.parseString(xhtml, parser="expat")
+        style = page.getElementsByTagName("style")[0]
+        cdata = style.childNodes[0]
+        self.assertIsInstance(cdata, CDATASection)
+        self.assertEqual(cdata.data, ".a{color:red}")
+        self.assertIs(cdata.parentNode, style)
+
 
 if __name__ == "__main__":
     unittest.main()

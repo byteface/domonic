@@ -296,6 +296,204 @@ class TestCase(unittest.TestCase):
         time.sleep(0.05)
         self.assertEqual(idle_cancelled, [])
 
+    def test_attach_host_calls_attach_and_exposes_native(self):
+        win = Window()
+        calls = []
+
+        class Host:
+            def attach(self, window):
+                calls.append(("attach", window))
+
+            def detach(self, window):
+                calls.append(("detach", window))
+
+        host = Host()
+        self.assertIs(win.attach_host(host), host)
+        self.assertIs(win.native, host)
+        self.assertEqual(calls, [("attach", win)])
+
+        # re-attaching the same host is a no-op
+        self.assertIs(win.attach_host(host), host)
+        self.assertEqual(calls, [("attach", win)])
+
+        self.assertIs(win.detach_host(), host)
+        self.assertIsNone(win.native)
+        self.assertEqual(calls, [("attach", win), ("detach", win)])
+
+        # detaching again is a no-op
+        self.assertIsNone(win.detach_host())
+        self.assertEqual(calls, [("attach", win), ("detach", win)])
+
+    def test_attach_host_swap_detaches_previous_host(self):
+        win = Window()
+        calls = []
+
+        class Host:
+            def __init__(self, name):
+                self.name = name
+
+            def attach(self, window):
+                calls.append(("attach", self.name))
+
+            def detach(self, window):
+                calls.append(("detach", self.name))
+
+        first, second = Host("first"), Host("second")
+        win.attach_host(first)
+        win.attach_host(second)
+
+        self.assertIs(win.native, second)
+        self.assertEqual(calls, [("attach", "first"), ("detach", "first"), ("attach", "second")])
+
+    def test_attach_host_rolls_back_on_attach_failure(self):
+        win = Window()
+
+        class BadHost:
+            def attach(self, window):
+                raise RuntimeError("boom")
+
+        with self.assertRaises(RuntimeError):
+            win.attach_host(BadHost())
+        self.assertIsNone(win.native)
+
+    def test_close_focus_blur_delegate_to_host(self):
+        win = Window()
+        calls = []
+
+        class Host:
+            def close(self):
+                calls.append("close")
+
+            def focus(self):
+                calls.append("focus")
+
+            def blur(self):
+                calls.append("blur")
+
+        win.attach_host(Host())
+
+        events = []
+        win.addEventListener("close", lambda event: events.append(event.type))
+        win.addEventListener("focus", lambda event: events.append(event.type))
+        win.addEventListener("blur", lambda event: events.append(event.type))
+
+        win.close()
+        win.focus()
+        win.blur()
+
+        self.assertEqual(calls, ["close", "focus", "blur"])
+        # close() falls back to dispatching synchronously when the host
+        # never confirms via _host_closed(); focus()/blur() do not, since a
+        # host that owns focus is expected to report back itself
+        self.assertEqual(events, ["close"])
+        self.assertTrue(win.closed)
+
+    def test_close_falls_back_when_host_never_confirms(self):
+        win = Window()
+
+        class SilentHost:
+            def close(self):
+                pass  # never calls window._host_closed()
+
+        win.attach_host(SilentHost())
+        events = []
+        win.addEventListener("close", lambda event: events.append(event.type))
+
+        win.close()
+
+        self.assertEqual(events, ["close"])
+        self.assertTrue(win.closed)
+
+    def test_resize_and_move_delegate_to_host(self):
+        win = Window()
+        calls = []
+
+        class Host:
+            def resize(self, width, height):
+                calls.append(("resize", width, height))
+
+            def move_to(self, x, y):
+                calls.append(("move_to", x, y))
+
+        win.attach_host(Host())
+        resize_events = []
+        win.addEventListener("resize", lambda event: resize_events.append(event.type))
+
+        win.resizeTo(640, 480)
+        win.moveTo(20, 30)
+
+        self.assertEqual(calls, [("resize", 640, 480), ("move_to", 20, 30)])
+        # the host owns dispatching resize; Domonic does not act until the
+        # host reports back via _host_resized()
+        self.assertEqual(resize_events, [])
+        self.assertEqual(win.innerWidth, win.screen.width)
+
+        win._host_resized(640, 480)
+        self.assertEqual((win.innerWidth, win.innerHeight), (640, 480))
+        self.assertEqual(resize_events, ["resize"])
+
+        win._host_moved(20, 30)
+        self.assertEqual((win.screenLeft, win.screenTop), (20, 30))
+
+    def test_animation_frame_and_open_delegate_to_host(self):
+        win = Window()
+        calls = []
+
+        class Host:
+            def request_animation_frame(self, callback):
+                calls.append(("request_animation_frame", callback))
+                return 99
+
+            def cancel_animation_frame(self, request_id):
+                calls.append(("cancel_animation_frame", request_id))
+
+            def open_window(self, url, target, features, replace, opener):
+                calls.append(("open_window", url, target))
+                return "child-from-host"
+
+        win.attach_host(Host())
+
+        request_id = win.requestAnimationFrame(lambda timestamp: None)
+        self.assertEqual(request_id, 99)
+        win.cancelAnimationFrame(request_id)
+
+        self.assertEqual(win.open("https://example.com", "_blank"), "child-from-host")
+        self.assertEqual(calls[0][0], "request_animation_frame")
+        self.assertEqual(calls[1], ("cancel_animation_frame", 99))
+        self.assertEqual(calls[2], ("open_window", "https://example.com", "_blank"))
+
+    def test_host_focus_blur_close_callbacks_dispatch_once(self):
+        win = Window()
+        events = []
+        win.addEventListener("focus", lambda event: events.append(event.type))
+        win.addEventListener("blur", lambda event: events.append(event.type))
+        win.addEventListener("close", lambda event: events.append(event.type))
+
+        # already focused by default; a redundant focus callback dispatches nothing
+        win._host_focused()
+        self.assertEqual(events, [])
+
+        win._host_blurred()
+        win._host_blurred()  # repeated callback is de-duplicated
+        self.assertEqual(events, ["blur"])
+
+        win._host_focused()
+        self.assertEqual(events, ["blur", "focus"])
+
+        win._host_closed()
+        win._host_closed()  # repeated callback is de-duplicated
+        self.assertEqual(events, ["blur", "focus", "close"])
+        self.assertTrue(win.closed)
+
+    def test_host_scale_changed_updates_device_pixel_ratio(self):
+        win = Window()
+        win.resizeTo(800, 600)
+
+        self.assertFalse(win.matchMedia("(min-resolution: 2dppx)").matches)
+        win._host_scale_changed(2.0)
+        self.assertEqual(win.devicePixelRatio, 2.0)
+        self.assertTrue(win.matchMedia("(min-resolution: 2dppx)").matches)
+
 
 if __name__ == "__main__":
     unittest.main()

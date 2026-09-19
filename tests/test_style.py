@@ -1559,6 +1559,72 @@ class TestCase(unittest.TestCase):
         # % needs layout -- left untouched
         self.assertEqual(c.getPropertyValue("width"), "50%")
 
+    def test_computed_style_resolves_ch_and_ex_using_spec_fallback(self):
+        # domonic has no real glyph metrics, so ch/ex fall back to the value
+        # the CSS spec itself mandates for that case: 0.5em for both units.
+        el = document.createElement("div")
+        el.setAttribute("style", "font-size: 20px; text-indent: 5ch")
+        document.createElement("div").appendChild(el)
+
+        c = ComputedStyleDeclaration(el)
+        self.assertEqual(c.getPropertyValue("text-indent"), "50px")   # 5 * 0.5 * 20
+
+        el.setAttribute("style", "font-size: 20px; text-indent: 3ex")
+        self.assertEqual(
+            ComputedStyleDeclaration(el).getPropertyValue("text-indent"), "30px"
+        )  # 3 * 0.5 * 20
+
+        el.setAttribute("style", "font-size: 20px; width: calc(2ch + 10px)")
+        self.assertEqual(
+            ComputedStyleDeclaration(el).getPropertyValue("width"), "30px"
+        )  # 2 * 0.5 * 20 + 10
+
+    def test_inherited_properties_reach_descendants_from_the_html_root(self):
+        # domonic's <html> tag doubles as the Document (the last html()
+        # created becomes the active document), so it reports
+        # nodeType == DOCUMENT_NODE like any other Document -- but it is
+        # still the real <html> element in the tree. Anything set directly
+        # on it (an attribute selector, a class, or a bare tag rule) must
+        # still inherit down to <body> and beyond, the same as it would for
+        # any other ancestor.
+        from domonic import domonic
+        from domonic.window import window
+
+        attr_page = domonic.parseString(
+            '<html dir="rtl"><head><style>[dir=rtl]{direction:rtl}</style></head>'
+            "<body><span>x</span></body></html>"
+        )
+        span = attr_page.querySelector("span")
+        self.assertEqual(
+            window.getComputedStyle(span).getPropertyValue("direction"), "rtl"
+        )
+
+        class_page = domonic.parseString(
+            '<html class="rtl"><head><style>.rtl{direction:rtl}</style></head>'
+            "<body><span>x</span></body></html>"
+        )
+        span = class_page.querySelector("span")
+        self.assertEqual(
+            window.getComputedStyle(span).getPropertyValue("direction"), "rtl"
+        )
+
+        tag_page = domonic.parseString(
+            "<html><head><style>html{direction:rtl}</style></head>"
+            "<body><span>x</span></body></html>"
+        )
+        span = tag_page.querySelector("span")
+        self.assertEqual(
+            window.getComputedStyle(span).getPropertyValue("direction"), "rtl"
+        )
+
+        font_page = domonic.parseString(
+            '<html style="font-size: 40px"><body><span style="font-size: 2em">x</span></body></html>'
+        )
+        span = font_page.querySelector("span")
+        self.assertEqual(
+            window.getComputedStyle(span).getPropertyValue("font-size"), "80px"
+        )
+
     def test_custom_properties_inherit_from_any_ancestor(self):
         from domonic.window import window
 
@@ -1827,6 +1893,29 @@ class TestCase(unittest.TestCase):
 
         win.resizeTo(1000, 800)
         self.assertEqual(win.getComputedStyle(el).getPropertyValue("color"), "rgb(0, 0, 255)")
+
+    def test_supports_condition_is_evaluated_for_real(self):
+        # an @supports condition must be evaluated through CSS.supports(),
+        # not treated as always matching regardless of what it says.
+        page = html(
+            head(
+                style(
+                    "@supports (display: grid) { .a { color: red; } }"
+                    "@supports not (display: grid) { .b { color: red; } }"
+                    "@supports (display: grid) and (gap: 1px) { .c { color: red; } }"
+                )
+            ),
+            body(div(_class="a"), div(_class="b"), div(_class="c")),
+        )
+        document = Document()
+        document.appendChild(page)
+
+        a = document.getElementsByClassName("a")[0]
+        b = document.getElementsByClassName("b")[0]
+        c = document.getElementsByClassName("c")[0]
+        self.assertEqual(ComputedStyleDeclaration(a).getPropertyValue("color"), "rgb(255, 0, 0)")
+        self.assertEqual(ComputedStyleDeclaration(b).getPropertyValue("color"), "rgb(0, 0, 0)")
+        self.assertEqual(ComputedStyleDeclaration(c).getPropertyValue("color"), "rgb(255, 0, 0)")
 
     # -- border-width / min-size / layout-box-driven used values -----------
 

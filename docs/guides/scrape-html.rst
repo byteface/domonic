@@ -101,7 +101,7 @@ context:
    assert page.defaultView is not None
    assert page.defaultView.document is page
 
-``attach=True`` creates a ``domonic.window.Window`` and attaches the parsed
+``attach=True`` creates a :doc:`../packages/window` and attaches the parsed
 document to it. That sets ``window.document`` and ``document.defaultView``.
 
 Use both flags together for a browserless page context where computed styles can
@@ -301,6 +301,7 @@ Next Steps
 
 - :doc:`../packages/bs4` for the full BeautifulSlop compatibility API
 - :doc:`../packages/html` for parser names and DOM rendering
+- :doc:`../packages/window` for the browsing context ``attach=True`` creates
 - :doc:`../packages/webapi` for XPath, URL, fetch, and XHR helpers
 - :doc:`parser-performance` for parser benchmark commands
 - :doc:`examples` for runnable scraping and parsing example files

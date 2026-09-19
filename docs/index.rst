@@ -235,6 +235,7 @@ Package Guide
    packages/animation
    packages/style
    packages/javascript
+   packages/window
    packages/webapi
    packages/constants
    packages/bs4

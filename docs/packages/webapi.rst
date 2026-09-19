@@ -73,24 +73,11 @@ patterns.
 	print(pattern.test("https://example.com/users/42"))
 
 
-History
+Window
 ----------------
 
-``History`` models ``pushState()``, ``replaceState()``, ``back()``,
-``forward()``, ``go()``, ``length``, ``state`` and ``scrollRestoration``.
-
-.. code-block :: python
-
-	from domonic.window import Window
-
-	win = Window(url="https://example.com/")
-	win.history.pushState({"page": 2}, "", "/page/2")
-	win.history.replaceState({"page": 2, "filter": "new"}, "", "/page/2?filter=new")
-
-	print(win.location.href)
-	# https://example.com/page/2?filter=new
-	print(win.history.state)
-	# {'page': 2, 'filter': 'new'}
+``Window`` -- location, history, screen, matchMedia, animation frames,
+scrolling and native host attachment -- has its own page: :doc:`window`.
 
 
 Geolocation

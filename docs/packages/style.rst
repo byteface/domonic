@@ -93,7 +93,7 @@ way a browser's CSSOM does.
 getComputedStyle
 ----------------
 
-``window.getComputedStyle(element)`` returns a **read-only** declaration
+``window.getComputedStyle(element)`` (see :doc:`window`) returns a **read-only** declaration
 resolved through a light cascade: matching author rules from
 ``document.styleSheets`` (by specificity, then source order, with
 ``!important`` on top), then the inline ``style`` attribute, then inherited

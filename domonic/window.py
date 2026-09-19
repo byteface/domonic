@@ -558,6 +558,9 @@ class Window(JavaScriptWindow, EventTarget):
         url: str | None = None,
     ):
         EventTarget.__init__(self)
+        # Optional native/backend host.  Headless Domonic leaves this as None;
+        # renderers such as Chromonic attach a real OS-window implementation.
+        self._host = None
         self.customElements = CustomElementRegistry()
         self._localStorage: Storage = Storage()
         self._sessionStorage: Storage = Storage()
@@ -637,6 +640,142 @@ class Window(JavaScriptWindow, EventTarget):
         self._document = document
         document.defaultView = self
         return document
+
+    @property
+    def native(self):
+        """Return the attached native/backend host, if one exists.
+
+        Browser-standard behaviour remains on this Window.  Host-specific
+        extensions (opacity, decoration, always-on-top, etc.) live behind
+        ``window.native`` so Domonic does not grow renderer-specific APIs.
+        """
+        return self._host
+
+    def attach_host(self, host):
+        """Attach an optional native window host and return it."""
+        if host is self._host:
+            return host
+
+        previous = self._host
+        self._host = None
+        if previous is not None:
+            detach = getattr(previous, "detach", None)
+            if callable(detach):
+                detach(self)
+
+        self._host = host
+        if host is not None:
+            attach = getattr(host, "attach", None)
+            if callable(attach):
+                try:
+                    attach(self)
+                except Exception:
+                    self._host = None
+                    raise
+        return host
+
+    def detach_host(self):
+        """Detach and return the current native host, if any."""
+        host = self._host
+        self._host = None
+        if host is not None:
+            detach = getattr(host, "detach", None)
+            if callable(detach):
+                detach(self)
+        return host
+
+    def _set_viewport(
+        self,
+        width: int,
+        height: int,
+        *,
+        outer_width: int | None = None,
+        outer_height: int | None = None,
+        dispatch: bool = True,
+    ) -> None:
+        """Update viewport/native size state without commanding a host.
+
+        This is deliberately separate from ``resizeTo``.  A browser shell can
+        have native chrome (Chromonic's toolbar is one example), so its OS
+        window and the page viewport do not necessarily have the same height.
+        """
+        width = max(0, int(width))
+        height = max(0, int(height))
+        changed = width != self._screen.width or height != self._screen.height
+
+        self._screen.width = width
+        self._screen.height = height
+        self._screen.availWidth = width
+        self._screen.availHeight = height
+
+        if outer_width is not None:
+            self._outer_width = max(0, int(outer_width))
+        if outer_height is not None:
+            self._outer_height = max(0, int(outer_height))
+
+        if changed:
+            self._update_media_queries()
+            if dispatch:
+                self.dispatchEvent(Event("resize", {"bubbles": False, "cancelable": False}))
+
+    # Host notifications.  These never call back into the host, which keeps
+    # public commands and native callbacks from recursively triggering each
+    # other.
+    def _host_resized(
+        self,
+        width: int,
+        height: int,
+        *,
+        outer_width: int | None = None,
+        outer_height: int | None = None,
+    ) -> None:
+        self._set_viewport(
+            width,
+            height,
+            outer_width=outer_width,
+            outer_height=outer_height,
+        )
+
+    def _host_moved(self, x: int, y: int) -> None:
+        self._screen.left = int(x)
+        self._screen.top = int(y)
+
+    def _host_scale_changed(self, xscale: float, yscale: float | None = None) -> None:
+        # devicePixelRatio is scalar in the browser API.  GLFW normally reports
+        # equal X/Y scale; use X as the canonical value and keep the pair on
+        # the host itself if a backend needs both.
+        self.devicePixelRatio = float(xscale or 1.0)
+        self._update_media_queries()
+
+    def _host_focused(self, *, dispatch: bool = True) -> None:
+        changed = not self._focused
+        self._focused = True
+        if dispatch and changed:
+            self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
+
+    def _host_blurred(self, *, dispatch: bool = True) -> None:
+        changed = self._focused
+        self._focused = False
+        if dispatch and changed:
+            self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
+
+    def _host_closed(self, *, dispatch: bool = True) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        if dispatch:
+            self.dispatchEvent(
+                CloseEvent(
+                    "close",
+                    {
+                        "bubbles": False,
+                        "cancelable": False,
+                        "code": 1000,
+                        "reason": "",
+                        "wasClean": True,
+                    },
+                )
+            )
 
     def _fetch_document(self, url: str) -> Document | None:
         try:
@@ -753,6 +892,13 @@ class Window(JavaScriptWindow, EventTarget):
             self._set_document(loaded_document, referrer=previous_href)
 
     def blur(self):
+        host_blur = getattr(self._host, "blur", None)
+        if callable(host_blur):
+            host_blur()
+            return None
+        # Preserve Domonic's existing headless behaviour: an explicit blur()
+        # call dispatches even if a caller repeats it.  Native host callbacks
+        # themselves are de-duplicated by _host_blurred().
         self._focused = False
         self.dispatchEvent(FocusEvent("blur", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
@@ -762,19 +908,15 @@ class Window(JavaScriptWindow, EventTarget):
         return self._closed
 
     def close(self):
-        self._closed = True
-        self.dispatchEvent(
-            CloseEvent(
-                "close",
-                {
-                    "bubbles": False,
-                    "cancelable": False,
-                    "code": 1000,
-                    "reason": "",
-                    "wasClean": True,
-                },
-            )
-        )
+        host_close = getattr(self._host, "close", None)
+        if callable(host_close):
+            host_close()
+            # Hosts normally notify via _host_closed(); keep this synchronous
+            # even for a minimal backend that does not.
+            if not self._closed:
+                self._host_closed()
+            return None
+        self._host_closed()
         return None
 
     def confirm(self, message: str):
@@ -807,6 +949,13 @@ class Window(JavaScriptWindow, EventTarget):
         return needle in text
 
     def focus(self):
+        host_focus = getattr(self._host, "focus", None)
+        if callable(host_focus):
+            host_focus()
+            return None
+        # Preserve Domonic's existing headless behaviour: explicitly calling
+        # focus() dispatches a focus event even if the virtual window started
+        # focused.  Native host callbacks themselves are de-duplicated.
         self._focused = True
         self.dispatchEvent(FocusEvent("focus", {"bubbles": False, "cancelable": False, "relatedTarget": None}))
         return None
@@ -838,7 +987,9 @@ class Window(JavaScriptWindow, EventTarget):
         return self._screen.width
 
     def _update_media_queries(self) -> None:
+        resolution = float(getattr(self, "devicePixelRatio", 1.0) or 1.0)
         for query in list(self._media_query_lists):
+            query._resolution = resolution
             query._set_viewport(width=self.innerWidth, height=self.innerHeight)
 
     def matchMedia(self, media_query_list):
@@ -853,6 +1004,10 @@ class Window(JavaScriptWindow, EventTarget):
         return query
 
     def cancelAnimationFrame(self, request_id: int):
+        host_cancel = getattr(self._host, "cancel_animation_frame", None)
+        if callable(host_cancel):
+            host_cancel(request_id)
+            return None
         timer = self._animation_frame_timers.pop(request_id, None)
         if timer is not None:
             timer.cancel()
@@ -865,12 +1020,15 @@ class Window(JavaScriptWindow, EventTarget):
         return None
 
     def moveBy(self, x: int, y: int):
-        self._screen.left += x
-        self._screen.top += y
+        return self.moveTo(self.screenLeft + int(x), self.screenTop + int(y))
 
     def moveTo(self, x: int, y: int):
-        self._screen.left = x
-        self._screen.top = y
+        host_move = getattr(self._host, "move_to", None)
+        if callable(host_move):
+            host_move(int(x), int(y))
+            return None
+        self._host_moved(int(x), int(y))
+        return None
 
     @property
     def name(self):
@@ -902,6 +1060,19 @@ class Window(JavaScriptWindow, EventTarget):
             if url:
                 target_window.location = url
             return target_window
+
+        host_open = getattr(self._host, "open_window", None)
+        if callable(host_open):
+            child = host_open(
+                url=url,
+                target=target,
+                features=features,
+                replace=replace,
+                opener=self,
+            )
+            if child is not None:
+                return child
+
         child = Window(doc=Document(), opener=self, parent=self, url="about:blank")
         if url:
             child.location = url
@@ -962,6 +1133,11 @@ class Window(JavaScriptWindow, EventTarget):
     def requestAnimationFrame(self, callback: Callable[[float], Any]) -> int:  # type: ignore[override]
         if not callable(callback):
             raise TypeError("requestAnimationFrame callback must be callable")
+
+        host_request = getattr(self._host, "request_animation_frame", None)
+        if callable(host_request):
+            return host_request(callback)
+
         request_id = self._next_animation_frame_id
         self._next_animation_frame_id += 1
 
@@ -1008,16 +1184,16 @@ class Window(JavaScriptWindow, EventTarget):
     def resizeTo(self, width: int, height: int):
         width = max(0, int(width))
         height = max(0, int(height))
-        changed = width != self._outer_width or height != self._outer_height
-        self._outer_width = width
-        self._outer_height = height
-        self._screen.width = width
-        self._screen.height = height
-        self._screen.availWidth = width
-        self._screen.availHeight = height
-        if changed:
-            self._update_media_queries()
-            self.dispatchEvent(Event("resize", {"bubbles": False, "cancelable": False}))
+        host_resize = getattr(self._host, "resize", None)
+        if callable(host_resize):
+            host_resize(width, height)
+            return None
+        self._set_viewport(
+            width,
+            height,
+            outer_width=width,
+            outer_height=height,
+        )
         return None
 
     @property

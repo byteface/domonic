@@ -5875,9 +5875,12 @@ def _condition_rule_matches(rule, viewport) -> bool:
     ``neither ``conditionText`` (a plain string) nor ``MediaList`` (a plain
     list) ever had a ``.matches`` attribute, so the previous
     ``hasattr(condition, "matches")`` check was always false and every
-    conditional block was treated as always matching. Other condition rules
-    (``@supports``, ``@when``, ``@else``) have no evaluator here yet and keep
-    the previous always-match behaviour."""
+    conditional block was treated as always matching. ``@supports`` is
+    evaluated through ``CSS.supports()``, the same ``not``/``and``/``or``/
+    nested-parens evaluator ``CSS.supports()`` itself exposes -- it was
+    already correct, just never wired in here. Other condition rules
+    (``@when``, ``@else``) have no evaluator here yet and keep the previous
+    always-match behaviour."""
     if isinstance(rule, CSSMediaRule):
         media_text = rule.media.mediaText if rule.media else ""
         if not media_text:
@@ -5886,6 +5889,8 @@ def _condition_rule_matches(rule, viewport) -> bool:
 
         width, height = viewport
         return MediaQueryList._evaluate(media_text, width=width or 0, height=height or 0)
+    if isinstance(rule, CSSSupportsRule):
+        return _supports_condition(rule.conditionText or "")
     return True
 
 
@@ -6010,7 +6015,9 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             return {}
 
         # only look at rules whose rightmost compound could match this element
-        buckets = ["*", (element.tagName or "").lower()]
+        tag_name = (element.tagName or "").lower()
+        local_name = tag_name.rpartition(":")[2] or tag_name
+        buckets = ["*", tag_name] if local_name == tag_name else ["*", tag_name, local_name]
         el_id = element.getAttribute("id")
         if el_id:
             buckets.append(f"#{el_id}")
@@ -6098,7 +6105,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 cache[id(element)] = parent_computed
         else:
             parent = getattr(element, "parentNode", None)
-            if parent is not None and getattr(parent, "nodeType", None) == 1:
+            if parent is not None and _is_inheritance_source(parent):
                 parent_computed = cache.get(id(parent))
                 if parent_computed is None:
                     parent_computed = ComputedStyleDeclaration(parent, None, _chain_cache=cache)
@@ -6244,7 +6251,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         root = node
         while True:
             parent = getattr(node, "parentNode", None)
-            if parent is None or getattr(parent, "nodeType", None) != 1:
+            if parent is None or not _is_inheritance_source(parent):
                 root = node
                 break
             node = parent
@@ -6257,7 +6264,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
     def _parent_computed(self):
         parent = getattr(self._element, "parentNode", None)
-        if parent is None or getattr(parent, "nodeType", None) != 1:
+        if parent is None or not _is_inheritance_source(parent):
             return None
         cache = self._chain_cache
         got = cache.get(id(parent))
@@ -6399,7 +6406,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 if used is not None:
                     return used
         cache = self._chain_cache
-        while node is not None and getattr(node, "nodeType", None) == 1:
+        while node is not None and _is_inheritance_source(node):
             declared = _parse_css_declarations(getattr(node, "getAttribute", lambda *_: "")("style") or "")
             for name, val, _ in declared:
                 if name == prop:
@@ -6480,6 +6487,23 @@ _UA_DISPLAY_NONE_TAGS = frozenset({"head", "title", "script", "style", "meta", "
 #: min-width/min-height's initial value is "auto", but no engine treats an
 #: unresolved "auto" as the reported computed value -- see _compute_property_value
 _MIN_SIZE_PROPERTIES = frozenset({"min-width", "min-height"})
+
+
+def _is_inheritance_source(node) -> bool:
+    """Whether *node* is a real ancestor to inherit computed style from.
+
+    Ordinarily that means ``nodeType == ELEMENT_NODE``. But domonic's ``html``
+    tag doubles as the ``Document`` (the last one created becomes the active
+    document -- see the dom guide), so the actual root ``<html>`` element
+    reports ``nodeType == DOCUMENT_NODE`` like any other ``Document``. Without
+    this, nothing set on ``<html>`` itself (an attribute selector, a class, a
+    tag rule) ever reaches ``<body>`` or anything below it via inheritance --
+    a real ``Document`` is excluded since it has no ``tagName`` of its own."""
+    node_type = getattr(node, "nodeType", None)
+    if node_type == 1:  # Node.ELEMENT_NODE
+        return True
+    return node_type == 9 and bool(getattr(node, "tagName", ""))  # Node.DOCUMENT_NODE
+
 
 #: an "auto" longhand -> the LayoutBox field holding its real used value,
 #: once a layout engine has attached one (see _to_used_length)
@@ -6746,12 +6770,17 @@ def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px:
         return None if percent_px is None else number / 100.0 * percent_px
     if unit in ("em", "rem"):
         return number * (em_px if unit == "em" else rem_px)
+    if unit in ("ch", "ex"):
+        # domonic has no real glyph metrics ("0" advance / x-height) to
+        # measure against, so fall back to the value the CSS spec itself
+        # mandates for exactly this case: 0.5em for both units.
+        return number * 0.5 * em_px
     if unit == "":
         return None  # a unitless non-zero number is not a length
     return None if unit not in _ABSOLUTE_LENGTH_UNITS else number * _ABSOLUTE_LENGTH_UNITS[unit]
 
 
-_CALC_LENGTH_TERM_RE = re.compile(r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|in|cm|mm|q|pt|pc)\b", re.I)
+_CALC_LENGTH_TERM_RE = re.compile(r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|ch|ex|in|cm|mm|q|pt|pc)\b", re.I)
 
 
 def _eval_calc_to_px(expr: str, *, em_px: float, rem_px: float) -> "float | None":
@@ -6761,7 +6790,7 @@ def _eval_calc_to_px(expr: str, *, em_px: float, rem_px: float) -> "float | None
     if body.lower().startswith("calc(") and body.endswith(")"):
         body = body[5:-1]
     # any unit we cannot resolve to px -> bail (keep the calc() verbatim)
-    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)" r"(%|vw|vh|vmin|vmax|ch|ex|fr|svh|lvh|dvh)\b", body, re.I):
+    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)" r"(%|vw|vh|vmin|vmax|fr|svh|lvh|dvh)\b", body, re.I):
         return None
     if "calc(" in body.lower():
         return None  # nested calc -- keep it simple

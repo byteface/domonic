@@ -274,7 +274,7 @@ For more information about the DOM API, navigate to the DOM section.
 Custom Elements Registry
 --------------------------------
 
-``window.customElements`` implements the ``CustomElementRegistry`` API. Register
+``window.customElements`` (see :doc:`window`) implements the ``CustomElementRegistry`` API. Register
 a class, then ``createElement`` and the HTML parsers return upgraded instances
 and run the lifecycle callbacks (``connectedCallback``,
 ``disconnectedCallback``, ``attributeChangedCallback`` for names listed in
@@ -777,7 +777,7 @@ Install optional native parsers as needed:
     python -m pip install markupever lxml
     python -m pip install html5-parser lxml
 
-For a quick parse, try the window module:
+For a quick parse, try the :doc:`window` module:
 
 .. code-block :: python
 

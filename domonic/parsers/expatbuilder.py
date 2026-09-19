@@ -43,6 +43,7 @@ from xml.parsers import expat
 from domonic.decorators import check
 from domonic.dom import (
     Attr,
+    CDATASection,
     Document,
     DocumentFragment,
     DOMImplementation,
@@ -317,7 +318,14 @@ class ExpatBuilder:
             if self._cdata_continue and childNodes[-1].nodeType == CDATA_SECTION_NODE:
                 childNodes[-1].appendData(data)
                 return
-            node = self.document.createCDATASection(data)
+            # not self.document.createCDATASection(): this builder only ever
+            # runs over real XML/XHTML input, but domonic's <html> tag doubles
+            # as its own document (the last html() created becomes the active
+            # document -- see the dom guide), so self.document may by now be
+            # an HTMLDocument-derived instance whose createCDATASection()
+            # correctly refuses CDATA per the DOM spec's HTML-document rule.
+            # That rule doesn't apply here: this input was parsed as XML.
+            node = CDATASection(data)
             self._cdata_continue = True
         elif childNodes and childNodes[-1].nodeType == TEXT_NODE:
             node = childNodes[-1]
