@@ -15,6 +15,7 @@ import re
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 
+from domonic import _cssom
 from domonic import dom as _dom
 from domonic import domonic
 from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text
@@ -929,6 +930,16 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
         if not lang:
             return None
         return selector[: match.start()], ("lang", lang)
+    # :dir() -- directionality comes from the nearest valid HTML ``dir``
+    # attribute. Keep unknown identifiers as a parsed pseudo that never
+    # matches; they are syntactically valid arguments, not a reason to reject
+    # the selector and hand it to a different engine.
+    match = re.search(r":dir\(([^()]+)\)$", selector, re.I)
+    if match:
+        direction = match.group(1).strip().strip("'\"").lower()
+        if not direction:
+            return None
+        return selector[: match.start()], ("dir", direction)
     # :is() / :where() -- a comma-separated list of compound selectors; match if
     # any branch matches. (:where() differs from :is() only in specificity,
     # which isn't computed here.) A combinator inside a branch bails to XPath.
@@ -1094,9 +1105,28 @@ def _sibling_positions(parent: Any) -> dict[int, tuple[int, int, int, int]]:
     """Map ``id(child element) -> (index, total, type_index, type_total)`` for
     one parent, all 1-based, computed in a single pass. ``type_index`` /
     ``type_total`` count only siblings sharing the child's tag name (for
-    ``:nth-of-type`` / ``:*-of-type``). Callers memoise this per ``select`` so
-    ``:nth-child`` etc. over a wide list stay linear, not O(n^2).
+    ``:nth-of-type`` / ``:*-of-type``). A bulk ``select()`` over a wide list
+    threads a ``position_cache`` dict through its own matching calls so this
+    stays linear there, not O(n^2) -- but a caller that checks one selector
+    against one element at a time (``Element._matches_selector_chain``, which
+    ``getComputedStyle`` uses once per candidate rule per element) builds a
+    fresh cache on every call, so without a cache here too, resolving a wide
+    sibling list one element at a time -- e.g. a page-wide ``getComputedStyle``
+    pass hitting a ``:first-child``/``:nth-child`` rule -- would redo this
+    same per-parent scan from scratch for every sibling, which is the O(n^2)
+    this function's own docstring warns against. So the result is also
+    memoized directly on *parent*, keyed by the DOM epoch (bumped on any
+    structural or attribute change anywhere -- conservative but correct,
+    consistent with the other whole-process epochs this codebase already
+    uses for cache invalidation); a sibling reorder invalidates it exactly
+    like any other DOM mutation would.
     """
+    cache_holder = getattr(parent, "__dict__", None)
+    epoch = _cssom.dom_style_epoch() if cache_holder is not None else None
+    if cache_holder is not None:
+        cached = cache_holder.get("_sibling_positions_cache")
+        if cached is not None and cached[0] == epoch:
+            return cached[1]
     elements = [c for c in _iter_child_nodes(parent) if isinstance(c, Element)]
     total = len(elements)
     type_totals: dict[str, int] = {}
@@ -1109,6 +1139,8 @@ def _sibling_positions(parent: Any) -> dict[int, tuple[int, int, int, int]]:
         name = el.name.lower()
         type_seen[name] = type_seen.get(name, 0) + 1
         positions[id(el)] = (i + 1, total, type_seen[name], type_totals[name])
+    if cache_holder is not None:
+        cache_holder["_sibling_positions_cache"] = (epoch, positions)
     return positions
 
 
@@ -1187,6 +1219,19 @@ def _match_simple_pseudo(
                 return declared == value or declared.startswith(value + "-")
             node = getattr(node, "parentNode", None)
         return False
+    if name == "dir":
+        if value not in ("ltr", "rtl"):
+            return False
+        # Like :lang(), include domonic's HTMLDocument-as-<html> root in the
+        # walk. ``auto`` and invalid values provide no explicit direction for
+        # this lightweight matcher, so continue to the nearest valid ancestor.
+        node = element
+        while isinstance(node, Element):
+            declared = str(_get_attribute(node, "dir") or "").strip().lower()
+            if declared in ("ltr", "rtl"):
+                return declared == value
+            node = getattr(node, "parentNode", None)
+        return value == "ltr"
     parent = getattr(element, "parentNode", None)
     if parent is None:
         return False

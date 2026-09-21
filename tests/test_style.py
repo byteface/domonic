@@ -983,6 +983,33 @@ class TestCase(unittest.TestCase):
         self.assertIn("margin-top: 1px !important;", s.cssText)
         self.assertNotIn("margin:", s.cssText)
 
+    def test_flex_flow_single_keyword_expands_by_keyword_type(self):
+        from domonic._cssom import expand_shorthand
+
+        self.assertEqual(
+            expand_shorthand("flex-flow", "row-reverse"),
+            [("flex-direction", "row-reverse"), ("flex-wrap", "nowrap")],
+        )
+        self.assertEqual(
+            expand_shorthand("flex-flow", "WRAP"),
+            [("flex-direction", "row"), ("flex-wrap", "WRAP")],
+        )
+        self.assertEqual(
+            expand_shorthand("flex-flow", "column wrap-reverse"),
+            [("flex-direction", "column"), ("flex-wrap", "wrap-reverse")],
+        )
+
+        style = div().style
+        style.setProperty("flex-flow", "row")
+        self.assertEqual(style.getPropertyValue("flex-direction"), "row")
+        self.assertEqual(style.getPropertyValue("flex-wrap"), "nowrap")
+
+        # Uniform-value shorthands retain their existing broadcast behavior.
+        self.assertEqual(
+            expand_shorthand("gap", "10px"),
+            [("row-gap", "10px"), ("column-gap", "10px")],
+        )
+
     def test_remove_longhand_of_a_set_shorthand(self):
         s = div().style
         s.setProperty("margin", "1px 2px 3px 4px")
@@ -1348,6 +1375,22 @@ class TestCase(unittest.TestCase):
         self.assertEqual(c.getPropertyValue("border-top-color"), "rgb(10, 20, 30)")
         self.assertEqual(c.getPropertyValue("border-top"), "1px solid rgb(10, 20, 30)")
 
+    def test_currentcolor_substitution_treats_backslashes_literally(self):
+        e = document.createElement("div")
+        e.setAttribute(
+            "style",
+            r"color: g\re\45n; border-top-color: currentColor; "
+            "border-top-style: solid; border-top-width: 1px",
+        )
+        document.createElement("div").appendChild(e)
+        computed = ComputedStyleDeclaration(e)
+
+        # CSS escape decoding is separate from this regression: whatever raw
+        # color text reaches currentColor replacement must not be interpreted
+        # as a Python regular-expression replacement template.
+        self.assertEqual(computed.getPropertyValue("color"), r"g\re\45n")
+        self.assertEqual(computed.getPropertyValue("border-top-color"), r"g\re\45n")
+
     def test_grid_column_row_shorthand_splits_on_slash_not_whitespace(self):
         # grid-column/grid-row is "<start> / <end>" -- unlike gap/overflow,
         # each <grid-line> can itself contain a space ("span 3"), so the
@@ -1649,6 +1692,68 @@ class TestCase(unittest.TestCase):
         self.assertTrue(page.querySelector("span").matches(":last-child"))
         self.assertTrue(page.querySelector("span").matches("span:only-of-type"))
         self.assertFalse(page.querySelector("p").matches(":only-child"))
+
+    def test_link_and_visited_pseudo_class_selectors(self):
+        page = document.createElement("div")
+        page.innerHTML = (
+            "<a id='link' href='/story'>story</a>"
+            "<a id='empty' href=''>empty</a>"
+            "<a id='missing'>missing</a>"
+            "<area id='area' href='/map'>"
+            "<link id='stylesheet' href='/site.css'>"
+        )
+
+        self.assertEqual(
+            [element.getAttribute("id") for element in page.querySelectorAll(":link")],
+            ["link", "area"],
+        )
+        self.assertTrue(page.querySelector("#link").matches("a:link"))
+        self.assertFalse(page.querySelector("#empty").matches(":link"))
+        self.assertFalse(page.querySelector("#missing").matches(":link"))
+        self.assertFalse(page.querySelector("#stylesheet").matches(":link"))
+        self.assertEqual(list(page.querySelectorAll(":visited")), [])
+
+    def test_link_pseudo_class_participates_in_author_cascade(self):
+        doc = Document()
+        hyperlink = doc.createElement("a")
+        hyperlink.setAttribute("href", "/story")
+        plain_anchor = doc.createElement("a")
+        doc.appendChild(hyperlink)
+        doc.appendChild(plain_anchor)
+
+        sheet = CSSStyleSheet()
+        sheet.replaceSync("a { color: blue } a:link { color: black } a:visited { color: red }")
+        doc.adoptedStyleSheets = [sheet]
+
+        self.assertEqual(
+            ComputedStyleDeclaration(hyperlink).getPropertyValue("color"),
+            "rgb(0, 0, 0)",
+        )
+        self.assertEqual(
+            ComputedStyleDeclaration(plain_anchor).getPropertyValue("color"),
+            "rgb(0, 0, 255)",
+        )
+
+    def test_dir_pseudo_class_participates_in_author_cascade(self):
+        page = document.createElement("html")
+        page.innerHTML = (
+            "<head><style>"
+            ":dir(ltr) { color: blue }"
+            ":dir(rtl) { color: lime }"
+            ":dir(foopy) { color: red }"
+            "section:dir(rtl) > span:dir(rtl) { background-color: black }"
+            "</style></head>"
+            "<body><div id='ltr'></div>"
+            "<section dir='rtl'><span id='rtl' dir='auto'></span></section>"
+            "</body>"
+        )
+        from domonic.window import window
+
+        ltr = window.getComputedStyle(page.querySelector("#ltr"))
+        rtl = window.getComputedStyle(page.querySelector("#rtl"))
+        self.assertEqual(ltr.getPropertyValue("color"), "rgb(0, 0, 255)")
+        self.assertEqual(rtl.getPropertyValue("color"), "rgb(0, 255, 0)")
+        self.assertEqual(rtl.getPropertyValue("background-color"), "rgb(0, 0, 0)")
 
     def test_element_matches_combinators(self):
         page = document.createElement("div")

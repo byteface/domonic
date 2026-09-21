@@ -79,6 +79,9 @@ matchMedia
 
 ``matchMedia()`` returns a live ``MediaQueryList`` evaluated against
 ``window.mediaFeatures``, which can be overridden for testing.
+``window.mediaType`` (default ``"screen"``) is what a bare ``screen``/``print``
+media type matches against -- domonic has no print pipeline, so ``print``
+never matches unless something sets ``window.mediaType = "print"``.
 
 .. code-block :: python
 

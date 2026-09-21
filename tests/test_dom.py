@@ -979,6 +979,29 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(f.querySelectorAll("input:enabled")), 2)
         self.assertEqual(len(f.querySelectorAll("input:checked")), 1)
 
+        # :dir() follows the nearest valid HTML dir attribute, skipping
+        # ``auto``/invalid values and defaulting the root direction to ltr.
+        directions = div(
+            span("default", _id="default"),
+            div(span("rtl child", _id="rtl-child"), _dir="rtl"),
+            div(span("inherited rtl", _id="auto-child"), _dir="rtl"),
+            _id="directions",
+        )
+        directions.querySelector("#auto-child").parentNode.setAttribute("dir", "auto")
+        directions.querySelector("#auto-child").setAttribute("dir", "foopy")
+        directions.setAttribute("dir", "rtl")
+        self.assertTrue(directions.querySelector("#rtl-child").matches(":DIR(RTL)"))
+        self.assertTrue(directions.querySelector("#auto-child").matches(":dir(rtl)"))
+        self.assertFalse(directions.querySelector("#rtl-child").matches(":dir(ltr)"))
+        self.assertFalse(directions.querySelector("#rtl-child").matches(":dir(foopy)"))
+        self.assertEqual(
+            {element.getAttribute("id") for element in directions.querySelectorAll("span:dir(rtl)")},
+            {"default", "rtl-child", "auto-child"},
+        )
+
+        detached = div(span("default", _id="default-ltr"))
+        self.assertTrue(detached.querySelector("#default-ltr").matches(":dir(ltr)"))
+
     def test_advanced_pseudo_classes_work_without_cssselect(self):
         # The native engine must handle these on its own -- cssselect is only a
         # fallback. Force its import to fail and confirm nothing regresses.

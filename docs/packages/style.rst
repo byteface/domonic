@@ -202,6 +202,17 @@ Once an engine has computed a box for an element, ``element.set_layout_box(box)`
 ``offsetWidth``/``offsetHeight``/``offsetLeft``/``offsetTop`` report it;
 with no box attached they keep their existing behaviour.
 
+``ch``/``ex`` lengths resolve via the CSS-spec 0.5em approximation by
+default (domonic has no glyph metrics of its own). A renderer with real font
+metrics can register ``domonic.style.set_ch_ex_resolver(fn)`` to resolve them
+precisely instead.
+
+Domonic has no opinion on legacy HTML presentational attributes (``bgcolor``,
+an ``<img>``'s ``width``/``height``, ...), but a renderer that translates them
+can register ``domonic.style.set_presentational_hint_resolver(fn)`` to fold
+them into the cascade at the correct priority: weaker than any real author
+rule or inline style for the same property, stronger than the initial value.
+
 CSS custom properties and ``var()``
 -----------------------------------
 
@@ -257,7 +268,9 @@ constructable stylesheets
 
 ``new CSSStyleSheet({media, disabled})`` and ``sheet.replaceSync(cssText)``
 build a stylesheet in code; adding it to ``document.adoptedStyleSheets`` (or a
-shadow root's) feeds it into ``getComputedStyle``.
+shadow root's) feeds it into ``getComputedStyle``. Setting ``sheet.disabled =
+True`` on any sheet (constructed, ``<style>``, or ``<link>``) removes its
+rules from the cascade immediately, matching a real browser.
 
 .. code-block :: python
 

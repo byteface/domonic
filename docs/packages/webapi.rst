@@ -239,9 +239,15 @@ examples and tests can verify canvas output without a browser renderer.
 
 	surface = canvas(width=320, height=180)
 	ctx = surface.getContext("2d")
+	ctx.fillStyle = "#f00"
 	ctx.fillRect(0, 0, 20, 20)
-	print(ctx.commands)
-	# [{'name': 'fillRect', 'args': [0, 0, 20, 20]}]
+	print(ctx.commands[-1]["name"], ctx.commands[-1]["args"])
+	# fillRect [0, 0, 20, 20]
+
+Each recorded command also carries a ``state`` snapshot (``fillStyle``,
+``strokeStyle``, ``globalAlpha``, ``transform``, ...) of the paint state active
+when it was issued, so replaying ``ctx.commands`` later draws with the right
+style even if later commands changed it.
 
 
 CSS Font Loading

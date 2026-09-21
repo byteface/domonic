@@ -18,14 +18,35 @@ as ``domonic.scrape`` and ``from domonic import scrape``.
 from __future__ import annotations
 
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 _TO_CHOICES = ("text", "json", "pyml", "dom")
+_ERROR_CHOICES = ("raise", "return")
 
 # Keyword arguments whose names match ``Request`` fields are used to build the
 # request; everything else is forwarded to ``requests``. Resolved once from the
 # ``Request`` signature so the two stay in step.
 _REQUEST_FIELDS: set[str] | None = None
+
+# Cross-origin stylesheet requests must not inherit credentials intended for
+# the page request. These transport-only options are safe/useful to retain.
+_CROSS_ORIGIN_CSS_KWARGS = frozenset(("timeout", "verify", "proxies", "allow_redirects"))
+
+
+class ScrapeHTTPError(RuntimeError):
+    """Raised by ``scrape(..., raise_for_status=True)`` for a non-2xx response."""
+
+    def __init__(self, response: Any) -> None:
+        self.response = response
+        status = getattr(response, "status", None)
+        status_text = getattr(response, "statusText", "") or ""
+        url = getattr(response, "url", "") or ""
+
+        detail = " ".join(part for part in (str(status) if status is not None else "", status_text) if part)
+        message = f"HTTP {detail}" if detail else "HTTP request failed"
+        if url:
+            message += f" for {url}"
+        super().__init__(message)
 
 
 def _request_fields() -> set[str]:
@@ -48,11 +69,116 @@ def _request_fields() -> set[str]:
     return _REQUEST_FIELDS
 
 
-def _fetch_stylesheet_text(href: str, request_kwargs: dict[str, Any]) -> str | None:
+def _make_request(target: Any, init: dict[str, Any]) -> Any:
+    from domonic.webapi.fetch import Request
+
+    # Request(Request(...), init=...) deliberately clones the request while
+    # applying any explicit scrape() overrides.
+    return Request(target, init=dict(init))
+
+
+def _fetch_request(request: Any, request_kwargs: dict[str, Any]) -> Any:
+    from domonic.webapi.fetch import fetch
+
+    promise = fetch(request, **request_kwargs)
+    if promise.state == "rejected":
+        error = promise.data
+        if isinstance(error, BaseException):
+            raise error
+        raise RuntimeError(error)
+    return promise.data
+
+
+def _fetch_many(requests: list[Any], request_kwargs: dict[str, Any]) -> list[Any]:
+    from domonic.webapi.fetch import fetch_pooled
+
+    return list(fetch_pooled(requests, **request_kwargs))
+
+
+def _http_error(response: Any) -> ScrapeHTTPError | None:
+    if getattr(response, "ok", True) is False:
+        return ScrapeHTTPError(response)
+    return None
+
+
+def _origin(url: str) -> tuple[str, str, int | None] | None:
     try:
-        response = _fetch_one(href, {"method": "GET"}, request_kwargs)
+        parsed = urlparse(url)
+        if not parsed.scheme or not parsed.hostname:
+            return None
+        port = parsed.port
+    except (TypeError, ValueError):
+        return None
+
+    scheme = parsed.scheme.lower()
+    if port is None:
+        if scheme == "http":
+            port = 80
+        elif scheme == "https":
+            port = 443
+
+    return scheme, parsed.hostname.lower(), port
+
+
+def _same_origin(left: str, right: str) -> bool:
+    left_origin = _origin(left)
+    right_origin = _origin(right)
+    return left_origin is not None and left_origin == right_origin
+
+
+def _document_base_url(document: Any) -> str:
+    page_url = str(getattr(document, "URL", "") or "")
+    base_uri = str(getattr(document, "baseURI", "") or "")
+    return urljoin(page_url, base_uri) if base_uri else page_url
+
+
+def _stylesheet_request(
+    href: str,
+    source_request: Any,
+    request_kwargs: dict[str, Any],
+) -> tuple[Any, dict[str, Any]]:
+    source_url = str(getattr(source_request, "url", "") or "")
+    same_origin = _same_origin(source_url, href)
+
+    init: dict[str, Any] = {"method": "GET"}
+
+    # Match the source request's redirect behaviour, but never inherit its body.
+    redirect = getattr(source_request, "redirect", None)
+    if redirect is not None:
+        init["redirect"] = redirect
+
+    # Authentication/cookie/custom headers are only inherited by same-origin
+    # stylesheets. Cross-origin CSS starts with a clean header set.
+    if same_origin:
+        headers = getattr(source_request, "headers", None)
+        if headers is not None:
+            init["headers"] = headers
+
+    fetch_kwargs = dict(request_kwargs)
+    for key in ("params", "data", "json", "files"):
+        fetch_kwargs.pop(key, None)
+
+    if not same_origin:
+        fetch_kwargs = {
+            key: value
+            for key, value in fetch_kwargs.items()
+            if key in _CROSS_ORIGIN_CSS_KWARGS
+        }
+
+    return _make_request(href, init), fetch_kwargs
+
+
+def _fetch_stylesheet_text(
+    href: str,
+    source_request: Any,
+    request_kwargs: dict[str, Any],
+) -> str | None:
+    try:
+        request, fetch_kwargs = _stylesheet_request(href, source_request, request_kwargs)
+        response = _fetch_request(request, fetch_kwargs)
     except Exception:
         return None
+
     if getattr(response, "ok", True) is False:
         return None
     return response.text()
@@ -66,10 +192,14 @@ def _replace_stylesheet_rules(sheet: Any, css_text: str) -> bool:
     return True
 
 
-def _load_external_stylesheets(document: Any, request_kwargs: dict[str, Any] | None = None) -> None:
+def _load_external_stylesheets(
+    document: Any,
+    source_request: Any,
+    request_kwargs: dict[str, Any] | None = None,
+) -> None:
     sheets = document.styleSheets
     fetch_kwargs = dict(request_kwargs or {})
-    fetch_kwargs.pop("params", None)
+    base_url = _document_base_url(document)
 
     for sheet in sheets:
         href = getattr(sheet, "href", None)
@@ -79,12 +209,12 @@ def _load_external_stylesheets(document: Any, request_kwargs: dict[str, Any] | N
         if len(getattr(sheet, "cssRules", ()) or ()):
             continue
 
-        resolved_href = urljoin(getattr(document, "URL", "") or getattr(document, "baseURI", "") or "", href)
+        resolved_href = urljoin(base_url, href)
         sheet._original_href = href
         sheet._resolved_href = resolved_href
         sheet.href = resolved_href
 
-        css_text = _fetch_stylesheet_text(resolved_href, fetch_kwargs)
+        css_text = _fetch_stylesheet_text(resolved_href, source_request, fetch_kwargs)
         if css_text is not None:
             _replace_stylesheet_rules(sheet, css_text)
 
@@ -93,6 +223,7 @@ def _parse(
     response: Any,
     parser: str | None,
     *,
+    source_request: Any,
     css: bool = False,
     attach: bool = False,
     request_kwargs: dict[str, Any] | None = None,
@@ -102,7 +233,7 @@ def _parse(
     document = domonic.parseString(response.text(), parser=parser, document=True)
     document.URL = getattr(response, "url", "") or getattr(document, "URL", "")
     if css:
-        _load_external_stylesheets(document, request_kwargs)
+        _load_external_stylesheets(document, source_request, request_kwargs)
     if attach:
         from domonic.window import Window
 
@@ -117,44 +248,72 @@ def _result(
     all_: bool,
     parser: str | None,
     *,
+    source_request: Any,
     css: bool = False,
     attach: bool = False,
     request_kwargs: dict[str, Any] | None = None,
 ) -> Any:
     if selector is not None:
-        dom = _parse(response, parser, css=css, attach=attach, request_kwargs=request_kwargs)
+        dom = _parse(
+            response,
+            parser,
+            source_request=source_request,
+            css=css,
+            attach=attach,
+            request_kwargs=request_kwargs,
+        )
         return dom.querySelectorAll(selector) if all_ else dom.querySelector(selector)
+
     if to is None or to == "dom":
-        return _parse(response, parser, css=css, attach=attach, request_kwargs=request_kwargs)
+        return _parse(
+            response,
+            parser,
+            source_request=source_request,
+            css=css,
+            attach=attach,
+            request_kwargs=request_kwargs,
+        )
+
     if to == "text":
         return response.text()
+
     if to == "json":
         return response.json()
+
     from domonic import domonic
 
     return domonic.parse(response.text())
 
 
-def _fetch_one(target: Any, init: dict[str, Any], request_kwargs: dict[str, Any]) -> Any:
-    from domonic.webapi.fetch import Request, fetch
+def _successful_result(
+    request: Any,
+    response: Any,
+    *,
+    to: str | None,
+    selector: str | None,
+    all_: bool,
+    parser: str | None,
+    include_response: bool,
+    css: bool,
+    attach: bool,
+    request_kwargs: dict[str, Any],
+) -> Any:
+    # Parsing/decoding consumes a Fetch Response body. When the caller asks for
+    # the Response too, consume a clone so the returned Response remains unused.
+    source_response = response.clone() if include_response else response
 
-    request = target if isinstance(target, Request) else Request(target, init=dict(init))
-    promise = fetch(request, **request_kwargs)
-    if promise.state == "rejected":
-        raise promise.data
-    return promise.data
-
-
-def _fetch_many(urls: Any, init: dict[str, Any], request_kwargs: dict[str, Any]) -> list[Any]:
-    from domonic.webapi.fetch import Request, fetch_pooled
-
-    targets = [url if isinstance(url, Request) else Request(url, init=dict(init)) for url in urls]
-    responses: list[Any] = []
-    for item in fetch_pooled(targets, **request_kwargs):
-        if isinstance(item, BaseException):
-            raise item
-        responses.append(item)
-    return responses
+    result = _result(
+        source_response,
+        to,
+        selector,
+        all_,
+        parser,
+        source_request=request,
+        css=css,
+        attach=attach,
+        request_kwargs=request_kwargs,
+    )
+    return (response, result) if include_response else result
 
 
 def scrape(
@@ -168,9 +327,11 @@ def scrape(
     headers: Any = None,
     params: Any = None,
     timeout: Any = 30,
-    method: str = "GET",
+    method: str | None = None,
     css: bool = False,
     attach: bool = False,
+    raise_for_status: bool = False,
+    errors: str = "raise",
     **kwargs: Any,
 ) -> Any:
     """Fetch one or more web resources and return their content directly.
@@ -184,6 +345,10 @@ def scrape(
     ``scrape(url, to="text" | "json" | "pyml" | "dom")`` returns just that.
 
     ``css=True`` eagerly populates ``document.styleSheets`` for DOM results.
+    Same-origin stylesheet requests inherit the page request's headers and
+    transport options; cross-origin stylesheet requests do not inherit page
+    credentials or custom headers.
+
     ``attach=True`` attaches DOM results to a new :class:`domonic.window.Window`
     so ``document.defaultView`` and ``window.getComputedStyle(...)`` are ready.
 
@@ -192,7 +357,15 @@ def scrape(
 
     ``scrape(url, response=True)`` returns ``(response, result)`` where
     ``response`` is the :class:`domonic.webapi.fetch.Response` (``.status``,
-    ``.headers``, ``.ok``, ``.text()``, ``.json()``).
+    ``.headers``, ``.ok``, ``.text()``, ``.json()``). The returned response body
+    remains unused because the result is produced from a clone.
+
+    ``raise_for_status=True`` turns non-2xx responses into
+    :class:`ScrapeHTTPError`.
+
+    ``errors="raise"`` raises fetch/status errors. ``errors="return"`` returns
+    the exception in that result position instead. For batches this preserves
+    input order and list length.
 
     Pass an iterable of URLs to fetch them through the pooled fetch, in input
     order; the result is a list of whatever a single URL would have returned
@@ -200,8 +373,12 @@ def scrape(
 
     ``method`` and ``headers`` build the request, as does any keyword argument
     that names a ``Request`` field (``body``, ``json``, ``credentials``,
-    ``redirect``, ...). ``params``, ``timeout`` and any remaining keyword
-    arguments are forwarded to ``requests``.
+    ``redirect``, ...). When ``url`` is already a ``Request``, explicit values
+    supplied to ``scrape`` override the corresponding fields while omitted
+    values are preserved. URL strings default to GET via ``Request``.
+
+    ``params``, ``timeout`` and any remaining keyword arguments are forwarded
+    to ``requests``.
     """
     if to is not None and to not in _TO_CHOICES:
         raise ValueError(f"scrape(to=...) must be one of {', '.join(_TO_CHOICES)}; got {to!r}")
@@ -209,6 +386,8 @@ def scrape(
         raise ValueError("pass either scrape(to=...) or scrape(selector=...), not both")
     if all and selector is None:
         raise ValueError("scrape(all=True) needs a selector=")
+    if errors not in _ERROR_CHOICES:
+        raise ValueError(f"scrape(errors=...) must be one of {', '.join(_ERROR_CHOICES)}; got {errors!r}")
 
     from domonic.webapi.fetch import Request
 
@@ -217,6 +396,7 @@ def scrape(
         init["method"] = method
     if headers is not None:
         init["headers"] = headers
+
     for key in [name for name in kwargs if name in _request_fields()]:
         init[key] = kwargs.pop(key)
 
@@ -227,13 +407,60 @@ def scrape(
         request_kwargs["timeout"] = timeout
 
     if isinstance(url, (str, Request)):
-        resp = _fetch_one(url, init, request_kwargs)
-        result = _result(resp, to, selector, all, parser, css=css, attach=attach, request_kwargs=request_kwargs)
-        return (resp, result) if response else result
+        request = _make_request(url, init)
 
-    responses = _fetch_many(url, init, request_kwargs)
-    results = [
-        _result(resp, to, selector, all, parser, css=css, attach=attach, request_kwargs=request_kwargs)
-        for resp in responses
-    ]
-    return list(zip(responses, results)) if response else results
+        try:
+            resp = _fetch_request(request, request_kwargs)
+            if raise_for_status:
+                error = _http_error(resp)
+                if error is not None:
+                    raise error
+            return _successful_result(
+                request,
+                resp,
+                to=to,
+                selector=selector,
+                all_=all,
+                parser=parser,
+                include_response=response,
+                css=css,
+                attach=attach,
+                request_kwargs=request_kwargs,
+            )
+        except Exception as exc:
+            if errors == "return":
+                return exc
+            raise
+
+    requests = [_make_request(target, init) for target in url]
+    fetched = _fetch_many(requests, request_kwargs)
+
+    results: list[Any] = []
+    for request, item in zip(requests, fetched):
+        error: BaseException | None = item if isinstance(item, BaseException) else None
+
+        if error is None and raise_for_status:
+            error = _http_error(item)
+
+        if error is not None:
+            if errors == "raise":
+                raise error
+            results.append(error)
+            continue
+
+        results.append(
+            _successful_result(
+                request,
+                item,
+                to=to,
+                selector=selector,
+                all_=all,
+                parser=parser,
+                include_response=response,
+                css=css,
+                attach=attach,
+                request_kwargs=request_kwargs,
+            )
+        )
+
+    return results

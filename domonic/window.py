@@ -113,17 +113,20 @@ class MediaQueryList(EventTarget):
         height: int,
         features: "dict[str, str] | None" = None,
         resolution: float = 1.0,
+        media_type: str = "screen",
     ) -> None:
         super().__init__()
         self.media = media
         self._features = features if features is not None else dict(self.DEFAULT_FEATURES)
         self._resolution = resolution
+        self._media_type = media_type
         self.matches = self._evaluate(
             media,
             width=width,
             height=height,
             features=self._features,
             resolution=resolution,
+            media_type=media_type,
         )
         self.onchange: Callable[[Event], Any] | None = None
 
@@ -144,6 +147,7 @@ class MediaQueryList(EventTarget):
         height: int,
         features: "dict[str, str] | None" = None,
         resolution: float = 1.0,
+        media_type: str = "screen",
     ) -> bool:
         if not media:
             return False
@@ -151,12 +155,16 @@ class MediaQueryList(EventTarget):
         text = media.strip().lower()
         if "," in text:
             return any(
-                cls._evaluate(part, width=width, height=height, features=features, resolution=resolution)
+                cls._evaluate(
+                    part, width=width, height=height, features=features, resolution=resolution, media_type=media_type
+                )
                 for part in _split_top_level(text, ",")
             )
         if " and " in text:
             return all(
-                cls._evaluate(part, width=width, height=height, features=features, resolution=resolution)
+                cls._evaluate(
+                    part, width=width, height=height, features=features, resolution=resolution, media_type=media_type
+                )
                 for part in _split_top_level(text, " and ")
             )
         if text.startswith("not "):
@@ -166,11 +174,21 @@ class MediaQueryList(EventTarget):
                 height=height,
                 features=features,
                 resolution=resolution,
+                media_type=media_type,
             )
         if text.startswith("only "):
             text = text[5:].strip()
-        if text in ("all", "screen", "print"):
+        if text == "all":
             return True
+        # A named media type (``screen``, ``print``) only matches when it is
+        # the one currently rendering -- domonic itself has no paged/print
+        # pipeline, so ``media_type`` defaults to ``"screen"`` and stays that
+        # way unless a host that does implement one (e.g. a renderer with an
+        # actual print mode) overrides ``window.mediaType``. Previously this
+        # returned ``True`` for either unconditionally, so ``@media print``
+        # rules applied outside of any print context.
+        if text in ("screen", "print"):
+            return text == media_type
         if text in ("speech", "tty", "tv", "projection", "handheld", "braille"):
             return False
 
@@ -249,6 +267,7 @@ class MediaQueryList(EventTarget):
             height=height,
             features=self._features,
             resolution=self._resolution,
+            media_type=self._media_type,
         )
         if self.matches != previous:
             event = Event("change", {"bubbles": False, "cancelable": False})
@@ -595,6 +614,13 @@ class Window(JavaScriptWindow, EventTarget):
         #: discrete media-feature answers used by ``matchMedia`` -- override e.g.
         #: ``window.mediaFeatures["prefers-color-scheme"] = "dark"``
         self.mediaFeatures: dict[str, str] = dict(MediaQueryList.DEFAULT_FEATURES)
+        #: the media type ``matchMedia``/``@media`` rules evaluate a named
+        #: media-type token against (``"screen"``, ``"print"``, ...). domonic
+        #: has no print/paged-media pipeline of its own, so this is always
+        #: interactive/"screen" rendering by default; a host that does
+        #: implement one can override it, e.g. ``window.mediaType = "print"``
+        #: while producing print output.
+        self.mediaType: str = "screen"
         self._microtask_queue: list[Callable[[], Any]] = []
         self._running_microtasks = False
         self._next_animation_frame_id = 1
@@ -999,6 +1025,7 @@ class Window(JavaScriptWindow, EventTarget):
             height=self.innerHeight,
             features=self.mediaFeatures,
             resolution=float(getattr(self, "devicePixelRatio", 1.0) or 1.0),
+            media_type=self.mediaType,
         )
         self._media_query_lists.append(query)
         return query

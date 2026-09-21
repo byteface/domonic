@@ -60,6 +60,16 @@ class LayoutStyleLengthsAndKeywords(unittest.TestCase):
         el = _styled("font-size: 20px; width: 2em")
         self.assertEqual(layout_style(el).width, Length(40.0))
 
+    def test_ch_resolves_against_font_size(self):
+        # Without a renderer-provided glyph-metrics resolver, CSS defines the
+        # unavailable zero-glyph advance as 0.5em. This is the layout-facing
+        # path consumed by downstream engines, not just getComputedStyle().
+        self.assertEqual(layout_style(_styled("width: 20ch")).width, Length(160.0))
+        self.assertEqual(
+            layout_style(_styled("font-size: 20px; width: 10ch")).width,
+            Length(100.0),
+        )
+
     def test_percent_stays_symbolic(self):
         self.assertEqual(layout_style(_styled("width: 50%")).width, Percent(0.5))
 

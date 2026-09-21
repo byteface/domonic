@@ -766,6 +766,14 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     document. A clone has no use for the *original* node's cached style
     anyway (it starts uncached and resolves its own on first read), so this
     drops the cache entirely on both sides rather than copying it.
+
+    ``_sibling_positions_cache`` (``domonic.bs4._sibling_positions``) has the
+    same problem for a different reason: it is keyed by ``id(child)``, and a
+    bare ``deepcopy`` would otherwise copy that dict onto the clone verbatim
+    -- pointing at the *original* children's identities, not the clone's own,
+    so a lookup against it would either silently miss or, if an id happened
+    to be reused, resolve to the wrong sibling entirely. Dropped for the same
+    reason and the same way.
     """
     import copy
 
@@ -773,6 +781,10 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     saved_owners = [(current, current.__dict__.get("_ownerDocument")) for current in _iter_dom_nodes(node)]
     saved_style_caches = [
         (current, current.__dict__.pop("_computed_style_cache", _DEEPCOPY_MISSING)) for current in _iter_dom_nodes(node)
+    ]
+    saved_sibling_caches = [
+        (current, current.__dict__.pop("_sibling_positions_cache", _DEEPCOPY_MISSING))
+        for current in _iter_dom_nodes(node)
     ]
     node.__dict__["parentNode"] = None
     for current, _owner in saved_owners:
@@ -786,6 +798,9 @@ def _deepcopy_subtree(node: "Node") -> "Node":
         for current, cache in saved_style_caches:
             if cache is not _DEEPCOPY_MISSING:
                 current.__dict__["_computed_style_cache"] = cache
+        for current, cache in saved_sibling_caches:
+            if cache is not _DEEPCOPY_MISSING:
+                current.__dict__["_sibling_positions_cache"] = cache
 
 
 def _prepare_detached_clone(
@@ -4697,10 +4712,10 @@ class Element(Node):
                 position = end + 1
                 continue
             if char == ":":
-                # Only a small set of self-contained structural pseudo-classes
-                # is understood here; anything else (``:hover``, ``:nth-child``,
-                # pseudo-elements, ...) fails the parse so the caller falls back
-                # to the full selector engine.
+                # Only a small set of self-contained pseudo-classes is
+                # understood here; anything else (``:hover``, ``:nth-child``,
+                # pseudo-elements, ...) fails the parse so the caller falls
+                # back to the full selector engine.
                 pseudo_match = re.match(r"::?([-\w]+)", selector[position:])
                 if not pseudo_match:
                     return None
@@ -4724,11 +4739,22 @@ class Element(Node):
             "first-of-type",
             "last-of-type",
             "only-of-type",
+            "link",
+            "visited",
         }
     )
 
     @staticmethod
     def _matches_structural_pseudo(element, pseudo: str) -> bool:
+        # domonic does not maintain browsing history.  Treat every hyperlink
+        # as unvisited, as a fresh private browsing context would, instead of
+        # guessing at :visited state (which browsers deliberately restrict).
+        if pseudo == "link":
+            tag_name = (getattr(element, "tagName", "") or "").lower()
+            return tag_name in ("a", "area") and bool(element.getAttribute("href"))
+        if pseudo == "visited":
+            return False
+
         parent = getattr(element, "parentNode", None)
         parent_is_element = parent is not None and getattr(parent, "nodeType", None) == Node.ELEMENT_NODE
 
@@ -4892,8 +4918,16 @@ class Element(Node):
     webkitMatchesSelector = matches
 
     def _matches_selector_chain(self, selector: str):
-        """``True`` / ``False`` if a combinator selector matches this element,
-        or ``None`` if the selector is too complex for the fast matcher."""
+        """``True`` / ``False`` if a selector -- a combinator chain, or a
+        single compound using a pseudo-class ``_matchElement`` doesn't
+        understand (``:nth-of-type()``, ``:hover``, ``:is()``, ...) -- matches
+        this element, or ``None`` if it is too complex for the fast matcher
+        entirely (the caller then falls back further, e.g. to
+        ``querySelectorAll``).
+
+        A lone compound (no combinator) reduces to matching it against
+        ``self`` and stopping -- the walk below only has work to do once
+        there is a second compound to its left."""
         try:
             from domonic.bs4 import (
                 _element_children,
@@ -4906,7 +4940,7 @@ class Element(Node):
         except Exception:
             return None
         parts = _split_simple_selector_chain(selector)
-        if not parts or len(parts) == 1:
+        if not parts:
             return None
         parsed = []
         for combinator, simple in parts:

@@ -368,7 +368,19 @@ class LayoutStyle:
         Lets a caller that needs both a ``LayoutStyle`` (for layout) and the
         ``ComputedStyleDeclaration`` itself (for anything ``LayoutStyle``
         deliberately excludes, e.g. colours for painting) share one
-        resolved cascade for the element instead of resolving it twice."""
+        resolved cascade for the element instead of resolving it twice.
+
+        Every field here comes from the raw cascade (``computed._resolved``)
+        or the font-size chain -- nothing reads a ``LayoutBox`` (percentages
+        and ``auto`` come back as typed placeholders, not used values), so
+        the result is immutable for as long as *computed* itself is valid,
+        including across a relayout. Cached on *computed* accordingly: a
+        caller that (like a layout engine driving multiple passes) asks for
+        the same element's ``LayoutStyle`` more than once against the same
+        ``ComputedStyleDeclaration`` does the parsing once."""
+        cached = computed.__dict__.get("_layout_style_cache")
+        if cached is not None:
+            return cached
         # the raw cascaded (author + inline, shorthand-expanded, inherited)
         # string for a longhand -- *not* getComputedStyle's used value.
         raw = computed._resolved.get
@@ -407,7 +419,7 @@ class LayoutStyle:
         def line(name: str) -> Any:
             return _parse_grid_line(raw(name))
 
-        return cls(
+        result = cls(
             display=Keyword(computed._computed_display(raw("display") or "inline")),
             position=kw("position"),
             boxSizing=kw("box-sizing"),
@@ -454,6 +466,8 @@ class LayoutStyle:
             gridRowEnd=line("grid-row-end"),
             element=computed._element,
         )
+        computed.__dict__["_layout_style_cache"] = result
+        return result
 
 
 def layout_style(element: Any, computed: "ComputedStyleDeclaration | None" = None) -> LayoutStyle:

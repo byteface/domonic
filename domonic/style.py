@@ -636,13 +636,33 @@ class StyleSheet:
 
     def __init__(self) -> None:
         # whether the sheet is prevented from applying (spec default: enabled)
-        self.disabled: bool = False
+        self._disabled: bool = False
         self.href: str | None = None
         self.parentStyleSheet: StyleSheet | None = None
         self.ownerNode = None
         self.title: str | None = None
         self.type: str = "text/css"
         self.media: MediaList = MediaList()
+
+    @property
+    def disabled(self) -> bool:
+        """Whether this sheet is prevented from contributing to the cascade
+        (spec default: enabled). A disabled sheet's rules are excluded in
+        ``_build_rule_index``; toggling this also bumps the same stylesheet
+        epoch ``insertRule``/``deleteRule``/``replace(Sync)`` already bump,
+        so it invalidates the rule-index and computed-style caches exactly
+        like any other rule change -- otherwise an element already queried
+        once would keep serving its pre-toggle computed style forever."""
+        return self._disabled
+
+    @disabled.setter
+    def disabled(self, value: bool) -> None:
+        value = bool(value)
+        if value != self._disabled:
+            self._disabled = value
+            _cssom.bump_stylesheet_epoch()
+        else:
+            self._disabled = value
 
     # @property
     # def href(self):
@@ -5818,14 +5838,43 @@ def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
     return tuple(result)
 
 
-def _build_rule_index(sheet_list, viewport):
+_PSEUDO_ELEMENT_SUFFIX_RE = re.compile(
+    r"::?(before|after|marker|placeholder|first-line|" r"first-letter|selection|backdrop|file-selector-button)\s*$"
+)
+
+
+def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = "screen"):
     """``{bucket_key: [(selector, specificity, order, layer, entries)]}`` for
-    fast element-vs-rule matching in getComputedStyle."""
+    fast element-vs-rule matching in getComputedStyle, plus the set of
+    pseudo-element names (``"before"``, ``"after"``, ...) any selector in
+    these sheets actually targets -- lets ``getComputedStyle(el, "::before")``
+    reject a page with no such rule at all without scanning a single bucket
+    (most pages never style a pseudo-element, and a caller like a renderer
+    asking "does this element have generated content?" pays for the whole
+    cascade to find out otherwise).
+
+    *features*/*media_type* are the window's ``mediaFeatures``/``mediaType``
+    (see ``_condition_rule_matches``), threaded through so a stylesheet's own
+    ``@media`` blocks are filtered out consistently with what
+    ``window.matchMedia()`` reports for the same window."""
     index: dict[str, list] = {}
+    pseudo_names: set[str] = set()
     order = 0
     layers: dict[int, int] = {}  # id(CSSLayerBlockRule) -> layer number
     for sheet in sheet_list:
-        for rule, layer in _iter_style_rules(getattr(sheet, "cssRules", None), viewport=viewport, layers=layers):
+        # per CSSOM, a disabled sheet contributes no rules to the cascade at
+        # all -- `StyleSheet.disabled`'s setter bumps the stylesheet epoch
+        # this index is keyed on, so toggling it also invalidates every
+        # cached rule index/computed style that was built while it applied.
+        if getattr(sheet, "disabled", False):
+            continue
+        for rule, layer in _iter_style_rules(
+            getattr(sheet, "cssRules", None),
+            viewport=viewport,
+            layers=layers,
+            features=features,
+            media_type=media_type,
+        ):
             entries = _expand_shorthands_for_cascade(rule.style._property_entries())
             if not entries:
                 continue
@@ -5837,10 +5886,13 @@ def _build_rule_index(sheet_list, viewport):
                 index.setdefault(_rule_bucket_key(selector), []).append(
                     (selector, _selector_specificity(selector), order, layer, entries)
                 )
-    return index
+                pe = _PSEUDO_ELEMENT_SUFFIX_RE.search(selector)
+                if pe:
+                    pseudo_names.add(pe.group(1))
+    return index, pseudo_names
 
 
-def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
+def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, media_type: str = "screen"):
     """Yield ``(CSSStyleRule, layer_number)`` pairs, descending into ``@media``
     blocks whose condition currently matches and tracking ``@layer`` nesting
     (layer 0 == unlayered; each ``@layer`` block gets the next number in
@@ -5862,13 +5914,17 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0):
         if isinstance(rule, CSSLayerBlockRule):
             layer_name = (rule.name or "").strip() or f"\x00anon{id(rule)}"
             child_layer = layers.setdefault(layer_name, len(layers) + 1)
-            yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=child_layer)
+            yield from _iter_style_rules(
+                inner, viewport=viewport, layers=layers, layer=child_layer, features=features, media_type=media_type
+            )
             continue
-        if _condition_rule_matches(rule, viewport):
-            yield from _iter_style_rules(inner, viewport=viewport, layers=layers, layer=layer)
+        if _condition_rule_matches(rule, viewport, features=features, media_type=media_type):
+            yield from _iter_style_rules(
+                inner, viewport=viewport, layers=layers, layer=layer, features=features, media_type=media_type
+            )
 
 
-def _condition_rule_matches(rule, viewport) -> bool:
+def _condition_rule_matches(rule, viewport, *, features=None, media_type: str = "screen") -> bool:
     """Whether a conditional group rule (``@media``, ``@supports``, ...)
     currently applies. ``@media`` is evaluated through its parsed ``MediaList``
     against the real viewport, the same matcher ``window.matchMedia()`` uses --
@@ -5880,7 +5936,15 @@ def _condition_rule_matches(rule, viewport) -> bool:
     nested-parens evaluator ``CSS.supports()`` itself exposes -- it was
     already correct, just never wired in here. Other condition rules
     (``@when``, ``@else``) have no evaluator here yet and keep the previous
-    always-match behaviour."""
+    always-match behaviour.
+
+    *features* and *media_type* mirror what ``window.matchMedia()`` uses for
+    the same element's window (``window.mediaFeatures`` /
+    ``window.mediaType``) -- passed through so a stylesheet's own ``@media
+    (prefers-color-scheme: dark)`` or ``@media print`` agrees with what
+    ``matchMedia()`` would report for the same window, instead of always
+    falling back to the class defaults regardless of what the window
+    actually has configured."""
     if isinstance(rule, CSSMediaRule):
         media_text = rule.media.mediaText if rule.media else ""
         if not media_text:
@@ -5888,26 +5952,34 @@ def _condition_rule_matches(rule, viewport) -> bool:
         from domonic.window import MediaQueryList
 
         width, height = viewport
-        return MediaQueryList._evaluate(media_text, width=width or 0, height=height or 0)
+        return MediaQueryList._evaluate(
+            media_text, width=width or 0, height=height or 0, features=features, media_type=media_type
+        )
     if isinstance(rule, CSSSupportsRule):
         return _supports_condition(rule.conditionText or "")
     return True
 
 
 def _computed_style_cache_key(element) -> tuple:
-    """Everything that can make a previously resolved computed style stale:
-    the DOM epoch (any attribute/structure change anywhere), the stylesheet
-    epoch (any rule change anywhere), the layout epoch (any element anywhere
-    gaining, losing, or getting a new layout box -- since that changes how
-    ``auto``/``%`` resolve well beyond just the element it was set on, see
-    ``_to_used_length``), and the viewport (a resize can flip which
+    """Everything that can make a previously resolved *cascade* stale: the DOM
+    epoch (any attribute/structure change anywhere), the stylesheet epoch (any
+    rule change anywhere), and the viewport (a resize can flip which
     ``@media`` rules apply). Deliberately whole-document/whole-process
     granularity, not per-element -- a conservative but correct starting point
-    (see the domonic-css-performance notes for the narrower alternative)."""
+    (see the domonic-css-performance notes for the narrower alternative).
+
+    The layout epoch is deliberately *not* part of this key. Selector
+    matching, inheritance, and shorthand resolution never consult a
+    ``LayoutBox`` -- only a handful of used-value conversions do (``auto``
+    box fields and ``%`` lengths, in ``_to_used_length``/``_percent_base_px``)
+    -- so a relayout would otherwise invalidate the entire cascade for every
+    element just to re-derive the few properties that actually depend on
+    geometry. Those are cached and invalidated separately, per property, in
+    ``ComputedStyleDeclaration.getPropertyValue``."""
     document = getattr(element, "ownerDocument", None) or getattr(element, "rootNode", None)
     window = getattr(document, "defaultView", None) if document is not None else None
     viewport = (getattr(window, "innerWidth", None), getattr(window, "innerHeight", None))
-    return (_cssom.dom_style_epoch(), _cssom.stylesheet_epoch(), _cssom.layout_epoch(), viewport)
+    return (_cssom.dom_style_epoch(), _cssom.stylesheet_epoch(), viewport)
 
 
 class ComputedStyleDeclaration(CSSStyleDeclaration):
@@ -5990,20 +6062,37 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             getattr(window, "innerWidth", None),
             getattr(window, "innerHeight", None),
         )
+        # Same media context ``window.matchMedia()`` would evaluate against,
+        # so a stylesheet's own ``@media (prefers-color-scheme: dark)`` /
+        # ``@media print`` agrees with what the window reports -- previously
+        # this always fell back to the class defaults here regardless of
+        # ``window.mediaFeatures``/``window.mediaType``.
+        media_features = getattr(window, "mediaFeatures", None)
+        media_type = getattr(window, "mediaType", None) or "screen"
 
         # The parsed index is keyed on everything that could make it stale: the
         # stylesheet epoch (bumped by insertRule/deleteRule/replace(Sync) on
         # any stylesheet), the viewport (a resize can change which @media
-        # rules apply), and the identity of the sheets actually in play (so
-        # reassigning document.adoptedStyleSheets, or adding a <style>
-        # element, is picked up without a dedicated hook for either).
-        rule_cache_key = (_cssom.stylesheet_epoch(), viewport, tuple(id(sheet) for sheet in sheet_list))
+        # rules apply), the media features/type (changing either can too),
+        # and the identity of the sheets actually in play (so reassigning
+        # document.adoptedStyleSheets, or adding a <style> element, is picked
+        # up without a dedicated hook for either).
+        rule_cache_key = (
+            _cssom.stylesheet_epoch(),
+            viewport,
+            tuple(id(sheet) for sheet in sheet_list),
+            tuple(sorted(media_features.items())) if media_features else None,
+            media_type,
+        )
         cache = self._chain_cache
         entry = cache.get("__rule_index__")
         if entry is None and document is not None:
             entry = getattr(document, "_cssom_rule_index", None)
         if entry is None or entry[0] != rule_cache_key:
-            entry = (rule_cache_key, _build_rule_index(sheet_list, viewport))
+            entry = (
+                rule_cache_key,
+                *_build_rule_index(sheet_list, viewport, features=media_features, media_type=media_type),
+            )
             if document is not None:
                 try:
                     document._cssom_rule_index = entry
@@ -6011,51 +6100,93 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                     pass
         cache["__rule_index__"] = entry
         index = entry[1]
-        if not index:
-            return {}
-
-        # only look at rules whose rightmost compound could match this element
-        tag_name = (element.tagName or "").lower()
-        local_name = tag_name.rpartition(":")[2] or tag_name
-        buckets = ["*", tag_name] if local_name == tag_name else ["*", tag_name, local_name]
-        el_id = element.getAttribute("id")
-        if el_id:
-            buckets.append(f"#{el_id}")
-        for cls in str(element.getAttribute("class") or "").split():
-            buckets.append(f".{cls}")
 
         want_pseudo = ""
         if self._pseudo:
             want_pseudo = str(self._pseudo).strip().lower().lstrip(":")
 
         cascade: dict[str, tuple[tuple, str, bool]] = {}
-        for bucket in buckets:
-            for selector, spec, order, layer, entries in index.get(bucket, ()):
-                pe = re.search(
-                    r"::?(before|after|marker|placeholder|first-line|"
-                    r"first-letter|selection|backdrop|file-selector-button)\s*$",
-                    selector,
-                )
-                sel_pseudo = pe.group(1) if pe else ""
-                if sel_pseudo != want_pseudo:
-                    continue
-                base_selector = selector[: pe.start()].strip() if pe else selector
-                if not base_selector:
-                    base_selector = "*"
-                try:
-                    ok = element._matchElement(element, base_selector) or (
-                        element._matches_selector_chain(base_selector) is True
-                    )
-                except Exception:
-                    ok = False
-                if not ok:
-                    continue
-                for name, value, priority in entries:
-                    important = priority == "important"
-                    key = (important, _layer_sort_key(layer, important), spec, order)
-                    if name not in cascade or key > cascade[name][0]:
-                        cascade[name] = (key, value, important)
-        return {name: (value, important) for name, (_, value, important) in cascade.items()}
+        # An empty index (no stylesheets at all) and "no rule in these sheets
+        # targets this pseudo-element" both mean the bucket scan below has
+        # nothing to find -- skip it, but (for a real, non-pseudo element)
+        # still fall through to the presentational-hint step afterward: a
+        # page with zero author stylesheets is exactly the case a legacy
+        # ``bgcolor``-style hint most needs to still apply in.
+        if index and (not want_pseudo or want_pseudo in entry[2]):
+            # only look at rules whose rightmost compound could match this element
+            tag_name = (element.tagName or "").lower()
+            local_name = tag_name.rpartition(":")[2] or tag_name
+            buckets = ["*", tag_name] if local_name == tag_name else ["*", tag_name, local_name]
+            el_id = element.getAttribute("id")
+            if el_id:
+                buckets.append(f"#{el_id}")
+            for cls in str(element.getAttribute("class") or "").split():
+                buckets.append(f".{cls}")
+
+            for bucket in buckets:
+                for selector, spec, order, layer, entries in index.get(bucket, ()):
+                    pe = _PSEUDO_ELEMENT_SUFFIX_RE.search(selector)
+                    sel_pseudo = pe.group(1) if pe else ""
+                    if sel_pseudo != want_pseudo:
+                        continue
+                    base_selector = selector[: pe.start()].strip() if pe else selector
+                    if not base_selector:
+                        base_selector = "*"
+                    try:
+                        # ``_matchElement`` only understands a small self-contained
+                        # subset of pseudo-classes (see ``_STRUCTURAL_PSEUDO_
+                        # CLASSES``) and no combinators at all; anything else
+                        # (``:nth-of-type()``, ``:hover``, ``:is()``, a combinator
+                        # chain, ...) makes it return ``False`` without that
+                        # meaning "genuinely doesn't match" -- ``_parse_simple_
+                        # selector``'s tokenizer isn't a strict validator (a
+                        # combinator selector still "parses", just into a bogus
+                        # single compound, rather than failing outright), so a
+                        # parse-failure check here cannot reliably tell the two
+                        # apart. Always falling through to the heavier bs4-backed
+                        # matcher on a ``False`` -- same as ``Element.matches()``
+                        # does -- is the only way that stays correct for every
+                        # selector shape.
+                        ok = element._matchElement(element, base_selector) or (
+                            element._matches_selector_chain(base_selector) is True
+                        )
+                    except Exception:
+                        ok = False
+                    if not ok:
+                        continue
+                    for name, value, priority in entries:
+                        important = priority == "important"
+                        key = (important, _layer_sort_key(layer, important), spec, order)
+                        if name not in cascade or key > cascade[name][0]:
+                            cascade[name] = (key, value, important)
+        result = {name: (value, important) for name, (_, value, important) in cascade.items()}
+        resolver = _PRESENTATIONAL_HINT_RESOLVER
+        # A pseudo-element has no HTML attributes of its own to carry a
+        # presentational hint about -- only a real element does.
+        if resolver is not None and not want_pseudo:
+            # A presentational hint (a legacy HTML attribute a browser treats
+            # as implicit style -- ``bgcolor``, an ``<img>``'s ``width``/
+            # ``height``, ...) is the weakest declaration in the real CSS
+            # cascade: weaker than any author rule for the same property
+            # regardless of specificity or source order, and weaker than an
+            # inline ``style=""`` too (merged in afterwards, in ``_resolve``).
+            # domonic has no opinion on which HTML attributes map to which
+            # properties -- that mapping is rendering policy for whatever is
+            # built on top of this -- so this only owns the one thing only
+            # the cascade can get right: filling a hint in *exclusively* for
+            # a property no real author rule declared at all, so it's already
+            # too late for it to compete with, or override, any real
+            # declaration found above, and a later CSSOM write still simply
+            # overrides it downstream the normal way, with no special-casing
+            # needed anywhere else in the cascade.
+            try:
+                hints = resolver(element) or {}
+            except Exception:
+                hints = {}
+            for name, value in hints.items():
+                if value is not None and name not in result:
+                    result[name] = (str(value), False)
+        return result
 
     def _resolve(self):
         element = self._element
@@ -6120,23 +6251,58 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
         # This instance is immutable once resolved (it's a read-only snapshot
-        # -- see the class docstring), so the used value for a given longhand
-        # never changes across repeated reads. Memoize it: a caller that asks
-        # for the same property more than once (or a shorthand that rebuilds
-        # itself from the same longhands `getPropertyValue` recurses into
-        # below) does the unit/colour/keyword conversion once, not every time.
-        # Lives in ``self.__dict__`` alongside ``_resolved`` and
+        # -- see the class docstring), so the *cascaded* value for a given
+        # longhand never changes across repeated reads. Memoize it: a caller
+        # that asks for the same property more than once (or a shorthand that
+        # rebuilds itself from the same longhands `getPropertyValue` recurses
+        # into below) does the unit/colour/keyword conversion once, not every
+        # time. Lives in ``self.__dict__`` alongside ``_resolved`` and
         # ``_font_size_px_cache``, so it rides along whenever this instance is
         # reused from the per-element computed-style cache too.
+        #
+        # A small minority of properties are *also* layout-dependent: an
+        # ``auto`` box field or a ``%`` length reads the element's (or its
+        # parent's) attached ``LayoutBox`` (see ``_to_used_length`` /
+        # ``_percent_base_px``), so their used value can go stale on a
+        # relayout even though nothing about the cascade changed. Rather than
+        # invalidate the whole cache on every layout epoch bump (which would
+        # throw away selector-matching and inheritance work for properties a
+        # relayout never touches), each entry that is layout-dependent also
+        # carries the layout epoch it was computed under, and is recomputed
+        # only when that epoch has moved; every other entry is cached for the
+        # lifetime of this cascade, same as before.
         cache = self.__dict__.get("_property_value_cache")
         if cache is None:
             cache = {}
             self.__dict__["_property_value_cache"] = cache
-        elif target in cache:
-            return cache[target]
+        else:
+            cached = cache.get(target)
+            if cached is not None:
+                cached_layout_epoch, cached_value = cached
+                if cached_layout_epoch is None or cached_layout_epoch == _cssom.layout_epoch():
+                    return cached_value
         value = self._compute_property_value(target)
-        cache[target] = value
+        cache[target] = (self._layout_epoch_of(target) if value is not None else None, value)
         return value
+
+    def _layout_epoch_of(self, target: str) -> "int | None":
+        """The layout epoch to stamp a just-computed property value with, or
+        ``None`` if it could not have consulted a ``LayoutBox`` and is safe to
+        cache regardless of future relayouts. Mirrors exactly the two
+        conditions under which ``_to_used_length``/``_percent_base_px`` ever
+        look at a box: an ``auto`` value on one of the handful of properties
+        a box reports (``width``/``height``/``margin-*``), or any length
+        containing a literal ``%``."""
+        if target not in _USED_LENGTH_PROPERTIES:
+            return None
+        raw = (self._resolved.get(target) or "").strip()
+        if not raw:
+            return None
+        if "%" in raw:
+            return _cssom.layout_epoch()
+        if target in _AUTO_BOX_FIELDS and raw.lower() == "auto":
+            return _cssom.layout_epoch()
+        return None
 
     def _compute_property_value(self, target: str) -> str:
         # A border's width computes to 0 when its style is none/hidden --
@@ -6218,7 +6384,11 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         if target != "color" and "currentcolor" in value.lower():
             current = self.getPropertyValue("color")
             if current and current.lower() != "currentcolor":
-                value = re.sub(r"(?i)\bcurrentcolor\b", current, value)
+                # ``current`` is page-controlled CSS text. Passing it as a
+                # replacement string would make ``re.sub`` interpret any
+                # backslash-number sequence as a group reference; a callback
+                # returns it literally regardless of its contents.
+                value = re.sub(r"(?i)\bcurrentcolor\b", lambda _match: current, value)
         normalized = _cssom.normalize_color(value)
         return normalized if normalized is not None else value
 
@@ -6229,6 +6399,20 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         parent = self._parent_computed()
         parent_px = parent._font_size_px() if parent is not None else 16.0
         raw = str(self._resolved.get("font-size") or "medium").strip()
+        # Every other property's used-value path expands a `var()` reference
+        # before parsing the result as a length (see the generic dispatch in
+        # `_compute_property_value`) -- this one has to do it too, and
+        # explicitly, rather than relying on a caller having already done it:
+        # `_font_size_px` is not just reached through `getPropertyValue`, it
+        # is also the em/rem base every *other* used-length resolution goes
+        # through (`_to_used_length`, `_eval_calc_to_px`, line-height's
+        # unitless multiplier, ...), so leaving `var(--x)` unexpanded here
+        # silently fails to parse as a length and falls back to the
+        # *inherited* size instead -- wrong for the common case of a
+        # design-token stylesheet (`font-size: var(--font-size-small,
+        # 0.875rem)`), not just a synthetic one.
+        if "var(" in raw.lower():
+            raw = _expand_var_references(raw, self._custom_property).strip()
         if "calc(" in raw.lower():
             px = _eval_calc_to_px(raw, em_px=parent_px, rem_px=self._root_font_size_px())
         else:
@@ -6240,8 +6424,42 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             )
         if px is None:
             px = _ABSOLUTE_FONT_SIZE_KEYWORDS.get(raw.lower(), parent_px)
+        px = self._apply_monospace_font_size_quirk(px, parent)
         self.__dict__["_font_size_px_cache"] = px
         return px
+
+    def _apply_monospace_font_size_quirk(self, px: float, parent: "ComputedStyleDeclaration | None") -> float:
+        """The "monospace font-size quirk" every real browser applies (Blink:
+        ``FontBuilder::CheckForGenericFamilyChange``): an element whose
+        ``font-family`` resolves to exactly the single generic ``monospace``
+        keyword gets its font-size scaled by 13/16 relative to what it would
+        otherwise be (the reverse, 16/13, on leaving monospace) -- the reason
+        a bare monospace element renders visibly smaller than surrounding
+        text, and why ``font-family: monospace, monospace`` is the
+        well-known trick to opt back out of it. It only fires at the exact
+        point monospace-ness *changes* between an element and its parent (a
+        descendant that inherits an already-monospace, already-scaled
+        ancestor is not scaled again), and only when this element's own
+        ``font-size`` was not itself specified as an absolute length -- an
+        explicit ``font-size: 16px`` on the monospace element itself always
+        means exactly ``16px``, never a scaled value.
+
+        Confirmed against ``wpt/css/CSS2/tables/table-anonymous-objects-
+        059.xht``. This is squarely a cascade-level default, not a rendering
+        one -- the 13/16 ratio is a fixed constant, not something derived
+        from real glyph metrics, so it needs no font data domonic doesn't
+        have."""
+        own_declared = str(self._resolved._declared.get("font-size") or "").strip()
+        if own_declared and "var(" in own_declared.lower():
+            own_declared = _expand_var_references(own_declared, self._custom_property).strip()
+        own_match = _LENGTH_TOKEN_RE.match(own_declared) if own_declared else None
+        if own_match and own_match.group(2).lower() in _ABSOLUTE_LENGTH_UNITS:
+            return px  # an explicit absolute length always opts out
+        own_monospace = _is_exactly_generic_monospace(self.getPropertyValue("font-family"))
+        parent_monospace = _is_exactly_generic_monospace(parent.getPropertyValue("font-family")) if parent else False
+        if own_monospace == parent_monospace:
+            return px
+        return px * _MONOSPACE_FONT_SIZE_SCALE if own_monospace else px / _MONOSPACE_FONT_SIZE_SCALE
 
     def _root_font_size_px(self) -> float:
         cache = self._chain_cache
@@ -6306,13 +6524,36 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
         if "calc(" in value.lower():
             evaluated = _eval_calc_to_px(value, em_px=font_px, rem_px=self._root_font_size_px())
-            return _px_str(evaluated) if evaluated is not None else value
+            if evaluated is not None:
+                # see the ``target == "line-height"`` branch below for why a
+                # negative result here becomes ``normal`` instead of a real
+                # negative used length -- ``calc()`` is the one other path
+                # that can produce a negative line-height.
+                if target == "line-height" and evaluated < 0:
+                    return "normal"
+                return _px_str(evaluated)
+            return value
 
         if target == "line-height":
             low = value.strip().lower()
             if low in ("normal", "inherit", "initial", "unset", ""):
                 return value
             match = _LENGTH_TOKEN_RE.match(value.strip())
+            # CSS 2.1 10.8.1: line-height "does not allow negative values" --
+            # a negative multiplier, percentage, or length makes the whole
+            # declaration invalid, so a real browser discards it and the used
+            # value falls back to ``normal`` instead of a real negative
+            # length (which would otherwise drive a negative line-box strut
+            # height downstream). Domonic has no general cascade-level
+            # "declaration validity" concept that would let a different,
+            # lower-priority but valid declaration win instead when one
+            # exists -- narrower than the full spec behaviour, but correct
+            # for the common case where line-height has only the one,
+            # invalid declaration. Checked before the per-form branches below
+            # so it covers all three forms -- 1.5, 150%, and 20px alike --
+            # with one check instead of three.
+            if match and float(match.group(1)) < 0:
+                return "normal"
             if match and match.group(2) == "":  # unitless multiplier
                 return _px_str(float(match.group(1)) * font_px)
             if match and match.group(2) == "%":  # % of the computed font-size
@@ -6613,6 +6854,19 @@ _ABSOLUTE_FONT_SIZE_KEYWORDS = {
     "xxx-large": 48.0,
 }
 
+#: the fixed 13/16 ratio behind the "monospace font-size quirk" -- see
+#: ``ComputedStyleDeclaration._apply_monospace_font_size_quirk``.
+_MONOSPACE_FONT_SIZE_SCALE = 13.0 / 16.0
+
+
+def _is_exactly_generic_monospace(font_family: "str | None") -> bool:
+    """Whether a resolved ``font-family`` is the single generic keyword
+    ``monospace`` and nothing else -- ``monospace, Arial`` or a quoted
+    family name does not count, only the exact generic keyword alone (the
+    well-known ``font-family: monospace, monospace`` trick relies on the
+    second entry making this ``False`` again)."""
+    return (font_family or "").strip().strip("'\"").lower() == "monospace"
+
 #: absolute length unit -> px (CSS reference pixel: 1in == 96px)
 _ABSOLUTE_LENGTH_UNITS = {
     "px": 1.0,
@@ -6756,11 +7010,81 @@ def _transform_to_matrix(value: str, *, em_px: float, rem_px: float) -> "str | N
     return result.toString()
 
 
+_CH_EX_RESOLVER: "Callable[[str, float, float], float | None] | None" = None
+
+
+def set_ch_ex_resolver(resolver: "Callable[[str, float, float], float | None] | None") -> None:
+    """Register a callback used to resolve ``ch``/``ex`` length units instead
+    of the CSS-spec 0.5em approximation ``getComputedStyle`` falls back to by
+    default. Domonic itself has no glyph metrics to measure a real character
+    advance or x-height against, but a renderer built on top of it (which
+    does have a font) can supply one.
+
+    Called as ``resolver(unit, number, em_px) -> float | None`` -- *unit* is
+    ``"ch"`` or ``"ex"``, *number* the numeric part of the token (``2`` for
+    ``"2ch"``), *em_px* the element's computed font-size in px -- only once
+    the parser has already identified the token as one of these two units, so
+    every other length (the overwhelming majority) never pays for the call.
+    Returning ``None`` falls back to the default approximation for that one
+    conversion. Pass ``None`` to remove a previously registered resolver."""
+    global _CH_EX_RESOLVER
+    _CH_EX_RESOLVER = resolver
+
+
+_PRESENTATIONAL_HINT_RESOLVER: "Callable[[Any], dict[str, Any] | None] | None" = None
+
+
+def set_presentational_hint_resolver(resolver: "Callable[[Any], dict[str, Any] | None] | None") -> None:
+    """Register a callback that supplies presentational hints -- the implicit
+    style a legacy HTML attribute carries (``bgcolor``, an ``<img>``'s
+    ``width``/``height``, ...) -- for ``getComputedStyle``'s cascade to fold
+    in at the one priority a real browser gives them: weaker than *any*
+    author stylesheet rule for the same property, and weaker than an inline
+    ``style=""``, but still stronger than a property's plain initial value.
+
+    Domonic has no opinion on which HTML attributes should become which CSS
+    properties -- that mapping is rendering policy for whatever is built on
+    top of it -- so this only owns the cascade-priority slot only the
+    cascade itself can get right.
+
+    Called as ``resolver(element) -> {property_name: value} | None`` once per
+    cascade resolution, kebab-case longhand property names (``"background-
+    color"``, not ``backgroundColor``). A returned entry is used only for a
+    property no real author rule declared at all; any real declaration --
+    of any specificity, source order, or a later CSSOM write -- overrides it
+    normally, with no special-casing needed anywhere else in the cascade.
+
+    "Once per cascade resolution" means the same thing it already means for
+    an author stylesheet: consulted fresh on a cache miss (the first read,
+    or after a DOM/stylesheet mutation invalidates the cached cascade), not
+    re-consulted just because whatever *resolver* itself reads changed on
+    its own with nothing else moving -- so a host that computes hints from
+    an element's own attributes should set them before that element's style
+    is first read, the same ordering it would already need for a real
+    ``style=""`` attribute set via ``setAttribute``.
+
+    Pass ``None`` to remove a previously registered resolver."""
+    global _PRESENTATIONAL_HINT_RESOLVER
+    _PRESENTATIONAL_HINT_RESOLVER = resolver
+
+
 def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px: "float | None") -> "float | None":
     """Convert a single length token to px, or ``None`` if it is not a plain
     length this resolver handles (``auto``, ``calc(...)``, a bare keyword, or a
     ``%`` with no base)."""
-    match = _LENGTH_TOKEN_RE.match(token.strip())
+    stripped = token.strip()
+    # Fast path for the tokens a stylesheet overwhelmingly actually uses --
+    # a bare integer ``px`` length (``12px``, ``0px``) or a bare ``0`` -- so
+    # the common case skips the regex match, the ``.lower()`` call, and the
+    # unit-table lookup below. Anything else (a decimal, a different unit, a
+    # keyword) falls through to the general path unchanged.
+    if stripped == "0":
+        return 0.0
+    if stripped.endswith("px"):
+        head = stripped[:-2]
+        if head and (head.isdigit() or (head[0] in "+-" and head[1:].isdigit())):
+            return float(head)
+    match = _LENGTH_TOKEN_RE.match(stripped)
     if not match:
         return None
     number, unit = float(match.group(1)), match.group(2).lower()
@@ -6771,9 +7095,17 @@ def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px:
     if unit in ("em", "rem"):
         return number * (em_px if unit == "em" else rem_px)
     if unit in ("ch", "ex"):
-        # domonic has no real glyph metrics ("0" advance / x-height) to
-        # measure against, so fall back to the value the CSS spec itself
-        # mandates for exactly this case: 0.5em for both units.
+        # domonic has no real glyph metrics ("0" advance / x-height) of its
+        # own to measure against, so it defaults to the value the CSS spec
+        # itself mandates for exactly this case: 0.5em for both units. A
+        # host that does have real font metrics (a renderer built on top of
+        # domonic) can register a resolver to use them instead -- called
+        # only once the unit is already known to be ``ch``/``ex``, so a
+        # plain ``px``/``em`` length never pays for the dispatch.
+        if _CH_EX_RESOLVER is not None:
+            resolved = _CH_EX_RESOLVER(unit, number, em_px)
+            if resolved is not None:
+                return resolved
         return number * 0.5 * em_px
     if unit == "":
         return None  # a unitless non-zero number is not a length

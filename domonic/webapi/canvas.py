@@ -197,25 +197,46 @@ class CanvasRenderingContext2D:
     def height(self) -> int:
         return _canvas_dimension(self.canvas, "height", 150)
 
-    def _record(self, name: str, *args: Any) -> None:
-        self.commands.append({"name": name, "args": [_json_safe(arg) for arg in args]})
+    def _capture_style_state(self) -> dict[str, Any]:
+        """The paint-affecting state a replayed command needs to draw exactly
+        as it did when recorded (also what ``save()``/``restore()`` push and
+        pop)."""
+        return {
+            "fillStyle": self.fillStyle,
+            "strokeStyle": self.strokeStyle,
+            "globalAlpha": self.globalAlpha,
+            "lineWidth": self.lineWidth,
+            "lineCap": self.lineCap,
+            "lineJoin": self.lineJoin,
+            "font": self.font,
+            "textAlign": self.textAlign,
+            "textBaseline": self.textBaseline,
+            "lineDash": list(self._line_dash),
+            "transform": self._transform,
+        }
 
-    def save(self) -> None:
-        self._state_stack.append(
+    def _record(self, name: str, *args: Any) -> None:
+        # A recorded command has no use on its own without the style state
+        # that was active when it was issued -- ``fillStyle``/``strokeStyle``/
+        # ``globalAlpha``/etc. are ordinary attributes, not recorded commands
+        # of their own, so a caller replaying ``self.commands`` later (this
+        # class exists to be recorded and replayed -- see the class
+        # docstring) would otherwise apply whatever style happens to be
+        # *current at replay time* to every command, silently wrong the
+        # moment two draws with different styles are interleaved with a style
+        # mutation. Snapshotting it here, once per command, costs one dict
+        # build (the same shape ``save()`` already builds) and makes replay
+        # correct without the caller needing its own save/restore bookkeeping.
+        self.commands.append(
             {
-                "fillStyle": self.fillStyle,
-                "strokeStyle": self.strokeStyle,
-                "globalAlpha": self.globalAlpha,
-                "lineWidth": self.lineWidth,
-                "lineCap": self.lineCap,
-                "lineJoin": self.lineJoin,
-                "font": self.font,
-                "textAlign": self.textAlign,
-                "textBaseline": self.textBaseline,
-                "lineDash": list(self._line_dash),
-                "transform": self._transform,
+                "name": name,
+                "args": [_json_safe(arg) for arg in args],
+                "state": {key: _json_safe(value) for key, value in self._capture_style_state().items()},
             }
         )
+
+    def save(self) -> None:
+        self._state_stack.append(self._capture_style_state())
         self._record("save")
 
     def restore(self) -> None:

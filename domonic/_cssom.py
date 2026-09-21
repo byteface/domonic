@@ -384,6 +384,15 @@ BOX_SHORTHANDS: frozenset[str] = frozenset(
 #: radius shorthand uses TL/TR/BR/BL order but the same 1-4 value collapsing
 RADIUS_SHORTHANDS: frozenset[str] = frozenset({"border-radius"})
 
+# ``flex-flow`` is unusual among the two-longhand shorthands below: either
+# component may be omitted, and its direction/wrap keywords occupy disjoint
+# value spaces.  A lone value therefore cannot simply be copied to both
+# longhands as it can for ``overflow`` or ``gap``.
+_FLEX_DIRECTION_KEYWORDS: frozenset[str] = frozenset(
+    {"row", "row-reverse", "column", "column-reverse"}
+)
+_FLEX_WRAP_KEYWORDS: frozenset[str] = frozenset({"nowrap", "wrap", "wrap-reverse"})
+
 
 def is_shorthand(name: str) -> bool:
     return name in SHORTHANDS
@@ -656,6 +665,16 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         if len(parts) == 2:
             return list(zip(longs, parts))
         return None
+
+    if name == "flex-flow":
+        parts = value.split()
+        if len(parts) == 1:
+            token = parts[0]
+            token_lower = token.lower()
+            if token_lower in _FLEX_DIRECTION_KEYWORDS:
+                return [("flex-direction", token), ("flex-wrap", "nowrap")]
+            if token_lower in _FLEX_WRAP_KEYWORDS:
+                return [("flex-direction", "row"), ("flex-wrap", token)]
 
     if name in (
         "overflow",
