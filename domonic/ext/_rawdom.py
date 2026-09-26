@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import importlib
 import re
+import threading
 from typing import Any, TypeVar
 
 from domonic import dom
@@ -36,6 +37,19 @@ _NodeT = TypeVar("_NodeT", bound=dom.Node)
 # Bind the base allocator/setter once; these paths deliberately bypass DOM hooks.
 _new_node = object.__new__
 _set_state = object.__setattr__
+
+# The text run: while ``parseString`` builds a whole document it records every
+# Text node in creation (document) order, plus the <script> / <style> elements
+# whose text ``get_text()`` must leave out. The document keeps the run, and
+# text extraction becomes a join over it instead of a tree walk, until the
+# tree changes (see ``dom._TREE_EPOCH``). Only one parse records at a time:
+# ``_RECORD_LOCK`` is held by a recording parse and by a streaming session
+# while it feeds its parser, so no other thread's raw nodes can land in the
+# run. That keeps the per-node cost to a global load and a None check.
+_RECORD_LOCK = threading.RLock()
+_TEXT_RUN: list[Any] | None = None
+_RAWTEXT_RUN: list[Any] | None = None
+_RAWTEXT_NAMES = frozenset(("script", "style"))
 
 _HTML_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
 _UNKNOWN_ELEMENT_CLASS_CACHE: dict[str, type[dom.Element]] = {}
@@ -121,6 +135,7 @@ def _invalidate_indexes() -> None:
     """
     dom._bump_dom_epoch()
     dom._bump_structure_epoch()
+    dom._bump_tree_epoch()
     dom._cssom.bump_dom_style_epoch()
 
 
@@ -312,6 +327,8 @@ def _create_element_raw(name: str, namespace_uri: str = HTML_NAMESPACE) -> dom.E
         # ``domonic.html.html`` subclasses ``HTMLDocument``; the raw element
         # init skips the document-level state those instances still expect.
         _apply_document_state(element)
+    if _RAWTEXT_RUN is not None and name in _RAWTEXT_NAMES:
+        _RAWTEXT_RUN.append(element)
     return element
 
 
@@ -330,6 +347,8 @@ def _create_text_raw(data: Any) -> dom.Text:
     state["kwargs"] = {}
     state["args"] = ("" if data is None else str(data),)
     _set_state(text, "__dict__", state)
+    if _TEXT_RUN is not None:
+        _TEXT_RUN.append(text)
     return text
 
 

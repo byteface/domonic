@@ -9,6 +9,7 @@ import subprocess
 import sys
 import unittest
 
+import domonic
 from domonic.bs4 import BeautifulSlop
 from domonic.dom import DocumentFragment, Element, Text
 
@@ -307,3 +308,101 @@ class BeautifulSlopTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TextIndexTest(unittest.TestCase):
+    """BeautifulSlop keeps the parser's record of a whole document's text nodes
+    (``parseString(..., text_index=True)``); the record must be exactly what a
+    tree walk finds and must retire on any change to the tree."""
+
+    PAGE = (
+        "<!doctype html><html><head><title>T</title><style>p{}</style>"
+        "<script>var x = 1;</script></head><body><h1>Head</h1>"
+        "<p>one <b>two</b> three</p><p id='last'>four</p><script src=a.js>skip()</script></body></html>"
+    )
+
+    def _walk(self, soup, strip=False):
+        from domonic.bs4 import _collect_text
+
+        parts = []
+        _collect_text(soup.__dict__["args"], parts.append, strip)
+        return parts
+
+    def test_recorded_text_matches_a_walk(self):
+        from domonic.dom import _text_run_for
+
+        soup = BeautifulSlop(self.PAGE, "html.parser")
+        self.assertIsNotNone(_text_run_for(soup))
+        self.assertEqual(soup.get_text(), "".join(self._walk(soup)))
+        self.assertEqual(soup.get_text(" ", strip=True), " ".join(self._walk(soup, strip=True)))
+        self.assertEqual(list(soup.strings), self._walk(soup))
+        self.assertEqual(list(soup.stripped_strings), self._walk(soup, strip=True))
+        self.assertNotIn("var x", soup.get_text())  # script and style text left out
+        self.assertNotIn("skip()", soup.get_text())
+        self.assertIn("var x = 1;", soup.textContent)  # but DOM textContent keeps it
+
+    def test_plain_parse_string_and_fragments_are_untouched(self):
+        from domonic.dom import _text_run_for
+
+        self.assertIsNone(_text_run_for(domonic.parseString(self.PAGE, parser="html.parser")))
+        snippet = BeautifulSlop("<p>one <b>two</b></p>", "html.parser")
+        self.assertIsNone(_text_run_for(snippet))
+        self.assertEqual(snippet.get_text(), "one two")
+
+    def test_the_record_retires_on_any_change(self):
+        from domonic.dom import Text, _text_run_for
+        from domonic.html import p
+
+        for label, mutate in (
+            ("appendChild", lambda s: s.body.appendChild(p("late"))),
+            ("removeChild", lambda s: s.body.removeChild(s.select_one("#last"))),
+            ("textContent", lambda s: setattr(s.select_one("#last"), "textContent", "changed")),
+            ("Text.data", lambda s: setattr(s.select_one("#last").firstChild, "data", "changed")),
+            ("args", lambda s: setattr(s.select_one("#last"), "args", (Text("changed"),))),
+            ("innerHTML", lambda s: setattr(s.select_one("#last"), "innerHTML", "<i>changed</i>")),
+            ("replaceChildren", lambda s: s.select_one("#last").replaceChildren(Text("changed"))),
+            ("splitText", lambda s: s.select_one("#last").firstChild.splitText(2)),
+            ("remove", lambda s: s.select_one("#last").remove()),
+        ):
+            with self.subTest(label):
+                soup = BeautifulSlop(self.PAGE, "html.parser")
+                self.assertIsNotNone(_text_run_for(soup))
+                mutate(soup)
+                self.assertIsNone(_text_run_for(soup))
+                self.assertEqual(soup.get_text(), "".join(self._walk(soup)))
+                self.assertEqual(soup.textContent, domonic.parseString(str(soup), parser="html.parser").textContent)
+
+    def test_a_failing_backend_leaves_nothing_in_the_record(self):
+        from domonic.ext._rawdom import _create_text_raw
+
+        def boom(source, **options):
+            _create_text_raw("garbage")  # a backend that builds a bit, then gives up
+            raise RuntimeError("no thanks")
+
+        domonic.register_parser("boom", boom, auto=True)
+        try:
+            soup = BeautifulSlop(self.PAGE)  # auto: boom fails, the next backend parses
+            self.assertNotIn("garbage", soup.get_text())
+            self.assertEqual(soup.get_text(), "".join(self._walk(soup)))
+        finally:
+            domonic.unregister_parser("boom")
+
+    def test_parallel_parses_keep_their_own_records(self):
+        import threading
+
+        results = {}
+
+        def work(index):
+            page = self.PAGE.replace("four", f"four-{index}") * 40
+            soup = BeautifulSlop(page, "html.parser")
+            results[index] = (soup.get_text(), "".join(self._walk(soup)))
+
+        threads = [threading.Thread(target=work, args=(i,)) for i in range(6)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        for index, (recorded, walked) in results.items():
+            self.assertEqual(recorded, walked, index)
+            self.assertIn(f"four-{index}", recorded)
+

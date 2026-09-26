@@ -70,19 +70,16 @@ Huge pages
 Streaming means the source never has to be in memory at once, but every node
 that lands is a Python object, and the tree, not the source, is what a big
 page costs. To keep memory flat, take what you need from each finished
-element as it lands and drop it. A node is finished once it is no longer open
-in the parser:
+element as it lands and drop it. The parser only ever appends to the last
+open element, so under any parent every child but the last has finished:
 
 .. code-block :: python
 
 	import gc
 
 	def landed(records, observer):
-	    still_open = {id(node) for node in doc.__dict__["_parser_session"].engine.open_elements}
 	    for record in records:
-	        for node in list(record.target.args):
-	            if id(node) in still_open or not hasattr(node, "remove"):
-	                continue
+	        for node in list(record.target.childNodes)[:-1]:
 	            handle(node)        # read what you want out of it
 	            node.remove()
 

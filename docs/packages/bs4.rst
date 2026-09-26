@@ -64,6 +64,10 @@ pass a name to pin one:
    BeautifulSlop(markup, "justhtml")
    BeautifulSlop(markup, "expat")
 
+Text extraction (``get_text()``, ``strings``, ``stripped_strings``) on a whole
+page reads the parser's own record of the text nodes rather than walking the
+tree, until the tree changes.
+
 It also accepts familiar Beautiful Soup names where they map cleanly onto
 domonic parser backends:
 

@@ -801,7 +801,33 @@ def _note_index_root(root: "Node") -> None:
 
 
 _SIBLING_SCAN_LIMIT = 16
-_CHILD_CACHE_KEYS = ("_child_positions", "_live_child_nodes", "_live_children_nodes", "_live_children_elements")
+_CHILD_CACHE_KEYS = (
+    "_child_positions",
+    "_live_child_nodes",
+    "_live_children_nodes",
+    "_live_children_elements",
+    "_text_run",
+)
+
+# Moves on every structural change (every ``args`` write goes through
+# ``_drop_child_caches``) and every character-data or attribute change (through
+# ``_queue_mutation_record``). Anything cached against the tree as a whole, such
+# as a parsed document's text run, is valid only while it still matches.
+_TREE_EPOCH: int = 0
+
+
+def _bump_tree_epoch() -> None:
+    global _TREE_EPOCH
+    _TREE_EPOCH += 1
+
+
+def _text_run_for(node: "Node") -> "tuple[tuple[Any, ...], frozenset[int]] | None":
+    """The node's recorded text run, if it is still current: the Text nodes
+    under it in document order, and the ids of those inside script / style."""
+    run = node.__dict__.get("_text_run")
+    if run is None or run[0] != _TREE_EPOCH:
+        return None
+    return run[1], run[2]
 
 
 def _child_position(parent: "Node", child: Any) -> int:
@@ -844,6 +870,8 @@ def _drop_child_caches(node: "Node") -> None:
     ``_LiveNodeList._nodes``). They validate themselves by ``args`` identity,
     so this is about memory, not correctness: a stale entry would otherwise
     keep the replaced child tuple, and every node removed with it, alive."""
+    global _TREE_EPOCH
+    _TREE_EPOCH += 1
     state = node.__dict__
     for key in _CHILD_CACHE_KEYS:
         if key in state:
@@ -1324,6 +1352,7 @@ def _queue_mutation_record(
     # index bookkeeping it sits next to, so there is no dormant-until-first-use
     # gate to earn here.
     _cssom.bump_dom_style_epoch()
+    _bump_tree_epoch()
     if DOMConfig.RENDER_CACHE_ENABLED:
         _invalidate_render_cache(target)
     try:
@@ -2992,6 +3021,10 @@ class Node(EventTarget):
     @property
     def textContent(self):
         """Returns the text content of a node and its descendants"""
+        run = _text_run_for(self)
+        if run is not None:  # a parsed document that has not changed since: no walk
+            text = "".join([node.__dict__["args"][0] for node in run[0]])
+            return text if text else None
         outp = ""
         for each in self.args:
             if type(each) is str:

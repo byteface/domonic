@@ -18,7 +18,7 @@ from typing import Any
 from domonic import _cssom
 from domonic import dom as _dom
 from domonic import domonic
-from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text
+from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text, _text_run_for
 
 _PARSER_ALIASES = {
     None: "auto",
@@ -60,7 +60,8 @@ class BeautifulSlop:
         # the returned object isn't an instance of cls)
         install()
         parser = _normalize_parser(features or kwargs.pop("parser", None))
-        return domonic.parseString(markup, parser=parser)
+        # text extraction is what a soup is for: keep the parser's text run
+        return domonic.parseString(markup, parser=parser, text_index=True)
 
 
 def _normalize_parser(parser: str | None) -> str:
@@ -1894,7 +1895,23 @@ def _find_all_previous(
 _STRINGS_SKIP_TAGS = frozenset({"script", "style", "SCRIPT", "STYLE", "Script", "Style"})
 
 
+def _run_strings(self: Node) -> list[str] | None:
+    """The document's text (``get_text`` order, script / style left out) from
+    its recorded run, or None if there is no current run for this node."""
+    run = _text_run_for(self)
+    if run is None:
+        return None
+    texts, hidden = run
+    if hidden:
+        return [node.__dict__["args"][0] for node in texts if id(node) not in hidden]
+    return [node.__dict__["args"][0] for node in texts]
+
+
 def _strings(self: Node) -> Iterator[str]:
+    recorded = _run_strings(self)
+    if recorded is not None:
+        yield from recorded
+        return
     text_type = Text
     comment_type = Comment
     node_type = Node
@@ -1977,6 +1994,11 @@ def _get_text(
         args = self.__dict__.get("args")
         text = args[0] if args else ""
         return text.strip() if strip else text
+    recorded = _run_strings(self)
+    if recorded is not None:
+        if strip:
+            recorded = [part for part in map(str.strip, recorded) if part]
+        return separator.join(recorded)
     parts: list = []
     _collect_text(self.__dict__.get("args", ()) or (), parts.append, strip)
     return separator.join(parts)

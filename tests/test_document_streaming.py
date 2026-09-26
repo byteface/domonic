@@ -250,11 +250,8 @@ class Html5libStreaming(StreamingUnderEngine):
 
             def landed(records, observer):
                 nonlocal seen
-                open_now = {id(node) for node in doc.__dict__["_parser_session"].engine.open_elements}
                 for record in records:
-                    for node in list(record.target.args):
-                        if id(node) in open_now or not hasattr(node, "remove"):
-                            continue
+                    for node in list(record.target.childNodes)[:-1]:  # every child but the last has finished
                         seen += len(node.textContent or "")  # read it on its way through
                         node.remove()
 

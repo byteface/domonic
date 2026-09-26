@@ -1474,8 +1474,21 @@ class domonic:
         return domonic.parseString_active_parser
 
     @staticmethod
-    def parseString(string, parser=None, debug: bool = False, *, document: bool = False, encoding: str | None = None):
+    def parseString(
+        string,
+        parser=None,
+        debug: bool = False,
+        *,
+        document: bool = False,
+        encoding: str | None = None,
+        text_index: bool = False,
+    ):
         """Parse a DOM from markup: a ``str``, or ``bytes`` as they came off the wire.
+
+        ``text_index=True`` (what BeautifulSlop asks for) keeps, on a whole
+        document, the parser's own record of its text nodes in document order,
+        so ``get_text()`` / ``textContent`` join that list instead of walking
+        the tree. The record retires itself the moment the tree changes.
 
         Bytes are decoded the way a browser decodes a page: a byte order mark
         first, then ``encoding`` (the transport's charset, e.g. from the HTTP
@@ -1501,6 +1514,9 @@ class domonic:
 
             string, used = decode_html(bytes(string), encoding)
             character_set = whatwg_name(used)
+        from domonic.ext import _rawdom
+
+        abandoned: list = []  # nodes normalisation left out of the returned page (see _normalize_parsed_page)
         parser_was_explicit = parser is not None
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
@@ -1509,6 +1525,21 @@ class domonic:
                 target = page if isinstance(page, dom.Document) else getattr(page, "ownerDocument", None)
                 if isinstance(target, dom.Document):
                     target.__dict__["_characterSet"] = character_set
+            if text_index and _rawdom._TEXT_RUN is not None and isinstance(page, dom.Document):
+                # A whole document: its text run is exactly the Text nodes recorded
+                # while it was built. A page that already carries one (a nested
+                # parse handed it back) keeps it. Custom-element upgrades below
+                # may mutate; they move the tree epoch and retire the run.
+                if page.__dict__.get("_text_run") is None:
+                    texts = _rawdom._TEXT_RUN
+                    if abandoned:
+                        dropped = {
+                            id(n) for node in abandoned for n in dom._iter_dom_nodes(node) if type(n) is dom.Text
+                        }
+                        texts = [text for text in texts if id(text) not in dropped]
+                    rawtext = _rawdom._RAWTEXT_RUN or ()
+                    hidden = frozenset(id(child) for element in rawtext for child in element.__dict__.get("args", ()))
+                    page.__dict__["_text_run"] = (dom._TREE_EPOCH, tuple(texts), hidden)
             try:
                 from domonic.window import window as domonic_window
 
@@ -1591,7 +1622,7 @@ class domonic:
                     # it with an empty document (issue #74). Let the HTML tree
                     # builder supply implied containers while retaining content.
                     _record_active("html5lib")
-                    return _parse_with_html5lib()
+                    return _recording(_parse_with_html5lib)
                 if isinstance(page, dom.Element):
                     page.parentNode = None
                 return _ensure_owner_document(page)
@@ -1599,7 +1630,16 @@ class domonic:
             if is_full_document:
                 if doctype is not None:
                     html_root.doctype = doctype
+                # Whatever sat beside the html element (a stray top-level text
+                # node, a second <html>) is left behind by the two branches that
+                # re-root the page; the text index must not keep its text either.
+                siblings = (
+                    []
+                    if page is html_root
+                    else [child for child in (getattr(page, "childNodes", []) or []) if child is not html_root]
+                )
                 if isinstance(html_root, dom.HTMLDocument):
+                    abandoned.extend(siblings)
                     html_root.parentNode = None
                     html_root.documentElement = html_root
                     return html_root
@@ -1612,6 +1652,7 @@ class domonic:
                     elif html_root.parentNode is not page:
                         html_root.parentNode = page
                     return page
+                abandoned.extend(siblings)
                 document = dom.HTMLDocument()
                 if doctype is not None:
                     document.doctype = doctype
@@ -1741,13 +1782,28 @@ class domonic:
                 raise ValueError("document=True requires the html5lib parser")
             parser = "html5lib"
 
+        def _recording(parse_with):
+            """Run one backend. With ``text_index`` the raw node constructors
+            record into a fresh run for just this attempt (a backend that fails
+            leaves nothing behind), under the lock that keeps other threads'
+            raw nodes out of it; the previous run is restored afterwards."""
+            if not text_index:
+                return parse_with()
+            with _rawdom._RECORD_LOCK:
+                previous = (_rawdom._TEXT_RUN, _rawdom._RAWTEXT_RUN)
+                _rawdom._TEXT_RUN, _rawdom._RAWTEXT_RUN = [], []
+                try:
+                    return parse_with()
+                finally:
+                    _rawdom._TEXT_RUN, _rawdom._RAWTEXT_RUN = previous
+
         if _is_doctype_only(string) and not document:
             return _upgrade_custom_elements(_html_document_from_doctype(string))
 
         if parser in explicit_parsers:
             name, parse_with = explicit_parsers[parser]
             _record_active(name)
-            return parse_with()
+            return _recording(parse_with)
         if parser != "auto":
             raise ValueError(f"Unknown parser: {parser}")
 
@@ -1772,7 +1828,7 @@ class domonic:
         )
         for name, parse_with, handled_errors in fallback_parsers:
             try:
-                result = parse_with()
+                result = _recording(parse_with)
             except handled_errors as exc:
                 message = f"parseString: auto skipped {name} ({exc})"
                 _PARSER_LOGGER.debug(message)

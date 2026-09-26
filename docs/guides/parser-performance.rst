@@ -182,6 +182,67 @@ algorithm, so deeply malformed markup (mis-nested inline formatting, tables
 without ``<tbody>``/``<tr>``) still comes out differently from ``html5lib``. Use
 a real tree-building backend when input HTML cannot be trusted.
 
+What the numbers look like
+--------------------------
+
+Parsing the 500 KB Wikipedia fixture (``benchmarks/html_meaty_page.html``)
+into a domonic tree, median of seven runs on an Apple M-series laptop,
+September 2026:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Backend
+     - Median
+   * - ``turbohtml``
+     - 25 ms
+   * - ``selectolax``
+     - 29 ms
+   * - ``markupever``
+     - 45 ms
+   * - ``lxml_html``
+     - 48 ms
+   * - ``html5_parser``
+     - 53 ms
+   * - ``html.parser``
+     - 72 ms
+   * - ``justhtml``
+     - 79 ms
+   * - ``html5lib``
+     - 138 ms
+
+BeautifulSlop against Beautiful Soup 4 on the same page, 70 cases, median
+speed-up per group (``turbohtml`` under BeautifulSlop, ``html.parser`` under
+BS4). Every parity-gated case matched BS4's result:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Group
+     - BeautifulSlop is
+   * - CSS selectors, simple
+     - 245x faster
+   * - CSS selectors, combinators
+     - 28x faster
+   * - CSS selectors, pseudo-classes
+     - 16x faster
+   * - ``find`` / ``find_all``
+     - 8x faster
+   * - ``find_all`` with filters
+     - 11x faster
+   * - Navigation (siblings, parents, ``find_next``)
+     - 12x faster
+   * - Mutation (``decompose``, ``wrap``, ``append``)
+     - 2x faster
+   * - Serialisation
+     - 3x faster
+   * - Parse
+     - 3x faster
+   * - Text extraction
+     - 1.8x faster
+
+Numbers move with the machine; rerun the two scripts above for yours.
+
 Whitespace fidelity
 -------------------
 

@@ -34,7 +34,14 @@ import threading
 from typing import Any, Callable
 
 from domonic.ext._encoding import PRESCAN_BYTES, bom_encoding, sniff_encoding, whatwg_name
-from domonic.ext._rawdom import HTML_NAMESPACE, _freeze_args, _invalidate_indexes, _live_append, _set_attribute_raw
+from domonic.ext._rawdom import (
+    _RECORD_LOCK,
+    HTML_NAMESPACE,
+    _freeze_args,
+    _invalidate_indexes,
+    _live_append,
+    _set_attribute_raw,
+)
 from domonic.ext.html_parser_ import DomonicHTMLParser
 
 _LOGGER = logging.getLogger("domonic.parser")
@@ -295,7 +302,8 @@ class DocumentParserSession:
             if tail:
                 self._feed(tail)
         self.closed = True
-        self.engine.close()
+        with _RECORD_LOCK:
+            self.engine.close()
         self._checkpoint()
 
     def abort(self) -> None:
@@ -304,7 +312,8 @@ class DocumentParserSession:
         if self.aborted or self.closed:
             return
         self.aborted = True
-        self.engine.abort()
+        with _RECORD_LOCK:
+            self.engine.abort()
         self._checkpoint()
 
     # -- parsing ---------------------------------------------------------
@@ -314,7 +323,8 @@ class DocumentParserSession:
 
         # Only pay for recording insertions while someone is observing.
         recorder = self._record if MutationObserver._all_observers else None
-        self.engine.feed(text, recorder)
+        with _RECORD_LOCK:  # no other thread's parse may record while raw nodes are made here
+            self.engine.feed(text, recorder)
         self._checkpoint()
 
     def _record(self, parent: Any, child: Any) -> None:
