@@ -181,7 +181,7 @@ Guides
    guides/index
 
 The guide section includes task-focused walkthroughs for :doc:`guides/scrape-html`,
-:doc:`guides/server-side-html`, :doc:`guides/live-dom-updates`,
+:doc:`guides/stream-html`, :doc:`guides/server-side-html`, :doc:`guides/live-dom-updates`,
 :doc:`guides/parser-performance`, and :doc:`guides/examples`.
 
 CLI

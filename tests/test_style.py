@@ -1703,14 +1703,16 @@ class TestCase(unittest.TestCase):
             "<link id='stylesheet' href='/site.css'>"
         )
 
+        # https://html.spec.whatwg.org/#selector-link: every a, area and link
+        # element with an href attribute, whatever its value (even empty)
         self.assertEqual(
             [element.getAttribute("id") for element in page.querySelectorAll(":link")],
-            ["link", "area"],
+            ["link", "empty", "area", "stylesheet"],
         )
         self.assertTrue(page.querySelector("#link").matches("a:link"))
-        self.assertFalse(page.querySelector("#empty").matches(":link"))
+        self.assertTrue(page.querySelector("#empty").matches(":link"))
         self.assertFalse(page.querySelector("#missing").matches(":link"))
-        self.assertFalse(page.querySelector("#stylesheet").matches(":link"))
+        self.assertTrue(page.querySelector("#stylesheet").matches(":link"))
         self.assertEqual(list(page.querySelectorAll(":visited")), [])
 
     def test_link_pseudo_class_participates_in_author_cascade(self):

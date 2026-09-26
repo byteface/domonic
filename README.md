@@ -114,6 +114,7 @@ return StreamingResponse(page.stream(), media_type="text/html")   # chunks, not 
 ```
 
 More task guides: <a href="https://domonic.readthedocs.io/guides/scrape-html/" target="_blank" rel="noopener">scraping</a> ·
+<a href="https://domonic.readthedocs.io/guides/stream-html/" target="_blank" rel="noopener">streaming</a> ·
 <a href="https://domonic.readthedocs.io/guides/server-side-html/" target="_blank" rel="noopener">server-side HTML</a> ·
 <a href="https://domonic.readthedocs.io/guides/live-dom-updates/" target="_blank" rel="noopener">live DOM updates</a> ·
 <a href="https://domonic.readthedocs.io/guides/parser-performance/" target="_blank" rel="noopener">parser performance</a> ·

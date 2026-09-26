@@ -23,6 +23,7 @@ browser concepts visible instead of hiding them behind a Python-only abstraction
 
    examples
    scrape-html
+   stream-html
    server-side-html
    compiled-rendering
    live-dom-updates

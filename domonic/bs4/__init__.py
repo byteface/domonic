@@ -72,7 +72,11 @@ def _normalize_parser(parser: str | None) -> str:
 
 def _tag_name(node: Any) -> str | None:
     if isinstance(node, Element):
-        return getattr(node, "name", getattr(node, "tagName", None))
+        # ``name`` is always there; only fall back to the (computed, upper-
+        # casing) ``tagName`` property when it is not, rather than paying for
+        # it on every node a matcher looks at.
+        name = getattr(node, "name", None)
+        return name if name is not None else getattr(node, "tagName", None)
     if isinstance(node, Document):
         return "[document]"
     return None
@@ -1932,49 +1936,50 @@ def _stripped_strings(self: Node) -> Iterator[str]:
             yield stripped
 
 
+def _collect_text(args: Any, append: Any, strip: bool) -> None:
+    """Append the text of ``args`` (a node's children) in document order,
+    skipping comments and ``<script>`` / ``<style>`` content. Recursive on
+    purpose: it is ~15% cheaper than an explicit stack (no push / pop /
+    reversed-slice per element), and the tree is never deep enough to matter."""
+    text_type = Text
+    comment_type = Comment
+    skip = _STRINGS_SKIP_TAGS
+    for node in args:
+        node_class = type(node)
+        if node_class is text_type:
+            a = node.__dict__.get("args")
+            if a:
+                value = a[0].strip() if strip else a[0]
+                if value:
+                    append(value)
+        elif node_class is str:
+            value = node.strip() if strip else node
+            if value:
+                append(value)
+        elif node_class is comment_type:
+            continue
+        else:
+            state = getattr(node, "__dict__", None)
+            if state is None:
+                continue
+            a = state.get("args")
+            if a and getattr(node, "name", "") not in skip:
+                _collect_text(a, append, strip)
+
+
 def _get_text(
     self: Node,
     separator: str = "",
     strip: bool = False,
     types: Any = None,
 ) -> str:
-    if strip:
-        if type(self) is Text:
-            text = self.__dict__.get("args", ("",))[0].strip()
-            return text if text else ""
-        parts: list = []
-        append = parts.append
-        stack = list(self.__dict__.get("args", ()) or ())
-        stack.reverse()
-        text_type = Text
-        element_type = Element
-        node_type = Node
-        comment_type = Comment
-        isinstance_ = isinstance
-        while stack:
-            node = stack.pop()
-            node_class = type(node)
-            if node_class is text_type:
-                stripped = node.__dict__["args"][0].strip()
-                if stripped:
-                    append(stripped)
-            elif node_class is str:
-                stripped = node.strip()
-                if stripped:
-                    append(stripped)
-            elif isinstance_(node, element_type):
-                name = node.name
-                if name == "script" or name == "style":
-                    continue
-                children = node.__dict__["args"]
-                if children:
-                    stack.extend(children[::-1])
-            elif isinstance_(node, node_type) and not isinstance_(node, comment_type):
-                children = node.__dict__.get("args")
-                if children:
-                    stack.extend(children[::-1])
-        return separator.join(parts)
-    return separator.join(_strings(self))
+    if type(self) is Text:
+        args = self.__dict__.get("args")
+        text = args[0] if args else ""
+        return text.strip() if strip else text
+    parts: list = []
+    _collect_text(self.__dict__.get("args", ()) or (), parts.append, strip)
+    return separator.join(parts)
 
 
 def _attrs_get(self: Element) -> dict[str, Any]:

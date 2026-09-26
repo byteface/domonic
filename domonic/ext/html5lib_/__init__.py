@@ -30,6 +30,7 @@ def getTreeBuilder(treeType, implementation='domonic', **kwargs):
 # from __future__ import absolute_import, division, unicode_literals
 
 # from xml.dom import minidom, Node
+import threading
 import weakref
 from collections.abc import MutableMapping
 from importlib import import_module
@@ -48,6 +49,17 @@ from domonic.ext._rawdom import (
     _freeze,
     _live_args,
 )
+
+# ``_recording.hook`` is set by a streaming session on the thread that runs
+# html5lib, so insertions can be reported to MutationObserver after each
+# write. Thread-local, so concurrent sessions never see each other's nodes.
+_recording = threading.local()
+
+
+def _record_insert(parent, child):
+    hook = getattr(_recording, "hook", None)
+    if hook is not None:
+        hook(parent, child)
 
 
 def _raw_detach(child):
@@ -166,6 +178,7 @@ def getDomBuilder(ignore: object):
         def appendChild(self, node):
             node.parent = self
             _raw_append(self.element, node.element)
+            _record_insert(self.element, node.element)
 
         def insertText(self, data, insertBefore=None):
             # Whitespace-only text nodes are kept: whitespace between inline
@@ -176,10 +189,12 @@ def getDomBuilder(ignore: object):
                 _raw_insert_before(self.element, text, insertBefore.element)
             else:
                 _raw_append(self.element, text)
+            _record_insert(self.element, text)
 
         def insertBefore(self, node, refNode):
             _raw_insert_before(self.element, node.element, refNode.element)
             node.parent = self
+            _record_insert(self.element, node.element)
 
         def removeChild(self, node):
             if node.element.__dict__.get("parentNode") is self.element:
@@ -364,5 +379,33 @@ from xml.dom import minidom  # nosec B408
 implementation = minidom
 
 
-def getTreeBuilder():
-    return getDomModule(implementation).TreeBuilder
+def getTreeBuilder(target=None):
+    """The html5lib tree builder that builds domonic nodes.
+
+    With ``target`` (a document), the tree is built into that document
+    instead of a fresh one: ``document.write()`` streams a page this way.
+    domonic's ``HTMLDocument`` is the ``<html>`` element, so when the target
+    is one the parser's html element *is* the target; a plain ``Document``
+    gets the html element as a child.
+    """
+    base = getDomModule(implementation).TreeBuilder
+    if target is None:
+        return base
+
+    target_is_html = getattr(target, "name", "") == "html"
+
+    class TargetTreeBuilder(base):
+        def documentClass(self):
+            self.dom = target
+            return weakref.proxy(self)
+
+        def elementClass(self, name, namespace=None):
+            node = base.elementClass(self, name, namespace)
+            if target_is_html and str(name).lower() == "html" and namespace in (None, namespaces["html"]):
+                node.element = target  # the document is its own <html> element
+            return node
+
+        def insertDoctype(self, token):
+            target.doctype = DOMImplementation().createDocumentType(token["name"], token["publicId"], token["systemId"])
+
+    return TargetTreeBuilder

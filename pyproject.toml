@@ -61,6 +61,7 @@ files = [
     "domonic/i18n/__init__.py",
     "domonic/parsers/__init__.py",
     "domonic/ext/__init__.py",
+    "domonic/ext/_encoding.py",
     "domonic/ext/_rawdom.py",
     "domonic/ext/html5_parser_/__init__.py",
     "domonic/ext/html5_parser_/dom.py",
@@ -150,6 +151,7 @@ files = [
     "domonic/templates/__init__.py",
     "domonic/__init__.py",
     "domonic/parsers/expatbuilder.py",
+    "domonic/_document_parser.py",
     "domonic/dom.py",
 ]
 follow_imports = "skip"

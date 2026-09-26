@@ -95,10 +95,18 @@ class TestCase(unittest.TestCase):
         self.assertEqual(node.tagName, "msqrt")
         self.assertEqual(node.namespaceURI, MATHML_NAMESPACE)
 
-    def test_mathml_example_with_shim(self):
-        from examples.mathml import build_page
+    def test_mathml_page_with_mathjax_shim(self):
+        # A MathML page with the MathJax shim, built from the current
+        # constructors (examples/mathml.py no longer carries a page builder).
+        from domonic.html import body, head, html, script
+        from domonic.xml.mathml import math_, mfrac, mi, msqrt
 
-        rendered = str(build_page())
+        rendered = str(
+            html(
+                head(script(_id="MathJax-script", _defer="", _src=CDN_JS.MATHML)),
+                body(math_(mfrac(mi("a"), mi("b")), msqrt(mi("x")), _xmlns=MATHML_NAMESPACE)),
+            )
+        )
 
         self.assertIn(CDN_JS.MATHML, rendered)
         self.assertIn('<script id="MathJax-script" defer', rendered)

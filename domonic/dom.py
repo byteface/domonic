@@ -510,23 +510,45 @@ def _find_wrapper_div(parsed: "Node") -> "Node | None":
     return None
 
 
+_WINDOW_MODULE: Any = None
+
+
 def _get_custom_element_registry():
-    try:
-        from domonic.window import window as domonic_window
-    except Exception:
-        return None
-    return getattr(domonic_window, "customElements", None)
+    # Runs on every tree connection, so resolve the module once rather than
+    # going through the import machinery each time. The attribute itself is
+    # still read live, so swapping ``window.customElements`` is honoured.
+    global _WINDOW_MODULE
+    if _WINDOW_MODULE is None:
+        try:
+            import domonic.window as window_module
+        except Exception:
+            return None
+        _WINDOW_MODULE = window_module
+    return getattr(_WINDOW_MODULE.window, "customElements", None)
 
 
 def _iter_dom_nodes(node):
+    """``node`` and every Node under it, in tree (pre-)order.
+
+    Iterative on purpose: a recursive generator resumes once per level for
+    every node it yields, so a deep subtree cost O(depth) per node."""
     if not isinstance(node, Node):
         return
-    yield node
-    # iterate ``args`` directly rather than the ``childNodes`` property, which
-    # allocates a fresh live NodeList wrapper on every (recursive) call
-    for child in node.__dict__.get("args", ()):
-        if isinstance(child, Node):
-            yield from _iter_dom_nodes(child)
+    stack = [node]
+    pop = stack.pop
+    push = stack.extend
+    node_type = Node
+    while stack:
+        current = pop()
+        yield current
+        # iterate ``args`` directly rather than the ``childNodes`` property,
+        # which allocates a fresh live NodeList wrapper on every call
+        args = current.__dict__.get("args")
+        if args:
+            children = [child for child in args if isinstance(child, node_type)]
+            if children:
+                children.reverse()
+                push(children)
 
 
 def _node_is_connected(node: "Node") -> bool:
@@ -537,7 +559,7 @@ def _node_is_connected(node: "Node") -> bool:
 
 
 def _notify_attribute_changed(element: "Element", attribute: str, old_value: Any, new_value: Any) -> None:
-    callback = getattr(element, "attributeChangedCallback", None)
+    callback = _lifecycle_callback(element, "attributeChangedCallback")
     if not callable(callback) or old_value == new_value:
         return
     observed = getattr(element.__class__, "observedAttributes", ())
@@ -548,16 +570,25 @@ def _notify_attribute_changed(element: "Element", attribute: str, old_value: Any
         callback(normalized, old_value, new_value)
 
 
+def _lifecycle_callback(element: "Element", name: str) -> Any:
+    """``element.<name>`` if a custom element defines it, else None -- without
+    going through ``Node.__getattr__``'s attribute-miss path (a raised and
+    caught AttributeError per lookup, on every insertion and removal)."""
+    if name in element.__dict__ or hasattr(type(element), name):
+        return getattr(element, name, None)
+    return None
+
+
 def _run_connected_callback(element: "Element") -> None:
-    callback = getattr(element, "connectedCallback", None)
-    if callable(callback) and not getattr(element, "_custom_element_connected", False):
+    callback = _lifecycle_callback(element, "connectedCallback")
+    if callable(callback) and not element.__dict__.get("_custom_element_connected", False):
         element._custom_element_connected = True
         callback()
 
 
 def _run_disconnected_callback(element: "Element") -> None:
-    callback = getattr(element, "disconnectedCallback", None)
-    if callable(callback) and getattr(element, "_custom_element_connected", False):
+    callback = _lifecycle_callback(element, "disconnectedCallback")
+    if callable(callback) and element.__dict__.get("_custom_element_connected", False):
         element._custom_element_connected = False
         callback()
 
@@ -639,6 +670,8 @@ def _ensure_pre_insertion_validity(parent: Any, *nodes: Any) -> None:
     for node in nodes:
         if not isinstance(node, Node):
             continue
+        if node is not parent and not node.__dict__.get("args"):
+            continue  # a childless node cannot contain the parent
         if ancestors is None:
             ancestors = set(map(id, _iter_ancestors_inclusive(parent)))
         if id(node) in ancestors:
@@ -819,6 +852,30 @@ def _drop_child_caches(node: "Node") -> None:
 
 _DEEPCOPY_MISSING = object()
 
+# What ``Node.__init__`` gives every node before its own arguments apply.
+_NODE_INIT_STATE: dict[str, Any] = {
+    "_baseURI": "",
+    "isConnected": True,
+    "namespaceURI": "http://www.w3.org/1999/xhtml",
+    "outerText": None,
+    "_ownerDocument": None,
+    "parentNode": None,
+    "prefix": None,
+    # whether this node belongs to an HTML document -- gates tagName /
+    # nodeName upper-casing (see the property). Programmatic construction is
+    # not associated with any document, so it defaults False; the
+    # HTML-producing parser adapters set it True on every node they build
+    # (see ``_rawdom.py`` / ``lxml_dom.py``). expat/XML parsing goes through
+    # the same __init__, so it stays False without any special-casing there.
+    "_html_doc": False,
+    "_escape_text_on_render": False,
+    # Attribute values are always escaped on serialization: emitting a raw
+    # ``"`` / ``&`` / ``<`` inside a quoted value produces malformed markup
+    # that corrupts on the next parse (e.g. Parsoid ``data-mw='{...}'`` JSON
+    # spilling into page text). Set to ``False`` on an individual node to opt out.
+    "_escape_attributes_on_render": True,
+}
+
 
 def _deepcopy_subtree(node: "Node") -> "Node":
     """``copy.deepcopy`` of a node without dragging in its parent chain -- a
@@ -931,9 +988,13 @@ def _connect_tree(node: "Node") -> None:
     owner = root if is_connected else getattr(node, "_ownerDocument", None)
     registry = _get_custom_element_registry()
     has_custom_elements = registry is not None and bool(getattr(registry, "store", None))
-    for current in _iter_dom_nodes(node):
-        current._ownerDocument = owner
-        current.isConnected = is_connected
+    # ``_ownerDocument`` / ``isConnected`` are plain state (see ``_NODE_INIT_STATE``),
+    # so skip the ``__setattr__`` hook; a lone node needs no subtree walk.
+    nodes = _iter_dom_nodes(node) if node.__dict__.get("args") else (node,)
+    for current in nodes:
+        state = current.__dict__
+        state["_ownerDocument"] = owner
+        state["isConnected"] = is_connected
         if id_map is not None:
             cid = current.__dict__.get("kwargs", {}).get("_id")
             if cid is not None:
@@ -967,8 +1028,9 @@ def _disconnect_tree(node: "Node") -> None:
         elif _SUBTREE_INDEXES or _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
             _bump_structure_epoch()
             _bump_dom_epoch()
-    for current in _iter_dom_nodes(node):
-        current.isConnected = False
+    nodes = _iter_dom_nodes(node) if node.__dict__.get("args") else (node,)
+    for current in nodes:
+        current.__dict__["isConnected"] = False
         if id_map is not None:
             cid = current.__dict__.get("kwargs", {}).get("_id")
             if cid is not None and cid in id_map:
@@ -1281,13 +1343,38 @@ def _queue_mutation_record(
         attributeNamespace=attribute_namespace,
         oldValue=old_value,
     )
-    pending: list[MutationObserver] = []
+    queued = False
     for observer in observers:
         if observer._enqueue_if_observing(record):
-            pending.append(observer)
-    for observer in pending:
-        observer._flush()
+            queued = True
+    if queued:
+        _deliver_mutation_records()
     _process_observer_notifications(target)
+
+
+_MUTATION_DELIVERY_ACTIVE: bool = False
+
+
+def _deliver_mutation_records() -> None:
+    """Run the callback of every observer holding records
+    (https://dom.spec.whatwg.org/#notify-mutation-observers).
+
+    Never re-entrant: a record queued by a running callback (a callback that
+    mutates the tree) is delivered once that callback returns, in a later
+    round, so a callback can never recurse into itself."""
+    global _MUTATION_DELIVERY_ACTIVE
+    if _MUTATION_DELIVERY_ACTIVE:
+        return
+    _MUTATION_DELIVERY_ACTIVE = True
+    try:
+        while True:
+            pending = [observer for observer in list(MutationObserver._all_observers) if observer._records]
+            if not pending:
+                return
+            for observer in pending:
+                observer._deliver()
+    finally:
+        _MUTATION_DELIVERY_ACTIVE = False
 
 
 _observer_processing: bool = False
@@ -1591,6 +1678,10 @@ def _is_control_valid(control: "Element") -> bool:
 class Node(EventTarget):
     """An abstract base class upon which many other DOM API objects are based"""
 
+    # The tag name. Concrete tags set it as a class attribute; ``__init__``
+    # gives every other node "" (declared here so type checkers see it).
+    name: str
+
     ELEMENT_NODE: int = 1
     TEXT_NODE: int = 3
     CDATA_SECTION_NODE: int = 4
@@ -1647,42 +1738,26 @@ class Node(EventTarget):
         else:
             self.__dict__["args"] = _coerce_insertion_nodes(*args)
 
+        state = self.__dict__
         # ``kwargs`` -- attributes get a leading underscore; build the dict once
         if kwargs:
-            self.kwargs = {(k if k[:1] == "_" else "_" + k): v for k, v in kwargs.items()}
+            state["kwargs"] = {(k if k[:1] == "_" else "_" + k): v for k, v in kwargs.items()}
         else:
-            self.kwargs = {}
+            state["kwargs"] = {}
 
         nm = getattr(self, "name", None)
         if nm is None:
-            self.name = ""
+            state["name"] = ""
 
-        self._baseURI: str = ""
-        self.isConnected: bool = True
-        self.namespaceURI: str = "http://www.w3.org/1999/xhtml"
-        self.outerText = None
-        self._ownerDocument = None
-        self.parentNode = None
-        self.prefix = None  # 🗑️
-        # whether this node belongs to an HTML document -- gates tagName /
-        # nodeName upper-casing (see the property). Programmatic construction
-        # (this path) is not associated with any document, so it defaults
-        # False; the HTML-producing parser adapters set it True on every node
-        # they build (see ``_rawdom.py`` / ``lxml_dom.py``). expat/XML parsing
-        # goes through this same __init__, so it stays False without any
-        # special-casing there.
-        self._html_doc = False
-        self._escape_text_on_render = False
-        # Attribute values are always escaped on serialization: emitting a raw
-        # ``"`` / ``&`` / ``<`` inside a quoted value produces malformed markup
-        # that corrupts on the next parse (e.g. Parsoid ``data-mw='{...}'`` JSON
-        # spilling into page text). Parser-built elements already force this on;
-        # programmatically built ones (constructors, ``createElement``) need the
-        # same default. Set to ``False`` on an individual node to opt out.
-        self._escape_attributes_on_render = True
+        # Plain per-node state, written in one go. Going through the
+        # ``__setattr__`` hook (which only cares about ``args``) cost eleven
+        # extra calls per node, on every programmatically built node. The
+        # parser adapters write these same fields directly too
+        # (``ext/_rawdom._NODE_STATE_DEFAULTS``); keep the two lists in step.
+        state.update(_NODE_INIT_STATE)
         # self.baseURIObject = None  # ?
         # self.nodePrincipal = None
-        if self.__dict__["args"]:
+        if state["args"]:
             self._update_parents()
 
         # namespaceURI from the tag name -- ``parentNode`` is always None during
@@ -1900,6 +1975,13 @@ class Node(EventTarget):
                     doctype = value.doctype
                     if doctype is not None and not any(child is doctype for child in value.args):
                         yield str(doctype)
+                    if not value.name:
+                        # A document node has no tag of its own (``HTMLDocument``
+                        # is the html element and does): serialise its children.
+                        args = value.args
+                        for i in range(len(args) - 1, -1, -1):
+                            stack.append((False, args[i]))
+                        continue
                 name = value.name
                 yield f"<{name}{value.__attributes__}>"
                 if name in rawtext:
@@ -2652,7 +2734,18 @@ class Node(EventTarget):
 
     def removeChild(self, node: Any) -> Any:
         """removes a child node from the DOM and returns the removed node."""
-        for count, each in enumerate(self.args):
+        args = self.args
+        if not args:
+            return None
+        # Removing the last or the first child is the common loop shape
+        # (``removeChild(lastChild)``, ``removeChild(firstChild)``); find those
+        # by identity without scanning, which was O(n) per call from the back.
+        if type(node) is not str:
+            if args[-1] is node:
+                return self._remove_child_at(len(args) - 1)
+            if args[0] is node:
+                return self._remove_child_at(0)
+        for count, each in enumerate(args):
             if type(each) == str:
                 if each != node:
                     continue
@@ -2666,28 +2759,28 @@ class Node(EventTarget):
                 return each
 
             if each is node:
-                n = node
-                args = self.args
-                previous_sibling = args[count - 1] if count > 0 else None
-                next_sibling = args[count + 1] if count + 1 < len(args) else None
-                _disconnect_tree(n)
-                n.parentNode = None
-                replace_args = list(self.args)
-                replace_args.pop(count)
-                self.__dict__["args"] = tuple(replace_args)
-                _drop_child_caches(self)
-                _queue_mutation_record(
-                    "childList",
-                    self,
-                    removed_nodes=(n,),
-                    previous_sibling=previous_sibling,
-                    next_sibling=next_sibling,
-                )
-                _notify_slot_change(self)
-
-                return n
+                return self._remove_child_at(count)
 
         return None
+
+    def _remove_child_at(self, count: int) -> "Node":
+        args = self.args
+        n = args[count]
+        previous_sibling = args[count - 1] if count > 0 else None
+        next_sibling = args[count + 1] if count + 1 < len(args) else None
+        _disconnect_tree(n)
+        n.parentNode = None
+        self.__dict__["args"] = args[:count] + args[count + 1 :]
+        _drop_child_caches(self)
+        _queue_mutation_record(
+            "childList",
+            self,
+            removed_nodes=(n,),
+            previous_sibling=previous_sibling,
+            next_sibling=next_sibling,
+        )
+        _notify_slot_change(self)
+        return n
 
     def replaceChild(self, newChild: "Node", oldChild: "Node") -> "Node":
         """Replaces a child node within the given (parent) node.
@@ -4864,8 +4957,10 @@ class Element(Node):
         # as unvisited, as a fresh private browsing context would, instead of
         # guessing at :visited state (which browsers deliberately restrict).
         if pseudo == "link":
+            # https://html.spec.whatwg.org/#selector-link: an a, area or link
+            # element with an href attribute, whatever its value (even empty)
             tag_name = (getattr(element, "tagName", "") or "").lower()
-            return tag_name in ("a", "area") and bool(element.getAttribute("href"))
+            return tag_name in ("a", "area", "link") and element.hasAttribute("href")
         if pseudo == "visited":
             return False
 
@@ -7882,7 +7977,14 @@ class Document(Element):
             self += el
 
     def close(self):
-        """Closes the output stream previously opened with document.open()"""
+        """Finish the parse started by ``open()`` / ``write()``
+        (https://html.spec.whatwg.org/#dom-document-close): elements still open
+        are closed, ``readyState`` moves through ``"interactive"`` and
+        ``"complete"``, and ``DOMContentLoaded`` then ``load`` fire."""
+        session = self.__dict__.get("_parser_session")
+        if session is not None and not session.closed:
+            session.close()
+            self._finish_loading()
         self._open_filename = None
 
     @property
@@ -7908,12 +8010,15 @@ class Document(Element):
     @property
     def charset(self):
         """Returns the character encoding for the document. Deprecated: Use characterSet instead."""
-        return "UTF-8"
+        return self.characterSet
 
     @property
     def characterSet(self):
-        """Returns the character encoding for the document"""
-        return "UTF-8"
+        """The encoding the document was decoded from
+        (https://html.spec.whatwg.org/#dom-document-characterset): what the
+        byte order mark, the transport or the page's ``<meta charset>``
+        declared when it arrived as bytes, else ``"UTF-8"``."""
+        return self.__dict__.get("_characterSet", "UTF-8")
 
     @property
     def inputEncoding(self):
@@ -8507,13 +8612,52 @@ class Document(Element):
         self._update_parents()
         return
 
-    def open(self, index="index.html"):
-        """Opens an HTML output stream to collect output from document.write()"""
+    def open(self, index=None, *args, **kwargs):
+        """Start a new parse (https://html.spec.whatwg.org/#dom-document-open):
+        the document is emptied, ``readyState`` becomes ``"loading"``, and markup
+        passed to ``write()`` is parsed into it incrementally until ``close()``.
+        A call while a parse is already open changes nothing.
+
+        ``index`` is a domonic extension: a file path that also receives
+        everything written.
+        """
+        session = self.__dict__.get("_parser_session")
+        if session is not None and not session.closed:
+            return self
         self._open_filename = index
-        if not os.path.exists(index):
+        if index is not None and not os.path.exists(index):
             open(index, "w").close()
-        else:
-            print("File already exists")
+        from domonic._document_parser import DocumentParserSession
+
+        self.replaceChildren()
+        self.__dict__["kwargs"] = {}  # an HTMLDocument is its own <html> element; its attributes go too
+        self.__dict__.pop("documentElement", None)
+        self.doctype = None
+        self.__dict__["_parser_session"] = DocumentParserSession(self)
+        self._set_ready_state("loading")
+        return self
+
+    def _set_ready_state(self, state: str) -> None:
+        if self.__dict__.get("_readyState") == state:
+            return
+        self.__dict__["_readyState"] = state
+        self.dispatchEvent(Event("readystatechange"))
+
+    def _finish_loading(self) -> None:
+        """The end of a parse (https://html.spec.whatwg.org/#the-end):
+        ``interactive``, ``DOMContentLoaded``, ``complete``, then ``load`` on
+        the window."""
+        from domonic.events import DOMContentLoadedEvent
+
+        self._set_ready_state("interactive")
+        self.dispatchEvent(
+            DOMContentLoadedEvent("DOMContentLoaded", {"bubbles": True, "cancelable": False, "document": self})
+        )
+        self._set_ready_state("complete")
+        view = getattr(self, "defaultView", None)
+        dispatch = getattr(view, "dispatchEvent", None)
+        if callable(dispatch):
+            dispatch(Event("load"))
 
     # def readyState(self):
     # ''' Returns the (loading) status of the document'''
@@ -8610,21 +8754,24 @@ class Document(Element):
         """Returns the visibility state of the document"""
         return "visible"
 
-    def write(self, html: str = ""):
-        """Writes HTML text to a document.
+    def write(self, html: Any = ""):
+        """Parse ``html`` into the document (https://html.spec.whatwg.org/#dom-document-write).
 
-        Args:
-            html (str, optional): The content to write to the document.
+        Text or UTF-8 bytes, in chunks of any size. Without an ``open()`` first
+        the document is opened (and so emptied) for you, as in a browser.
+        Everything written accumulates until ``close()``; between writes the
+        document is live.
         """
-        html = str(html)
+        session = self.__dict__.get("_parser_session")
+        if session is None or session.closed:
+            self.open(self._open_filename)
+            session = self.__dict__["_parser_session"]
         current_open_filename = self._open_filename
         if current_open_filename is not None:
-            # open the file and APPEND the html to the file without losing the previous content
+            text = html.decode("utf-8", "replace") if isinstance(html, (bytes, bytearray)) else str(html)
             with open(current_open_filename, "a") as f:
-                f.write(html)
-        content = DocumentFragment(html)
-        self.__init__(content)  # type: ignore[misc]
-        self._open_filename = current_open_filename
+                f.write(text)
+        session.write(html)
 
     def writeln(self, html: str = ""):
         """Writes HTML text to a document, followed by a line break.
@@ -9420,6 +9567,10 @@ class MutationObserver:
         return True
 
     def _flush(self) -> None:
+        if self._records:
+            _deliver_mutation_records()
+
+    def _deliver(self) -> None:
         if not self._records:
             return
         records = self.takeRecords()

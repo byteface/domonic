@@ -17,6 +17,8 @@ as ``domonic.scrape`` and ``from domonic import scrape``.
 
 from __future__ import annotations
 
+import re
+
 from typing import Any
 from urllib.parse import urljoin, urlparse
 
@@ -219,6 +221,16 @@ def _load_external_stylesheets(
             _replace_stylesheet_rules(sheet, css_text)
 
 
+def _charset_from_headers(response: Any) -> str | None:
+    headers = getattr(response, "headers", None)
+    getter = getattr(headers, "get", None)
+    content_type = getter("content-type") if callable(getter) else None
+    if not content_type:
+        return None
+    match = re.search(r"charset\s*=\s*[\"']?([A-Za-z0-9_.:-]+)", str(content_type), re.I)
+    return match.group(1) if match else None
+
+
 def _parse(
     response: Any,
     parser: str | None,
@@ -230,7 +242,13 @@ def _parse(
 ) -> Any:
     from domonic import domonic
 
-    document = domonic.parseString(response.text(), parser=parser, document=True)
+    raw = response.bytes() if callable(getattr(response, "bytes", None)) else None
+    if isinstance(raw, (bytes, bytearray, memoryview)):
+        document = domonic.parseString(
+            bytes(raw), parser=parser, document=True, encoding=_charset_from_headers(response)
+        )
+    else:
+        document = domonic.parseString(response.text(), parser=parser, document=True)
     document.URL = getattr(response, "url", "") or getattr(document, "URL", "")
     if css:
         _load_external_stylesheets(document, source_request, request_kwargs)

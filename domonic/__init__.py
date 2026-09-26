@@ -1474,8 +1474,13 @@ class domonic:
         return domonic.parseString_active_parser
 
     @staticmethod
-    def parseString(string, parser=None, debug: bool = False, *, document: bool = False):
-        """Parse a file into a DOM from a string.
+    def parseString(string, parser=None, debug: bool = False, *, document: bool = False, encoding: str | None = None):
+        """Parse a DOM from markup: a ``str``, or ``bytes`` as they came off the wire.
+
+        Bytes are decoded the way a browser decodes a page: a byte order mark
+        first, then ``encoding`` (the transport's charset, e.g. from the HTTP
+        header), then the page's own ``<meta charset>``; failing all of those,
+        valid UTF-8 is UTF-8 and anything else is windows-1252.
 
         With ``parser="auto"`` (the default) the fastest installed backend that
         can parse the input is used, falling back through the pure-Python
@@ -1490,10 +1495,20 @@ class domonic:
         ``parser`` may name a backend registered with
         :meth:`register_parser`; it is called as ``parser(source, **options)``.
         """
+        character_set = None
+        if isinstance(string, (bytes, bytearray, memoryview)):
+            from domonic.ext._encoding import decode_html, whatwg_name
+
+            string, used = decode_html(bytes(string), encoding)
+            character_set = whatwg_name(used)
         parser_was_explicit = parser is not None
         parser = (parser or domonic.DEFAULT_PARSER or "auto").lower()
 
         def _upgrade_custom_elements(page):
+            if character_set is not None:  # bytes came in: the document remembers what decoded them
+                target = page if isinstance(page, dom.Document) else getattr(page, "ownerDocument", None)
+                if isinstance(target, dom.Document):
+                    target.__dict__["_characterSet"] = character_set
             try:
                 from domonic.window import window as domonic_window
 

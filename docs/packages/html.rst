@@ -732,6 +732,12 @@ You can also choose a parser directly through ``domonic.parseString()``:
     print(page.text)
     # Hello World!
 
+Bytes are fine too, straight from a response: ``parseString(response.content)``
+decodes them the way a browser would, from the byte order mark, an
+``encoding=`` hint (the HTTP charset) or the page's own ``<meta charset>``, so
+accents and non-Latin text come through intact. ``document.characterSet``
+reports what was used.
+
 When markup has a single root element, ``parseString`` returns that element
 itself (here, the ``<p>``) rather than a document wrapping it, so query it
 directly -- ``querySelector`` and friends only search *descendants*, not the

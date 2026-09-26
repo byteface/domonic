@@ -77,6 +77,35 @@ def _link_response(method, url, **kwargs):
 
 
 class TestScrape(unittest.TestCase):
+    def test_non_utf8_pages_are_decoded_like_a_browser(self):
+        def declared_by_page(method, url, **kwargs):
+            return SimpleNamespace(
+                url=url,
+                status_code=200,
+                reason="OK",
+                headers={"Content-Type": "text/html"},
+                content=b'<html><head><meta charset="windows-1252"></head><body><h1>caf\xe9</h1></body></html>',
+                history=[],
+            )
+
+        def declared_by_header(method, url, **kwargs):
+            return SimpleNamespace(
+                url=url,
+                status_code=200,
+                reason="OK",
+                headers={"Content-Type": "text/html; charset=iso-8859-1"},
+                content=b"<html><body><h1>caf\xe9</h1></body></html>",
+                history=[],
+            )
+
+        with patch("requests.request", side_effect=declared_by_page):
+            dom = scrape("https://example.com")
+        self.assertEqual(dom.querySelector("h1").textContent, "caf\u00e9")
+        self.assertEqual(dom.characterSet, "windows-1252")
+        with patch("requests.request", side_effect=declared_by_header):
+            dom = scrape("https://example.com")
+        self.assertEqual(dom.querySelector("h1").textContent, "caf\u00e9")
+
     def test_single_url_returns_dom(self):
         with patch("requests.request", side_effect=_html_response):
             dom = scrape("https://example.com")

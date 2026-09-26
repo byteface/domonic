@@ -139,3 +139,37 @@ def test_inactive_observers_are_collectable(observe_first):
     del instance
     gc.collect()
     assert reference() is None
+
+
+def test_records_queued_inside_a_callback_are_delivered_after_it_returns():
+    # https://dom.spec.whatwg.org/#notify-mutation-observers: a callback that
+    # mutates the tree queues records for a later delivery, never a nested one.
+    from domonic.dom import MutationObserver
+    from domonic.html import div, span
+
+    container = div(span("a"), span("b"), span("c"))
+    depth = 0
+    deepest = 0
+    deliveries = []
+
+    def callback(records, observer):
+        nonlocal depth, deepest
+        depth += 1
+        deepest = max(deepest, depth)
+        deliveries.append([(record.type, len(record.addedNodes), len(record.removedNodes)) for record in records])
+        for record in records:
+            for node in record.addedNodes:  # remove the sibling after each added node
+                following = node.nextSibling
+                if following is not None:
+                    following.remove()
+        depth -= 1
+
+    observer = MutationObserver(callback)
+    observer.observe(container, {"childList": True})
+    try:
+        container.insertBefore(span("new"), container.args[1])
+    finally:
+        observer.disconnect()
+    assert deepest == 1
+    assert deliveries == [[("childList", 1, 0)], [("childList", 0, 1)]]
+    assert [child.textContent for child in container.args] == ["a", "new", "c"]

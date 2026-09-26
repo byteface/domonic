@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from html import unescape
 from html.parser import HTMLParser
-from typing import Any
+from typing import Any, Callable
 
 from domonic.dom import Element, Node
 from domonic.ext._rawdom import (
@@ -102,10 +102,15 @@ CLOSES_OPEN_P = {
 class DomonicHTMLParser(HTMLParser):
     """Build a domonic tree from stdlib ``HTMLParser`` callbacks."""
 
-    def __init__(self) -> None:
+    def __init__(self, root: Node | None = None) -> None:
+        """Build under a fresh fragment, or straight into ``root`` (how
+        ``document.write()`` streams a page into an existing document)."""
         super().__init__(convert_charrefs=False)
-        self.root = _create_fragment_raw()
+        self.root = _create_fragment_raw() if root is None else root
         self.stack: list[Node] = [self.root]
+        # The insertion primitive. A streaming session swaps in one that also
+        # records what landed, for MutationObserver.
+        self._append: Callable[[Any, Any], None] = _live_append
         self.namespace_stack: list[str] = [HTML_NAMESPACE]
 
     @property
@@ -116,7 +121,7 @@ class DomonicHTMLParser(HTMLParser):
 
     def _open_implicit(self, tag: str) -> None:
         element = self._create_element(tag, [])
-        _live_append(self.current, element)
+        self._append(self.current, element)
         self.stack.append(element)
         self.namespace_stack.append(element.namespaceURI)
 
@@ -146,7 +151,7 @@ class DomonicHTMLParser(HTMLParser):
         elif tag in CLOSES_OPEN_P and any(getattr(node, "tagName", "").lower() == "p" for node in self.stack[1:]):
             self._close_open_element("p")
         element = self._create_element(tag, attrs)
-        _live_append(self.current, element)
+        self._append(self.current, element)
         if tag not in VOID_ELEMENTS:
             self.stack.append(element)
             self.namespace_stack.append(element.namespaceURI)
@@ -168,14 +173,14 @@ class DomonicHTMLParser(HTMLParser):
                 return
 
     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        _live_append(self.current, self._create_element(tag, attrs))
+        self._append(self.current, self._create_element(tag, attrs))
 
     def handle_data(self, data: str) -> None:
         if data:
-            _live_append(self.current, _create_text_raw(data))
+            self._append(self.current, _create_text_raw(data))
 
     def handle_comment(self, data: str) -> None:
-        _live_append(self.current, _create_comment_raw(data))
+        self._append(self.current, _create_comment_raw(data))
 
     def handle_entityref(self, name: str) -> None:
         self.handle_data(unescape(f"&{name};"))
@@ -191,7 +196,9 @@ class DomonicHTMLParser(HTMLParser):
         namespace_uri = _namespace_for_tag(tag, self.namespace_stack[-1], parent_tag, parent_encoding)
         element = _create_element_raw(tag, namespace_uri)
         for name, value in attrs:
-            _set_attribute_raw(element, name, name if value is None else value)
+            # A bare attribute (``<input disabled>``) has the empty string as
+            # its value, as in a browser and every other backend here.
+            _set_attribute_raw(element, name, "" if value is None else value)
         return element
 
 

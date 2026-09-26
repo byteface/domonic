@@ -330,6 +330,36 @@ _id="one", _class="two",
         self.assertEqual(len(html.getElementsByTagName("p")), 1)
         self.assertEqual(len(html.querySelectorAll("p")), 1)
 
+    def test_parse_string_accepts_bytes_and_decodes_them_like_a_browser(self):
+        def text(page):
+            return page.textContent if (getattr(page, "name", "") or "").lower() == "p" else page.querySelector("p").textContent
+
+        self.assertEqual(text(domonic.parseString("<p>caf\u00e9 \u2615</p>".encode("utf-8"))), "caf\u00e9 \u2615")
+        self.assertEqual(text(domonic.parseString(b'<meta charset="windows-1252"><p>caf\xe9</p>')), "caf\u00e9")
+        self.assertEqual(
+            text(
+                domonic.parseString(
+                    b'<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><p>caf\xe9</p>'
+                )
+            ),
+            "caf\u00e9",
+        )
+        self.assertEqual(text(domonic.parseString("\ufeff<p>caf\u00e9</p>".encode("utf-8"))), "caf\u00e9")
+        self.assertEqual(text(domonic.parseString("<p>caf\u00e9</p>".encode("utf-16"))), "caf\u00e9")
+        self.assertEqual(text(domonic.parseString(b"<p>caf\xe9</p>")), "caf\u00e9")  # not UTF-8, so windows-1252
+        # the transport's charset outranks the page's own claim, as in a browser
+        self.assertEqual(text(domonic.parseString(b'<meta charset="utf-8"><p>caf\xe9</p>', encoding="latin1")), "caf\u00e9")
+        page = domonic.parseString(
+            '<!doctype html><html><head><meta charset="shift_jis"></head><body><p>\u65e5\u672c</p></body></html>'.encode(
+                "shift_jis"
+            ),
+            parser="html5lib",
+        )
+        self.assertEqual(page.querySelector("p").textContent, "\u65e5\u672c")
+        self.assertEqual(page.characterSet, "Shift_JIS")
+        whole = "<!doctype html><html><body><p>x</p></body></html>"
+        self.assertEqual(domonic.parseString(whole, parser="html5lib").characterSet, "UTF-8")
+
     def test_parse_string_reports_active_parser(self):
         domonic.parseString("<p>x</p>", parser="html.parser")
         self.assertEqual(domonic.get_active_parser(), "html.parser")
@@ -549,7 +579,9 @@ _id="one", _class="two",
 
         self.assertEqual(page.getAttribute("id"), "name")
         self.assertEqual(page.getAttribute("class"), "field")
-        self.assertTrue(page.getAttribute("disabled"))
+        # a bare attribute is present with the empty string as its value (as in a browser)
+        self.assertTrue(page.hasAttribute("disabled"))
+        self.assertEqual(page.getAttribute("disabled"), "")
         self.assertEqual(str(page), '<input id="name" class="field" disabled/>')
 
     def test_parse_string_with_stdlib_html_parser_self_closing_and_void(self):
@@ -559,9 +591,8 @@ _id="one", _class="two",
         )
 
         self.assertEqual(page.querySelector("img").getAttribute("src"), "x.png")
-        self.assertEqual(
-            page.querySelector("input").getAttribute("disabled"), "disabled"
-        )
+        self.assertEqual(page.querySelector("input").getAttribute("disabled"), "")
+        self.assertTrue(page.querySelector("input").hasAttribute("disabled"))
         self.assertIn("<br/>", str(page))
 
     def test_parse_string_with_stdlib_html_parser_fragments(self):

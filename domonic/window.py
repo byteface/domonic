@@ -1295,7 +1295,14 @@ class Window(JavaScriptWindow, EventTarget):
         self._status = "" if value is None else str(value)
 
     def stop(self):
+        """Stop loading (https://html.spec.whatwg.org/#dom-window-stop): a
+        parse in progress via ``document.write()`` ignores further input;
+        ``document.close()`` still finalises what has landed."""
         self._stopped = True
+        document = getattr(self, "_document", None)
+        session = document.__dict__.get("_parser_session") if document is not None else None
+        if session is not None:
+            session.abort()
         return None
 
 
