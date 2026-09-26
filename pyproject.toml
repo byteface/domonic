@@ -107,6 +107,7 @@ files = [
     "domonic/webapi/messaging.py",
     "domonic/webapi/netinfo.py",
     "domonic/webapi/notifications.py",
+    "domonic/webapi/performance.py",
     "domonic/webapi/permissions.py",
     "domonic/webapi/push.py",
     "domonic/webapi/sanitizer.py",

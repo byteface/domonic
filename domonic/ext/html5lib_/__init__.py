@@ -45,6 +45,8 @@ from domonic.ext._rawdom import (
     _create_comment_raw,
     _create_element_raw,
     _create_text_raw,
+    _freeze,
+    _live_args,
 )
 
 
@@ -55,27 +57,35 @@ def _raw_detach(child):
     old_parent = child.__dict__.get("parentNode")
     if old_parent is None:
         return
-    args = old_parent.__dict__.get("args") or ()
-    old_parent.__dict__["args"] = tuple(node for node in args if node is not child)
+    args = _live_args(old_parent)
+    # Identity, not ``==``: a detach nearly always targets a recent child, so
+    # scan from the end.
+    for index in range(len(args) - 1, -1, -1):
+        if args[index] is child:
+            del args[index]
+            break
 
 
 def _raw_append(parent, child):
     _raw_detach(child)
-    parent.__dict__["args"] = (parent.__dict__.get("args") or ()) + (child,)
+    _live_args(parent).append(child)
     child.__dict__["parentNode"] = parent
 
 
 def _raw_insert_before(parent, child, ref):
     _raw_detach(child)
-    args = parent.__dict__.get("args") or ()
+    args = _live_args(parent)
     index = next((i for i, node in enumerate(args) if node is ref), len(args))
-    parent.__dict__["args"] = args[:index] + (child,) + args[index:]
+    args.insert(index, child)
     child.__dict__["parentNode"] = parent
 
 
 def _raw_remove(parent, child):
-    args = parent.__dict__.get("args") or ()
-    parent.__dict__["args"] = tuple(node for node in args if node is not child)
+    args = _live_args(parent)
+    for index in range(len(args) - 1, -1, -1):
+        if args[index] is child:
+            del args[index]
+            break
     child.__dict__["parentNode"] = None
 
 
@@ -84,11 +94,6 @@ SVG_TAGS = frozenset(import_module("domonic.svg").svg_tags) - HTML_TAGS
 MATHML_TAGS = frozenset(import_module("domonic.xml.mathml").mathml_tags)
 SVG_TAG_NAMES = frozenset(tag.lower() for tag in SVG_TAGS)
 MATHML_TAG_NAMES = frozenset(tag.lower() for tag in MATHML_TAGS)
-
-# from . import base
-# from .. import constants
-# from ..constants import namespaces
-# from .._utils import moduleFactoryFactory
 
 
 # def getDomBuilder(DomImplementation):
@@ -183,10 +188,9 @@ def getDomBuilder(ignore: object):
 
         def reparentChildren(self, newParent):
             target = newParent.element
-            moved = self.element.__dict__.get("args") or ()
-            self.element.__dict__["args"] = ()
-            existing = target.__dict__.get("args") or ()
-            target.__dict__["args"] = existing + tuple(moved)
+            moved = _live_args(self.element)
+            self.element.__dict__["args"] = []
+            _live_args(target).extend(moved)
             for child in moved:
                 child.__dict__["parentNode"] = target
             self.childNodes = []
@@ -263,10 +267,13 @@ def getDomBuilder(ignore: object):
             return testSerializer(element)
 
         def getDocument(self):
+            _freeze(self.dom)
             return self.dom
 
         def getFragment(self):
-            return base.TreeBuilder.getFragment(self).element
+            fragment = base.TreeBuilder.getFragment(self).element
+            _freeze(fragment)
+            return fragment
 
         def insertText(self, data, parent=None):
             data = data

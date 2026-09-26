@@ -6,7 +6,7 @@ Python DOM, HTML, SVG, XML, Web API, and JavaScript-like runtime toolkit.
 
 """
 
-__version__ = "1.8.4"
+__version__ = "1.8.5"
 __license__ = "MIT"
 __author__ = "@byteface"
 
@@ -1748,9 +1748,9 @@ class domonic:
         ) + (
             ("selectolax", _parse_with_selectolax, (Exception,)),
             ("turbohtml", _parse_with_turbohtml, (Exception,)),
+            ("markupever", _parse_with_markupever, (Exception,)),
             ("lxml_html", _parse_with_lxml_html, (Exception,)),
             ("html5_parser", _parse_with_html5_parser, (Exception,)),
-            ("markupever", _parse_with_markupever, (Exception,)),
             ("html.parser", _parse_with_html_parser, (Exception,)),
             ("justhtml", _parse_with_justhtml, (Exception,)),
             ("html5lib", _parse_with_html5lib, (Exception,)),

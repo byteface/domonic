@@ -58,6 +58,120 @@ class TestHTMLRendering(unittest.TestCase):
                 self.assertEqual(str(factory()), f"<{factory.name}/>")
 
 
+class TestTagClassWiring(unittest.TestCase):
+    """Every tag must build the ``HTML<Tag>Element`` class dom.py defines for it,
+    whichever way the element is made."""
+
+    def test_every_tag_uses_its_dom_element_class(self):
+        # Regression: details / summary / isindex were left on bare Element,
+        # so parsed <details> had no .open / .toggle() at all.
+        import inspect
+        import re
+        import sys
+
+        from domonic import dom
+
+        html_module = sys.modules["domonic.html"]
+        classes = {
+            name.lower(): cls
+            for name, cls in inspect.getmembers(dom, inspect.isclass)
+            if re.fullmatch(r"HTML[A-Za-z]+Element", name) and issubclass(cls, dom.Element)
+        }
+        wrong = []
+        for tag in html_module.html_tags:
+            expected = classes.get(f"html{tag}element")
+            tag_class = getattr(html_module, tag, None)
+            if expected is not None and isinstance(tag_class, type) and not issubclass(tag_class, expected):
+                wrong.append((tag, tag_class.__mro__[1].__name__, expected.__name__))
+        self.assertEqual(wrong, [])
+
+    # The HTML Standard's element-interface table, for every tag domonic
+    # declares. A tag may sit on a subclass of the listed interface.
+    SPEC_INTERFACES = {
+        "a": "HTMLAnchorElement", "area": "HTMLAreaElement", "audio": "HTMLAudioElement", "base": "HTMLBaseElement",
+        "blockquote": "HTMLQuoteElement", "body": "HTMLBodyElement", "br": "HTMLBRElement", "button": "HTMLButtonElement",
+        "canvas": "HTMLCanvasElement", "caption": "HTMLTableCaptionElement", "col": "HTMLTableColElement",
+        "colgroup": "HTMLTableColElement", "data": "HTMLDataElement", "datalist": "HTMLDataListElement",
+        "del_": "HTMLModElement", "details": "HTMLDetailsElement", "dialog": "HTMLDialogElement", "div": "HTMLDivElement",
+        "dl": "HTMLDListElement", "embed": "HTMLEmbedElement", "fieldset": "HTMLFieldSetElement", "form": "HTMLFormElement",
+        "h1": "HTMLHeadingElement", "h2": "HTMLHeadingElement", "h3": "HTMLHeadingElement", "h4": "HTMLHeadingElement",
+        "h5": "HTMLHeadingElement", "h6": "HTMLHeadingElement", "head": "HTMLHeadElement", "hr": "HTMLHRElement",
+        "iframe": "HTMLIFrameElement", "img": "HTMLImageElement", "input": "HTMLInputElement", "ins": "HTMLModElement",
+        "label": "HTMLLabelElement", "legend": "HTMLLegendElement", "li": "HTMLLIElement", "link": "HTMLLinkElement",
+        "map": "HTMLMapElement", "menu": "HTMLMenuElement", "meta": "HTMLMetaElement", "meter": "HTMLMeterElement",
+        "object": "HTMLObjectElement", "ol": "HTMLOListElement", "optgroup": "HTMLOptGroupElement",
+        "option": "HTMLOptionElement", "output": "HTMLOutputElement", "p": "HTMLParagraphElement",
+        "picture": "HTMLPictureElement", "pre": "HTMLPreElement", "progress": "HTMLProgressElement", "q": "HTMLQuoteElement",
+        "script": "HTMLScriptElement", "select": "HTMLSelectElement", "slot": "HTMLSlotElement", "source": "HTMLSourceElement",
+        "span": "HTMLSpanElement", "style": "HTMLStyleElement", "summary": "HTMLSummaryElement", "table": "HTMLTableElement",
+        "tbody": "HTMLTableSectionElement", "td": "HTMLTableCellElement", "template": "HTMLTemplateElement",
+        "textarea": "HTMLTextAreaElement", "tfoot": "HTMLTableSectionElement", "th": "HTMLTableCellElement",
+        "thead": "HTMLTableSectionElement", "time": "HTMLTimeElement", "title": "HTMLTitleElement", "tr": "HTMLTableRowElement",
+        "track": "HTMLTrackElement", "ul": "HTMLUListElement", "video": "HTMLVideoElement", "applet": "HTMLUnknownElement",
+    }
+    # Everything else the standard defines is a plain HTMLElement.
+    PLAIN_HTML_ELEMENTS = (
+        "abbr address article aside b bdi bdo cite code dd dfn dt em figcaption figure footer header hgroup i kbd main "
+        "mark nav noscript rp rt ruby s samp search section small strong sub sup u var wbr center strike noframes "
+        "plaintext xmp listing font frame dir menuitem"
+    ).split()
+
+    def test_tags_use_the_interface_the_standard_names(self):
+        import sys
+
+        from domonic import dom
+
+        html_module = sys.modules["domonic.html"]
+        wrong = []
+        for tag, interface in list(self.SPEC_INTERFACES.items()) + [(t, "HTMLElement") for t in self.PLAIN_HTML_ELEMENTS]:
+            tag_class = getattr(html_module, tag)
+            if not issubclass(tag_class, getattr(dom, interface)):
+                wrong.append((tag, tag_class.__mro__[1].__name__, interface))
+        self.assertEqual(wrong, [])
+
+    def test_unknown_and_custom_tags_get_the_standard_base(self):
+        from domonic import domonic
+        from domonic.dom import HTMLElement, HTMLUnknownElement, document
+
+        self.assertIsInstance(document.createElement("foo"), HTMLUnknownElement)
+        custom = document.createElement("my-el")
+        self.assertIsInstance(custom, HTMLElement)
+        self.assertNotIsInstance(custom, HTMLUnknownElement)
+        parsed = domonic.parseString("<html><body><foo></foo><my-el></my-el></body></html>", parser="html.parser")
+        self.assertIsInstance(parsed.querySelector("foo"), HTMLUnknownElement)
+        self.assertIsInstance(parsed.querySelector("my-el"), HTMLElement)
+        self.assertNotIsInstance(parsed.querySelector("my-el"), HTMLUnknownElement)
+        self.assertEqual(str(parsed.querySelector("my-el")), "<my-el></my-el>")
+        # what the rebase actually buys: HTMLElement's API on every HTML tag
+        page = domonic.parseString("<html><body><section popover>x</section></body></html>", parser="html.parser")
+        page.querySelector("section").showPopover()
+        # popover is an enumerated attribute: state, not raw value
+        self.assertIsNone(section().popover)
+        self.assertEqual(section(_popover="").popover, "auto")
+        self.assertEqual(section(_popover="AUTO").popover, "auto")
+        self.assertEqual(section(_popover="hint").popover, "hint")
+        self.assertEqual(section(_popover="bogus").popover, "manual")
+
+    def test_details_element_behaves_however_it_is_made(self):
+        from domonic import domonic
+        from domonic.dom import HTMLDetailsElement, HTMLSummaryElement, document
+
+        parsed = domonic.parseString(
+            "<html><body><details open><summary>s</summary>x</details></body></html>", parser="html.parser"
+        )
+        element = parsed.querySelector("details")
+        self.assertIsInstance(element, HTMLDetailsElement)
+        self.assertIsInstance(parsed.querySelector("summary"), HTMLSummaryElement)
+        self.assertTrue(element.open)
+        self.assertFalse(element.toggle())
+        self.assertFalse(element.hasAttribute("open"))
+
+        created = document.createElement("details")
+        self.assertIsInstance(created, HTMLDetailsElement)
+        self.assertFalse(created.open)
+        self.assertIsInstance(details(summary("s")), HTMLDetailsElement)
+
+
 class TestHTML(unittest.TestCase):
     def test_every_tag(self):
         assert str(html()) == "<html></html>"

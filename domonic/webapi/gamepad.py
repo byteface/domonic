@@ -6,10 +6,10 @@ https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API
 
 from __future__ import annotations
 
-import time
 from typing import Any
 
 from domonic.events import EventTarget, GamePadEvent
+from domonic.webapi.performance import now as _performance_now
 
 
 def _create_promise():
@@ -79,7 +79,7 @@ class Gamepad:
         self.connected = bool(connected)
         self.axes = [float(axis) for axis in (axes or [])]
         self.buttons = [self._coerce_button(button) for button in (buttons or [])]
-        self.timestamp = time.perf_counter() * 1000
+        self.timestamp = _performance_now()
         self.vibrationActuator = GamepadHapticActuator()
 
     @staticmethod
@@ -104,7 +104,7 @@ class Gamepad:
             self.axes = [float(axis) for axis in axes]
         if buttons is not None:
             self.buttons = [self._coerce_button(button) for button in buttons]
-        self.timestamp = time.perf_counter() * 1000
+        self.timestamp = _performance_now()
         return self
 
     def toJSON(self) -> dict[str, Any]:
@@ -139,7 +139,7 @@ class GamepadManager(EventTarget):
         if index is not None:
             gamepad.index = int(index)
         gamepad.connected = True
-        gamepad.timestamp = time.perf_counter() * 1000
+        gamepad.timestamp = _performance_now()
         self._gamepads[gamepad.index] = gamepad
         self._dispatch(GamePadEvent.START, gamepad)
         return gamepad
@@ -150,7 +150,7 @@ class GamepadManager(EventTarget):
         if stored is None:
             return None
         stored.connected = False
-        stored.timestamp = time.perf_counter() * 1000
+        stored.timestamp = _performance_now()
         self._dispatch(GamePadEvent.STOP, stored)
         return stored
 

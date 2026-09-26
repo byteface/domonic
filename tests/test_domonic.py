@@ -268,7 +268,7 @@ _id="one", _class="two",
         # Whitespace between inline elements is significant (Markdown converters
         # such as turndown rely on it). Every backend must keep it.
         parsers = ["html5lib", "html.parser", "lxml", "selectolax", "turbohtml",
-                   "justhtml"]
+                   "justhtml", "markupever"]
         for parser in parsers:
             with self.subTest(parser=parser):
                 try:
@@ -284,6 +284,51 @@ _id="one", _class="two",
                 )
                 self.assertEqual(node.textContent, "x y")
                 self.assertIn("</b> <i>", str(node))
+
+    def test_html5lib_builder_hands_back_tuple_children(self):
+        # html5lib builds with mutable child lists (a tuple append per child
+        # was O(n^2) for wide parents). Every list must be a tuple again by the
+        # time the tree is handed back, including after adoption-agency
+        # reparenting, foster parenting and the fragment path.
+        markup = "<b><p>x</b>y</p><table><div>foster</div><tr><td>1</td></tr></table>" + "<i>s</i>" * 3
+        for source in (f"<!doctype html><html><body>{markup}</body></html>", markup):
+            with self.subTest(source=source[:20]):
+                page = domonic.parseString(source, parser="html5lib")
+                stack, seen = [page], 0
+                while stack:
+                    node = stack.pop()
+                    args = node.__dict__.get("args", ())
+                    self.assertIs(type(args), tuple, type(node).__name__)
+                    seen += 1
+                    stack.extend(child for child in args if not isinstance(child, str))
+                self.assertGreater(seen, 10)
+                self.assertEqual(page.querySelector("td").textContent, "1")
+                self.assertEqual(len(page.querySelectorAll("i")), 3)
+                self.assertIsNone(page.querySelector("table div"))
+                self.assertEqual(page.querySelector("div").textContent, "foster")
+
+    def test_html_parser_partial_tree_is_live_and_lookups_recover_after_invalidation(self):
+        # Streaming prerequisite. The stdlib adapter's tree is complete up to
+        # the last token fed, and ``_invalidate_indexes`` is what a checkpoint
+        # must call so an id / tag lookup cached against the partial tree does
+        # not keep answering from that snapshot once more markup lands.
+        from domonic.ext._rawdom import _invalidate_indexes
+        from domonic.ext.html_parser_ import DomonicHTMLParser
+
+        parser = DomonicHTMLParser()
+        parser.feed("<html><head><title>t</title><script src=a.js></script></head><body><div id=x>")
+        html = parser.root.childNodes[0]
+        self.assertEqual([s.getAttribute("src") for s in html.querySelectorAll("script")], ["a.js"])
+        self.assertEqual(html.querySelector("title").textContent, "t")
+        self.assertIsNone(html.getElementById("late"))
+        self.assertEqual(len(html.getElementsByTagName("p")), 0)
+
+        _invalidate_indexes()
+        parser.feed("<p id=late>hi</p></div></body></html>")
+        parser.close()
+        self.assertIsNotNone(html.getElementById("late"))
+        self.assertEqual(len(html.getElementsByTagName("p")), 1)
+        self.assertEqual(len(html.querySelectorAll("p")), 1)
 
     def test_parse_string_reports_active_parser(self):
         domonic.parseString("<p>x</p>", parser="html.parser")

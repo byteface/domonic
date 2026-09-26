@@ -34,8 +34,8 @@ Parser Choices
      - ``python -m pip install lxml``
      - You want a fast lxml-backed parser and direct lxml DOM adaptation.
    * - ``markupever``
-     - ``python -m pip install markupever lxml``
-     - You want fast Rust-powered HTML repair.
+     - ``python -m pip install markupever``
+     - You want fast Rust-powered HTML5 repair, adapted directly into domonic.
    * - ``html5_parser``
      - ``python -m pip install html5-parser lxml``
      - You want a native HTML5 parser adapted into domonic.
@@ -110,7 +110,7 @@ Which Backend Ran
 
 With ``parser="auto"`` (the default) the fastest installed backend that can
 parse the input is used, in the order ``selectolax``, ``turbohtml``,
-``lxml_html``, ``html5_parser``, ``markupever``, ``html.parser``, ``justhtml``,
+``markupever``, ``lxml_html``, ``html5_parser``, ``html.parser``, ``justhtml``,
 ``html5lib`` (then ``expat`` as a last resort for XML-like input). Backends
 that are not installed, or that raise on the input, are skipped silently -- so
 on a machine with only ``html5lib`` available you are always on ``html5lib``
@@ -185,16 +185,16 @@ a real tree-building backend when input HTML cannot be trusted.
 Whitespace fidelity
 -------------------
 
-``html5lib``, ``html.parser``, ``lxml_html``, ``selectolax``, ``turbohtml`` and
-``justhtml`` keep whitespace-only text nodes, so whitespace between inline
-elements (``<b>x</b> <i>y</i>``) survives the parse -- Markdown converters and
-anything that reflows inline content depend on this. ``markupever`` currently
-loses it: its adapter round-trips through the ``markupever`` serializer, which
-re-indents and drops the original whitespace nodes.
+``html5lib``, ``html.parser``, ``lxml_html``, ``selectolax``, ``turbohtml``,
+``justhtml`` and ``markupever`` keep whitespace-only text nodes, so whitespace
+between inline elements (``<b>x</b> <i>y</i>``) survives the parse -- Markdown
+converters and anything that reflows inline content depend on this.
 
 The important practical distinction is parse-only versus parse-plus-query.
 BeautifulSlop is built to win query-heavy workflows because it keeps a real
-domonic DOM and avoids a second wrapped tree.
+domonic DOM and avoids a second wrapped tree. Walking a wide parent by
+``nextSibling``, by ``children[i]``, or by index over a live
+``getElementsByTagName`` collection is linear, not quadratic.
 
 ``querySelector`` / ``querySelectorAll`` resolve descendant, child, adjacent
 (``+``) and general-sibling (``~``) combinators, classes, attribute selectors

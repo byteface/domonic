@@ -65,6 +65,9 @@ from domonic.webapi.mediasession import MediaSession
 from domonic.webapi.messaging import BroadcastChannel, MessageChannel, MessagePort
 from domonic.webapi.netinfo import NetworkInformation
 from domonic.webapi.notifications import Notification
+# ``from domonic.webapi import *`` above rebinds ``performance`` to the submodule;
+# take the singleton explicitly, as the file already does for ``console``.
+from domonic.webapi.performance import Performance, PerformanceObserverEntryList, performance
 from domonic.webapi.permissions import Permissions, PermissionStatus
 from domonic.webapi.push import PushManager, PushSubscription, PushSubscriptionOptions
 from domonic.webapi.sanitizer import Sanitizer
@@ -2064,6 +2067,86 @@ onmessage = handle
             PerformanceObserver(None)
         with self.assertRaises(TypeError):
             PerformanceObserver(lambda records, obs: None).observe({})
+
+    def test_performance_now_is_milliseconds_on_a_monotonic_origin(self):
+        import time
+
+        first = performance.now()
+        time.sleep(0.02)
+        second = performance.now()
+        self.assertGreater(second - first, 5)  # ms, not seconds
+        self.assertLess(second - first, 2000)
+        self.assertLess(second, 1e9)  # relative to the origin, not the epoch
+        # wall-clock time since the origin agrees with the monotonic reading
+        self.assertLess(abs((time.time() * 1000 - performance.timeOrigin) - performance.now()), 5000)
+        self.assertEqual(performance.toJSON(), {"timeOrigin": performance.timeOrigin})
+        self.assertIsInstance(Performance().now(), float)
+
+    def test_performance_mark_and_measure_options(self):
+        performance.clearMarks()
+        performance.clearMeasures()
+        mark = performance.mark("a", {"startTime": 10, "detail": {"k": 1}})
+        self.assertEqual((mark.startTime, mark.detail), (10.0, {"k": 1}))
+        self.assertEqual(mark.toJSON()["detail"], {"k": 1})
+        self.assertEqual(performance.measure("m1", {"start": "a", "duration": 5}).toJSON()["duration"], 5.0)
+        by_end = performance.measure("m2", {"end": 30, "duration": 10})
+        self.assertEqual((by_end.startTime, by_end.duration), (20.0, 10.0))
+        both = performance.measure("m3", "a", 12)
+        self.assertEqual((both.startTime, both.duration), (10.0, 2.0))
+        open_ended = performance.measure("m4", "a")
+        self.assertGreater(open_ended.duration, 0)
+        with self.assertRaises(DOMException) as raised:
+            performance.measure("bad", "no-such-mark")
+        self.assertEqual(raised.exception.name, "SyntaxError")
+        with self.assertRaises(TypeError):
+            performance.mark("negative", {"startTime": -1})
+        with self.assertRaises(TypeError):
+            performance.measure("over", {"start": 1, "end": 2, "duration": 1})
+        performance.clearMarks("a")
+        self.assertEqual(performance.getEntriesByName("a"), [])
+        self.assertEqual(len(performance.getEntriesByType("measure")), 4)
+        performance.clearMeasures()
+        self.assertEqual(performance.getEntries(), [])
+
+    def test_performance_observer_entry_list(self):
+        performance.clearMeasures()
+        seen = []
+        observer = PerformanceObserver(lambda entries, obs: seen.append(entries))
+        observer.observe({"type": "measure"})
+        performance.measure("only-measures")
+        performance.mark("ignored-mark")
+        self.assertEqual(len(seen), 1)
+        self.assertIsInstance(seen[0], PerformanceObserverEntryList)
+        self.assertEqual([e.name for e in seen[0].getEntriesByType("measure")], ["only-measures"])
+        self.assertEqual(seen[0].getEntriesByName("only-measures", "measure")[0].entryType, "measure")
+        with self.assertRaises(TypeError):
+            observer.observe({"type": "mark", "entryTypes": ["mark"]})
+        observer.disconnect()
+
+    def test_high_resolution_stamps_share_the_performance_origin(self):
+        import time
+
+        from domonic.dom import DocumentTimeline, document
+        from domonic.events import Event
+        from domonic.javascript import Window as JSWindow
+        from domonic.webapi.gamepad import Gamepad
+
+        def close_to_now(value):
+            self.assertLess(abs(value - performance.now()), 1000, value)
+
+        seen = []
+        JSWindow.requestAnimationFrame(seen.append)
+        close_to_now(seen[0])
+        frames = []
+        BrowserWindow().requestAnimationFrame(frames.append)
+        time.sleep(0.1)
+        self.assertEqual(len(frames), 1)
+        close_to_now(frames[0])
+        close_to_now(Event("tick").timeStamp)
+        close_to_now(Gamepad("Pad").timestamp)
+        close_to_now(document.timeline.currentTime)
+        offset = DocumentTimeline(originTime=100.0)
+        self.assertLess(abs((performance.now() - 100.0) - offset.currentTime), 50)
 
     def test_permissions(self):
         permissions = Permissions()

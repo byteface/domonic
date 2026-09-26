@@ -1734,77 +1734,10 @@ def atob(data: str) -> str:
     return base64.b64decode(str(data)).decode("latin-1")
 
 
-class Performance:
+# ``Performance`` lives in ``domonic.webapi.performance``; it is re-exported here
+# because ``domonic.javascript.Performance`` / ``performance`` predate the move.
+from domonic.webapi.performance import Performance, performance  # noqa: E402
 
-    _start: float = _time.time()
-
-    def __init__(self) -> None:
-        self._entries: list[Any] = []
-        self._marks: dict[str, float] = {}
-
-    def now(self) -> float:
-        end = _time.time()
-        return end - Performance._start
-
-    def mark(self, name: str) -> Any:
-        from domonic.dom import PerformanceMark, PerformanceObserver
-
-        start = self.now()
-        self._marks[name] = start
-        entry = PerformanceMark(name, start)
-        self._entries.append(entry)
-        PerformanceObserver._notify_entry(entry)
-        return entry
-
-    def measure(self, name: str, startMark: str | None = None, endMark: str | None = None) -> Any:
-        from domonic.dom import PerformanceMeasure, PerformanceObserver
-
-        end = self.now() if endMark is None else self._marks.get(endMark, self.now())
-        start = 0.0 if startMark is None else self._marks.get(startMark, 0.0)
-        entry = PerformanceMeasure(name, start, end - start)
-        self._entries.append(entry)
-        PerformanceObserver._notify_entry(entry)
-        return entry
-
-    def getEntries(self) -> list[Any]:
-        return list(self._entries)
-
-    def getEntriesByType(self, entryType: str) -> list[Any]:
-        return [entry for entry in self._entries if getattr(entry, "entryType", None) == entryType]
-
-    def getEntriesByName(self, name: str, entryType: str | None = None) -> list[Any]:
-        entries = [entry for entry in self._entries if getattr(entry, "name", None) == name]
-        if entryType is not None:
-            entries = [entry for entry in entries if getattr(entry, "entryType", None) == entryType]
-        return entries
-
-    def clearMarks(self, name: str | None = None) -> None:
-        if name is None:
-            self._marks.clear()
-            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "mark"]
-            return
-        self._marks.pop(name, None)
-        self._entries = [
-            entry
-            for entry in self._entries
-            if not (getattr(entry, "entryType", None) == "mark" and getattr(entry, "name", None) == name)
-        ]
-
-    def clearMeasures(self, name: str | None = None) -> None:
-        if name is None:
-            self._entries = [entry for entry in self._entries if getattr(entry, "entryType", None) != "measure"]
-            return
-        self._entries = [
-            entry
-            for entry in self._entries
-            if not (getattr(entry, "entryType", None) == "measure" and getattr(entry, "name", None) == name)
-        ]
-
-    # def reset(self):
-    #     Performance._start = _time.time()
-
-
-performance = Performance()
 Global.performance = performance
 globalThis = Global
 Global.globalThis = globalThis

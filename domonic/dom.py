@@ -51,6 +51,7 @@ from domonic.layout import get_layout_box as _get_layout_box
 from domonic.style import CSSStyleDeclaration as Style
 from domonic.style import StyleSheetList
 from domonic.webapi.console import Console
+from domonic.webapi.performance import now as _performance_now
 from domonic.webapi.url import URL
 from domonic.webapi.xpath import (
     XPathEvaluator,
@@ -749,6 +750,73 @@ def _connect_inserted_node(
     _connect_tree(node)
 
 
+# Set once an id / tag / class index is attached below the top of a tree.
+# ``_connect_tree`` / ``_disconnect_tree`` only look for indexes on the tree
+# root (so an id-less append into an unindexed tree stays O(1)); an index they
+# cannot see would otherwise never be invalidated, so from then on every
+# structural change bumps both epochs -- conservative, never stale.
+_SUBTREE_INDEXES: bool = False
+
+
+def _note_index_root(root: "Node") -> None:
+    global _SUBTREE_INDEXES
+    if _SUBTREE_INDEXES:
+        return
+    top = getattr(root, "rootNode", root)
+    if top is not root:
+        _SUBTREE_INDEXES = True
+
+
+_SIBLING_SCAN_LIMIT = 16
+_CHILD_CACHE_KEYS = ("_child_positions", "_live_child_nodes", "_live_children_nodes", "_live_children_elements")
+
+
+def _child_position(parent: "Node", child: Any) -> int:
+    """Index of ``child`` in ``parent.args`` by identity, or -1.
+
+    A linear scan makes ``node.nextSibling`` O(n), so walking a parent's
+    children by sibling links -- the usual DOM traversal idiom -- was O(n^2).
+    Scan the first few slots (so ``removeChild(firstChild)`` loops and narrow
+    parents never build anything), then use a per-parent ``id(child) -> index``
+    map cached on the parent and keyed by the identity of its ``args`` tuple:
+    every mutation path replaces that tuple, so a hit is always current.
+    Builder-time ``list`` children (see ``ext/_rawdom``) are never cached.
+    """
+    args = getattr(parent, "args", ())
+    total = len(args)
+    limit = total if total < _SIBLING_SCAN_LIMIT else _SIBLING_SCAN_LIMIT
+    for index in range(limit):
+        if args[index] is child:
+            return index
+    if total <= _SIBLING_SCAN_LIMIT:
+        return -1
+    state = getattr(parent, "__dict__", None)
+    if type(args) is not tuple or state is None:
+        for index in range(_SIBLING_SCAN_LIMIT, total):
+            if args[index] is child:
+                return index
+        return -1
+    cached = state.get("_child_positions")
+    if cached is not None and cached[0] is args:
+        return cached[1].get(id(child), -1)
+    positions: dict[int, int] = {}
+    for index in range(total - 1, -1, -1):  # first occurrence wins
+        positions[id(args[index])] = index
+    state["_child_positions"] = (args, positions)
+    return positions.get(id(child), -1)
+
+
+def _drop_child_caches(node: "Node") -> None:
+    """Forget the per-parent traversal caches (``_child_position`` and
+    ``_LiveNodeList._nodes``). They validate themselves by ``args`` identity,
+    so this is about memory, not correctness: a stale entry would otherwise
+    keep the replaced child tuple, and every node removed with it, alive."""
+    state = node.__dict__
+    for key in _CHILD_CACHE_KEYS:
+        if key in state:
+            del state[key]
+
+
 _DEEPCOPY_MISSING = object()
 
 
@@ -789,6 +857,7 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     node.__dict__["parentNode"] = None
     for current, _owner in saved_owners:
         current.__dict__["_ownerDocument"] = None
+        _drop_child_caches(current)
     try:
         return copy.deepcopy(node)
     finally:
@@ -851,11 +920,11 @@ def _connect_tree(node: "Node") -> None:
         id_index = rd.get("_id_index")
         if id_index is not None:
             _bump_structure_epoch()
-            if id_index[0] == _DOM_MUTATION_EPOCH:
+            if id_index[0] == _DOM_MUTATION_EPOCH and not _SUBTREE_INDEXES:
                 id_map = id_index[1]
             else:
                 _bump_dom_epoch()
-        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
+        elif _SUBTREE_INDEXES or _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
             _bump_structure_epoch()
             _bump_dom_epoch()
     is_connected = isinstance(root, Document)
@@ -891,11 +960,11 @@ def _disconnect_tree(node: "Node") -> None:
         id_index = rd.get("_id_index")
         if id_index is not None:
             _bump_structure_epoch()
-            if id_index[0] == _DOM_MUTATION_EPOCH:
+            if id_index[0] == _DOM_MUTATION_EPOCH and not _SUBTREE_INDEXES:
                 id_map = id_index[1]
             else:
                 _bump_dom_epoch()
-        elif _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
+        elif _SUBTREE_INDEXES or _root_holds_structure_index(rd) or "_bs4_id_index" in rd:
             _bump_structure_epoch()
             _bump_dom_epoch()
     for current in _iter_dom_nodes(node):
@@ -1045,6 +1114,7 @@ def _root_element_index(root: "Node") -> "dict[str, dict[str, list[Element]]]":
     cached = root.__dict__.get("_dom_index")
     if cached is not None and cached[0] == _STRUCTURE_EPOCH:
         return cached[1]
+    _note_index_root(root)
     tags: "dict[str, list[Element]]" = {"*": []}
     local_tags: "dict[str, list[Element]]" = {}
     classes: "dict[str, list[Element]]" = {}
@@ -1139,6 +1209,7 @@ def _element_by_id_via_index(root: "Node", _id: str) -> "Element | None":
         _enable_id_indexing()
     cached = root.__dict__.get("_id_index")
     if cached is None or cached[0] != _DOM_MUTATION_EPOCH:
+        _note_index_root(root)
         cached = (_DOM_MUTATION_EPOCH, _collect_id_index(root))
         root.__dict__["_id_index"] = cached
     node = cached[1].get(_id)
@@ -1355,14 +1426,20 @@ def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = 
 
 
 def _radio_group_members(control: "Element", *, include_disabled: bool = True) -> list["HTMLInputElement"]:
+    """The radio button group ``control`` belongs to
+    (https://html.spec.whatwg.org/#radio-button-group): every radio in the
+    same tree that has the same form owner (or none) and the same non-empty
+    ``name``. Searching the whole tree matters when there is no form: radios
+    each wrapped in their own ``<label>`` share no parent, yet are one group.
+    """
     if not isinstance(control, Element):
         return []
     name = control.getAttribute("name")
     if not name:
         return [control] if isinstance(control, HTMLInputElement) else []
     form = _form_owner(control)
-    root = form if form is not None else getattr(control, "parentNode", None)
-    if root is None or not hasattr(root, "querySelectorAll"):
+    root = control.getRootNode()
+    if not hasattr(root, "querySelectorAll"):
         return [control] if isinstance(control, HTMLInputElement) else []
     radios = []
     for candidate in root.querySelectorAll("input"):
@@ -1371,6 +1448,7 @@ def _radio_group_members(control: "Element", *, include_disabled: bool = True) -
             and (include_disabled or not candidate.hasAttribute("disabled"))
             and (candidate.getAttribute("type") or "").lower() == "radio"
             and candidate.getAttribute("name") == name
+            and _form_owner(candidate) is form
         ):
             radios.append(candidate)
     return radios or ([control] if isinstance(control, HTMLInputElement) else [])
@@ -2174,6 +2252,7 @@ class Node(EventTarget):
     def __setattr__(self, name: str, value: Any) -> None:
         if name == "args":
             super().__setattr__(name, value)
+            _drop_child_caches(self)
             self._update_parents()
             if _ID_INDEXING_ON:  # structure changed -> both indexes may be stale
                 _bump_dom_epoch()
@@ -2301,6 +2380,7 @@ class Node(EventTarget):
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         previous_sibling = self.args[-1] if len(self.args) else None
         self.__dict__["args"] = self.args + items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -2322,12 +2402,12 @@ class Node(EventTarget):
     @property
     def childNodes(self) -> "NodeList":
         """Returns a live NodeList containing all the children of this node"""
-        return _LiveNodeList(self)
+        return _LiveNodeList(self, cache_key="_live_child_nodes")
 
     @property
     def children(self) -> list[Node]:
         """Returns a live collection of child nodes, excluding string content."""
-        return _LiveNodeList(self, lambda child: not isinstance(child, str))
+        return _LiveNodeList(self, lambda child: not isinstance(child, str), cache_key="_live_children_nodes")
 
     def compareDocumentPosition(self, otherElement: "Node") -> int:
         """A bitmask of ``DOCUMENT_POSITION_*`` flags describing where
@@ -2553,6 +2633,7 @@ class Node(EventTarget):
             return self.appendChild(new_node)
         previous_sibling = self.args[index - 1] if index > 0 and isinstance(self.args[index - 1], Node) else None
         self.__dict__["args"] = self.args[:index] + items + self.args[index:]
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -2580,18 +2661,21 @@ class Node(EventTarget):
                 # bypass Node.__setattr__ -> _update_parents(): removing one
                 # child never changes the parent link of the siblings that stay.
                 self.__dict__["args"] = tuple(replace_args)
+                _drop_child_caches(self)
                 _notify_slot_change(self)
                 return each
 
             if each is node:
                 n = node
-                previous_sibling = n.previousSibling
-                next_sibling = n.nextSibling
+                args = self.args
+                previous_sibling = args[count - 1] if count > 0 else None
+                next_sibling = args[count + 1] if count + 1 < len(args) else None
                 _disconnect_tree(n)
                 n.parentNode = None
                 replace_args = list(self.args)
                 replace_args.pop(count)
                 self.__dict__["args"] = tuple(replace_args)
+                _drop_child_caches(self)
                 _queue_mutation_record(
                     "childList",
                     self,
@@ -2646,6 +2730,7 @@ class Node(EventTarget):
         # _connect_inserted_node below re-parents the new items; the siblings
         # that stay keep their parent link, so skip the recursive _update_parents.
         self.__dict__["args"] = tuple(replace_args)
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         if isinstance(oldChild, Node):
@@ -2684,6 +2769,7 @@ class Node(EventTarget):
             clone = _deepcopy_subtree(self)
         else:
             clone = copy.copy(self)  # shallow copy
+            _drop_child_caches(clone)
             # A shallow clone drops child nodes, but a Text node's ``args`` hold
             # its character data, not children -- Text/Comment/CDATA/PI have no
             # children, so a shallow clone must preserve their data (DOM spec).
@@ -2786,15 +2872,14 @@ class Node(EventTarget):
     @property
     def nextSibling(self):
         """returns the next sibling of the current node."""
-        if self.parentNode is None:
+        parent = self.parentNode
+        if parent is None:
             return None
-        else:
-            for count, node in enumerate(self.parentNode.args):
-                if node == self:
-                    if count == len(self.parentNode.args) - 1:
-                        return None
-                    else:
-                        return self.parentNode.args[count + 1]
+        index = _child_position(parent, self)
+        args = parent.args
+        if index < 0 or index + 1 >= len(args):
+            return None
+        return args[index + 1]
 
     def normalize(self):
         """Normalize a node's value"""
@@ -2803,15 +2888,13 @@ class Node(EventTarget):
     @property
     def previousSibling(self):
         """returns the previous sibling of the current node."""
-        if self.parentNode is None:
+        parent = self.parentNode
+        if parent is None:
             return None
-        else:
-            for count, node in enumerate(self.parentNode.args):
-                if node == self:
-                    if count == 0:
-                        return None
-                    else:
-                        return self.parentNode.args[count - 1]
+        index = _child_position(parent, self)
+        if index < 1:
+            return None
+        return parent.args[index - 1]
 
     @property
     def textContent(self):
@@ -2949,6 +3032,7 @@ class ParentNode:
         return _LiveNodeList(
             self,  # type: ignore[arg-type]
             lambda child: isinstance(child, Element),
+            cache_key="_live_children_elements",
         )
 
     @property
@@ -2971,6 +3055,7 @@ class ParentNode:
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = self.args + items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         return self
@@ -2979,6 +3064,7 @@ class ParentNode:
         items = _coerce_insertion_nodes(*args)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = items + tuple(self.args)
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         return self
@@ -2991,6 +3077,7 @@ class ParentNode:
         items = _coerce_replacement_nodes(*children)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -3025,6 +3112,7 @@ def _child_insert_adjacent(node: "Node", nodes: tuple, *, after: bool) -> None:
     previous_sibling = kids[pos - 1] if pos > 0 and isinstance(kids[pos - 1], Node) else None
     kids[pos:pos] = items
     parent.__dict__["args"] = tuple(kids)
+    _drop_child_caches(parent)
     for it, old_document in old_documents:
         _connect_inserted_node(parent, it, old_document)
     added = [it for it in items if isinstance(it, Node)]
@@ -3032,8 +3120,10 @@ def _child_insert_adjacent(node: "Node", nodes: tuple, *, after: bool) -> None:
         _queue_mutation_record(
             "childList", parent, added_nodes=added, previous_sibling=previous_sibling, next_sibling=reference
         )
+    # ``_connect_inserted_node`` re-parented every inserted item and the
+    # siblings keep their link, so the full ``_update_parents`` walk (O(n)
+    # per call, ``before()`` in a loop was O(n^2)) is not needed.
     _notify_slot_change(parent)
-    parent._update_parents()
 
 
 def _child_replace_with(node: "Node", nodes: tuple) -> None:
@@ -3066,13 +3156,18 @@ def _child_replace_with(node: "Node", nodes: tuple) -> None:
     # real root and invalidate its id / structure index.
     _disconnect_tree(node)
     parent.__dict__["args"] = tuple(kids)
+    _drop_child_caches(parent)
     node.parentNode = None
     for it, old_document in old_documents:
         _connect_inserted_node(parent, it, old_document)
     added = [it for it in items if isinstance(it, Node)]
     _queue_mutation_record("childList", parent, added_nodes=added, removed_nodes=(node,))
     _notify_slot_change(parent)
-    parent._update_parents()
+    if id(node) in node_ids:
+        # ``node`` was among the replacements and stays put: it was
+        # disconnected above, so re-insert it like the other items. Everything
+        # else already has its parent link (``_connect_inserted_node``).
+        _connect_inserted_node(parent, node, None)
 
 
 class ChildNode(Node):
@@ -3607,11 +3702,12 @@ class DocumentTimeline:
     def __init__(self, document: "Document | None" = None, originTime: float = 0.0):
         self.document = document
         self.originTime = float(originTime)
-        self._started_at = time.perf_counter()
 
     @property
     def currentTime(self) -> float:
-        return self.originTime + ((time.perf_counter() - self._started_at) * 1000.0)
+        """Milliseconds on the same clock as ``performance.now()``, offset by
+        ``originTime`` (https://drafts.csswg.org/web-animations-1/#document-timelines)."""
+        return _performance_now() - self.originTime
 
 
 class CaretPosition:
@@ -4328,15 +4424,33 @@ class NodeList(list):
 class _LiveNodeList(NodeList):
     """List-like live view over a node's current children."""
 
-    def __init__(self, owner: Node, predicate: Callable[[Any], bool] | None = None) -> None:
+    def __init__(
+        self, owner: Node, predicate: Callable[[Any], bool] | None = None, *, cache_key: str | None = None
+    ) -> None:
         self._owner = owner
         self._predicate = predicate
+        self._cache_key = cache_key
         super().__init__()
 
     def _nodes(self) -> list[Any]:
-        nodes = list(getattr(self._owner, "args", ()))
+        # ``childNodes`` / ``children`` hand out a fresh view per access, and
+        # ``for i in range(len(el.children)): el.children[i]`` is everyday
+        # ported JS. The materialised list is cached on the owner, keyed by the
+        # identity of its ``args`` tuple (every mutation replaces it), so that
+        # idiom is linear rather than quadratic. The cached list is shared:
+        # readers must not mutate it. Builder-time ``list`` children are never cached.
+        owner = self._owner
+        args = getattr(owner, "args", ())
+        key = self._cache_key
+        if key is not None and type(args) is tuple:
+            cached = owner.__dict__.get(key)
+            if cached is not None and cached[0] is args:
+                return cached[1]
+        nodes = list(args)
         if self._predicate is not None:
             nodes = [node for node in nodes if self._predicate(node)]
+        if key is not None and type(args) is tuple:
+            owner.__dict__[key] = (args, nodes)
         return nodes
 
     @property
@@ -4548,7 +4662,7 @@ class Element(Node):
     @property
     def children(self) -> list[Node]:
         """Returns child elements, excluding text, comments, and strings."""
-        return _LiveNodeList(self, lambda child: isinstance(child, Element))
+        return _LiveNodeList(self, lambda child: isinstance(child, Element), cache_key="_live_children_elements")
 
     def _find_element_by_id(self, _id: str) -> Element | None:
         # Hot path: pre-order DFS over ``args``, reading the raw ``_id`` kwarg
@@ -5137,6 +5251,7 @@ class Element(Node):
         # append -> O(n^2) for a loop), and this method already links the new
         # nodes below.
         self.__dict__["args"] = self.args + items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
             if isinstance(item, Node):
@@ -5916,36 +6031,43 @@ class Element(Node):
     @property
     def nextSibling(self) -> Node | None:
         """Returns the next node at the same node tree level"""
-        if self.parentNode is not None:
-            for count, el in enumerate(self.parentNode.args):
-                if el is self and count < len(self.parentNode.args) - 1:
-                    return self.parentNode.args[count + 1]
-        return None
+        parent = self.parentNode
+        if parent is None:
+            return None
+        index = _child_position(parent, self)
+        args = parent.args
+        if index < 0 or index + 1 >= len(args):
+            return None
+        return args[index + 1]
 
     @property
     def nextElementSibling(self) -> Node | None:
         """Returns the next element at the same node tree level"""
-        if self.parentNode is not None:
-            found_self = False
-            for el in self.parentNode.args:
-                if el is self:
-                    found_self = True
-                    continue
-                if found_self and isinstance(el, Element):
-                    return el
+        parent = self.parentNode
+        if parent is None:
+            return None
+        index = _child_position(parent, self)
+        if index < 0:
+            return None
+        args = parent.args
+        for position in range(index + 1, len(args)):
+            el = args[position]
+            if isinstance(el, Element):
+                return el
         return None
 
     @property
     def previousElementSibling(self) -> Node | None:
         """returns the Element immediately prior to the specified one in its parent's children list,
         or None if the specified element is the first one in the list."""
-        if self.parentNode is not None:
-            previous = None
-            for el in self.parentNode.args:
-                if el is self:
-                    return previous
-                if isinstance(el, Element):
-                    previous = el
+        parent = self.parentNode
+        if parent is None:
+            return None
+        args = parent.args
+        for position in range(_child_position(parent, self) - 1, -1, -1):
+            el = args[position]
+            if isinstance(el, Element):
+                return el
         return None
 
     def normalize(self) -> tuple[Any, ...]:
@@ -6033,6 +6155,7 @@ class Element(Node):
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         next_sibling = self.args[0] if len(self.args) and isinstance(self.args[0], Node) else None
         self.__dict__["args"] = items + tuple(self.args)
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -6049,6 +6172,7 @@ class Element(Node):
             node.parentNode = None
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
         added_nodes = [item for item in items if isinstance(item, Node)]
@@ -8565,7 +8689,7 @@ class DocumentFragment(Node):
 
     @property
     def children(self) -> NodeList:
-        return _LiveNodeList(self, lambda child: isinstance(child, Element))
+        return _LiveNodeList(self, lambda child: isinstance(child, Element), cache_key="_live_children_elements")
 
     @property
     def childElementCount(self) -> int:
@@ -8587,6 +8711,7 @@ class DocumentFragment(Node):
         items = _coerce_insertion_nodes(*nodes)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = self.args + items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -8595,6 +8720,7 @@ class DocumentFragment(Node):
         items = _coerce_insertion_nodes(*nodes)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = items + self.args
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -8608,6 +8734,7 @@ class DocumentFragment(Node):
         items = _coerce_replacement_nodes(*newChildren)
         old_documents = [(item, _detach_node_for_insertion(item)) for item in items]
         self.__dict__["args"] = items
+        _drop_child_caches(self)
         for item, old_document in old_documents:
             _connect_inserted_node(self, item, old_document)
 
@@ -8917,8 +9044,13 @@ class Text(CharacterData):
                 index = siblings.index(self)
                 sibling.parentNode = self.parentNode
                 siblings.insert(index + 1, sibling)
-                self.parentNode.args = tuple(siblings)
-                self.parentNode._update_parents()
+                # ``sibling`` is the only new child and already has its parent
+                # link; skip the ``args`` hook's walk over every sibling.
+                self.parentNode.__dict__["args"] = tuple(siblings)
+                _drop_child_caches(self.parentNode)
+                if _ID_INDEXING_ON:
+                    _bump_dom_epoch()
+                    _bump_structure_epoch()
             except ValueError:
                 sibling.parentNode = None
         return sibling
@@ -9073,15 +9205,24 @@ class _LiveHTMLCollection(HTMLCollection):
     def _elements(self) -> list:
         matcher = self._matcher
         # Index-backed fast paths. A matcher alongside ``tag`` / ``named``
-        # post-filters the (already narrow) index result.
-        if self._tag is not None:
-            hits = _elements_by_tag_name(self._root, self._tag)
-            return [el for el in hits if matcher(el)] if matcher is not None else hits
-        if self._named is not None:
-            hits = _elements_by_name(self._root, self._named)
-            return [el for el in hits if matcher(el)] if matcher is not None else hits
-        if self._classes is not None:
-            return _elements_by_class_name(self._root, self._classes) if self._classes else []
+        # post-filters the (already narrow) index result. The result is
+        # memoised per structure epoch -- the key the index itself lives by --
+        # so ``for i in range(len(coll)): coll[i]`` is linear, not quadratic.
+        if self._tag is not None or self._named is not None or self._classes is not None:
+            cached = self.__dict__.get("_elements_cache")
+            if cached is not None and _ID_INDEXING_ON and cached[0] == _STRUCTURE_EPOCH:
+                return cached[1]
+            if self._tag is not None:
+                hits = _elements_by_tag_name(self._root, self._tag)
+                found = [el for el in hits if matcher(el)] if matcher is not None else hits
+            elif self._named is not None:
+                hits = _elements_by_name(self._root, self._named)
+                found = [el for el in hits if matcher(el)] if matcher is not None else hits
+            else:
+                found = _elements_by_class_name(self._root, self._classes) if self._classes else []
+            if _ID_INDEXING_ON:
+                self.__dict__["_elements_cache"] = (_STRUCTURE_EPOCH, found)
+            return found
 
         if matcher is None:
             return []
@@ -9440,7 +9581,7 @@ class IntersectionObserver:
         changed_target: Node | None = None,
         target_rect: DOMRectReadOnly | None = None,
     ) -> None:
-        now_ms = time.perf_counter() * 1000.0
+        now_ms = _performance_now()
         for target, previous in list(self._observations.items()):
             bounding_rect = (
                 DOMRect.fromRect(target_rect)
@@ -9466,87 +9607,15 @@ class IntersectionObserver:
         self.callback(records, self)
 
 
-class PerformanceEntry:
-    def __init__(self, name: str, entryType: str, startTime: float, duration: float) -> None:
-        self.name = name
-        self.entryType = entryType
-        self.startTime = startTime
-        self.duration = duration
-
-    def toJSON(self) -> dict[str, Any]:
-        return {
-            "name": self.name,
-            "entryType": self.entryType,
-            "startTime": self.startTime,
-            "duration": self.duration,
-        }
-
-
-class PerformanceMark(PerformanceEntry):
-    def __init__(self, name: str, startTime: float) -> None:
-        super().__init__(name, "mark", startTime, 0.0)
-
-
-class PerformanceMeasure(PerformanceEntry):
-    def __init__(self, name: str, startTime: float, duration: float) -> None:
-        super().__init__(name, "measure", startTime, duration)
-
-
-PerformanceObserverCallback = Callable[[list["PerformanceEntry"], "PerformanceObserver"], Any]
-
-
-class PerformanceObserver:
-    supportedEntryTypes: ClassVar[list[str]] = ["mark", "measure"]
-    _all_observers: ClassVar[list["PerformanceObserver"]] = []
-
-    def __init__(self, callback: PerformanceObserverCallback) -> None:
-        if not callable(callback):
-            raise TypeError("PerformanceObserver callback must be callable")
-        self.callback = callback
-        self._entry_types: set[str] = set()
-        self._records: list[PerformanceEntry] = []
-        PerformanceObserver._all_observers.append(self)
-
-    def observe(self, options: dict[str, Any]) -> None:
-        entry_types = options.get("entryTypes")
-        if not entry_types:
-            raise TypeError("PerformanceObserver.observe requires entryTypes")
-        self._entry_types = set(entry_types)
-        if options.get("buffered"):
-            try:
-                from domonic.javascript import performance as js_performance
-
-                for entry in js_performance.getEntries():
-                    self._enqueue(entry)
-            except Exception:
-                self._flush()
-                return
-        self._flush()
-
-    def disconnect(self) -> None:
-        self._entry_types.clear()
-        self._records.clear()
-
-    def takeRecords(self) -> list[PerformanceEntry]:
-        records = list(self._records)
-        self._records.clear()
-        return records
-
-    def _enqueue(self, entry: PerformanceEntry) -> None:
-        if entry.entryType in self._entry_types:
-            self._records.append(entry)
-
-    def _flush(self) -> None:
-        if not self._records:
-            return
-        records = self.takeRecords()
-        self.callback(records, self)
-
-    @classmethod
-    def _notify_entry(cls, entry: PerformanceEntry) -> None:
-        for observer in list(cls._all_observers):
-            observer._enqueue(entry)
-            observer._flush()
+# The Performance timeline lives in ``domonic.webapi.performance``; the names
+# stay importable from here because they were defined here first.
+from domonic.webapi.performance import (  # noqa: E402
+    PerformanceEntry,
+    PerformanceMark,
+    PerformanceMeasure,
+    PerformanceObserver,
+    PerformanceObserverCallback,
+)
 
 
 class DOMException(ValueError):
@@ -11107,7 +11176,17 @@ class HTMLElement(Element):
 
     @property
     def popover(self) -> str | None:
-        return self.getAttribute("popover")
+        """The popover attribute's state (https://html.spec.whatwg.org/#attr-popover):
+        ``"auto"``, ``"manual"`` or ``"hint"``. An empty value means auto, any
+        other value means manual, and a missing attribute is ``None``."""
+        if not self.hasAttribute("popover"):
+            return None
+        value = str(self.getAttribute("popover") or "").strip().lower()
+        if value in ("", "auto"):
+            return "auto"
+        if value in ("manual", "hint"):
+            return value
+        return "manual"
 
     @popover.setter
     def popover(self, value: Any) -> None:
@@ -12495,6 +12574,10 @@ class HTMLMediaElement(HTMLElement):
         )
 
 
+class HTMLMenuElement(HTMLElement):
+    name = "menu"
+
+
 class HTMLMetaElement(HTMLElement):
     name = "meta"
     __isempty = True
@@ -13001,7 +13084,7 @@ class HTMLTableColElement(HTMLElement):
     __isempty = True
 
 
-class HTMLTableDataCellElement(HTMLElement):
+class HTMLTableDataCellElement(HTMLTableCellElement):
     name = "td"
 
 
@@ -13058,7 +13141,7 @@ class HTMLTableElement(HTMLElement):
             self.setAttribute("width", width)
 
 
-class HTMLTableHeaderCellElement(HTMLElement):
+class HTMLTableHeaderCellElement(HTMLTableCellElement):
     name = "th"
 
 

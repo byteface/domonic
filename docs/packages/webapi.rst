@@ -329,6 +329,28 @@ interactive examples.
 	print(win.navigator.getGamepads())
 
 
+Performance
+----------------
+
+``performance.now()`` is milliseconds since the time origin, from a monotonic
+clock. ``requestAnimationFrame`` timestamps, ``Event.timeStamp``,
+``document.timeline.currentTime`` and ``Gamepad.timestamp`` are read from the
+same clock, so they compare with each other. Marks and measures feed
+``PerformanceObserver``.
+
+.. code-block :: python
+
+	from domonic.webapi.performance import PerformanceObserver, performance
+
+	performance.mark("parse-start")
+	# ... work ...
+	measure = performance.measure("parse", "parse-start")
+	print(round(measure.duration, 2), "ms")
+
+	observer = PerformanceObserver(lambda entries, obs: print(entries.getEntriesByType("measure")))
+	observer.observe({"entryTypes": ["measure"]})
+
+
 Service Workers
 ----------------
 

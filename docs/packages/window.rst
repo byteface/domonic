@@ -123,7 +123,8 @@ Animation frames and scheduling
 --------------------------------
 
 ``requestAnimationFrame()``, ``requestIdleCallback()`` and
-``queueMicrotask()`` schedule work the same way they do in a browser.
+``queueMicrotask()`` schedule work the same way they do in a browser. The frame
+callback receives ``performance.now()``: milliseconds since the time origin.
 
 .. code-block :: python
 

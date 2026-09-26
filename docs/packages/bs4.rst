@@ -79,7 +79,7 @@ Install optional parser backends as needed:
    python -m pip install selectolax
    python -m pip install turbohtml
    python -m pip install lxml
-   python -m pip install markupever lxml
+   python -m pip install markupever
 
 Scrape Links
 ------------

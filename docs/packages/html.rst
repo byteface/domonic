@@ -759,8 +759,8 @@ The current practical parser order for large HTML pages is:
 
 - ``selectolax``: fastest native parser in the bundled benchmark, adapted directly into domonic
 - ``turbohtml``: fast native WHATWG parser, adapted directly into domonic
+- ``markupever``: fast Rust-powered HTML5 repair, adapted directly into domonic
 - ``lxml_html``: fast lxml-backed HTML parsing and DOM adaptation
-- ``markupever``: fast Rust-powered HTML repair, adapted through lxml
 - ``html5_parser``: fast HTML5 parser, adapted through lxml
 - ``html.parser``: Python standard library, no external dependency
 - ``html5lib``: bundled Python parser with broad compatibility
@@ -774,7 +774,7 @@ Install optional native parsers as needed:
     python -m pip install selectolax
     python -m pip install turbohtml
     python -m pip install lxml
-    python -m pip install markupever lxml
+    python -m pip install markupever
     python -m pip install html5-parser lxml
 
 For a quick parse, try the :doc:`window` module:

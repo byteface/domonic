@@ -53,6 +53,77 @@ def _append_child_raw(parent: dom.Node, child: dom.Node, children: list[Any]) ->
     child.__dict__["parentNode"] = parent
 
 
+_Text = dom.Text
+_Comment = dom.Comment
+
+
+def _live_args(node: dom.Node) -> list[Any]:
+    """Return ``node``'s children as a mutable ``list``, converting the ``args``
+    tuple in place on first touch. A tree builder appends into these lists
+    (O(1) each; growing a tuple per child was O(n^2) for wide parents) and
+    freezes them back to the tuple the rest of domonic expects with
+    ``_freeze_args`` as each element closes, or ``_freeze`` for a whole tree.
+    """
+    state = node.__dict__
+    args = state.get("args")
+    if type(args) is list:
+        return args
+    args = list(args) if args else []
+    state["args"] = args
+    return args
+
+
+def _live_append(parent: dom.Node, child: dom.Node) -> None:
+    _live_args(parent).append(child)
+    child.__dict__["parentNode"] = parent
+
+
+def _freeze_args(node: dom.Node) -> None:
+    """Turn ``node``'s builder-time child list back into a tuple (one node)."""
+    state = node.__dict__
+    args = state.get("args")
+    if type(args) is list:
+        state["args"] = tuple(args)
+
+
+def _freeze(root: dom.Node) -> None:
+    """``_freeze_args`` for every element under ``root``. One pass; text and
+    comment nodes are leaves and are skipped without a lookup."""
+    stack = [root]
+    pop = stack.pop
+    push = stack.append
+    while stack:
+        state = pop().__dict__
+        args = state.get("args")
+        if type(args) is list:
+            # Convert before the emptiness check: html5lib's adoption agency
+            # leaves the original formatting element with an empty list.
+            args = tuple(args)
+            state["args"] = args
+        if not args:
+            continue
+        for node in args:
+            kind = type(node)
+            if kind is not _Text and kind is not _Comment and kind is not str:
+                push(node)
+
+
+def _invalidate_indexes() -> None:
+    """Drop every cached id / tag / class index and computed style.
+
+    Raw insertion bypasses the epoch bookkeeping in ``dom.py``, so a lookup
+    made against a tree that is still being built would otherwise keep
+    answering from that snapshot. Anything that lets user code observe a
+    raw-built tree before it is complete (a streaming checkpoint) must call
+    this at each observation boundary. Cached ``str(node)`` output is the
+    caller's to mark dirty (``dom._invalidate_render_cache``) for the nodes
+    that can still gain children.
+    """
+    dom._bump_dom_epoch()
+    dom._bump_structure_epoch()
+    dom._cssom.bump_dom_style_epoch()
+
+
 _NODE_STATE_DEFAULTS = {
     "_baseURI": "",
     "isConnected": True,
@@ -175,9 +246,13 @@ def _element_class(name: str, namespace_uri: str) -> type[dom.Element]:
         tag_name = html._TAG_ALIASES.get(normalized_name, normalized_name)
         element_class = getattr(html, tag_name)
     else:
-        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(normalized_name)
+        element_class = _UNKNOWN_ELEMENT_CLASS_CACHE.get(cache_key)
         if element_class is None:
-            element_class = type("custom_tag", (dom.Element,), {"name": name})
+            # https://html.spec.whatwg.org/#elements-in-the-dom: a valid custom
+            # element name (it has a hyphen) is an HTMLElement awaiting upgrade;
+            # anything else unknown is an HTMLUnknownElement.
+            base = dom.HTMLElement if "-" in normalized_name else dom.HTMLUnknownElement
+            element_class = type("custom_tag", (base,), {"name": name})
             _UNKNOWN_ELEMENT_CLASS_CACHE[cache_key] = element_class
 
     _HTML_ELEMENT_CLASS_CACHE[cache_key] = element_class

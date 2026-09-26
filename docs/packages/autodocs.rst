@@ -151,6 +151,9 @@
 .. automodule:: domonic.webapi.scheduler
     :members:
 
+.. automodule:: domonic.webapi.performance
+    :members:
+
 .. automodule:: domonic.webapi.streams
     :members:
 

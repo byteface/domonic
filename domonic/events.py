@@ -12,7 +12,6 @@ common event model.
 from __future__ import annotations
 
 import inspect
-import time as _time
 from typing import Any, Callable, ClassVar
 
 from domonic.constants.keyboard import (
@@ -23,6 +22,7 @@ from domonic.constants.keyboard import (
     normalize_code,
     normalize_key,
 )
+from domonic.webapi.performance import now as _performance_now
 
 
 class EventListener:
@@ -549,7 +549,9 @@ class Event:
         self._returnValue: bool = not self.defaultPrevented
         self.srcElement: object = options.get("srcElement", None)
         self.target: object = options.get("target", None)
-        self.timeStamp: float = _time.time_ns() / 1_000_000
+        # A DOMHighResTimeStamp: milliseconds since the time origin, on the
+        # same clock as ``performance.now()`` (https://dom.spec.whatwg.org/#dom-event-timestamp).
+        self.timeStamp: float = _performance_now()
         self._propagation_stopped: bool = False
         self._immediate_propagation_stopped: bool = False
         self._in_passive_listener: bool = False

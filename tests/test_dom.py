@@ -4080,6 +4080,35 @@ class DOMTest(unittest.TestCase):
         self.assertFalse(free.checked)
         self.assertTrue(pro.checked)
 
+    def test_radio_group_is_the_whole_tree_when_there_is_no_form(self):
+        # https://html.spec.whatwg.org/#radio-button-group: same tree, same
+        # form owner (or none), same name. Radios wrapped in their own <label>
+        # were looked up under their parent only, so nothing ever cleared.
+        page = html(
+            body(
+                label(input(_type="radio", _name="size", _value="s")),
+                label(input(_type="radio", _name="size", _value="m")),
+                label(input(_type="radio", _name="size", _value="l")),
+                form(input(_type="radio", _name="size", _value="in-form"), _id="f"),
+                input(_type="radio", _name="size", _value="by-attribute", _form="f"),
+            )
+        )
+        radios = page.querySelectorAll("input")
+        for radio in radios:
+            radio.checked = True
+        # the three form-less radios are one group; the form owns the other two
+        self.assertEqual([r.checked for r in radios], [False, False, True, False, True])
+        radios[0].checked = True
+        self.assertEqual([r.checked for r in radios], [True, False, False, False, True])
+        radios[3].checked = True
+        self.assertEqual([r.checked for r in radios], [True, False, False, True, False])
+        for radio in radios[:3]:
+            radio.setAttribute("required", "")
+            radio.checked = False
+        self.assertTrue(radios[1].validity.valueMissing)
+        radios[2].checked = True
+        self.assertFalse(radios[1].validity.valueMissing)
+
     def test_radio_groups_ignore_unnamed_inputs(self):
         first = input(_type="radio")
         second = input(_type="radio")
@@ -6132,6 +6161,108 @@ class MeasureTextTest(unittest.TestCase):
         small = p("hello", _style="font-size: 10px")
         large = p("hello", _style="font-size: 40px")
         self.assertLess(small.measureText()[0], large.measureText()[0])
+
+
+class TestTraversalCachesAndIndexes(unittest.TestCase):
+    """Sibling links, ``children`` views and live collections are cached per
+    parent; every cache must fall out of date the moment the tree changes."""
+
+    def test_sibling_walk_matches_args_on_a_wide_parent(self):
+        parent = div(*[span(str(i)) for i in range(200)], Text("text"), span("last"))
+        walked = []
+        node = parent.firstChild
+        while node is not None:
+            walked.append(node)
+            node = node.nextSibling
+        self.assertEqual(walked, list(parent.args))
+        backwards = []
+        node = parent.lastChild
+        while node is not None:
+            backwards.append(node)
+            node = node.previousSibling
+        self.assertEqual(backwards, list(reversed(parent.args)))
+        self.assertIs(parent.args[199].nextElementSibling, parent.args[201])
+        self.assertIs(parent.args[201].previousElementSibling, parent.args[199])
+        self.assertIsNone(parent.args[201].nextSibling)
+        self.assertIsNone(parent.firstChild.previousSibling)
+
+    def test_sibling_links_follow_mutations(self):
+        parent = div(*[span(str(i)) for i in range(40)])
+        first, second, third = parent.args[0], parent.args[1], parent.args[2]
+        self.assertIs(first.nextSibling, second)  # builds the position cache
+        parent.removeChild(second)
+        self.assertIs(first.nextSibling, third)
+        moved = parent.args[-1]
+        parent.insertBefore(moved, first)
+        self.assertIs(moved.nextSibling, first)
+        self.assertIsNone(moved.previousSibling)
+        parent.args = tuple(reversed(parent.args))  # the hook path
+        self.assertIs(parent.args[0].nextSibling, parent.args[1])
+        # remove while walking from the front
+        node = parent.firstChild
+        while node is not None:
+            following = node.nextSibling
+            node.remove()
+            node = following
+        self.assertEqual(len(parent.args), 0)
+
+    def test_children_view_reflects_mutations_and_is_linear(self):
+        parent = div(*[span(str(i)) for i in range(50)], "text")
+        self.assertEqual(len(parent.childNodes), 51)
+        self.assertEqual(len(parent.children), 50)
+        parent.appendChild(b("x"))
+        self.assertEqual(len(parent.childNodes), 52)
+        self.assertEqual(parent.children[-1].tagName.lower(), "b")
+        parent.args[0].remove()
+        self.assertEqual(len(parent.children), 50)
+        self.assertEqual([c.tagName.lower() for c in parent.children][-1], "b")
+        for index in range(len(parent.children)):  # the ported-JS idiom
+            self.assertIs(parent.children[index], parent.children[index])
+
+    def test_subtree_rooted_indexes_are_invalidated_by_mutations(self):
+        # Regression: an index built on a subtree element (not the document)
+        # was never invalidated, so removals and insertions under it went unseen.
+        container = div(span(), span(), span())
+        page = html(body(container))
+        self.assertEqual(len(container.getElementsByTagName("span")), 3)
+        container.removeChild(container.args[0])
+        self.assertEqual(len(container.getElementsByTagName("span")), 2)
+        container.appendChild(span())
+        container.appendChild(span())
+        self.assertEqual(len(container.getElementsByTagName("span")), 4)
+        live = container.getElementsByTagName("span")
+        self.assertEqual(len(live), 4)
+        container.args[0].remove()
+        self.assertEqual(len(live), 3)
+        container.args[0].setAttribute("class", "k")
+        self.assertEqual(len(container.getElementsByClassName("k")), 1)
+        self.assertEqual(len(page.getElementsByTagName("span")), 3)
+
+    def test_before_after_replace_with_keep_parent_links(self):
+        parent = div(*[span(str(i)) for i in range(30)])
+        html(body(parent))  # in a document, so isConnected is meaningful
+        last = parent.args[-1]
+        added = [b(str(i)) for i in range(5)]
+        last.before(*added)
+        self.assertTrue(all(node.parentNode is parent for node in parent.args))
+        self.assertIs(added[-1].nextSibling, last)
+        first = parent.args[0]
+        first.after(b("after"))
+        self.assertIs(first.nextSibling.parentNode, parent)
+        keep = parent.args[3]
+        keep.replaceWith(b("before-keep"), keep, b("after-keep"))
+        self.assertIs(keep.parentNode, parent)
+        self.assertTrue(keep.isConnected)
+        self.assertEqual(str(keep.previousSibling), "<b>before-keep</b>")
+        self.assertEqual(str(keep.nextSibling), "<b>after-keep</b>")
+
+    def test_split_text_keeps_siblings_parented(self):
+        text = Text("hello world")
+        parent = div(span(), text, span())
+        tail = text.splitText(5)
+        self.assertIs(tail.parentNode, parent)
+        self.assertIs(text.nextSibling, tail)
+        self.assertEqual(parent.textContent, "hello world")
 
 
 if __name__ == "__main__":

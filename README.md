@@ -253,7 +253,7 @@ or raw speed:
 | `html.parser` | Python standard library, no extra dependency |
 | `html5lib` | Pure Python, bundled with domonic, spec-accurate tree building |
 | `turbohtml` | Pure-Python WHATWG parser, direct DOM adaptation |
-| `selectolax` · `lxml_html` · `html5_parser` · `markupever` | Native / compiled parsers via a shared adapter |
+| `selectolax` · `markupever` · `lxml_html` · `html5_parser` | Native / compiled parsers via a shared adapter |
 | `tl` · `reliq` | Opt-in native parsers, outside `auto` |
 | `expat` | Built in, for XML-like input |
 

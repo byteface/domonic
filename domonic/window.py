@@ -32,7 +32,7 @@ from domonic.events import (
 )
 from domonic.javascript import Promise
 from domonic.javascript import Window as JavaScriptWindow
-from domonic.javascript import performance
+from domonic.webapi.performance import performance
 from domonic.webapi.clipboard import Clipboard
 from domonic.webapi.console import Console
 from domonic.webapi.cookiestore import CookieStore
