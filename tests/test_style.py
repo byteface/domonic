@@ -2617,6 +2617,13 @@ class ShorthandExpansionTest(unittest.TestCase):
         menu = self.expand("font", "menu")
         self.assertEqual((menu["font-size"], menu["font-family"]), ("13px", "Arial"))
 
+    def test_flex_basis_of_a_unitless_zero_is_0px_and_a_third_number_is_invalid(self):
+        self.assertEqual(self.expand("flex", "1 1 0")["flex-basis"], "0px")
+        self.assertEqual(self.expand("flex", "1")["flex-basis"], "0%")
+        self.assertEqual(self.expand("flex", "10px 2"), {"flex-grow": "2", "flex-shrink": "1", "flex-basis": "10px"})
+        self.assertEqual(self.expand("flex", "1 calc(50% - 10px)")["flex-basis"], "calc(50% - 10px)")
+        self.assertIsNone(self.expand("flex", "0 0 4"))
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):

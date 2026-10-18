@@ -513,6 +513,9 @@ _SYSTEM_FONTS = {
 }
 
 
+_NUMBER_RE = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$", re.I)
+
+
 def _is_font_weight_number(token: str) -> bool:
     """A ``<number>`` font weight, 1 to 1000 (CSS Fonts 4 2.2) -- before a
     ``font`` shorthand's size, a bare number is the weight."""
@@ -699,19 +702,34 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             return [("flex-grow", "0"), ("flex-shrink", "0"), ("flex-basis", "auto")]
         if lower == "auto":
             return [("flex-grow", "1"), ("flex-shrink", "1"), ("flex-basis", "auto")]
+        # [ <flex-grow> <flex-shrink>? || <flex-basis> ] (CSS Flexbox 1 7.2): an
+        # omitted basis is 0%; a unitless zero after both factors is the
+        # basis (0px), any other unitless third number is invalid
         parts = _tokens(value)
-        grow, shrink, basis = "1", "1", "0%"
-        nums = [p for p in parts if p.replace(".", "", 1).isdigit()]
-        non_nums = [p for p in parts if p not in nums]
-        if len(nums) >= 1:
-            grow = nums[0]
-        if len(nums) >= 2:
-            shrink = nums[1]
-        if non_nums:
-            basis = non_nums[0]
-        elif len(parts) == 1 and parts[0].replace(".", "", 1).isdigit():
-            basis = "0%"
-        return [("flex-grow", grow), ("flex-shrink", shrink), ("flex-basis", basis)]
+        grow = shrink = basis = None
+        index = 0
+        while index < len(parts):
+            part = parts[index]
+            if _NUMBER_RE.match(part):
+                if grow is not None:
+                    return None
+                grow = part
+                if index + 1 < len(parts) and _NUMBER_RE.match(parts[index + 1]):
+                    index += 1
+                    shrink = parts[index]
+                    if index + 1 < len(parts) and _NUMBER_RE.match(parts[index + 1]):
+                        index += 1
+                        if float(parts[index]) != 0 or basis is not None:
+                            return None
+                        basis = "0px"
+            elif basis is not None:
+                return None
+            else:
+                basis = part
+            index += 1
+        if grow is None and basis is None:
+            return None
+        return [("flex-grow", grow or "1"), ("flex-shrink", shrink or "1"), ("flex-basis", basis or "0%")]
 
     if name in ("grid-column", "grid-row"):
         # <grid-line> [ / <grid-line> ]? -- the slash, not whitespace, is the
