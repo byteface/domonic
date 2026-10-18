@@ -501,6 +501,26 @@ _FONT_STRETCH_KEYWORDS = frozenset(
     }
 )
 _GLOBAL_KEYWORDS = frozenset({"inherit", "initial", "unset", "revert", "revert-layer"})
+#: CSS Fonts 4 system font keywords -> the size Blink gives them (its default
+#: UI font, Arial, at the platform's system size)
+_SYSTEM_FONTS = {
+    "caption": "13px",
+    "icon": "13px",
+    "menu": "13px",
+    "message-box": "13px",
+    "small-caption": "11px",
+    "status-bar": "13px",
+}
+
+
+def _is_font_weight_number(token: str) -> bool:
+    """A ``<number>`` font weight, 1 to 1000 (CSS Fonts 4 2.2) -- before a
+    ``font`` shorthand's size, a bare number is the weight."""
+    try:
+        number = float(token)
+    except ValueError:
+        return False
+    return 1 <= number <= 1000
 
 
 def _has_top_level_comma(value: str) -> bool:
@@ -796,32 +816,46 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         ]
 
     if name == "font":
+        system = _SYSTEM_FONTS.get(lower)
+        if system is not None:
+            # a system font keyword sets every longhand (CSS Fonts 4 2.8), to
+            # what Blink resolves them to: its default UI font at system size
+            return [
+                ("font-style", "normal"),
+                ("font-variant", "normal"),
+                ("font-weight", "normal"),
+                ("font-stretch", "normal"),
+                ("font-size", system),
+                ("line-height", "normal"),
+                ("font-family", "Arial"),
+            ]
         # [ style || variant || weight || stretch ]? size [ / line-height ]? family
-        tokens = _tokens(value)
+        # (``/`` is its own token, spaced or not: ``1rem / 1.5``)
+        tokens = _split_ws_keep_funcs(value)
         style = variant = weight = stretch = "normal"
         size = line_height = ""
-        family_start = 0
-        for i, token in enumerate(tokens):
+        index = 0
+        while index < len(tokens):
+            token = tokens[index]
             tl = token.lower()
             if tl in _FONT_STYLE_KEYWORDS:
                 style = token
             elif tl in _FONT_VARIANT_KEYWORDS:
                 variant = token
-            elif tl in _FONT_WEIGHT_KEYWORDS:
+            elif tl in _FONT_WEIGHT_KEYWORDS or _is_font_weight_number(tl):
                 weight = token
             elif tl in _FONT_STRETCH_KEYWORDS:
                 stretch = token
-            elif tl == "normal":
-                continue
-            else:
-                # first non-keyword token is the size (optionally size/line-height)
-                if "/" in token:
-                    size, _, line_height = token.partition("/")
-                else:
-                    size = token
-                family_start = i + 1
+            elif tl != "normal":
+                # the first other token is the size, then an optional / line-height
+                size = token
+                index += 1
+                if index < len(tokens) and tokens[index] == "/":
+                    line_height = tokens[index + 1] if index + 1 < len(tokens) else ""
+                    index += 2
                 break
-        family = " ".join(tokens[family_start:]) or "inherit"
+            index += 1
+        family = " ".join(tokens[index:]) or "inherit"
         return [
             ("font-style", style),
             ("font-variant", variant),

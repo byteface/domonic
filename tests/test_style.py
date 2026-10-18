@@ -2607,6 +2607,16 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(self.expand("columns", "auto 12em"), {"column-width": "12em", "column-count": "auto"})
         self.assertIsNone(self.expand("columns", "1 2"))
 
+    def test_font_slash_spacing_numeric_weights_and_system_fonts(self):
+        spaced = self.expand("font", "1rem / 1.5 sans-serif")
+        self.assertEqual((spaced["font-size"], spaced["line-height"], spaced["font-family"]), ("1rem", "1.5", "sans-serif"))
+        weighted = self.expand("font", "650 16px serif")
+        self.assertEqual((weighted["font-weight"], weighted["font-size"], weighted["font-family"]), ("650", "16px", "serif"))
+        fluid = self.expand("font", "clamp(1rem, 2vw, 2rem)/1.2 serif")
+        self.assertEqual((fluid["font-size"], fluid["line-height"]), ("clamp(1rem, 2vw, 2rem)", "1.2"))
+        menu = self.expand("font", "menu")
+        self.assertEqual((menu["font-size"], menu["font-family"]), ("13px", "Arial"))
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):
