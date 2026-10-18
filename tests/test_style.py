@@ -2470,6 +2470,16 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "left"), "50%")
         self.assertEqual(_computed(markup, "p", "top"), "10%")
 
+    def test_font_size_keywords_match_browsers_and_relative_keywords_scale(self):
+        sizes = {"xx-small": "9px", "x-small": "10px", "small": "13px", "medium": "16px", "large": "18px",
+                 "x-large": "24px", "xx-large": "32px", "xxx-large": "48px"}
+        for keyword, expected in sizes.items():
+            self.assertEqual(_computed(self.page(f"p {{ font-size: {keyword} }}", "<p>x</p>"), "p", "font-size"), expected)
+        markup = self.page("div { font-size: 24px } sub { font-size: smaller } sup { font-size: larger }",
+                           "<div><sub>a</sub><sup>b</sup></div>")
+        self.assertEqual(_computed(markup, "sub", "font-size"), "20px")
+        self.assertEqual(_computed(markup, "sup", "font-size"), "28.8px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

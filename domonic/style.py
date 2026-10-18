@@ -6606,7 +6606,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 percent_px=parent_px,
             )
         if px is None:
-            px = _ABSOLUTE_FONT_SIZE_KEYWORDS.get(raw.lower(), parent_px)
+            keyword = raw.lower()
+            if keyword == "smaller":
+                px = parent_px / _RELATIVE_FONT_SIZE_RATIO
+            elif keyword == "larger":
+                px = parent_px * _RELATIVE_FONT_SIZE_RATIO
+            else:
+                px = _ABSOLUTE_FONT_SIZE_KEYWORDS.get(keyword, parent_px)
         px = self._apply_monospace_font_size_quirk(px, parent)
         self.__dict__["_font_size_px_cache"] = px
         return px
@@ -7036,16 +7042,21 @@ _COLOR_PROPERTIES = frozenset(
     }
 )
 
+#: the absolute ``font-size`` keywords for a 16px ``medium``, as every browser
+#: computes them (HTML's legacy font-size table; Blink's
+#: ``FontSizeFunctions::FontSizeForKeyword``, Gecko's likewise)
 _ABSOLUTE_FONT_SIZE_KEYWORDS = {
-    "xx-small": 9.6,
-    "x-small": 12.0,
-    "small": 13.333,
+    "xx-small": 9.0,
+    "x-small": 10.0,
+    "small": 13.0,
     "medium": 16.0,
-    "large": 18.667,
+    "large": 18.0,
     "x-large": 24.0,
     "xx-large": 32.0,
     "xxx-large": 48.0,
 }
+#: ``smaller`` / ``larger`` scale the parent's size by this (CSS Fonts 4 2.5)
+_RELATIVE_FONT_SIZE_RATIO = 1.2
 
 #: the fixed 13/16 ratio behind the "monospace font-size quirk" -- see
 #: ``ComputedStyleDeclaration._apply_monospace_font_size_quirk``.
