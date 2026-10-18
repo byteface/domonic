@@ -6715,6 +6715,10 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 # that can produce a negative line-height.
                 if target == "line-height" and evaluated < 0:
                     return "normal"
+                if target == "line-height" and _is_unitless_math(value):
+                    # a calc() that is a plain <number> is a multiplier of the
+                    # font size, like a bare 1.5 (Tailwind 4's line heights)
+                    return _px_str(evaluated * font_px)
                 return _px_str(evaluated)
             return value
 

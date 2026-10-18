@@ -2458,6 +2458,12 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "h2 b", "line-height"), "25px")
         self.assertEqual(_computed(markup, "p b", "line-height"), "20px")  # a length is inherited as the length
 
+    def test_a_unitless_calc_line_height_multiplies_the_font_size(self):
+        markup = self.page("p { font-size: 14px; line-height: calc(1.25 / .875) } i { line-height: calc(10px + 2px) }",
+                           "<p>x</p><i>i</i>")
+        self.assertEqual(_computed(markup, "p", "line-height"), "20px")
+        self.assertEqual(_computed(markup, "i", "line-height"), "12px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")
