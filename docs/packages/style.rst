@@ -123,7 +123,10 @@ viewport units (once the document has a window) and ``calc()`` / ``min()`` /
 and the containing block where one can be found without full layout), ``currentColor``
 resolves to the element's ``color``, ``font-weight`` keywords become numbers,
 an out-of-flow ``display: inline`` blockifies, and ``inherit`` / ``initial`` /
-``unset`` are resolved. ``%`` values that need layout, and a ``transform``
+``unset`` are resolved. Logical properties (``margin-inline-start``,
+``padding-block``, ``inline-size``, ...) map onto physical sides by each
+element's own ``writing-mode`` and ``direction`` (an HTML ``dir`` attribute
+included), so an ``rtl`` list is indented on the right. ``%`` values that need layout, and a ``transform``
 list, are reported the browser way too:
 
 .. code-block :: python

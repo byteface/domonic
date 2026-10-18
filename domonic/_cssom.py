@@ -351,6 +351,15 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
         "border-bottom-color",
         "border-left-color",
     ),
+    **{
+        f"border-{axis}-{edge}": (
+            f"border-{axis}-{edge}-width",
+            f"border-{axis}-{edge}-style",
+            f"border-{axis}-{edge}-color",
+        )
+        for axis in ("block", "inline")
+        for edge in ("start", "end")
+    },
     "outline": ("outline-width", "outline-style", "outline-color"),
     "overflow": ("overflow-x", "overflow-y"),
     "gap": ("row-gap", "column-gap"),
@@ -588,6 +597,11 @@ _FONT_STRETCH_KEYWORDS = frozenset(
     }
 )
 _GLOBAL_KEYWORDS = frozenset({"inherit", "initial", "unset", "revert", "revert-layer"})
+#: <line-width> || <line-style> || <color> shorthands
+_BORDER_LIKE_SHORTHANDS = frozenset(
+    {"border", "border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"}
+    | {f"border-{axis}-{edge}" for axis in ("block", "inline") for edge in ("start", "end")}
+)
 #: CSS Fonts 4 system font keywords -> the size Blink gives them (its default
 #: UI font, Arial, at the platform's system size)
 _SYSTEM_FONTS = {
@@ -952,7 +966,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         top, right, bottom, left = expand_box_values(value)
         return list(zip(longs, (top, right, bottom, left)))
 
-    if name in ("border", "border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"):
+    if name in _BORDER_LIKE_SHORTHANDS:
         width = style = color = None
         for token in _tokens(value):
             tl = token.lower()
@@ -1253,7 +1267,7 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
             return ""
         return collapse_box_values(*vals)
 
-    if name in ("border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"):
+    if name in _BORDER_LIKE_SHORTHANDS and name != "border":
         # longs is (<x>-width, <x>-style, <x>-color) for this exact shorthand
         parts = [get(long) for long in longs]
         if any(p == "" for p in parts):

@@ -339,75 +339,107 @@ def _split_css_declarations(css_text: str) -> list[str]:
 
 
 #: each 2-value logical axis shorthand ("start end", or one value for both)
-#: -> its two physical longhands, in start-then-end order. Only LTR,
-#: horizontal writing-mode is modelled (inline -> left/right, block ->
-#: top/bottom), matching this project's existing lack of RTL/bidi support.
+#: -> its two logical longhands, in start-then-end order. Logical longhands
+#: keep their names in a declaration block (as in a browser); the cascade maps
+#: them to physical sides per element (``_physical_property``).
 _LOGICAL_AXIS_SHORTHANDS: dict[str, tuple[str, str]] = {
-    "padding-inline": ("padding-left", "padding-right"),
-    "padding-block": ("padding-top", "padding-bottom"),
-    "margin-inline": ("margin-left", "margin-right"),
-    "margin-block": ("margin-top", "margin-bottom"),
-    "inset-inline": ("left", "right"),
-    "inset-block": ("top", "bottom"),
-    "border-inline-width": ("border-left-width", "border-right-width"),
-    "border-block-width": ("border-top-width", "border-bottom-width"),
-    "border-inline-style": ("border-left-style", "border-right-style"),
-    "border-block-style": ("border-top-style", "border-bottom-style"),
-    "border-inline-color": ("border-left-color", "border-right-color"),
-    "border-block-color": ("border-top-color", "border-bottom-color"),
-}
+    **{f"{box}-{axis}": (f"{box}-{axis}-start", f"{box}-{axis}-end")
+       for box in ("padding", "margin", "inset") for axis in ("inline", "block")},
+    **{f"border-{axis}-{part}": (f"border-{axis}-start-{part}", f"border-{axis}-end-{part}")
+       for axis in ("inline", "block") for part in ("width", "style", "color")},
+}  # fmt: skip
 
 #: ``border-inline`` / ``border-block``: one ``border``-style value for both
 #: sides of the axis (CSS Logical 1 4.4)
 _LOGICAL_BOTH_SIDES_SHORTHANDS: dict[str, tuple[str, str]] = {
-    "border-inline": ("border-left", "border-right"),
-    "border-block": ("border-top", "border-bottom"),
+    "border-inline": ("border-inline-start", "border-inline-end"),
+    "border-block": ("border-block-start", "border-block-end"),
 }
 
-#: each single-value logical longhand -> the one physical longhand it aliases.
-_LOGICAL_ALIAS_LONGHANDS: dict[str, str] = {
-    "padding-inline-start": "padding-left",
-    "padding-inline-end": "padding-right",
-    "padding-block-start": "padding-top",
-    "padding-block-end": "padding-bottom",
-    "margin-inline-start": "margin-left",
-    "margin-inline-end": "margin-right",
-    "margin-block-start": "margin-top",
-    "margin-block-end": "margin-bottom",
-    "inset-inline-start": "left",
-    "inset-inline-end": "right",
-    "inset-block-start": "top",
-    "inset-block-end": "bottom",
-    "inline-size": "width",
-    "block-size": "height",
-    "min-inline-size": "min-width",
-    "min-block-size": "min-height",
-    "max-inline-size": "max-width",
-    "max-block-size": "max-height",
-    "border-inline-start": "border-left",
-    "border-inline-end": "border-right",
-    "border-block-start": "border-top",
-    "border-block-end": "border-bottom",
-    **{
-        f"border-{axis}-{edge}-{part}": f"border-{side}-{part}"
-        for axis, edge, side in (
-            ("inline", "start", "left"),
-            ("inline", "end", "right"),
-            ("block", "start", "top"),
-            ("block", "end", "bottom"),
+#: logical longhand -> how it maps: ("side", physical pattern, axis, edge),
+#: ("size", horizontal-mode property, vertical-mode property) or
+#: ("corner", block edge, inline edge)
+_LOGICAL_LONGHANDS: dict[str, tuple] = {}
+for _pattern, _physical in (
+    ("margin-{}", "margin-{}"),
+    ("padding-{}", "padding-{}"),
+    ("inset-{}", "{}"),
+    ("border-{}-width", "border-{}-width"),
+    ("border-{}-style", "border-{}-style"),
+    ("border-{}-color", "border-{}-color"),
+):
+    for _axis in ("block", "inline"):
+        for _edge in ("start", "end"):
+            _LOGICAL_LONGHANDS[_pattern.format(f"{_axis}-{_edge}")] = ("side", _physical, _axis, _edge)
+for _logical, _sizes in {
+    "inline-size": ("width", "height"),
+    "block-size": ("height", "width"),
+    "min-inline-size": ("min-width", "min-height"),
+    "min-block-size": ("min-height", "min-width"),
+    "max-inline-size": ("max-width", "max-height"),
+    "max-block-size": ("max-height", "max-width"),
+}.items():
+    _LOGICAL_LONGHANDS[_logical] = ("size", *_sizes)
+for _block_edge in ("start", "end"):
+    for _inline_edge in ("start", "end"):
+        _LOGICAL_LONGHANDS[f"border-{_block_edge}-{_inline_edge}-radius"] = ("corner", _block_edge, _inline_edge)
+_LOGICAL_LONGHAND_NAMES = frozenset(_LOGICAL_LONGHANDS)
+_VERTICAL_WRITING_MODES = frozenset(
+    {"vertical-rl", "vertical-lr", "sideways-rl", "sideways-lr", "tb-rl", "tb", "tb-lr"}
+)
+
+
+def _physical_side(axis: str, edge: str, writing_mode: str, direction: str) -> str:
+    """The physical side an axis's start or end edge is (CSS Writing Modes 3 6.4)."""
+    mode = {"tb-rl": "vertical-rl", "tb": "vertical-rl", "tb-lr": "vertical-lr"}.get(writing_mode, writing_mode)
+    rtl = direction == "rtl"
+    if axis == "block":
+        if mode in ("vertical-rl", "sideways-rl"):
+            return "right" if edge == "start" else "left"
+        if mode in ("vertical-lr", "sideways-lr"):
+            return "left" if edge == "start" else "right"
+        return "top" if edge == "start" else "bottom"
+    if mode == "sideways-lr":
+        start = "top" if rtl else "bottom"
+    elif mode in _VERTICAL_WRITING_MODES:
+        start = "bottom" if rtl else "top"
+    else:
+        start = "right" if rtl else "left"
+    if edge == "start":
+        return start
+    return {"left": "right", "right": "left", "top": "bottom", "bottom": "top"}[start]
+
+
+_LOGICAL_SIDE_SHORTHANDS = frozenset(f"border-{axis}-{edge}" for axis in ("block", "inline") for edge in ("start", "end"))
+
+
+def _physical_side_shorthand(name: str, writing_mode: str, direction: str) -> str:
+    """``border-inline-start`` & co. as the physical side shorthand they are
+    for this element (``border-left`` in horizontal ltr); other names as is."""
+    if name not in _LOGICAL_SIDE_SHORTHANDS:
+        return name
+    _border, axis, edge = name.split("-")
+    return f"border-{_physical_side(axis, edge, writing_mode, direction)}"
+
+
+def _physical_property(name: str, writing_mode: str, direction: str) -> str:
+    """The physical property a logical longhand is, for an element with this
+    writing mode and direction (CSS Logical 1); any other name unchanged."""
+    entry = _LOGICAL_LONGHANDS.get(name)
+    if entry is None:
+        return name
+    if entry[0] == "size":
+        return entry[2] if writing_mode in _VERTICAL_WRITING_MODES else entry[1]
+    if entry[0] == "corner":
+        sides = (
+            _physical_side("block", entry[1], writing_mode, direction),
+            _physical_side("inline", entry[2], writing_mode, direction),
         )
-        for part in ("width", "style", "color")
-    },
-    **{
-        f"border-{corner}-radius": f"border-{physical}-radius"
-        for corner, physical in (
-            ("start-start", "top-left"),
-            ("start-end", "top-right"),
-            ("end-start", "bottom-left"),
-            ("end-end", "bottom-right"),
-        )
-    },
-}
+        vertical = next(side for side in sides if side in ("top", "bottom"))
+        horizontal = next(side for side in sides if side in ("left", "right"))
+        return f"border-{vertical}-{horizontal}-radius"
+    _kind, pattern, axis, edge = entry
+    return pattern.format(_physical_side(axis, edge, writing_mode, direction))
 
 
 #: properties whose value CSS 2.1 requires to be non-negative (8.4's
@@ -526,8 +558,7 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
             # unrecognised shape -- keep verbatim rather than guess
             emit(name, value, priority)
             continue
-        alias = _LOGICAL_ALIAS_LONGHANDS.get(name)
-        emit(alias if alias is not None else name, value, priority)
+        emit(name, value, priority)
     return entries
 
 
@@ -6050,9 +6081,9 @@ def _resolve_reverting_keywords(cascade: dict, matched: list) -> None:
             if candidates is None:
                 candidates = sorted(
                     (
-                        ((imp, _layer_sort_key(layer, imp), spec, order), declared, imp)
+                        ((imp, _layer_sort_key(layer, imp), spec, order, position), declared, imp)
                         for spec, order, layer, entries in matched
-                        for long_name, declared, priority in entries
+                        for position, (long_name, declared, priority) in enumerate(entries)
                         if long_name == name
                         for imp in (priority == "important",)
                     ),
@@ -6603,9 +6634,11 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                     if not ok:
                         continue
                     matched.append((spec, order, layer, entries))
-                    for name, value, priority in entries:
+                    # (the declaration's place in its rule settles a logical
+                    # and a physical declaration of the same side, mapped below)
+                    for position, (name, value, priority) in enumerate(entries):
                         important = priority == "important"
-                        key = (important, _layer_sort_key(layer, important), spec, order)
+                        key = (important, _layer_sort_key(layer, important), spec, order, position)
                         if name not in cascade or key > cascade[name][0]:
                             cascade[name] = (key, value, important)
             _resolve_reverting_keywords(cascade, matched)
@@ -6615,7 +6648,21 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             # (``dir=auto`` needs the element's text; it inherits instead)
             direction = str(element.getAttribute("dir") or "").strip().lower() if element.hasAttribute("dir") else ""
             if direction in ("ltr", "rtl"):
-                cascade["direction"] = ((False, (-1, 0), (0, 0, 0), 0), direction, False)
+                cascade["direction"] = ((False, (-1, 0), (0, 0, 0), 0, 0), direction, False)
+        if not _LOGICAL_LONGHAND_NAMES.isdisjoint(cascade):
+            # each logical winner onto its physical side for this element, a
+            # logical and a physical declaration of that side won by the one
+            # ranked higher (CSS Logical 1 4: they share a computed value)
+            writing_mode, direction = self._logical_modes(
+                {name: cascade[name][1] for name in ("writing-mode", "direction") if name in cascade}
+            )
+            for name in sorted(_LOGICAL_LONGHAND_NAMES.intersection(cascade), key=lambda name: cascade[name][0]):
+                key, value, important = cascade.pop(name)
+                target = _physical_property(name, writing_mode, direction)
+                if isinstance(value, str) and value.startswith(_PENDING_SUBSTITUTION):
+                    value = f"{value}\x01{name}"  # (a shorthand's pending value: pick this longhand)
+                if target not in cascade or key > cascade[target][0]:
+                    cascade[target] = (key, value, important)
         result = {name: (value, important) for name, (_, value, important) in cascade.items()}
         resolver = _PRESENTATIONAL_HINT_RESOLVER
         # A pseudo-element has no HTML attributes of its own to carry a
@@ -6667,7 +6714,19 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         # (an element's style attribute is its own: a pseudo-element only
         # inherits from it -- CSS Style Attributes 1)
         inline = "" if self._pseudo else getattr(element, "getAttribute", lambda *_: "")("style") or ""
-        for name, value, priority in _parse_css_declarations(inline):
+        inline_entries = _parse_css_declarations(inline)
+        if any(name in _LOGICAL_LONGHAND_NAMES or name in _LOGICAL_SIDE_SHORTHANDS for name, _, _ in inline_entries):
+            # mapped in order, so the later of a logical and a physical one wins
+            writing_mode, direction = self._logical_modes(
+                {name: author[name][0] for name in ("writing-mode", "direction") if name in author}
+            )
+            inline_entries = [
+                (_physical_property(name, writing_mode, direction), value, priority)
+                if name in _LOGICAL_LONGHAND_NAMES
+                else (_physical_side_shorthand(name, writing_mode, direction), value, priority)
+                for name, value, priority in inline_entries
+            ]
+        for name, value, priority in inline_entries:
             if priority != "important":
                 covering = _cssom.LONGHAND_TO_SHORTHANDS.get(name, ())
                 if name in important_author or any(shorthand in important_author for shorthand in covering):
@@ -6930,6 +6989,27 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         if own_monospace == parent_monospace:
             return px
         return px * _MONOSPACE_FONT_SIZE_SCALE if own_monospace else px / _MONOSPACE_FONT_SIZE_SCALE
+
+    def _logical_modes(self, declared: dict) -> "tuple[str, str]":
+        """The writing mode and direction this element's logical properties
+        map with: its own (author ``declared``, inline style over it), else
+        its parent's computed values."""
+        inline = "" if self._pseudo else str(getattr(self._element, "getAttribute", lambda *_: "")("style") or "")
+        own_inline = (
+            {name: value for name, value, _ in _parse_css_declarations(inline)}
+            if ("writing-mode" in inline or "direction" in inline)
+            else {}
+        )
+        modes = []
+        for name, initial in (("writing-mode", "horizontal-tb"), ("direction", "ltr")):
+            value = str(own_inline.get(name) or declared.get(name) or "").strip().lower()
+            if value == "initial":
+                value = initial
+            if not value or value in _CSS_WIDE_KEYWORDS or "var(" in value:
+                parent = self._parent_computed()
+                value = (parent.getPropertyValue(name) if parent is not None else "") or initial
+            modes.append(value)
+        return modes[0], modes[1]
 
     def _has_absolute_font_size(self) -> bool:
         """Blink's ``FontDescription::IsAbsoluteSize``: the font size was set
@@ -7976,6 +8056,9 @@ class _ResolvedView:
         """A pending-substitution longhand's value: its shorthand's value with
         var() substituted, expanded, this longhand picked out -- or None if the
         shorthand is then invalid (CSS Variables 1 3.2)."""
+        marker, _, pick = marker.partition("\x01")
+        if pick:
+            name = pick  # (mapped from this logical longhand)
         pairs = self._pending.get(marker)
         if pairs is None:
             shorthand, _, raw = marker[len(_PENDING_SUBSTITUTION) :].partition("\x00")

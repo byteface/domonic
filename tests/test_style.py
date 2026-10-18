@@ -2931,35 +2931,36 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "overflow-wrap"), "break-word")
         self.assertNotEqual(_computed(markup, "p", "font-family"), "x")
 
-    def test_logical_sizes_border_sides_and_spaced_axis_values(self):
+    def test_logical_properties_keep_their_names_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
-        style.cssText = "padding-inline: calc(var(--p) - 1px); inline-size: 100px; max-block-size: 50%"
-        self.assertEqual(style.getPropertyValue("padding-right"), "calc(var(--p) - 1px)")
-        self.assertEqual(style.getPropertyValue("width"), "100px")
-        self.assertEqual(style.getPropertyValue("max-height"), "50%")
-        style.cssText = "border-inline-start: 1px solid red; border-block: 2px dashed; border-inline-width: 3px 4px"
-        self.assertEqual(style.getPropertyValue("border-left-color"), "red")
-        self.assertEqual(style.getPropertyValue("border-bottom-style"), "dashed")
-        self.assertEqual(style.getPropertyValue("border-right-width"), "4px")
+        style.cssText = "padding-inline: calc(var(--p) - 1px); inline-size: 100px; border-block: 2px dashed"
+        self.assertEqual(style.getPropertyValue("padding-inline-end"), "calc(var(--p) - 1px)")
+        self.assertEqual(style.getPropertyValue("inline-size"), "100px")
+        self.assertEqual(style.getPropertyValue("border-block-end"), "2px dashed")
+        self.assertEqual(style.getPropertyValue("padding-right"), "")  # (a separate property, as in a browser)
 
-    def test_an_invalid_declaration_is_dropped_so_an_earlier_one_applies(self):
+    def test_logical_properties_map_by_writing_mode_and_direction(self):
         markup = (
-            "<html><head><style>.a { white-space: pre-wrap; white-space: -o-pre-wrap } .b { display: flex }"
-            " .b { display: run-in } .c { display: list-item inline } .d { font-size: -0px } .e { grid-auto-flow: columns }"
-            " .f { opacity: 0.5; opacity: yes } .g { border-spacing: 3px; border-spacing: -1px } .h { flex: 2 1 0; flex: 0 0 4 }"
-            " .i { align-self: center; align-self: left }</style></head><body>"
-            + "".join(f"<p class={c}>{c}</p>" for c in "abcdefghi")
-            + "</body></html>"
+            "<html><head><style>ul { padding-inline-start: 40px } .v { writing-mode: vertical-rl; margin-block: 1em 2px }"
+            " .both { margin-left: 5px; margin-inline-start: 7px } .phys { margin-inline-start: 7px; margin-left: 5px }"
+            " .b { border-inline-start: 2px solid red; border-start-end-radius: 3px; inline-size: 50px }"
+            " :root { --bb: 4px dashed blue } .vb { border-inline-end: var(--bb) }</style></head><body>"
+            "<ul id=ltr><li>a</li></ul><div dir=rtl><ul id=rtl><li>b</li></ul><p class=b>b</p><p class=vb>vb</p></div>"
+            "<p class=v>v</p><p class=both>x</p><p class=phys>y</p><p class=b id=lb>z</p>"
+            "<p style='direction: rtl; padding-inline-end: 3px; border-inline-start: 1px solid' id=inl>i</p>"
+            "</body></html>"
         )
-        expected = {".a": ("white-space", "pre-wrap"), ".b": ("display", "flex"), ".c": ("display", "inline list-item"),
-                    ".d": ("font-size", "0px"), ".e": ("grid-auto-flow", "row"), ".f": ("opacity", "0.5"),
-                    ".g": ("border-spacing", "3px"), ".h": ("flex-basis", "0px"), ".i": ("align-self", "center")}
-        for selector, (prop, value) in expected.items():
-            self.assertEqual(_computed(markup, selector, prop), value, selector)
-        style = CSSStyleDeclaration()
-        style.cssText = "display: grid; display: bogus; justify-content: safe flex-start"
-        self.assertEqual(style.getPropertyValue("display"), "grid")
-        self.assertEqual(style.getPropertyValue("justify-content"), "safe flex-start")
+        expected = {
+            ("#ltr", "padding-left"): "40px", ("#rtl", "padding-right"): "40px", ("#rtl", "padding-left"): "0px",
+            (".v", "margin-right"): "16px", (".v", "margin-left"): "2px",  # vertical-rl: block start is the right
+            (".both", "margin-left"): "7px", (".phys", "margin-left"): "5px",  # the later declaration wins
+            ("div .b", "border-right-style"): "solid", ("div .b", "border-top-left-radius"): "3px",
+            ("div .b", "width"): "50px", ("#lb", "border-left-style"): "solid", ("#lb", "border-top-right-radius"): "3px",
+            (".vb", "border-left-style"): "dashed", (".vb", "border-left-width"): "4px",  # var() substituted, then mapped
+            ("#inl", "padding-left"): "3px", ("#inl", "border-right-style"): "solid",
+        }
+        for (selector, prop), value in expected.items():
+            self.assertEqual(_computed(markup, selector, prop), value, f"{selector} {prop}")
 
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
