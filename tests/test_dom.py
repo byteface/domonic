@@ -6262,6 +6262,14 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(str(keep.previousSibling), "<b>before-keep</b>")
         self.assertEqual(str(keep.nextSibling), "<b>after-keep</b>")
 
+    def test_iterate_skips_str_subclass_children(self):
+        from domonic.javascript import String
+
+        parent = div(span("a"), String("text"), [b("in a list"), String("more")])
+        walked = []
+        parent._iterate(parent, walked.append)
+        self.assertEqual([node.tagName for node in walked], ["div", "span", "b"])
+
     def test_split_text_keeps_siblings_parented(self):
         text = Text("hello world")
         parent = div(span(), text, span())

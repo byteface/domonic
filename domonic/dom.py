@@ -2445,21 +2445,13 @@ class Node(EventTarget):
         elif isinstance(element, list):
             elements = element
         for el in elements:
-            if type(el) not in [str, list, dict, int, float, tuple, object, set]:
-                # callback(el)
+            # anything that isn't a Node is text -- including a ``str`` subclass
+            # such as ``domonic.javascript.String``
+            if isinstance(el, Node):
                 el._iterate(el, callback)
             elif isinstance(el, list):  # if someone is incorrectly using a list as a child
                 for e in el:
-                    if type(e) not in (
-                        str,
-                        list,
-                        dict,
-                        int,
-                        float,
-                        tuple,
-                        object,
-                        set,
-                    ):
+                    if isinstance(e, Node):
                         e._iterate(e, callback)
 
     def __bool__(self) -> bool:
