@@ -618,6 +618,23 @@ def _html_root_matches(root: "Element", query: str) -> bool:
     return False
 
 
+_BS4_SELECTOR_ENGINE: Any = None
+
+
+def _bs4_selector_engine() -> Any:
+    """``domonic.bs4``'s compound matchers and cached chain parser, imported on
+    first use (``domonic.bs4`` imports this module) and kept: the cascade
+    calls ``_matches_selector_chain`` hundreds of thousands of times a page."""
+    global _BS4_SELECTOR_ENGINE
+    if _BS4_SELECTOR_ENGINE is None:
+        try:
+            from domonic.bs4 import _match_parsed_selector, _match_simple_pseudo, _parse_selector_chain
+        except Exception:
+            return None
+        _BS4_SELECTOR_ENGINE = (_match_parsed_selector, _match_simple_pseudo, _parse_selector_chain)
+    return _BS4_SELECTOR_ENGINE
+
+
 def _node_is_connected(node: "Node") -> bool:
     try:
         return isinstance(node.rootNode, Document)
@@ -5232,30 +5249,13 @@ class Element(Node):
         A lone compound (no combinator) reduces to matching it against
         ``self`` and stopping -- the walk below only has work to do once
         there is a second compound to its left."""
-        try:
-            from domonic.bs4 import (
-                _element_children,
-                _match_parsed_selector,
-                _match_simple_pseudo,
-                _parse_stripped_selector,
-                _split_simple_selector_chain,
-                _strip_simple_pseudo,
-            )
-        except Exception:
+        engine = _bs4_selector_engine()
+        if engine is None:
             return None
-        parts = _split_simple_selector_chain(selector)
-        if not parts:
+        _match_parsed_selector, _match_simple_pseudo, _parse_selector_chain = engine
+        parsed = _parse_selector_chain(selector)  # (lru_cache'd: the cascade asks again and again)
+        if not parsed:
             return None
-        parsed = []
-        for combinator, simple in parts:
-            stripped = _strip_simple_pseudo(simple)
-            if stripped is None:
-                return None
-            simple_sel, pseudo = stripped
-            compound = _parse_stripped_selector(simple_sel)
-            if compound is None:
-                return None
-            parsed.append((combinator, compound, pseudo))
 
         cache: dict = {}
 

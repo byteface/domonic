@@ -1870,10 +1870,14 @@ class TestCase(unittest.TestCase):
             document.appendChild(parent)
             self.assertEqual(ComputedStyleDeclaration(child).getPropertyValue("color"), "rgb(0, 128, 0)")
 
-        chain_info = _split_simple_selector_chain.cache_info()
+        # the chain matcher parses through _parse_selector_chain's cache, so
+        # the split under it runs once
+        chain_info = _parse_selector_chain.cache_info()
+        split_info = _split_simple_selector_chain.cache_info()
         simple_info = Element._parse_simple_selector.cache_info()
         self.assertLessEqual(chain_info.misses, 2)
         self.assertGreaterEqual(chain_info.hits, 4)
+        self.assertLessEqual(split_info.misses, 2)
         self.assertLessEqual(simple_info.misses, 4)
         self.assertGreaterEqual(simple_info.hits, 4)
 
