@@ -2564,6 +2564,19 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "--plain"), "0")  # unregistered: as written
         self.assertEqual(_computed(markup, "p", "margin-left"), "1px")
 
+    def test_computed_font_family_is_serialised_like_a_browser(self):
+        markup = self.page(
+            "p { font-family: 'DejaVu Sans', Arial, Sans-Serif } i { font: 16px Times New Roman }"
+            " b { font-family: 'monospace' } code { font-family: monospace }",
+            "<p>p</p><i>i</i><b>b</b><code>c</code>",
+        )
+        self.assertEqual(_computed(markup, "p", "font-family"), '"DejaVu Sans", Arial, sans-serif')
+        self.assertEqual(_computed(markup, "i", "font-family"), '"Times New Roman"')
+        self.assertEqual(_computed(markup, "b", "font-family"), '"monospace"')
+        # a family named "monospace" isn't the generic: no 13px quirk for it
+        self.assertEqual(_computed(markup, "b", "font-size"), "16px")
+        self.assertEqual(_computed(markup, "code", "font-size"), "13px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

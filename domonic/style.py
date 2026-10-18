@@ -6679,6 +6679,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 return composed if composed is not None else value
             if target == "display":
                 return self._computed_display(value)
+            if target == "font-family":
+                return _serialize_font_family(value)
             mapped = _COMPUTED_KEYWORD_MAP.get(target)
             if mapped is not None:
                 return mapped.get(value.strip().lower(), value)
@@ -7075,6 +7077,39 @@ _BORDER_WIDTH_TO_STYLE = {
 #: the convention every browser (Chrome included) uses.
 _BORDER_WIDTH_KEYWORD_PX = {"thin": 1.0, "medium": 3.0, "thick": 5.0}
 
+_GENERIC_FONT_FAMILIES = frozenset(
+    {
+        "serif", "sans-serif", "cursive", "fantasy", "monospace", "system-ui", "emoji", "math", "fangsong",
+        "ui-serif", "ui-sans-serif", "ui-monospace", "ui-rounded",
+    }
+)  # fmt: skip
+_FONT_FAMILY_RESERVED = _GENERIC_FONT_FAMILIES | {"inherit", "initial", "unset", "revert", "revert-layer", "default"}
+_CSS_IDENT_RE = re.compile(r"^-?(?:[A-Za-z_\u0080-\U0010ffff]|\\.)(?:[A-Za-z0-9_\-\u0080-\U0010ffff]|\\.)*$")
+
+
+@functools.lru_cache(maxsize=512)
+def _serialize_font_family(value: str) -> str:
+    """A computed ``font-family`` serialised as browsers do (Blink's
+    ``SerializeFontFamily``): a family name bare when it is one identifier,
+    as a double-quoted string otherwise -- several words, or a name that would
+    read as a generic family or CSS-wide keyword (``"monospace"`` quoted is a
+    family, not the generic); generic families as lower-case keywords."""
+    out = []
+    for part in _split_top_level_commas(value):
+        if len(part) >= 2 and part[0] in "'\"" and part[-1] == part[0]:
+            name = re.sub(r"\\(.)", r"\1", part[1:-1])
+        else:
+            name = " ".join(part.split())
+            if name.lower() in _GENERIC_FONT_FAMILIES:
+                out.append(name.lower())
+                continue
+        if _CSS_IDENT_RE.match(name) and name.lower() not in _FONT_FAMILY_RESERVED:
+            out.append(name)
+        else:
+            out.append('"' + name.replace("\\", "\\\\").replace('"', '\\"') + '"')
+    return ", ".join(out)
+
+
 #: tags a real browser's UA stylesheet gives display:none outright, since
 #: nothing about them is content.
 _UA_DISPLAY_NONE_TAGS = frozenset({"head", "title", "script", "style", "meta", "link", "noscript", "template"})
@@ -7224,7 +7259,9 @@ def _is_exactly_generic_monospace(font_family: "str | None") -> bool:
     family name does not count, only the exact generic keyword alone (the
     well-known ``font-family: monospace, monospace`` trick relies on the
     second entry making this ``False`` again)."""
-    return (font_family or "").strip().strip("'\"").lower() == "monospace"
+    # (the computed value is serialised: the generic is bare, a family that
+    # happens to be named "monospace" is quoted and doesn't count)
+    return (font_family or "").strip().lower() == "monospace"
 
 #: absolute length unit -> px (CSS reference pixel: 1in == 96px)
 _ABSOLUTE_LENGTH_UNITS = {
