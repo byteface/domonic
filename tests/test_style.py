@@ -2962,6 +2962,14 @@ class StylesheetParsingTest(unittest.TestCase):
         for (selector, prop), value in expected.items():
             self.assertEqual(_computed(markup, selector, prop), value, f"{selector} {prop}")
 
+    def test_supports_checks_the_value_where_a_grammar_is_known(self):
+        self.assertFalse(CSS.supports("(display: bogus-value-xyz)"))
+        self.assertFalse(CSS.supports("display", "nope"))
+        self.assertFalse(CSS.supports("(padding: -1px)"))
+        self.assertTrue(CSS.supports("(display: inline flow-root)"))
+        self.assertTrue(CSS.supports("(aspect-ratio: 1)"))
+        self.assertTrue(CSS.supports("(color: red)"))
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"

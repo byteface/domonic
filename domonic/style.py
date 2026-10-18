@@ -8211,7 +8211,9 @@ def _supports_property_value(property_name: str, value: str) -> bool:
     normalized = _css_property_name(property_name)
     if normalized.startswith("--"):
         return len(normalized) > 2
-    return normalized in _known_css_property_names()
+    if _is_invalid_non_negative_declaration(normalized, str(value).strip()):
+        return False  # (the value is outside the property's grammar)
+    return normalized in _known_css_property_names() or normalized in _cssom.INITIAL_VALUES
 
 
 def _supports_condition(condition_text: str) -> bool:
