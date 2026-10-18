@@ -2639,6 +2639,11 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(style("p", "cursor"), 'url("https://example.com/docs/c.cur"), auto')
         self.assertEqual(style("b", "background-image"), 'url("https://cdn.example.org/img/b.png")')
 
+    def test_computed_content_and_quotes_strings_are_double_quoted(self):
+        markup = self.page("p::before { content: 'x' counter(c) 'it\\'s' } q { quotes: '«' '»' }", "<p>p</p><q>q</q>")
+        self.assertEqual(_computed(markup, "p", "content", "::before"), '"x" counter(c) "it\'s"')
+        self.assertEqual(_computed(markup, "q", "quotes"), '"«" "»"')
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

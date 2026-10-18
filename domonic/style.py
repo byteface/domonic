@@ -6940,6 +6940,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 return self._computed_display(value)
             if target == "font-family":
                 return _serialize_font_family(value)
+            if target in ("content", "quotes") and "'" in value:
+                return _double_quote_strings(value)
             mapped = _COMPUTED_KEYWORD_MAP.get(target)
             if mapped is not None:
                 return mapped.get(value.strip().lower(), value)
@@ -7437,6 +7439,37 @@ def _serialize_font_family(value: str) -> str:
         else:
             out.append('"' + name.replace("\\", "\\\\").replace('"', '\\"') + '"')
     return ", ".join(out)
+
+
+def _double_quote_strings(value: str) -> str:
+    """``value`` with each single-quoted string serialised the CSSOM way, in
+    double quotes (``content: 'x'`` computes to ``"x"``)."""
+    out, index, length = [], 0, len(value)
+    while index < length:
+        char = value[index]
+        if char == '"':
+            end = index + 1
+            while end < length and value[end] != '"':
+                end += 2 if value[end] == "\\" else 1
+            out.append(value[index : end + 1])
+            index = end + 1
+            continue
+        if char == "'":
+            end, text = index + 1, []
+            while end < length and value[end] != "'":
+                if value[end] == "\\" and end + 1 < length:
+                    text.append(value[end + 1])
+                    end += 2
+                    continue
+                text.append(value[end])
+                end += 1
+            body = "".join(text).replace("\\", "\\\\").replace('"', '\\"')
+            out.append(f'"{body}"')
+            index = end + 1
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out)
 
 
 #: tags a real browser's UA stylesheet gives display:none outright, since
