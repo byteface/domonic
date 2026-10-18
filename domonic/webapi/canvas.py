@@ -44,6 +44,19 @@ def _json_safe(value: Any) -> Any:
         return {str(key): _json_safe(item) for key, item in value.items()}
     if isinstance(value, (bytes, bytearray, memoryview)):
         return list(bytes(value))
+    # (the canvas's own objects, recorded so a replay can redraw them -- a
+    # repr() string lost a Path2D's commands and a gradient's stops)
+    if isinstance(value, Path2D):
+        return {"type": "Path2D", "commands": _json_safe(value.commands)}
+    if isinstance(value, CanvasGradient):
+        return {
+            "type": "CanvasGradient",
+            "kind": value.kind,
+            "args": _json_safe(value.args),
+            "colorStops": [[float(offset), str(color)] for offset, color in value.colorStops],
+        }
+    if isinstance(value, CanvasPattern):
+        return {"type": "CanvasPattern", "repetition": value.repetition, "image": _json_safe(value.image)}
     return repr(value)
 
 

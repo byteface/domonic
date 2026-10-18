@@ -2712,5 +2712,27 @@ onmessage = handle
         """
 
 
+
+class CanvasRecordingTest(unittest.TestCase):
+    def test_recorded_commands_keep_paths_gradients_and_patterns_replayable(self):
+        import json
+
+        from domonic.webapi.canvas import CanvasRenderingContext2D, Path2D
+
+        ctx = CanvasRenderingContext2D(None)
+        path = Path2D()
+        path.moveTo(1, 2)
+        path.lineTo(3, 4)
+        gradient = ctx.createLinearGradient(0, 0, 10, 0)
+        gradient.addColorStop(0, "red")
+        gradient.addColorStop(1, "blue")
+        ctx.fillStyle = gradient
+        ctx.fill(path)
+        command = json.loads(json.dumps(ctx.commands[-1]))  # (plain data)
+        self.assertEqual(command["args"][0]["type"], "Path2D")
+        self.assertEqual([c["name"] for c in command["args"][0]["commands"]], ["moveTo", "lineTo"])
+        self.assertEqual(command["state"]["fillStyle"]["colorStops"], [[0.0, "red"], [1.0, "blue"]])
+        self.assertEqual(command["state"]["fillStyle"]["kind"], "linear")
+
 if __name__ == "__main__":
     unittest.main()
