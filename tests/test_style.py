@@ -2577,6 +2577,16 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "b", "font-size"), "16px")
         self.assertEqual(_computed(markup, "code", "font-size"), "13px")
 
+    def test_monospace_quirk_respects_an_inherited_absolute_size(self):
+        markup = self.page(
+            "body { font-size: 12px } .k { font-size: medium } pre { font-family: monospace }"
+            " .e { font-size: 2em; font-family: monospace }",
+            "<pre>a</pre><div class=k><pre id=b>b</pre><p class=e>e</p></div>",
+        )
+        self.assertEqual(_computed(markup, "pre", "font-size"), "12px")  # absolute size inherited from body
+        self.assertEqual(_computed(markup, "#b", "font-size"), "13px")  # a keyword clears it
+        self.assertEqual(_computed(markup, ".e", "font-size"), "26px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

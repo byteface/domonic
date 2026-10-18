@@ -6776,17 +6776,39 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         one -- the 13/16 ratio is a fixed constant, not something derived
         from real glyph metrics, so it needs no font data domonic doesn't
         have."""
-        own_declared = str(self._resolved._declared.get("font-size") or "").strip()
-        if own_declared and "var(" in own_declared.lower():
-            own_declared = _expand_var_references(own_declared, self._custom_property).strip()
-        own_match = _LENGTH_TOKEN_RE.match(own_declared) if own_declared else None
-        if own_match and own_match.group(2).lower() in _ABSOLUTE_LENGTH_UNITS:
-            return px  # an explicit absolute length always opts out
+        if self._has_absolute_font_size():
+            return px  # an absolute length here or inherited opts out
         own_monospace = _is_exactly_generic_monospace(self.getPropertyValue("font-family"))
         parent_monospace = _is_exactly_generic_monospace(parent.getPropertyValue("font-family")) if parent else False
         if own_monospace == parent_monospace:
             return px
         return px * _MONOSPACE_FONT_SIZE_SCALE if own_monospace else px / _MONOSPACE_FONT_SIZE_SCALE
+
+    def _has_absolute_font_size(self) -> bool:
+        """Blink's ``FontDescription::IsAbsoluteSize``: the font size was set
+        as an absolute length (or calc) on this element -- or, through
+        ``em`` / ``%`` / an inherited size, on an ancestor; a keyword size
+        clears it. A monospace ``<pre>`` under ``body { font-size: 12px }``
+        keeps 12px (CSS2/text text-indent-intrinsic-003)."""
+        cached = self.__dict__.get("_absolute_font_size_cache")
+        if cached is not None:
+            return cached
+        declared = str(self._resolved._declared.get("font-size") or "").strip()
+        if declared and "var(" in declared.lower():
+            declared = _expand_var_references(declared, self._custom_property).strip()
+        low = declared.lower()
+        match = _LENGTH_TOKEN_RE.match(low) if low else None
+        if match and (match.group(2) in _ABSOLUTE_LENGTH_UNITS or match.group(2) == "rem"):
+            result = True
+        elif _has_math_function(low):
+            result = True
+        elif low in _ABSOLUTE_FONT_SIZE_KEYWORDS or low in ("smaller", "larger", "initial", "unset", "revert"):
+            result = False
+        else:  # unset / inherit / em / % / ex ...: whatever the parent's was
+            parent = self._parent_computed()
+            result = parent._has_absolute_font_size() if parent is not None else False
+        self.__dict__["_absolute_font_size_cache"] = result
+        return result
 
     def _viewport_px(self) -> "tuple[float, float] | None":
         """The window's ``(innerWidth, innerHeight)`` -- what viewport units
