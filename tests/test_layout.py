@@ -295,5 +295,25 @@ class GeometryHookUsesAnAttachedBox(unittest.TestCase):
         self.assertEqual((rect.x, rect.y), (7, 8))
 
 
+
+class LayoutStyleVarTest(unittest.TestCase):
+    def test_every_field_substitutes_var_and_line_name_groups_stay_whole(self):
+        import domonic
+        from domonic.layout import Fr, Keyword, Length, layout_style
+
+        page = domonic.parseString(
+            "<html><head><style>:root { --w: 120px; --d: flex; --cols: 1fr 2fr }"
+            " p { width: var(--w); display: var(--d); grid-template-columns: var(--cols); margin-left: var(--x, 3px) }"
+            " .g { display: grid; grid-template-columns: [a b] 1fr [c] 2fr }</style></head>"
+            "<body><p>x</p><div class=g></div></body></html>"
+        )
+        style = layout_style(page.querySelector("p"))
+        self.assertEqual(style.width, Length(120.0))
+        self.assertEqual(style.display, Keyword("flex"))
+        self.assertEqual(style.margin.left, Length(3.0))
+        self.assertEqual(style.gridTemplateColumns, [Fr(1.0), Fr(2.0)])
+        grid = layout_style(page.querySelector(".g"))
+        self.assertEqual(grid.gridTemplateColumns, [Keyword("[a b]"), Fr(1.0), Keyword("[c]"), Fr(2.0)])
+
 if __name__ == "__main__":
     unittest.main()

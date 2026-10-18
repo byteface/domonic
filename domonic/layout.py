@@ -259,14 +259,15 @@ def _parse_grid_line(raw: "str | None") -> Any:
 
 def _split_track_list(text: str) -> list[str]:
     """Split a track list on whitespace, ignoring whitespace inside a
-    function call (``repeat(2, 1fr)``, ``minmax(10px, 1fr)``)."""
+    function call (``repeat(2, 1fr)``, ``minmax(10px, 1fr)``) or a line-name
+    group (``[a b]`` is one token, not ``[a`` and ``b]``)."""
     tokens = []
     depth = 0
     current = ""
     for char in text:
-        if char == "(":
+        if char in "([":
             depth += 1
-        elif char == ")":
+        elif char in ")]":
             depth -= 1
         if char.isspace() and depth == 0:
             if current:
@@ -383,8 +384,17 @@ class LayoutStyle:
         if cached is not None:
             return cached
         # the raw cascaded (author + inline, shorthand-expanded, inherited)
-        # string for a longhand -- *not* getComputedStyle's used value.
-        raw = computed._resolved.get
+        # string for a longhand -- *not* getComputedStyle's used value --
+        # with its var()s substituted (``width: var(--w)``, ``display:
+        # var(--d)``, ``grid-template-columns: var(--cols)``), as the cascade
+        # would before computing it.
+        resolved = computed._resolved.get
+
+        def raw(name: str) -> Any:
+            value = resolved(name)
+            if isinstance(value, str) and "var(" in value:
+                value = _expand_var_references(value, computed._custom_property).strip()
+            return value
 
         def dim(name: str, **kwargs: Any) -> Any:
             return _parse_length_or_percent(raw(name), computed, **kwargs)
