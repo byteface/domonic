@@ -446,7 +446,7 @@ def initial_value(name: str) -> str:
 
 def expand_box_values(value: str) -> tuple[str, str, str, str]:
     """Expand a 1-4 token box value into (top, right, bottom, left)."""
-    parts = value.split()
+    parts = _tokens(value)
     if len(parts) == 1:
         return parts[0], parts[0], parts[0], parts[0]
     if len(parts) == 2:
@@ -543,10 +543,48 @@ def _split_ws_keep_funcs(value: str) -> list[str]:
     return tokens
 
 
+def _tokens(value: str) -> list[str]:
+    """``value`` split on top-level whitespace: a function call
+    (``rgba(0, 0, 0, .5)``, ``calc(50% - 10px)``) or a quoted string stays one
+    token."""
+    tokens: list[str] = []
+    buf: list[str] = []
+    depth = 0
+    quote = None
+    for char in value.strip():
+        if quote is not None:
+            buf.append(char)
+            if char == quote:
+                quote = None
+        elif char in "\"'":
+            quote = char
+            buf.append(char)
+        elif char == "(":
+            depth += 1
+            buf.append(char)
+        elif char == ")":
+            depth = max(depth - 1, 0)
+            buf.append(char)
+        elif depth == 0 and char.isspace():
+            if buf:
+                tokens.append("".join(buf))
+                buf = []
+        else:
+            buf.append(char)
+    if buf:
+        tokens.append("".join(buf))
+    return tokens
+
+
+_MATH_FUNCTION_PREFIXES = ("calc(", "min(", "max(", "clamp(", "-webkit-calc(")
+
+
 def _looks_like_length(token: str) -> bool:
     token = token.strip().lower()
     if token in _BORDER_WIDTH_KEYWORDS:
         return True
+    if token.startswith(_MATH_FUNCTION_PREFIXES):
+        return True  # (a math function in a length slot reads as a length)
     return (
         bool(token)
         and (token[0].isdigit() or token[0] in "+-.")
@@ -608,7 +646,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
 
     if name in ("border", "border-top", "border-right", "border-bottom", "border-left", "outline", "column-rule"):
         width = style = color = None
-        for token in value.split():
+        for token in _tokens(value):
             tl = token.lower()
             if tl in _BORDER_STYLE_KEYWORDS and style is None:
                 style = token
@@ -640,7 +678,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             return [("flex-grow", "0"), ("flex-shrink", "0"), ("flex-basis", "auto")]
         if lower == "auto":
             return [("flex-grow", "1"), ("flex-shrink", "1"), ("flex-basis", "auto")]
-        parts = value.split()
+        parts = _tokens(value)
         grow, shrink, basis = "1", "1", "0%"
         nums = [p for p in parts if p.replace(".", "", 1).isdigit()]
         non_nums = [p for p in parts if p not in nums]
@@ -667,7 +705,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         return None
 
     if name == "flex-flow":
-        parts = value.split()
+        parts = _tokens(value)
         if len(parts) == 1:
             token = parts[0]
             token_lower = token.lower()
@@ -685,7 +723,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         "flex-flow",
         "columns",
     ):
-        parts = value.split()
+        parts = _tokens(value)
         if len(parts) == 1:
             return [(long, parts[0]) for long in longs]
         if len(parts) == len(longs):
@@ -694,7 +732,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
 
     if name == "list-style":
         type_ = position = image = None
-        for token in value.split():
+        for token in _tokens(value):
             tl = token.lower()
             if tl in ("inside", "outside"):
                 position = token
@@ -712,7 +750,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         line = style = color = None
         line_kw = {"none", "underline", "overline", "line-through", "blink"}
         style_kw = {"solid", "double", "dotted", "dashed", "wavy"}
-        for token in value.split():
+        for token in _tokens(value):
             tl = token.lower()
             if tl in line_kw:
                 line = f"{line} {token}".strip() if line else token
@@ -728,7 +766,7 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
 
     if name == "font":
         # [ style || variant || weight || stretch ]? size [ / line-height ]? family
-        tokens = value.split()
+        tokens = _tokens(value)
         style = variant = weight = stretch = "normal"
         size = line_height = ""
         family_start = 0

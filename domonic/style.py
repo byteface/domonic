@@ -5897,22 +5897,6 @@ def _layer_sort_key(layer: int, important: bool) -> tuple[int, int]:
     return (1, 0) if layer == 0 else (0, layer)
 
 
-def _has_paren_internal_whitespace(value: str) -> bool:
-    """Whether *value* has whitespace nested inside a function call's
-    parens -- e.g. the space after ``var(--missing,`` in ``var(--missing,
-    4px)``, as opposed to ``var(--gap)`` (no comma/space inside at all) or
-    plain top-level whitespace like ``1px solid red``."""
-    depth = 0
-    for char in value:
-        if char == "(":
-            depth += 1
-        elif char == ")":
-            depth = max(depth - 1, 0)
-        elif char.isspace() and depth > 0:
-            return True
-    return False
-
-
 def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
     """A cascade-only, fully-longhand view of one rule's declarations.
 
@@ -5944,10 +5928,7 @@ def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
             marker = f"{_PENDING_SUBSTITUTION}{name}\x00{value}"
             longhands = [long_name for long_name, _ in (_cssom.expand_shorthand(name, "initial") or ())]
             pairs = [(name, value)] + [(long_name, marker) for long_name in longhands]
-        # the box/border/font/background splitters below tokenize on bare
-        # whitespace, so a value with a space inside a function call's parens
-        # is left as the single shorthand entry, exactly as authored
-        elif _cssom.is_shorthand(name) and not _has_paren_internal_whitespace(value):
+        elif _cssom.is_shorthand(name):
             pairs = _cssom.expand_shorthand(name, value)
         for long_name, long_value in pairs if pairs is not None else ((name, value),):
             existing = index_by_name.get(long_name)
@@ -6518,20 +6499,14 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             and (getattr(self._element, "tagName", "") or "").lower() in _UA_DISPLAY_NONE_TAGS
         ):
             return "none"
-        # a shorthand is rebuilt from its (already used-value-resolved) longhands
-        # -- but only once its own raw value has no unresolved var() left in
-        # it: a fallback's internal comma/space isn't safe to split into
-        # per-longhand pieces (see _has_paren_internal_whitespace), so this
-        # shorthand's own longhands were never actually given a real,
-        # correctly-substituted value to rebuild from -- each one falls back
-        # to its bare initial value instead, which "rebuilds" into a
-        # confidently wrong result rather than the real one below.
+        # a shorthand is rebuilt from its (already used-value-resolved)
+        # longhands -- once its value, var()s substituted, is one the
+        # splitter understands (its longhands then hold real values: see the
+        # pending substitution in _expand_shorthands_for_cascade)
         raw_target_value = self._resolved.get(target) or ""
-        if (
-            _cssom.is_shorthand(target)
-            and "var(" not in raw_target_value.lower()
-            and _cssom.expand_shorthand(target, raw_target_value) is not None
-        ):
+        if _cssom.is_shorthand(target) and "var(" in raw_target_value:
+            raw_target_value = _expand_var_references(raw_target_value, self._custom_property).strip()
+        if _cssom.is_shorthand(target) and _cssom.expand_shorthand(target, raw_target_value) is not None:
             built = _cssom.build_shorthand(target, self.getPropertyValue)
             if built:
                 return built

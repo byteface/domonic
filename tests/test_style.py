@@ -2534,6 +2534,22 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, ".g", "font-size"), "20px")
         self.assertEqual(_computed(markup, ".g", "line-height"), "40px")
 
+    def test_shorthands_with_spaces_inside_functions_expand(self):
+        markup = self.page(
+            ".a { border-top: 12px solid rgba(0, 0, 0, .5) } .b { background: linear-gradient(to right, red, blue) no-repeat }"
+            " .c { margin: 0 calc(1px + 2px) } .d { flex: 0 0 calc(50% - 10px) } .e { border: calc(1px + 1px) solid red }"
+            " .f { text-decoration: underline rgba(0, 0, 0, 0.5) }",
+            "".join(f"<p class={c}>{c}</p>" for c in "abcdef"),
+        )
+        self.assertEqual(_computed(markup, ".a", "border-top-width"), "12px")
+        self.assertEqual(_computed(markup, ".a", "border-top-color"), "rgba(0, 0, 0, 0.5)")
+        self.assertEqual(_computed(markup, ".b", "background-image"), "linear-gradient(to right, red, blue)")
+        self.assertEqual(_computed(markup, ".b", "background-repeat"), "no-repeat")
+        self.assertEqual(_computed(markup, ".c", "margin-right"), "3px")
+        self.assertEqual(_computed(markup, ".d", "flex-basis"), "calc(50% - 10px)")
+        self.assertEqual(_computed(markup, ".e", "border-top-width"), "2px")
+        self.assertEqual(_computed(markup, ".f", "text-decoration-color"), "rgba(0, 0, 0, 0.5)")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")
