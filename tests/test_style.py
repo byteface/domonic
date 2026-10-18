@@ -2600,6 +2600,13 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual((expanded["list-style-type"], expanded["list-style-image"]), ("square", "none"))
         self.assertEqual(self.expand("list-style", "inside")["list-style-type"], "disc")
 
+    def test_columns_takes_width_and_count_in_either_order(self):
+        self.assertEqual(self.expand("columns", "6 100px"), {"column-width": "100px", "column-count": "6"})
+        self.assertEqual(self.expand("columns", "100px 6"), {"column-width": "100px", "column-count": "6"})
+        self.assertEqual(self.expand("columns", "6"), {"column-width": "auto", "column-count": "6"})
+        self.assertEqual(self.expand("columns", "auto 12em"), {"column-width": "12em", "column-count": "auto"})
+        self.assertIsNone(self.expand("columns", "1 2"))
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):

@@ -14,6 +14,7 @@ mirror every property a browser knows, only the ones worth resolving.
 
 from __future__ import annotations
 
+import re
 from typing import Callable
 
 # --- inheritance ----------------------------------------------------------
@@ -714,6 +715,26 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
             if token_lower in _FLEX_WRAP_KEYWORDS:
                 return [("flex-direction", "row"), ("flex-wrap", token)]
 
+    if name == "columns":
+        # <'column-width'> || <'column-count'>, either order: an integer is the
+        # count (Multi-column 1 3.4)
+        parts = _tokens(value)
+        if not 1 <= len(parts) <= 2:
+            return None
+        width = count = None
+        for part in parts:
+            if re.fullmatch(r"[+-]?\d+", part):
+                if count is not None:
+                    return None
+                count = part
+            elif part.lower() == "auto":
+                continue
+            elif width is None:
+                width = part
+            else:
+                return None
+        return [("column-width", width or "auto"), ("column-count", count or "auto")]
+
     if name in (
         "overflow",
         "gap",
@@ -721,7 +742,6 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         "place-items",
         "place-self",
         "flex-flow",
-        "columns",
     ):
         parts = _tokens(value)
         if len(parts) == 1:
