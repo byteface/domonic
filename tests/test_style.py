@@ -2707,6 +2707,15 @@ class InitialValuesTest(unittest.TestCase):
 
 
 class InlineStyleTest(unittest.TestCase):
+    def test_css_wide_keywords_are_not_folded_into_a_shorthand(self):
+        style = CSSStyleDeclaration()
+        style.cssText = "border-width: 50px; border-style: solid; border-color: inherit"
+        self.assertEqual(style.cssText, "border-width: 50px; border-style: solid; border-color: inherit;")
+        style.cssText = "margin-top: inherit; margin-right: 1px; margin-bottom: 1px; margin-left: 1px"
+        self.assertNotIn("margin:", style.cssText)
+        style.cssText = "margin-top: unset; margin-right: unset; margin-bottom: unset; margin-left: unset"
+        self.assertEqual(style.cssText, "margin: unset;")
+
     def test_reading_style_does_not_rewrite_the_attribute(self):
         import domonic
         from domonic import _cssom

@@ -5723,7 +5723,16 @@ class CSSStyleDeclaration(Style):
             priorities = {by_name[ln][1] for ln in longs}
             if len(priorities) != 1:
                 continue
-            collapsed = _cssom.build_shorthand(shorthand, lambda ln: by_name.get(ln, ("", ""))[0])
+            # CSSOM 6.7.2: a CSS-wide keyword only collapses into a shorthand
+            # when every longhand has that same keyword (``border-color:
+            # inherit`` mustn't become ``border: 50px solid inherit``)
+            keywords = {str(by_name[ln][0]).strip().lower() for ln in longs}
+            if keywords & _CSS_WIDE_KEYWORDS:
+                if len(keywords) != 1:
+                    continue
+                collapsed = keywords.pop()
+            else:
+                collapsed = _cssom.build_shorthand(shorthand, lambda ln: by_name.get(ln, ("", ""))[0])
             if not collapsed:
                 continue
             priority = priorities.pop()
@@ -5738,7 +5747,11 @@ class CSSStyleDeclaration(Style):
         if all(t in by_name for t in trio):
             prios = {by_name[t][1] for t in trio}
             vals = [by_name[t][0] for t in trio]
-            if len(prios) == 1 and all(v and " " not in v for v in vals):
+            if (
+                len(prios) == 1
+                and all(v and " " not in v for v in vals)
+                and not {v.strip().lower() for v in vals} & _CSS_WIDE_KEYWORDS
+            ):
                 merged = " ".join(v for v in vals if v not in ("medium", "currentcolor")) or vals[1]
                 first_idx = min(i for i, e in enumerate(entries) if e[0] in trio)
                 entries = [e for e in entries if e[0] not in trio]
