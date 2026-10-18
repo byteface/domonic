@@ -192,7 +192,62 @@ def _css_property_name(name: str) -> str:
         return "float"
     if name.startswith("--"):
         return name
-    return Utils.case_kebab(name)
+    if "-" in name or name.islower():
+        # already a CSS name (ASCII case-insensitive): keep its leading hyphen
+        # -- ``-webkit-mask-image`` stays prefixed, and ``-font-family`` is an
+        # unknown property, not ``font-family``
+        kebab = name.lower()
+    else:
+        # a CSSOM IDL attribute: ``marginTop``, ``webkitTransform`` /
+        # ``WebkitTransform`` (CSSOM 6.7.1: -webkit-transform)
+        kebab = Utils.case_kebab(name)
+        if kebab.startswith(_VENDOR_PREFIXES) and name[:1].isalpha():
+            kebab = "-" + kebab
+    return _LEGACY_PROPERTY_ALIASES.get(kebab, kebab)
+
+
+_VENDOR_PREFIXES = ("webkit-", "moz-", "ms-", "o-")
+#: legacy names every browser maps onto the standard property (CSS Grid 1's
+#: grid-*-gap, CSS Text 3's word-wrap, the -webkit- aliases Compat lists)
+_LEGACY_PROPERTY_ALIASES = {
+    "grid-gap": "gap",
+    "grid-row-gap": "row-gap",
+    "grid-column-gap": "column-gap",
+    "word-wrap": "overflow-wrap",
+    "-webkit-flex": "flex",
+    "-webkit-flex-direction": "flex-direction",
+    "-webkit-flex-wrap": "flex-wrap",
+    "-webkit-flex-flow": "flex-flow",
+    "-webkit-flex-grow": "flex-grow",
+    "-webkit-flex-shrink": "flex-shrink",
+    "-webkit-flex-basis": "flex-basis",
+    "-webkit-order": "order",
+    "-webkit-align-items": "align-items",
+    "-webkit-align-self": "align-self",
+    "-webkit-align-content": "align-content",
+    "-webkit-justify-content": "justify-content",
+    "-webkit-transform": "transform",
+    "-webkit-transform-origin": "transform-origin",
+    "-webkit-transform-style": "transform-style",
+    "-webkit-perspective": "perspective",
+    "-webkit-perspective-origin": "perspective-origin",
+    "-webkit-backface-visibility": "backface-visibility",
+    "-webkit-box-sizing": "box-sizing",
+    "-webkit-border-radius": "border-radius",
+    "-webkit-border-top-left-radius": "border-top-left-radius",
+    "-webkit-border-top-right-radius": "border-top-right-radius",
+    "-webkit-border-bottom-left-radius": "border-bottom-left-radius",
+    "-webkit-border-bottom-right-radius": "border-bottom-right-radius",
+    "-webkit-box-shadow": "box-shadow",
+    "-webkit-columns": "columns",
+    "-webkit-column-count": "column-count",
+    "-webkit-column-gap": "column-gap",
+    "-webkit-column-width": "column-width",
+    "-webkit-animation": "animation",
+    "-webkit-transition": "transition",
+    "-webkit-filter": "filter",
+    "-webkit-line-break": "line-break",
+}
 
 
 @functools.lru_cache(maxsize=1024)

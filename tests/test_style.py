@@ -2779,6 +2779,25 @@ class StylesheetParsingTest(unittest.TestCase):
         rule = sheet.cssRules[0]
         self.assertFalse(_supports_condition(rule.conditionText))
 
+    def test_property_names_keep_prefixes_and_map_legacy_aliases(self):
+        from domonic.style import _css_property_name
+
+        self.assertEqual(_css_property_name("-webkit-mask-image"), "-webkit-mask-image")
+        self.assertEqual(_css_property_name("MozBoxSizing"), "-moz-box-sizing")
+        self.assertEqual(_css_property_name("marginTop"), "margin-top")
+        self.assertEqual(_css_property_name("MARGIN-TOP"), "margin-top")
+        self.assertEqual(_css_property_name("-font-family"), "-font-family")  # not a vendor prefix: unknown
+        self.assertEqual(_css_property_name("grid-gap"), "gap")
+        self.assertEqual(_css_property_name("wordWrap"), "overflow-wrap")
+        self.assertEqual(_css_property_name("-webkit-flex-direction"), "flex-direction")
+        markup = (
+            "<html><head><style>.g { display: grid; grid-gap: 1.25rem } p { word-wrap: break-word; -font-family: x }"
+            "</style></head><body><div class=g><p>x</p></div></body></html>"
+        )
+        self.assertEqual(_computed(markup, ".g", "row-gap"), "20px")
+        self.assertEqual(_computed(markup, "p", "overflow-wrap"), "break-word")
+        self.assertNotEqual(_computed(markup, "p", "font-family"), "x")
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"
