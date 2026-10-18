@@ -53,6 +53,192 @@ from domonic.webapi.serviceworker import ServiceWorkerContainer
 from domonic.webapi.webstorage import Storage
 
 
+class _MediaContext:
+    """What a media query is evaluated against."""
+
+    __slots__ = ("width", "height", "features", "resolution", "media_type")
+
+    def __init__(self, width: float, height: float, features: dict, resolution: float, media_type: str) -> None:
+        self.width = float(width)
+        self.height = float(height)
+        self.features = features
+        self.resolution = float(resolution or 1.0)
+        self.media_type = media_type or "screen"
+
+
+_MEDIA_TYPES = frozenset({"all", "screen", "print", "speech", "tty", "tv", "projection", "handheld", "braille",
+                          "embossed", "aural"})  # fmt: skip
+#: range features -> how to read their value (a length, number, ratio or resolution)
+_RANGE_FEATURES = {
+    "width": "length", "height": "length", "device-width": "length", "device-height": "length",
+    "aspect-ratio": "ratio", "device-aspect-ratio": "ratio", "resolution": "resolution",
+    "color": "number", "color-index": "number", "monochrome": "number",
+}  # fmt: skip
+#: discrete features this evaluator answers itself (the rest come from ``features``)
+_STATIC_FEATURES = {"grid": "0", "scan": "progressive", "overflow-block": "scroll", "overflow-inline": "scroll",
+                    "dynamic-range": "standard", "video-dynamic-range": "standard"}  # fmt: skip
+
+
+def _media_feature_value(name: str, context: "_MediaContext") -> "float | str | None":
+    if name in ("width", "device-width"):
+        return context.width
+    if name in ("height", "device-height"):
+        return context.height
+    if name in ("aspect-ratio", "device-aspect-ratio"):
+        return context.width / context.height if context.height else float("inf")
+    if name == "resolution":
+        return context.resolution
+    if name == "color":
+        return 8.0
+    if name in ("color-index", "monochrome"):
+        return 0.0
+    if name == "orientation":
+        return "landscape" if context.width > context.height else "portrait"
+    if name in context.features:
+        return str(context.features[name]).lower()
+    return _STATIC_FEATURES.get(name)
+
+
+def _media_value(text: str, kind: str, context: "_MediaContext") -> "float | None":
+    """A media feature value as a number: px for a length, dppx for a
+    resolution, a quotient for a ratio."""
+    text = text.strip()
+    if kind == "ratio":
+        parts = _split_top_level(text, "/")
+        if len(parts) > 2:
+            return None
+        numbers = [_media_value(part, "number", context) for part in parts]
+        if any(number is None for number in numbers):
+            return None
+        if len(numbers) == 1:
+            return numbers[0]
+        return numbers[0] / numbers[1] if numbers[1] else float("inf")
+    if kind == "resolution":
+        match = re.fullmatch(r"([+-]?(?:\d+\.?\d*|\.\d+))(dppx|x|dpi|dpcm)", text)
+        if match:
+            number = float(match.group(1))
+            return number / {"dppx": 1.0, "x": 1.0, "dpi": 96.0, "dpcm": 96.0 / 2.54}[match.group(2)]
+        return None
+    from domonic.style import _eval_math
+
+    result = _eval_math(text, em_px=16.0, rem_px=16.0, viewport=(context.width, context.height))
+    if result is None:
+        return None
+    number, is_length = result
+    if kind == "length":
+        return number if is_length or number == 0 else None
+    return None if is_length else number
+
+
+_RANGE_OPS = {"<": lambda a, b: a < b, "<=": lambda a, b: a <= b, ">": lambda a, b: a > b,
+              ">=": lambda a, b: a >= b, "=": lambda a, b: abs(a - b) < 1e-9}  # fmt: skip
+_RANGE_RE = re.compile(r"(<=|>=|<|>|=)")
+_FLIPPED = {"<": ">", "<=": ">=", ">": "<", ">=": "<=", "=": "="}
+
+
+def _evaluate_media_feature(text: str, context: "_MediaContext") -> "bool | None":
+    """``( <media-feature> )``'s value: True, False, or None for unknown."""
+    if ":" in text and not _RANGE_RE.search(text.split(":", 1)[0]):
+        name, value = (part.strip() for part in text.split(":", 1))
+        prefix = ""
+        if name.startswith(("min-", "max-")) and name[4:] in _RANGE_FEATURES:
+            prefix, name = name[:4], name[4:]
+        if name in _RANGE_FEATURES:
+            actual = _media_feature_value(name, context)
+            target = _media_value(value, _RANGE_FEATURES[name], context)
+            if target is None or actual is None:
+                return None
+            return _RANGE_OPS[{"min-": ">=", "max-": "<=", "": "="}[prefix]](actual, target)
+        if prefix:
+            return None
+        actual = _media_feature_value(name, context)
+        if actual is None:
+            return None
+        return str(actual) == value
+    pieces = [piece.strip() for piece in _RANGE_RE.split(text)]
+    if len(pieces) == 1:
+        # boolean context: (color), (hover), (prefers-reduced-motion)
+        name = pieces[0]
+        actual = _media_feature_value(name, context)
+        if actual is None:
+            return None
+        if isinstance(actual, float):
+            return actual != 0
+        return actual not in ("none", "no-preference", "0")
+    if len(pieces) == 3:
+        left, op, right = pieces
+        if left in _RANGE_FEATURES:
+            name, value, op = left, right, op
+        elif right in _RANGE_FEATURES:
+            name, value, op = right, left, _FLIPPED[op]  # (1000px < width) is (width > 1000px)
+        else:
+            return None
+        actual = _media_feature_value(name, context)
+        target = _media_value(value, _RANGE_FEATURES[name], context)
+        if actual is None or target is None:
+            return None
+        return _RANGE_OPS[op](actual, target)
+    if len(pieces) == 5:
+        low, low_op, name, high_op, high = pieces
+        if name not in _RANGE_FEATURES or (low_op[0] != high_op[0]) or "=" == low_op:
+            return None
+        actual = _media_feature_value(name, context)
+        low_value = _media_value(low, _RANGE_FEATURES[name], context)
+        high_value = _media_value(high, _RANGE_FEATURES[name], context)
+        if actual is None or low_value is None or high_value is None:
+            return None
+        return _RANGE_OPS[_FLIPPED[low_op]](actual, low_value) and _RANGE_OPS[high_op](actual, high_value)
+    return None
+
+
+def _evaluate_media_condition(text: str, context: "_MediaContext") -> "bool | None":
+    """A ``<media-condition>`` in three-valued logic (True / False / None)."""
+    text = text.strip()
+    if text.startswith("not ") or text.startswith("not("):
+        inner = _evaluate_media_condition(text[3:], context)
+        return None if inner is None else not inner
+    for word, combine in ((" or ", any), (" and ", all)):
+        parts = _split_top_level(text, word)
+        if len(parts) > 1:
+            values = [_evaluate_media_condition(part, context) for part in parts]
+            if combine is any:
+                return True if True in values else (None if None in values else False)
+            return False if False in values else (None if None in values else True)
+    if text.startswith("(") and text.endswith(")"):
+        inner = text[1:-1].strip()
+        if inner.startswith("(") or inner.startswith("not ") or _split_top_level(inner, " and ")[1:] or (
+            _split_top_level(inner, " or ")[1:]
+        ):
+            return _evaluate_media_condition(inner, context)
+        return _evaluate_media_feature(inner, context)
+    return None  # (general-enclosed: unknown)
+
+
+def _evaluate_media_query(query: str, context: "_MediaContext") -> "bool | None":
+    query = " ".join(query.split())
+    if not query:
+        return None
+    words = query.split(" ", 2)
+    negate = False
+    if words[0] in ("not", "only") and len(words) > 1 and words[1] in _MEDIA_TYPES:
+        negate = words[0] == "not"
+        query = query.split(" ", 1)[1]
+        words = query.split(" ", 2)
+    if words[0] in _MEDIA_TYPES:
+        media_type = words[0]
+        result: "bool | None" = media_type == "all" or media_type == context.media_type
+        rest = query[len(media_type):].strip()
+        if rest:
+            if not rest.startswith("and "):
+                return None
+            condition = _evaluate_media_condition(rest[4:], context)
+            result = None if condition is None else (result and condition)
+        if result is None:
+            return None
+        return not result if negate else result
+    return _evaluate_media_condition(query, context)
+
+
 def _split_top_level(text: str, separator: str) -> list[str]:
     """Split ``text`` on ``separator`` only where parenthesis depth is zero."""
     parts: list[str] = []
@@ -149,115 +335,16 @@ class MediaQueryList(EventTarget):
         resolution: float = 1.0,
         media_type: str = "screen",
     ) -> bool:
+        """Whether a media query list matches (Media Queries 4): media types,
+        ``and`` / ``or`` / ``not``, every range form (``(width >= 600px)``,
+        ``(1000px < width)``, ``(400px <= width <= 900px)``), ``calc()`` and
+        ratios in values, and the discrete features from ``features``. An
+        unknown feature is unknown, not false: ``not (unknown)`` doesn't
+        match either."""
         if not media:
             return False
-        features = features or cls.DEFAULT_FEATURES
-        text = media.strip().lower()
-        if "," in text:
-            return any(
-                cls._evaluate(
-                    part, width=width, height=height, features=features, resolution=resolution, media_type=media_type
-                )
-                for part in _split_top_level(text, ",")
-            )
-        if " and " in text:
-            return all(
-                cls._evaluate(
-                    part, width=width, height=height, features=features, resolution=resolution, media_type=media_type
-                )
-                for part in _split_top_level(text, " and ")
-            )
-        if text.startswith("not "):
-            return not cls._evaluate(
-                text[4:].strip(),
-                width=width,
-                height=height,
-                features=features,
-                resolution=resolution,
-                media_type=media_type,
-            )
-        if text.startswith("only "):
-            text = text[5:].strip()
-        if text == "all":
-            return True
-        # A named media type (``screen``, ``print``) only matches when it is
-        # the one currently rendering -- domonic itself has no paged/print
-        # pipeline, so ``media_type`` defaults to ``"screen"`` and stays that
-        # way unless a host that does implement one (e.g. a renderer with an
-        # actual print mode) overrides ``window.mediaType``. Previously this
-        # returned ``True`` for either unconditionally, so ``@media print``
-        # rules applied outside of any print context.
-        if text in ("screen", "print"):
-            return text == media_type
-        if text in ("speech", "tty", "tv", "projection", "handheld", "braille"):
-            return False
-
-        # (orientation: portrait|landscape)
-        orientation_match = re.search(r"\(\s*orientation\s*:\s*(portrait|landscape)\s*\)", text)
-        if orientation_match:
-            orientation = "landscape" if width >= height else "portrait"
-            return orientation == orientation_match.group(1)
-
-        # discrete feature: (prefers-color-scheme: dark), (hover: none), ...
-        discrete = re.search(r"\(\s*([a-z-]+)\s*:\s*([a-z-]+)\s*\)", text)
-        if discrete and discrete.group(1) in features:
-            return features[discrete.group(1)] == discrete.group(2)
-        # boolean feature form: (pointer), (prefers-reduced-motion)
-        boolean = re.fullmatch(r"\(\s*([a-z-]+)\s*\)", text)
-        if boolean and boolean.group(1) in features:
-            return features[boolean.group(1)] not in ("none", "no-preference")
-
-        # resolution: (min-resolution: 2dppx), (resolution >= 150dpi)
-        res_match = re.search(
-            r"\(\s*(min-|max-)?resolution\s*(:|<=|>=|<|>)?\s*([\d.]+)(dppx|dpi|x)\s*\)",
-            text,
-        )
-        if res_match:
-            bound, cmp, number, unit = res_match.groups()
-            target = float(number) / (96.0 if unit == "dpi" else 1.0)
-            if bound == "min-" or cmp in (">=", ">"):
-                return resolution >= target
-            if bound == "max-" or cmp in ("<=", "<"):
-                return resolution <= target
-            return abs(resolution - target) < 1e-9
-
-        # width / height -- (min-width: Npx) / (max-height: Npx) prefix form and
-        # the range form (width >= Npx), (400px <= width <= 900px)
-        checks: list[bool] = []
-        for axis_name, axis in (("width", width), ("height", height)):
-            for m in re.finditer(
-                rf"\(\s*(min-|max-)?{axis_name}\s*(:|<=|>=|<|>|=)\s*([\d.]+)([a-z%]*)\s*\)",
-                text,
-            ):
-                bound, cmp, number, unit = m.groups()
-                target = cls._to_px(number, unit)
-                if bound == "min-":
-                    checks.append(axis >= target)
-                elif bound == "max-":
-                    checks.append(axis <= target)
-                elif cmp == ">=":
-                    checks.append(axis >= target)
-                elif cmp == ">":
-                    checks.append(axis > target)
-                elif cmp == "<=":
-                    checks.append(axis <= target)
-                elif cmp == "<":
-                    checks.append(axis < target)
-                else:
-                    checks.append(axis == target)
-            # double-ended range: (400px <= width <= 900px)
-            for m in re.finditer(
-                rf"\(\s*([\d.]+)([a-z%]*)\s*(<=?|>=?)\s*{axis_name}\s*" rf"(<=?|>=?)\s*([\d.]+)([a-z%]*)\s*\)",
-                text,
-            ):
-                lo, lounit, locmp, hicmp, hi, hiunit = m.groups()
-                lo_px, hi_px = cls._to_px(lo, lounit), cls._to_px(hi, hiunit)
-                checks.append(
-                    (axis >= lo_px if locmp == "<=" else axis > lo_px)
-                    and (axis <= hi_px if hicmp == "<=" else axis < hi_px)
-                )
-
-        return all(checks) if checks else False
+        context = _MediaContext(width or 0, height or 0, features or cls.DEFAULT_FEATURES, resolution, media_type)
+        return any(_evaluate_media_query(query, context) is True for query in _split_top_level(media.lower(), ","))
 
     def _set_viewport(self, *, width: int, height: int) -> None:
         previous = self.matches

@@ -289,11 +289,14 @@ rules from the cascade immediately, matching a real browser.
 media queries
 -------------
 
-``window.matchMedia(query)`` evaluates width / height / orientation, the range
-syntax (``(width >= 600px)``, ``(400px <= width <= 900px)``), ``resolution``
-(from ``window.devicePixelRatio``), and the discrete preference features
-(``prefers-color-scheme``, ``prefers-reduced-motion``, ``hover``, ``pointer``,
-...). Override a preference for the session via ``window.mediaFeatures``.
+``window.matchMedia(query)`` (and every ``@media``, ``<link media>`` and
+``@import`` media list) evaluates Media Queries 4: width / height /
+aspect-ratio / orientation, every range form (``(width >= 600px)``,
+``(1000px < width)``, ``(400px <= width <= 900px)``), ``calc()`` in values,
+``resolution`` (from ``window.devicePixelRatio``), ``and`` / ``or`` / ``not``,
+and the discrete preference features (``prefers-color-scheme``,
+``prefers-reduced-motion``, ``hover``, ``pointer``, ...). Override a preference
+for the session via ``window.mediaFeatures``.
 
 stylesheets
 -----------

@@ -2807,6 +2807,34 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(_computed(markup, ".a", "align-content"), "unsafe center")
 
 
+class MediaQueryTest(unittest.TestCase):
+    def matches(self, query, width=1024, height=768, **kwargs):
+        from domonic.window import MediaQueryList
+
+        return MediaQueryList._evaluate(query, width=width, height=height, **kwargs)
+
+    def test_calc_values_and_value_first_ranges(self):
+        mdn = "(width >= calc(1rem * 2 + (15rem + 2rem) * 2 + 31rem))"  # MDN's two-sidebar layout
+        self.assertTrue(self.matches(mdn, width=1200))
+        self.assertFalse(self.matches(mdn, width=900))
+        self.assertTrue(self.matches("(1000px < width)"))
+        self.assertFalse(self.matches("(1000px < width)", width=900))
+        self.assertTrue(self.matches("(400px <= width <= 1100px)"))
+        self.assertTrue(self.matches("screen and (min-width: 40em)"))
+
+    def test_ratios_resolution_and_logic(self):
+        self.assertTrue(self.matches("(aspect-ratio: 4/3)"))
+        self.assertFalse(self.matches("(min-aspect-ratio: 16/9)"))
+        self.assertTrue(self.matches("(resolution >= 1dppx)"))
+        self.assertFalse(self.matches("(min-resolution: 2dppx)"))
+        self.assertTrue(self.matches("(pointer: coarse) or (min-width: 1000px)"))
+        self.assertTrue(self.matches("(width > 600px) and (not (height < 100px))"))
+        self.assertTrue(self.matches("not screen and (max-width: 100px)"))
+        self.assertFalse(self.matches("only screen and (min-width: 768px) and (max-width: 1023px)"))
+        self.assertFalse(self.matches("not (unknown-feature)"))  # unknown, not false
+        self.assertTrue(self.matches("screen, print"))
+
+
 class InitialValuesTest(unittest.TestCase):
     def test_common_longhands_report_their_initial_values(self):
         document = Document()
