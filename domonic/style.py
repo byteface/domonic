@@ -1307,10 +1307,13 @@ class CSSFontFeatureValuesRule(CSSRule):
         super().__init__()
         self.cssRules: "CSSRuleList" = CSSRuleList()
         self.type = CSSRule.FONT_FEATURE_VALUES_RULE
+        #: the family list the feature values are for (CSSOM ``fontFamily``)
+        self.fontFamily: str = ""
 
     @property
     def cssText(self):
-        return f"@font-feature-values {{{' '.join(str(rule) for rule in self.cssRules)}}}"
+        family = f"{self.fontFamily} " if self.fontFamily else ""
+        return f"@font-feature-values {family}{{{' '.join(str(rule) for rule in self.cssRules)}}}"
 
     # @property
     # def cssRules(self):
@@ -9048,6 +9051,7 @@ def _parse_block_rule(
         rule = CSSFontFeatureValuesRule()
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
+        rule.fontFamily = _serialize_font_family(prelude[len("@font-feature-values") :].strip())
         rule.cssRules = _parse_rule_list(parentStyleSheet, block, rule)
         return rule
     return _parse_style_rule(parentStyleSheet, parentRule, prelude, block)

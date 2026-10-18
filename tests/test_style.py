@@ -3013,6 +3013,13 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertTrue(CSS.supports("(aspect-ratio: 1)"))
         self.assertTrue(CSS.supports("(color: red)"))
 
+    def test_font_feature_values_keeps_its_family_list(self):
+        sheet = CSSStyleSheet()
+        sheet.replaceSync('@font-feature-values Font One, "Font Two" { @styleset { nice-style: 12; } }')
+        rule = sheet.cssRules[0]
+        self.assertEqual(rule.fontFamily, '"Font One", "Font Two"')
+        self.assertTrue(rule.cssText.startswith('@font-feature-values "Font One", "Font Two" {'))
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"
