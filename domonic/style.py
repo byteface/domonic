@@ -6558,7 +6558,11 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
     # -- read-only CSSOM surface --------------------------------------
     def _custom_property(self, name: str) -> str:
         """Computed value of a custom property (they inherit by default)."""
-        return self._resolved.get(name) or ""
+        value = self._resolved.get(name) or ""
+        registration = _cssom.REGISTERED_PROPERTIES.get(name)
+        if registration is not None:
+            value = _cssom.computed_registered_value(registration["syntax"], value) or ""
+        return value
 
     def getPropertyValue(self, propertyName: str) -> str:
         target = self._to_kebab(propertyName)
@@ -6653,7 +6657,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             built = _cssom.build_shorthand(target, self.getPropertyValue)
             if built:
                 return built
-        value = self._resolved.get(target)
+        value = self._custom_property(target) if target.startswith("--") else self._resolved.get(target)
         # min-width/min-height's initial (and only auto) value never actually
         # behaves as "no minimum" in a browser -- Chrome (and every other
         # engine) reports it as 0px rather than the literal keyword.

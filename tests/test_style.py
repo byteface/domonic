@@ -2554,6 +2554,16 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, ".e", "border-top-width"), "2px")
         self.assertEqual(_computed(markup, ".f", "text-decoration-color"), "rgba(0, 0, 0, 0.5)")
 
+    def test_a_registered_length_computes_a_unitless_zero_to_0px(self):
+        markup = self.page(
+            '@property --ring-offset { syntax: "<length>"; inherits: false; initial-value: 0 }'
+            " p { --plain: 0; margin-left: calc(1px + var(--ring-offset)) }",
+            "<p>x</p>",
+        )
+        self.assertEqual(_computed(markup, "p", "--ring-offset"), "0px")
+        self.assertEqual(_computed(markup, "p", "--plain"), "0")  # unregistered: as written
+        self.assertEqual(_computed(markup, "p", "margin-left"), "1px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

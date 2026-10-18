@@ -495,8 +495,22 @@ def register_property(
     REGISTERED_PROPERTIES[name] = {
         "syntax": syntax,
         "inherits": bool(inherits),
-        "initialValue": initial_value,
+        "initialValue": computed_registered_value(syntax, initial_value),
     }
+
+
+_LENGTH_SYNTAX_RE = re.compile(r"<length(?:-percentage)?>")
+_UNITLESS_ZERO_RE = re.compile(r"^[+-]?(?:0+\.?0*|\.0+)$")
+
+
+def computed_registered_value(syntax: str | None, value: str | None) -> str | None:
+    """A registered custom property's value as it computes (CSS Properties and
+    Values API 1 2.4): for a ``<length>`` syntax a unitless zero is ``0px`` --
+    Tailwind 4's ``initial-value: 0`` ring offsets made ``calc(1px + 0)``, a
+    length plus a number, and every ring vanished."""
+    if isinstance(value, str) and syntax and _LENGTH_SYNTAX_RE.search(syntax) and _UNITLESS_ZERO_RE.match(value.strip()):
+        return "0px"
+    return value
 
 
 def registered_property(name: str) -> dict | None:
