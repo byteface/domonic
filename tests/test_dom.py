@@ -6430,6 +6430,23 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertIsNot(clone.content, template.content)
         self.assertEqual(str(clone.content.firstChild), "<b>new</b>")
 
+    def test_shadow_root_is_a_document_fragment_with_inner_html(self):
+        page = parseString("<html><body></body></html>")
+        host = page.createElement("div")
+        page.body.appendChild(host)
+        root = host.attachShadow({"mode": "open"})
+        self.assertIsInstance(root, DocumentFragment)
+        self.assertEqual((root.nodeType, root.nodeName), (11, "#document-fragment"))
+        root.innerHTML = "<style>p { color: red }</style><p class=x id=i>in <slot></slot></p><span>s</span>"
+        self.assertEqual(root.innerHTML, '<style>p { color: red }</style><p class="x" id="i">in <slot></slot></p><span>s</span>')
+        self.assertEqual(root.querySelector(".x").tagName, "P")
+        self.assertEqual(len(root.querySelectorAll("p, span")), 2)
+        self.assertEqual(root.getElementById("i").tagName, "P")
+        self.assertEqual(root.firstElementChild.tagName, "STYLE")
+        self.assertEqual(len(root.styleSheets), 1)
+        root.replaceChildren(page.createElement("b"))
+        self.assertEqual(root.innerHTML, "<b></b>")
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 

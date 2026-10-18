@@ -4420,65 +4420,6 @@ class DOMTokenList(list):
         return self.toString()
 
 
-class ShadowRoot(Node):
-    """property on element that has hidden DOM"""
-
-    def __init__(self, host, mode="open"):
-        self.adoptedStyleSheets = []
-        self.delegatesFocus = False
-        self.host = host
-        self.mode = mode
-        self.parentNode = host
-        self._selection = Selection()
-        super().__init__()
-
-    def elementFromPoint(self, x: float, y: float) -> Element | None:
-        """Returns the topmost element at the specified coordinates."""
-        hits = self.elementsFromPoint(x, y)
-        return hits[0] if hits else None
-
-    def getSelection(self) -> Selection:
-        """Returns a Selection object for the document."""
-        if not hasattr(self, "_selection"):
-            self._selection = Selection()
-        return self._selection
-
-    def elementsFromPoint(self, x: float, y: float) -> list[Element]:
-        """Returns an array of all elements at the specified coordinates."""
-        matches = []
-
-        def walk(node):
-            if not isinstance(node, Element):
-                return
-            rect = node.getBoundingClientRect()
-            if rect.left <= x <= rect.right and rect.top <= y <= rect.bottom:
-                matches.append(node)
-            for child in getattr(node, "childNodes", []):
-                walk(child)
-
-        for child in self.childNodes:
-            walk(child)
-        return matches
-
-    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> CaretPosition | None:
-        """
-        Returns a CaretPosition object containing the DOM node containing the caret,
-        and caret's character offset within that node.
-        """
-        target = self.elementFromPoint(x, y)
-        if target is None:
-            return None
-        first_child = target.firstChild
-        if isinstance(first_child, Text):
-            rect = target.getBoundingClientRect()
-            width = max(rect.width, 1)
-            text_length = len(first_child.textContent)
-            relative = max(0, min(x - rect.left, width))
-            offset = min(text_length, int((relative / width) * text_length))
-            return CaretPosition(first_child, offset)
-        return CaretPosition(target, 0)
-
-
 class DocumentType(Node):
 
     nodeType = Node.DOCUMENT_TYPE_NODE
@@ -9146,6 +9087,97 @@ def _cdata_coerce_string(value: Any) -> str:
     if value is None:
         return ""
     return value if isinstance(value, str) else str(value)
+
+
+class ShadowRoot(DocumentFragment):
+    """An element's shadow tree root (DOM 4.8): a DocumentFragment, so it has
+    the ParentNode query and mutation methods, plus ``innerHTML``."""
+
+    def __init__(self, host, mode="open"):
+        self.adoptedStyleSheets = []
+        self.delegatesFocus = False
+        self.host = host
+        self.mode = mode
+        self.parentNode = host
+        self._selection = Selection()
+        super().__init__()
+
+    innerHTML = Element.innerHTML
+    getHTML = Element.getHTML
+    setHTMLUnsafe = Element.setHTMLUnsafe
+    _parse_html_fragment = Element._parse_html_fragment
+    replaceChildren = Element.replaceChildren
+
+    @property
+    def activeElement(self) -> "Element | None":
+        """The focused element, if it is in this shadow tree."""
+        document = self.ownerDocument
+        active = getattr(document, "_activeElement", None) if document is not None else None
+        node = active
+        while node is not None:
+            if node is self:
+                return active
+            node = node.__dict__.get("parentNode")
+        return None
+
+    @property
+    def styleSheets(self) -> "StyleSheetList":
+        """The sheets of the ``<style>`` / ``<link>`` elements in this shadow
+        tree, in tree order (DocumentOrShadowRoot)."""
+        sheets = self.__dict__.get("_shadow_style_sheets")
+        if sheets is None:
+            sheets = StyleSheetList()
+            self.__dict__["_shadow_style_sheets"] = sheets
+        if getattr(sheets, "_epoch", None) != _STRUCTURE_EPOCH:
+            sheets._populate_stylesheets_from_document(self)
+            sheets._epoch = _STRUCTURE_EPOCH
+        return sheets
+
+    def elementFromPoint(self, x: float, y: float) -> Element | None:
+        """Returns the topmost element at the specified coordinates."""
+        hits = self.elementsFromPoint(x, y)
+        return hits[0] if hits else None
+
+    def getSelection(self) -> Selection:
+        """Returns a Selection object for the document."""
+        if not hasattr(self, "_selection"):
+            self._selection = Selection()
+        return self._selection
+
+    def elementsFromPoint(self, x: float, y: float) -> list[Element]:
+        """Returns an array of all elements at the specified coordinates."""
+        matches = []
+
+        def walk(node):
+            if not isinstance(node, Element):
+                return
+            rect = node.getBoundingClientRect()
+            if rect.left <= x <= rect.right and rect.top <= y <= rect.bottom:
+                matches.append(node)
+            for child in getattr(node, "childNodes", []):
+                walk(child)
+
+        for child in self.childNodes:
+            walk(child)
+        return matches
+
+    def caretPositionFromPoint(self, x: float = 0, y: float = 0) -> CaretPosition | None:
+        """
+        Returns a CaretPosition object containing the DOM node containing the caret,
+        and caret's character offset within that node.
+        """
+        target = self.elementFromPoint(x, y)
+        if target is None:
+            return None
+        first_child = target.firstChild
+        if isinstance(first_child, Text):
+            rect = target.getBoundingClientRect()
+            width = max(rect.width, 1)
+            text_length = len(first_child.textContent)
+            relative = max(0, min(x - rect.left, width))
+            offset = min(text_length, int((relative / width) * text_length))
+            return CaretPosition(first_child, offset)
+        return CaretPosition(target, 0)
 
 
 class CharacterData(Node):
