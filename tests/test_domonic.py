@@ -893,6 +893,18 @@ _id="one", _class="two",
 
 
 
+class BogusCommentTest(unittest.TestCase):
+    def test_processing_instruction_syntax_is_a_bogus_comment(self):
+        from domonic.html import div
+
+        parsed = domonic.parseString('<div><?lit$123$>x<?xml version="1.0"?></div>', parser="html.parser")
+        self.assertEqual([(n.nodeType, getattr(n, "data", None)) for n in parsed.childNodes],
+                         [(8, "?lit$123$"), (3, "x"), (8, '?xml version="1.0"?')])
+        holder = div()
+        holder.innerHTML = "<p><?lit$1$></p>"
+        self.assertEqual(holder.innerHTML, "<p><!--?lit$1$--></p>")
+
+
 class TextMergingTest(unittest.TestCase):
     def test_character_references_join_the_text_node_before_them(self):
         markup = "<html><body><p>A&nbsp;&nbsp;B &amp; c<b>x</b>&lt;y</p></body></html>"

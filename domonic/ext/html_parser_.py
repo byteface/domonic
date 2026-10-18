@@ -193,6 +193,12 @@ class DomonicHTMLParser(HTMLParser):
     def handle_comment(self, data: str) -> None:
         self._append(self.current, _create_comment_raw(data))
 
+    def handle_pi(self, data: str) -> None:
+        # HTML has no processing instructions: ``<?...>`` is a bogus comment
+        # with the ``?`` kept (13.2.5.6, tag open state). lit-html marks its
+        # text bindings with ``<?lit$123$>``.
+        self.handle_comment("?" + data)
+
     def handle_entityref(self, name: str) -> None:
         self.handle_data(unescape(f"&{name};"))
 
