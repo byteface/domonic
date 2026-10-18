@@ -62,6 +62,44 @@ def _set_attribute_raw(element: dom.Element, name: str, value: Any) -> None:
     element.__dict__["kwargs"][name] = value
 
 
+def _template_contents_raw(element: dom.Node, inner_html: Any) -> None:
+    """Give a parsed ``<template>`` its contents from the backend's serialised
+    ``inner_html``, for backends (lexbor, turbohtml) that keep a template's
+    contents in a separate fragment their node API doesn't walk -- they used
+    to come back empty. Parsed by the stdlib backend, which keeps ``<tr>`` &
+    co. as they are (a body-context fragment parse would drop them)."""
+    text = inner_html() if callable(inner_html) else inner_html
+    if not text or not isinstance(text, str):
+        return
+    from domonic.ext import html_parser_
+
+    fragment = html_parser_.parse(text, return_root=False)
+    children = tuple(fragment.__dict__.get("args") or ())
+    for child in children:
+        if isinstance(child, dom.Node):
+            child.__dict__["parentNode"] = element
+    element.__dict__["args"] = children
+
+
+def _template_inner_from_outer(outer_html: Any) -> str:
+    """A serialised ``<template ...>...</template>``'s contents: what lies
+    between the end of its start tag (outside attribute quotes) and its end
+    tag."""
+    text = outer_html() if callable(outer_html) else outer_html
+    if not isinstance(text, str) or not text.lower().endswith("</template>"):
+        return ""
+    quote = None
+    for index, char in enumerate(text):
+        if quote is not None:
+            if char == quote:
+                quote = None
+        elif char in "\"'":
+            quote = char
+        elif char == ">":
+            return text[index + 1 : -len("</template>")]
+    return ""
+
+
 def _append_child_raw(parent: dom.Node, child: dom.Node, children: list[Any]) -> None:
     children.append(child)
     child.__dict__["parentNode"] = parent

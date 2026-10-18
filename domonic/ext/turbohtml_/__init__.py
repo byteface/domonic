@@ -19,6 +19,7 @@ from domonic.ext._rawdom import (
     SVG_NAMESPACE,
     SVG_TAG_NAMES,
     _append_child_raw,
+    _template_contents_raw,
     _create_cdata_raw,
     _create_comment_raw,
 )
@@ -137,6 +138,8 @@ def _adapt_node(
                 children.append(adapted)
                 adapted.__dict__["parentNode"] = element
         element.__dict__["args"] = tuple(children)
+        if tag == "template" and not children:
+            _template_contents_raw(element, getattr(node, "inner_html", None))
         return element
 
     return None

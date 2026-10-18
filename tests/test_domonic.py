@@ -922,6 +922,20 @@ class ByteOrderMarkTest(unittest.TestCase):
             self.assertNotIn("\ufeff", page.body.textContent)
 
 
+class TemplateParsingTest(unittest.TestCase):
+    def test_template_contents_survive_every_backend_that_hides_them(self):
+        source = ("<html><body><template id=x data-a='x>y'><tr><td>1</td></tr><p>a &amp; b</p>"
+                  "<template><i>nested</i></template></template><p>after</p></body></html>")
+        expected = '<tr><td>1</td></tr><p>a &amp; b</p><template><i>nested</i></template>'
+        for parser in ("auto", "selectolax", "turbohtml", "html.parser", "lxml"):
+            try:
+                page = domonic.parseString(source, parser=parser)
+            except Exception:  # pragma: no cover - backend not installed
+                continue
+            template = page.querySelector("#x")
+            self.assertIn(expected, str(template), parser)
+
+
 class TextMergingTest(unittest.TestCase):
     def test_character_references_join_the_text_node_before_them(self):
         markup = "<html><body><p>A&nbsp;&nbsp;B &amp; c<b>x</b>&lt;y</p></body></html>"

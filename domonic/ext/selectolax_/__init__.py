@@ -20,6 +20,8 @@ from domonic.ext._rawdom import (
     SVG_NAMESPACE,
     SVG_TAG_NAMES,
     _append_child_raw,
+    _template_contents_raw,
+    _template_inner_from_outer,
     _create_comment_raw,
     _create_doctype_raw,
     _create_document_raw,
@@ -114,6 +116,9 @@ def _adapt_node(
             adapted.__dict__["parentNode"] = element
         child = child.next
     element.__dict__["args"] = tuple(children)
+    if tag == "template" and not children:
+        # (lexbor's inner_html of a template is empty; its outer html isn't)
+        _template_contents_raw(element, _template_inner_from_outer(getattr(node, "html", None)))
     return element
 
 
