@@ -1060,12 +1060,32 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
                 return None
         return [("column-width", width or "auto"), ("column-count", count or "auto")]
 
+    if name in ("place-content", "place-items", "place-self"):
+        # <align value> <justify value>?, each one or two words (``safe center``,
+        # ``first baseline``); an omitted second copies the first -- bar a
+        # baseline place-content, whose justify-content is then ``start``
+        words = _tokens(value)
+        values: list[str] = []
+        index = 0
+        while index < len(words):
+            word = words[index].lower()
+            take = 2 if (word in ("safe", "unsafe") or (word in ("first", "last") and index + 1 < len(words))) else 1
+            if name == "place-items" and word == "legacy" and index + 1 < len(words):
+                take = 2
+            values.append(" ".join(words[index : index + take]))
+            index += take
+        if not 1 <= len(values) <= 2:
+            return None
+        if len(values) == 1:
+            second = values[0]
+            if name == "place-content" and values[0].endswith("baseline"):
+                second = "start"
+            values.append(second)
+        return list(zip(longs, values))
+
     if name in (
         "overflow",
         "gap",
-        "place-content",
-        "place-items",
-        "place-self",
         "flex-flow",
     ):
         parts = _tokens(value)

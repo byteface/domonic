@@ -2689,6 +2689,19 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p b", "margin-left"), "4px")
 
 
+    def test_place_shorthands_take_multi_word_alignment_values(self):
+        self.assertEqual(self.expand("place-content", "unsafe center safe flex-start"),
+                         {"align-content": "unsafe center", "justify-content": "safe flex-start"})
+        self.assertEqual(self.expand("place-content", "baseline")["justify-content"], "start")
+        self.assertEqual(self.expand("place-items", "first baseline")["justify-items"], "first baseline")
+        self.assertEqual(self.expand("place-items", "center legacy left")["justify-items"], "legacy left")
+        # a rule setting both longhands serialises them as place-content and
+        # must read back
+        markup = ("<html><head><style>.a { justify-content: safe flex-start; align-content: unsafe center }</style>"
+                  "</head><body><p class=a>a</p></body></html>")
+        self.assertEqual(_computed(markup, ".a", "justify-content"), "safe flex-start")
+        self.assertEqual(_computed(markup, ".a", "align-content"), "unsafe center")
+
 
 class InitialValuesTest(unittest.TestCase):
     def test_common_longhands_report_their_initial_values(self):
