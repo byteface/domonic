@@ -6998,7 +6998,18 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         position = str(self._resolved.get("position") or "static").strip().lower()
         if float_val != "none" or position in ("absolute", "fixed"):
             return self._DISPLAY_BLOCKIFY.get(display, display)
+        # a flex or grid container's children are blockified too (CSS Display
+        # 3 2.7, Flexbox 1 4, Grid 1 6.1)
+        parent = self._parent_computed()
+        if parent is not None and display in self._DISPLAY_BLOCKIFY:
+            parent_display = parent.getPropertyValue("display")
+            if parent_display in self._ITEM_CONTAINER_DISPLAYS:
+                return self._DISPLAY_BLOCKIFY[display]
         return display
+
+    _ITEM_CONTAINER_DISPLAYS = frozenset(
+        {"flex", "inline-flex", "grid", "inline-grid", "-webkit-box", "-webkit-inline-box"}
+    )
 
     def _percent_base_px(self, target: str) -> "float | None":
         """The px a ``%`` resolves against for *target*: the used inline size

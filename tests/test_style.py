@@ -2587,6 +2587,17 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "#b", "font-size"), "13px")  # a keyword clears it
         self.assertEqual(_computed(markup, ".e", "font-size"), "26px")
 
+    def test_flex_and_grid_items_are_blockified(self):
+        markup = self.page('.f { display: flex } .g { display: inline-grid } .ib { display: inline-block }'
+                           ' .f::before { content: "x" }',
+                           "<div class=f><span>a</span><i class=ib>i</i></div><div class=g><b>b</b></div>"
+                           "<p><span id=n>n</span></p>")
+        self.assertEqual(_computed(markup, ".f span", "display"), "block")
+        self.assertEqual(_computed(markup, ".ib", "display"), "block")
+        self.assertEqual(_computed(markup, ".g b", "display"), "block")
+        self.assertEqual(_computed(markup, ".f", "display", "::before"), "block")
+        self.assertEqual(_computed(markup, "#n", "display"), "inline")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")
