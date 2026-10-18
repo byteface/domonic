@@ -967,7 +967,7 @@ _DEEPCOPY_MISSING = object()
 # What ``Node.__init__`` gives every node before its own arguments apply.
 _NODE_INIT_STATE: dict[str, Any] = {
     "_baseURI": "",
-    "isConnected": True,
+    "isConnected": False,
     "namespaceURI": "http://www.w3.org/1999/xhtml",
     "outerText": None,
     "_ownerDocument": None,
@@ -2777,6 +2777,29 @@ class Node(EventTarget):
         if newOwner is None:
             return
         self._ownerDocument = newOwner if isinstance(newOwner, Document) else getattr(newOwner, "ownerDocument", None)
+
+    @property
+    def isConnected(self) -> bool:
+        """Whether this node's shadow-including root is a document (DOM 4.4) --
+        computed, so a node built or created but never inserted is not
+        connected, and one inside ``html(...)`` is."""
+        node: Any = self
+        for _ in range(100000):
+            if isinstance(node, Document):
+                return True
+            parent = node.__dict__.get("parentNode")
+            if parent is None:
+                host = node.__dict__.get("host") if isinstance(node, ShadowRoot) else None
+                if host is None:
+                    return False
+                parent = host
+            node = parent
+        return False
+
+    @isConnected.setter
+    def isConnected(self, value: bool) -> None:
+        # (the tree builders still record it as plain state; reads are computed)
+        self.__dict__["isConnected"] = bool(value)
 
     @property
     def rootNode(self) -> "Node":

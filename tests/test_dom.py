@@ -1848,6 +1848,11 @@ class DOMTest(unittest.TestCase):
         first, second = parsed.querySelectorAll("p")
         self.assertIsInstance(first, WordCountParagraph)
         self.assertNotIsInstance(second, WordCountParagraph)
+        # a parsed fragment isn't in a document: upgraded, but not connected
+        self.assertFalse(first.isConnected)
+        self.assertEqual(WordCountParagraph.connected, 0)
+        page = domonic_module.parseString('<html><body><p is="word-count">hi</p></body></html>')
+        self.assertIsInstance(page.querySelector("p"), WordCountParagraph)
         self.assertEqual(WordCountParagraph.connected, 1)
 
     def test_mutation_observer_child_list_records(self):
@@ -6359,6 +6364,24 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(select_el.length, 3)
         select_el.remove()  # ChildNode.remove()
         self.assertIsNone(page.querySelector("select"))
+
+    def test_is_connected_means_in_a_document(self):
+        self.assertFalse(div().isConnected)
+        built = html(body(div(span("x"))))
+        self.assertTrue(built.querySelector("span").isConnected)
+        page = parseString("<html><body><p>x</p></body></html>")
+        created = page.createElement("p")
+        self.assertFalse(created.isConnected)
+        page.body.appendChild(created)
+        self.assertTrue(created.isConnected)
+        created.remove()
+        self.assertFalse(created.isConnected)
+        host = page.createElement("div")
+        page.body.appendChild(host)
+        inner = page.createElement("b")
+        host.attachShadow({"mode": "open"}).appendChild(inner)
+        self.assertTrue(inner.isConnected)  # (the shadow-including root is the document)
+        self.assertFalse(parseString("<p>x</p>").isConnected)
 
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
