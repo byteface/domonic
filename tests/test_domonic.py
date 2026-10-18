@@ -905,6 +905,14 @@ class BogusCommentTest(unittest.TestCase):
         self.assertEqual(holder.innerHTML, "<p><!--?lit$1$--></p>")
 
 
+class MalformedMarkupTest(unittest.TestCase):
+    def test_html5lib_keeps_attribute_names_the_tokenizer_produces(self):
+        parsed = domonic.parseString('<html\n<meta charset=utf-8><body><p a"b=1 id=x>x</p></body></html>', parser="html5lib")
+        self.assertEqual(parsed.getAttribute("charset"), "utf-8")
+        self.assertIn("<meta", parsed.getAttributeNames())
+        self.assertEqual(parsed.querySelector("p").getAttribute("id"), "x")
+
+
 class TextMergingTest(unittest.TestCase):
     def test_character_references_join_the_text_node_before_them(self):
         markup = "<html><body><p>A&nbsp;&nbsp;B &amp; c<b>x</b>&lt;y</p></body></html>"

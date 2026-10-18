@@ -40,7 +40,7 @@ from html5lib._utils import moduleFactoryFactory
 from html5lib.constants import namespaces
 from html5lib.treebuilders import base
 
-from domonic.dom import DOMImplementation, Node, Text
+from domonic.dom import Attr, DOMImplementation, Node, Text
 from domonic.ext._rawdom import HTML_NAMESPACE as _HTML_NS
 from domonic.ext._rawdom import (
     _create_comment_raw,
@@ -126,7 +126,11 @@ def getDomBuilder(ignore: object):
             if isinstance(name, tuple):
                 raise NotImplementedError
             else:
-                attr = self.element.ownerDocument.createAttribute(name)
+                # not createAttribute(): its XML-name check is for names from
+                # script, and the HTML tokenizer can produce any attribute name
+                # (``<html\n<meta charset=utf-8>`` gives one named ``<meta``),
+                # which a browser keeps
+                attr = Attr(name)
                 attr.value = value
                 self.element.attributes[name] = attr
 
