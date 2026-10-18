@@ -6657,6 +6657,10 @@ class Element(Node):
             kwargs = object.__getattribute__(self, "kwargs")
         except AttributeError:
             return None
+        if type(value) in (int, float):
+            # an attribute value is a DOMString (setAttribute("tabindex", 1)
+            # reads back "1"); True/False stay domonic's boolean attributes
+            value = str(value)
         old_value = kwargs.get(attribute)
         kwargs[attribute] = value
         _notify_attribute_changed(self, attribute, old_value, value)

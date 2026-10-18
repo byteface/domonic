@@ -2154,7 +2154,7 @@ class DOMTest(unittest.TestCase):
             autocomplete="on", dirname="notes.dir", minlength=2
         )
         self.assertEqual(textarea_el.getAttribute("autocomplete"), "on")
-        self.assertEqual(textarea_el.getAttribute("minlength"), 2)
+        self.assertEqual(textarea_el.getAttribute("minlength"), "2")
 
         dialog_el = HTMLDialogElement(closedby="any")
         self.assertEqual(dialog_el.getAttribute("closedby"), "any")
@@ -3053,7 +3053,7 @@ class DOMTest(unittest.TestCase):
             (
                 HTMLCanvasElement,
                 {"width": 320, "height": 240},
-                {"width": 320, "height": 240},
+                {"width": "320", "height": "240"},  # (attribute values are strings)
             ),
             (HTMLDataElement, {"value": "42"}, {"value": "42"}),
             (HTMLDialogElement, {"open": True}, {"open": True}),
@@ -6382,6 +6382,14 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         host.attachShadow({"mode": "open"}).appendChild(inner)
         self.assertTrue(inner.isConnected)  # (the shadow-including root is the document)
         self.assertFalse(parseString("<p>x</p>").isConnected)
+
+    def test_set_attribute_stores_numbers_as_strings(self):
+        element = div()
+        element.setAttribute("data-n", 16)
+        element.setAttribute("data-f", 1.5)
+        self.assertEqual(element.getAttribute("data-n"), "16")
+        self.assertEqual(element.getAttribute("data-f"), "1.5")
+        self.assertEqual(str(element), '<div data-n="16" data-f="1.5"></div>')
 
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
