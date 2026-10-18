@@ -892,5 +892,16 @@ _id="one", _class="two",
             self.assertEqual(page.querySelector("p").text, "Hi")
 
 
+
+class TextMergingTest(unittest.TestCase):
+    def test_character_references_join_the_text_node_before_them(self):
+        markup = "<html><body><p>A&nbsp;&nbsp;B &amp; c<b>x</b>&lt;y</p></body></html>"
+        for parser in ("html5lib", "html.parser"):
+            p = domonic.parseString(markup, parser=parser).querySelector("p")
+            self.assertEqual(len(p.childNodes), 3, parser)
+            self.assertEqual(p.childNodes[0].textContent, "A\xa0\xa0B & c", parser)
+            self.assertEqual(p.childNodes[2].textContent, "<y", parser)
+
+
 if __name__ == "__main__":
     unittest.main()

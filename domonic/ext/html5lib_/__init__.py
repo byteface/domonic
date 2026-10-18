@@ -40,7 +40,7 @@ from html5lib._utils import moduleFactoryFactory
 from html5lib.constants import namespaces
 from html5lib.treebuilders import base
 
-from domonic.dom import DOMImplementation, Node
+from domonic.dom import DOMImplementation, Node, Text
 from domonic.ext._rawdom import HTML_NAMESPACE as _HTML_NS
 from domonic.ext._rawdom import (
     _create_comment_raw,
@@ -184,6 +184,23 @@ def getDomBuilder(ignore: object):
             # Whitespace-only text nodes are kept: whitespace between inline
             # elements (``<b>x</b> <i>y</i>``) is significant, and dropping it
             # here loses information the HTML5 tree builder is meant to preserve.
+            #
+            # HTML's "insert a character" appends to a Text node right before
+            # the insertion point: html5lib hands a character reference over
+            # as its own token, and a new node each time gave
+            # ``A&nbsp;&nbsp;B`` three text nodes where a browser has one.
+            args = _live_args(self.element)
+            if insertBefore is None:
+                previous = args[-1] if args else None
+            else:
+                ref = insertBefore.element
+                index = next((i for i, node in enumerate(args) if node is ref), None)
+                previous = args[index - 1] if index else None
+            if type(previous) is Text:
+                held = previous.__dict__.get("args") or ()
+                if len(held) == 1 and isinstance(held[0], str):
+                    previous.__dict__["args"] = (held[0] + ("" if data is None else str(data)),)
+                    return
             text = _create_text_raw(data)
             if insertBefore is not None:
                 _raw_insert_before(self.element, text, insertBefore.element)

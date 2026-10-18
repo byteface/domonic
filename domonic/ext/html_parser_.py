@@ -11,7 +11,7 @@ from html import unescape
 from html.parser import HTMLParser
 from typing import Any, Callable
 
-from domonic.dom import Element, Node
+from domonic.dom import Element, Node, Text
 from domonic.ext._rawdom import (
     HTML_NAMESPACE,
     _freeze_args,
@@ -176,8 +176,19 @@ class DomonicHTMLParser(HTMLParser):
         self._append(self.current, self._create_element(tag, attrs))
 
     def handle_data(self, data: str) -> None:
-        if data:
-            self._append(self.current, _create_text_raw(data))
+        if not data:
+            return
+        # HTML's "insert a character" appends to a Text node right before the
+        # insertion point: each entity / charref arrives as its own call
+        parent = self.current
+        args = parent.__dict__.get("args")
+        last = args[-1] if args else None
+        if type(last) is Text:
+            held = last.__dict__.get("args") or ()
+            if len(held) == 1 and isinstance(held[0], str):
+                last.__dict__["args"] = (held[0] + data,)
+                return
+        self._append(parent, _create_text_raw(data))
 
     def handle_comment(self, data: str) -> None:
         self._append(self.current, _create_comment_raw(data))
