@@ -735,7 +735,7 @@ class TestCase(unittest.TestCase):
 
         import_rule = sheet.cssRules[5]
         self.assertIsInstance(import_rule, CSSImportRule)
-        self.assertEqual(import_rule.href, 'url("theme.css")')
+        self.assertEqual(import_rule.href, "theme.css")
         self.assertEqual(import_rule.layerName, "theme.components")
         self.assertEqual(import_rule.supportsText, "display: grid")
         self.assertEqual(import_rule.media.mediaText, "screen and (min-width: 40rem)")
@@ -2377,6 +2377,25 @@ class CascadeSelectorTest(unittest.TestCase):
             "<style media='(prefers-color-scheme: dark)'>p { color: blue }</style></head><body><p>x</p></body></html>"
         )
         self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
+
+    def test_an_imported_sheet_cascades_gated_by_its_media_and_layer(self):
+        import domonic
+        from domonic.window import window
+
+        page = domonic.parseString(
+            "<html><head><style>@import url(base.css); @import 'print.css' print;"
+            "@import url(theme.css) layer(theme); p { margin-left: 1px }</style></head><body><p>x</p></body></html>"
+        )
+        sheet = page.styleSheets[0]
+        imports = [rule for rule in sheet.cssRules if isinstance(rule, CSSImportRule)]
+        self.assertEqual([rule.href for rule in imports], ["base.css", "print.css", "theme.css"])
+        for rule, css in zip(imports, ["p { color: green }", "p { color: red }", "p { margin-left: 9px; padding-top: 2px }"]):
+            rule.styleSheet = CSSStyleSheet()
+            rule.styleSheet.replaceSync(css)
+        computed = window.getComputedStyle(page.querySelector("p"))
+        self.assertEqual(computed.getPropertyValue("color"), "rgb(0, 128, 0)")  # print.css doesn't apply
+        self.assertEqual(computed.getPropertyValue("margin-left"), "1px")  # unlayered beats layer(theme)
+        self.assertEqual(computed.getPropertyValue("padding-top"), "2px")
 
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(

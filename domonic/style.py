@@ -840,8 +840,18 @@ class CSSRule:
     #     raise NotImplementedError
 
 
+_IMPORT_URL_RE = re.compile(
+    r"""(?:url\(\s*(?:"([^"]*)"|'([^']*)'|([^)\s]*))\s*\)|"([^"]*)"|'([^']*)')\s*(.*)$""", re.I | re.S
+)
+
+
 class CSSImportRule(CSSRule):
-    """The CSSImportRule interface represents an @import rule in a CSS style sheet."""
+    """The CSSImportRule interface represents an @import rule in a CSS style sheet.
+
+    domonic doesn't fetch anything itself: ``styleSheet`` stays ``None`` until
+    something loads it (``domonic.scrape`` does). Once set, the cascade walks
+    into its rules, gated by the rule's media list, ``supports()`` and
+    ``layer``."""
 
     def __init__(self):
         super().__init__()
@@ -859,7 +869,8 @@ class CSSImportRule(CSSRule):
             layer = " layer" if self.layerName == "" else f" layer({self.layerName})"
         supports = f" supports({self.supportsText})" if self.supportsText else ""
         media = f" {self.media.mediaText}" if self.media and self.media.mediaText else ""
-        return f"@import {self.href}{layer}{supports}{media};"
+        href = str(self.href or "").replace("\\", "\\\\").replace('"', '\\"')
+        return f'@import url("{href}"){layer}{supports}{media};'
 
     # @property
     # def href(self):
@@ -6006,6 +6017,17 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, m
         if isinstance(rule, CSSStyleRule):
             yield rule, layer
             continue
+        if isinstance(rule, CSSImportRule):
+            imported = getattr(rule.styleSheet, "cssRules", None) if rule.styleSheet is not None else None
+            if imported and _import_rule_applies(rule, viewport, features=features, media_type=media_type):
+                child_layer = layer
+                if rule.layerName is not None:
+                    layer_name = rule.layerName.strip() or f"\x00anon{id(rule)}"
+                    child_layer = layers.setdefault(layer_name, len(layers) + 1)
+                yield from _iter_style_rules(
+                    imported, viewport=viewport, layers=layers, layer=child_layer, features=features, media_type=media_type
+                )
+            continue
         if not inner:
             continue
         if isinstance(rule, CSSLayerBlockRule):
@@ -6019,6 +6041,21 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, m
             yield from _iter_style_rules(
                 inner, viewport=viewport, layers=layers, layer=layer, features=features, media_type=media_type
             )
+
+
+def _import_rule_applies(rule, viewport, *, features=None, media_type: str = "screen") -> bool:
+    """Whether an ``@import``'s ``supports()`` condition and media list hold."""
+    if rule.supportsText and not _supports_condition(rule.supportsText):
+        return False
+    media_text = rule.media.mediaText if rule.media else ""
+    if not media_text or media_text.strip().lower() == "all":
+        return True
+    from domonic.window import MediaQueryList
+
+    width, height = viewport
+    return MediaQueryList._evaluate(
+        media_text, width=width or 0, height=height or 0, features=features, media_type=media_type
+    )
 
 
 def _condition_rule_matches(rule, viewport, *, features=None, media_type: str = "screen") -> bool:
@@ -8007,10 +8044,11 @@ def _parse_statement_at_rule(
         rule.parentStyleSheet = parentStyleSheet
         rule.parentRule = parentRule
         rest = prelude[len("@import") :].strip()
-        href_match = re.match(r"(url\([^)]+\)|\"[^\"]+\"|'[^']+')\s*(.*)$", rest)
+        href_match = _IMPORT_URL_RE.match(rest)
         if href_match:
-            rule.href = href_match.group(1)
-            layer_name, supports_text, media_text = _parse_import_tail(href_match.group(2).strip())
+            # (CSSOM: href is the URL itself, not the url() / string token)
+            rule.href = next(group for group in href_match.groups()[:5] if group is not None)
+            layer_name, supports_text, media_text = _parse_import_tail(href_match.group(6).strip())
             rule.layerName = layer_name
             rule.supportsText = supports_text
             rule.media = MediaList([item for item in _split_top_level_commas(media_text) if item])
