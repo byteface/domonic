@@ -432,6 +432,17 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
     ),
 }
 
+# CSS Cascade 4 3.2 ``all``: every property but ``direction``, ``unicode-bidi``
+# and custom properties -- here, every longhand this module knows of. Its only
+# values are the CSS-wide keywords (``button { all: unset }``).
+SHORTHANDS["all"] = tuple(
+    sorted(
+        (set(INITIAL_VALUES) | set(INHERITED_PROPERTIES) | {long for longs in SHORTHANDS.values() for long in longs})
+        - set(SHORTHANDS)
+        - {"all", "direction", "unicode-bidi"}
+    )
+)
+
 #: longhand property -> the shorthand(s) that include it
 LONGHAND_TO_SHORTHANDS: dict[str, tuple[str, ...]] = {}
 for _short, _longs in SHORTHANDS.items():

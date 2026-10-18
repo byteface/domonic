@@ -2674,6 +2674,21 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(layered["background-color"], "transparent")
         self.assertIsNone(self.expand("background", "url(a) red, blue"))  # colour only in the final layer
 
+    def test_all_resets_every_longhand_but_direction(self):
+        self.assertEqual(self.expand("all", "unset")["color"], "unset")
+        self.assertNotIn("direction", self.expand("all", "initial"))
+        self.assertNotIn("unicode-bidi", self.expand("all", "initial"))
+        markup = (
+            "<html><head><style>button { color: red; padding: 5px; direction: rtl } button.x { all: unset }"
+            " p { color: green } p b { all: inherit }</style></head>"
+            "<body><button class=x>a</button><p style='margin-left: 4px'><b>b</b></p></body></html>"
+        )
+        self.assertEqual(_computed(markup, ".x", "color"), "rgb(0, 0, 0)")
+        self.assertEqual(_computed(markup, ".x", "padding-left"), "0px")
+        self.assertEqual(_computed(markup, ".x", "direction"), "rtl")
+        self.assertEqual(_computed(markup, "p b", "margin-left"), "4px")
+
+
 
 class InitialValuesTest(unittest.TestCase):
     def test_common_longhands_report_their_initial_values(self):
