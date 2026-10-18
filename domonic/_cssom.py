@@ -1500,6 +1500,33 @@ import re as _re  # noqa: E402
 _HEX_RE = _re.compile(r"^#([0-9a-fA-F]{3,8})$")
 
 
+def _hwb_to_rgb(arguments: str) -> str | None:
+    """CSS Color 4 7 ``hwb(<hue> <whiteness> <blackness> [/ <alpha>])`` as
+    ``rgb()`` (what it computes to, like ``hsl()``)."""
+    main, _, alpha_text = arguments.partition("/")
+    parts = main.replace(",", " ").split()
+    if len(parts) != 3:
+        return None
+    try:
+        hue = float(_re.sub(r"deg$", "", parts[0])) if parts[0] != "none" else 0.0
+        white, black = (float(part.rstrip("%")) / 100.0 if part != "none" else 0.0 for part in parts[1:])
+        alpha = None
+        if alpha_text.strip():
+            token = alpha_text.strip()
+            alpha = float(token[:-1]) / 100.0 if token.endswith("%") else float(token)
+    except ValueError:
+        return None
+    if white + black >= 1:
+        gray = int(round(white / (white + black) * 255))
+        return _fmt_rgb(gray, gray, gray, alpha)
+    red, green, blue = _hsl_to_rgb(hue, 1.0, 0.5)
+    scale = 1 - white - black
+    return _fmt_rgb(
+        *(int(round(channel * scale + white * 255)) for channel in (red, green, blue)),
+        alpha,
+    )
+
+
 def _hsl_to_rgb(h: float, s: float, ll: float) -> tuple[int, int, int]:
     h = (h % 360) / 360.0
     s = max(0.0, min(1.0, s))
@@ -1539,15 +1566,79 @@ def _fmt_rgb(r: int, g: int, b: int, a: float | None) -> str:
     return f"rgba({r}, {g}, {b}, {text})"
 
 
-def normalize_color(value: str) -> str | None:
+#: CSS Color 4 6.2 system colours, as Chrome resolves them (LayoutTheme::
+#: DefaultSystemColor, macOS): (light, dark)
+SYSTEM_COLORS: dict[str, tuple[tuple[int, int, int], tuple[int, int, int]]] = {
+    "canvas": ((255, 255, 255), (18, 18, 18)),
+    "canvastext": ((0, 0, 0), (255, 255, 255)),
+    "linktext": ((0, 0, 238), (158, 158, 255)),
+    "visitedtext": ((85, 26, 139), (208, 173, 240)),
+    "activetext": ((255, 0, 0), (255, 158, 158)),
+    "buttonface": ((239, 239, 239), (107, 107, 107)),
+    "buttontext": ((0, 0, 0), (255, 255, 255)),
+    "buttonborder": ((118, 118, 118), (107, 107, 107)),
+    "field": ((255, 255, 255), (59, 59, 59)),
+    "fieldtext": ((0, 0, 0), (255, 255, 255)),
+    "highlight": ((181, 213, 255), (99, 99, 99)),
+    "highlighttext": ((0, 0, 0), (255, 255, 255)),
+    "selecteditem": ((0, 117, 255), (153, 200, 255)),
+    "selecteditemtext": ((255, 255, 255), (59, 59, 59)),
+    "graytext": ((128, 128, 128), (128, 128, 128)),
+    "mark": ((255, 255, 0), (255, 255, 0)),
+    "marktext": ((0, 0, 0), (0, 0, 0)),
+    "accentcolor": ((0, 117, 255), (153, 200, 255)),
+    "accentcolortext": ((255, 255, 255), (0, 0, 0)),
+}
+# (6.2.1: the deprecated system colours are what they map to)
+for _old, _new in {
+    "activeborder": "buttonborder", "activecaption": "canvas", "appworkspace": "canvas", "background": "canvas",
+    "buttonhighlight": "buttonborder", "buttonshadow": "buttonborder", "captiontext": "canvastext",
+    "inactiveborder": "buttonborder", "inactivecaption": "canvas", "inactivecaptiontext": "graytext",
+    "infobackground": "canvas", "infotext": "canvastext", "menu": "canvas", "menutext": "canvastext",
+    "scrollbar": "canvas", "threeddarkshadow": "buttonborder", "threedface": "buttonface",
+    "threedhighlight": "buttonborder", "threedlightshadow": "buttonborder", "threedshadow": "buttonborder",
+    "window": "canvas", "windowframe": "buttonborder", "windowtext": "canvastext",
+}.items():  # fmt: skip
+    SYSTEM_COLORS[_old] = SYSTEM_COLORS[_new]
+
+
+def _split_function_arguments(text: str) -> list[str]:
+    parts, depth, current = [], 0, []
+    for char in text:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        if char == "," and depth == 0:
+            parts.append("".join(current).strip())
+            current = []
+        else:
+            current.append(char)
+    parts.append("".join(current).strip())
+    return parts
+
+
+def normalize_color(value: str, dark: bool = False) -> str | None:
     """Return ``value`` as ``rgb()`` / ``rgba()``, or ``None`` if it is not a
-    colour this resolver understands (leave it untouched)."""
+    colour this resolver understands (leave it untouched). ``dark`` is the
+    element's used colour scheme, for ``light-dark()`` and system colours."""
     text = str(value).strip()
     low = text.lower()
     if low in ("", "currentcolor", "transparent"):
         return "rgba(0, 0, 0, 0)" if low == "transparent" else None
     if low in NAMED_COLORS:
         return _fmt_rgb(*NAMED_COLORS[low], None)
+    system = SYSTEM_COLORS.get(low)
+    if system is not None:
+        return _fmt_rgb(*system[1 if dark else 0], None)
+    if low.startswith("light-dark(") and low.endswith(")"):
+        # CSS Color 5 light-dark(): the first colour in a light scheme
+        choices = _split_function_arguments(text[len("light-dark(") : -1])
+        if len(choices) != 2:
+            return None
+        return normalize_color(choices[1 if dark else 0], dark)
+    if low.startswith("hwb(") and low.endswith(")"):
+        return _hwb_to_rgb(low[4:-1])
 
     hexmatch = _HEX_RE.match(text)
     if hexmatch:

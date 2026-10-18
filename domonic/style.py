@@ -6907,8 +6907,24 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 # backslash-number sequence as a group reference; a callback
                 # returns it literally regardless of its contents.
                 value = re.sub(r"(?i)\bcurrentcolor\b", lambda _match: current, value)
-        normalized = _cssom.normalize_color(value)
+        low = value.strip().lower()
+        dark = (low in _cssom.SYSTEM_COLORS or "light-dark(" in low) and self._uses_dark_color_scheme()
+        normalized = _cssom.normalize_color(value, dark)
         return normalized if normalized is not None else value
+
+    def _uses_dark_color_scheme(self) -> bool:
+        """Whether this element's used colour scheme is dark (CSS Color Adjust
+        1 2.1): its ``color-scheme`` allows dark, and either not light or the
+        window prefers dark."""
+        schemes = str(self.getPropertyValue("color-scheme") or "normal").lower().split()
+        if "dark" not in schemes:
+            return False
+        if "light" not in schemes:
+            return True
+        document = getattr(self._element, "ownerDocument", None)
+        window = getattr(document, "defaultView", None) if document is not None else None
+        features = getattr(window, "mediaFeatures", None) or {}
+        return str(features.get("prefers-color-scheme", "light")).lower() == "dark"
 
     def _font_size_px(self) -> float:
         cached = self.__dict__.get("_font_size_px_cache")

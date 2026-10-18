@@ -2598,6 +2598,21 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, ".f", "display", "::before"), "block")
         self.assertEqual(_computed(markup, "#n", "display"), "inline")
 
+    def test_hwb_light_dark_and_system_colours_compute_to_rgb(self):
+        markup = self.page(
+            ".a { color: hwb(120 0% 50%) } .b { background-color: hwb(0 50% 50%); color: hwb(240 20% 20% / 50%) }"
+            " .c { color: light-dark(rgb(1, 2, 3), white) }"
+            " .d { color-scheme: dark; color: light-dark(red, rgb(0, 0, 255)); background-color: Canvas }"
+            " .e { color: LinkText; border-top-color: ButtonFace }",
+            "".join(f"<p class={c}>{c}</p>" for c in "abcde"),
+        )
+        expected = {(".a", "color"): "rgb(0, 128, 0)", (".b", "background-color"): "rgb(128, 128, 128)",
+                    (".b", "color"): "rgba(51, 51, 204, 0.5)", (".c", "color"): "rgb(1, 2, 3)",
+                    (".d", "color"): "rgb(0, 0, 255)", (".d", "background-color"): "rgb(18, 18, 18)",
+                    (".e", "color"): "rgb(0, 0, 238)", (".e", "border-top-color"): "rgb(239, 239, 239)"}
+        for (selector, prop), value in expected.items():
+            self.assertEqual(_computed(markup, selector, prop), value, f"{selector} {prop}")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")
