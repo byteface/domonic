@@ -306,6 +306,11 @@ stylesheets
 	sheet = page.styleSheets[0]
 	print(sheet.cssRules[0].selectorText)   # p
 
+The list is live and in tree order: a ``<style>`` added later shows up in it,
+and each ``<style>`` / ``<link rel="stylesheet" href>`` keeps one sheet object
+(``element.sheet``), so ``insertRule()`` edits stick. A sheet whose ``media``
+attribute doesn't match the window contributes nothing to the cascade.
+
 Related Examples and Guides
 ---------------------------
 

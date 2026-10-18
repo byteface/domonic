@@ -2397,6 +2397,46 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(computed.getPropertyValue("margin-left"), "1px")  # unlayered beats layer(theme)
         self.assertEqual(computed.getPropertyValue("padding-top"), "2px")
 
+    def test_stylesheet_list_is_live_in_tree_order_with_element_sheets(self):
+        import domonic
+        from domonic.window import window
+
+        page = domonic.parseString(
+            "<html><head><link rel='stylesheet' href='a.css'><style>p { color: red }</style>"
+            "<link rel=stylesheet><link rel='preload stylesheet' href='b.css'>"
+            "<link rel='alternate stylesheet' href='c.css' title=C></head><body><p>x</p></body></html>"
+        )
+        sheets = page.styleSheets
+        # tree order; the href-less link has no sheet; rel is a token list
+        self.assertEqual([s.ownerNode.tagName for s in sheets], ["LINK", "STYLE", "LINK", "LINK"])
+        self.assertEqual([sheets[0].href, sheets[2].href, sheets[3].href], ["a.css", "b.css", "c.css"])
+        self.assertTrue(sheets[3].disabled)  # an alternate sheet
+        style_el = page.querySelector("style")
+        self.assertIs(style_el.sheet, sheets[1])
+        style_el.sheet.insertRule("p { margin-left: 3px }", 0)
+        added = page.createElement("style")
+        self.assertIsNone(added.sheet)  # not in a document yet
+        added.textContent = "p { color: green }"
+        page.head.appendChild(added)
+        self.assertEqual(len(page.styleSheets), 5)
+        self.assertIs(page.styleSheets[1], style_el.sheet)
+        computed = window.getComputedStyle(page.querySelector("p"))
+        self.assertEqual(computed.getPropertyValue("color"), "rgb(0, 128, 0)")
+        self.assertEqual(computed.getPropertyValue("margin-left"), "3px")
+        page.head.removeChild(added)
+        self.assertEqual(len(page.styleSheets), 4)
+
+    def test_link_sheet_after_a_style_wins_by_source_order(self):
+        import domonic
+        from domonic.window import window
+
+        page = domonic.parseString(
+            "<html><head><style>p { color: red }</style><link rel=stylesheet href=x.css></head>"
+            "<body><p>x</p></body></html>"
+        )
+        page.styleSheets[1].replaceSync("p { color: blue }")
+        self.assertEqual(window.getComputedStyle(page.querySelector("p")).getPropertyValue("color"), "rgb(0, 0, 255)")
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",

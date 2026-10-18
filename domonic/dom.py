@@ -7988,10 +7988,17 @@ class Document(Element):
 
     @property
     def stylesheets(self):
-        if self.__stylesheets is None:
-            self.stylesheets = StyleSheetList()
-            self.stylesheets._populate_stylesheets_from_document(self)
-        return self.__stylesheets
+        sheets = self.__stylesheets
+        if sheets is None:
+            sheets = StyleSheetList()
+            sheets._live = True
+            self.__stylesheets = sheets
+        # live (CSSOM 6.2.2): rebuilt, keeping each element's sheet object,
+        # once the tree has changed since it was last read
+        if getattr(sheets, "_live", False) and getattr(sheets, "_epoch", None) != _STRUCTURE_EPOCH:
+            sheets._populate_stylesheets_from_document(self)
+            sheets._epoch = _STRUCTURE_EPOCH
+        return sheets
 
     @stylesheets.setter
     def stylesheets(self, stylesheets):
@@ -12698,8 +12705,23 @@ class HTMLLegendElement(HTMLElement):
     name = "legend"
 
 
+def _linkstyle_sheet(element: "Element") -> Any:
+    if not _node_is_connected(element):
+        return None
+    from domonic.style import _associated_sheet
+
+    return _associated_sheet(element)
+
+
 class HTMLLinkElement(HTMLElement):
     name = "link"
+
+    @property
+    def sheet(self) -> "Any":
+        """CSSOM ``LinkStyle.sheet``: the ``CSSStyleSheet`` of a connected
+        ``<link rel="stylesheet" href>`` (the one ``document.styleSheets``
+        lists), else None."""
+        return _linkstyle_sheet(self)
 
     def __init__(
         self,
@@ -13336,6 +13358,12 @@ class HTMLStyleElement(HTMLElement):
         """
         super().__init__(*args, **kwargs)
         _set_attributes(self, {"blocking": blocking, "media": media, "scoped": scoped, "type": type})
+
+    @property
+    def sheet(self) -> "Any":
+        """CSSOM ``LinkStyle.sheet``: this element's ``CSSStyleSheet`` while it
+        is in a document (the one ``document.styleSheets`` lists), else None."""
+        return _linkstyle_sheet(self)
 
 
 class HTMLTableCaptionElement(HTMLElement):

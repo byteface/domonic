@@ -735,6 +735,61 @@ class StyleSheet:
     #     raise NotImplementedError
 
 
+def _in_template(element) -> bool:
+    """Whether ``element`` is part of a ``<template>``'s contents (inert: its
+    ``<style>`` sheets don't apply to the document)."""
+    node = getattr(element, "parentNode", None)
+    while node is not None:
+        if (getattr(node, "name", "") or "").lower() == "template":
+            return True
+        node = getattr(node, "parentNode", None)
+    return False
+
+
+def _associated_sheet(owner, document=None) -> "CSSStyleSheet | None":
+    """The style sheet a ``<style>`` or ``<link>`` element has (CSSOM 6.3
+    ``LinkStyle.sheet``; HTML 4.2.6, 4.6.7): the same object for as long as
+    its source -- a ``<style>``'s text, a ``<link>``'s ``href`` and ``rel`` --
+    stands, so ``insertRule()`` edits and the rules a fetch put in a link's
+    sheet persist. None for a ``<link>`` that isn't a stylesheet with an
+    ``href`` (``rel`` is a token list: ``rel="preload stylesheet"`` is one;
+    an ``alternate stylesheet`` is disabled)."""
+    tag = (getattr(owner, "name", "") or "").lower()
+    if tag == "style":
+        source: tuple = ("style", owner.textContent or "")
+    elif tag == "link":
+        rel = str(owner.getAttribute("rel") or "").lower().split()
+        href = owner.getAttribute("href")
+        if "stylesheet" not in rel or not href:
+            return None
+        source = ("link", str(href), "alternate" in rel)
+    else:
+        return None
+    cached = owner.__dict__.get("_cssom_sheet")
+    if cached is not None and cached[0] == source:
+        return cached[1]
+    sheet = CSSStyleSheet()
+    sheet._constructed = False
+    sheet.ownerNode = owner
+    title = owner.getAttribute("title")
+    if title:
+        sheet.title = str(title)
+    media = owner.getAttribute("media")
+    if media:
+        sheet.media.mediaText = str(media)
+    if tag == "style":
+        if document is None:
+            document = getattr(owner, "ownerDocument", None)
+        sheet.href = getattr(document, "URL", None)
+        sheet.replaceSync(source[1])
+    else:
+        sheet.href = source[1]
+        if source[2]:
+            sheet.disabled = True
+    owner.__dict__["_cssom_sheet"] = (source, sheet)
+    return sheet
+
+
 class StyleSheetList(list):
     """List-like collection returned by ``Document.styleSheets``.
 
@@ -743,23 +798,19 @@ class StyleSheetList(list):
     """
 
     def _populate_stylesheets_from_document(self, doc) -> None:
-        """parse the document to find all the stylesheets and add them to the list."""
-        sheets = doc.querySelectorAll('link[rel="stylesheet"]')
-        for sheet in sheets:
-            ss = CSSStyleSheet()
-            ss._constructed = False
-            ss.href = sheet.href
-            ss.ownerNode = sheet
-            self.append(ss)
+        """(Re)build the list from ``doc``'s ``<style>`` and stylesheet
+        ``<link>`` elements, in tree order (CSSOM 6.2.2). Each element keeps
+        its own sheet object (``element.sheet``) across rebuilds; sheets added
+        to the list by hand (no ``ownerNode``) stay at the end."""
+        from domonic.dom import _root_element_index
 
-        styles = doc.querySelectorAll("style")
-        for style in styles:
-            ss = CSSStyleSheet()
-            ss._constructed = False
-            ss.href = doc.URL
-            ss.ownerNode = style
-            ss.replaceSync(style.textContent or "")
-            self.append(ss)
+        owners = [
+            element
+            for element in _root_element_index(doc)["tag"]["*"]
+            if (getattr(element, "name", "") or "").lower() in ("style", "link") and not _in_template(element)
+        ]
+        sheets = [sheet for sheet in (_associated_sheet(owner, doc) for owner in owners) if sheet is not None]
+        self[:] = sheets + [sheet for sheet in self if getattr(sheet, "ownerNode", None) is None]
 
     @property
     def length(self) -> int:
