@@ -558,6 +558,66 @@ def _is_html_root(node: Any) -> bool:
     return isinstance(node, Document) and getattr(node, "name", "") == "html"
 
 
+def _split_selector_list(text: str) -> "list[str]":
+    """The selectors of a selector list, split at commas outside parens,
+    brackets and strings (``:is(a, b), c`` is two selectors, not three)."""
+    if "," not in text:
+        stripped = text.strip()
+        return [stripped] if stripped else []
+    parts, current, depth, quote, escaped = [], [], 0, None, False
+    for char in text:
+        if escaped:
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif quote:
+            quote = None if char == quote else quote
+        elif char in "\"'":
+            quote = char
+        elif char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif char == "," and depth == 0:
+            parts.append("".join(current))
+            current = []
+            continue
+        current.append(char)
+    parts.append("".join(current))
+    return [part.strip() for part in parts if part.strip()]
+
+
+# the type selector starting a selector's last compound (``ul > li.x`` -> ``li``)
+_SUBJECT_TYPE_RE = re.compile(r"(?:^|[\s>+~])([A-Za-z][\w-]*)[^\s>+~]*$")
+_SIMPLE_ID_RE = re.compile(r"^#[\w-]+$")
+_SELECTOR_NEEDS_PARSING_RE = re.compile(r"[\[(\"'\\]")
+_SIMPLE_CLASSES_RE = re.compile(r"^\.[\w-]+(?:\.[\w-]+)*$")
+
+
+def _html_root_matches(root: "Element", query: str) -> bool:
+    """Whether domonic's ``<html>`` document ``root`` itself matches ``query``
+    -- without ``matches()``'s document-wide fallback, which would query
+    ``root`` again."""
+    attributes = root.__dict__.get("kwargs") or {}
+    for selector in _split_selector_list(query):
+        if _SELECTOR_NEEDS_PARSING_RE.search(selector) is None:
+            # (most queries' subject is a type selector, and not ``html``)
+            subject = _SUBJECT_TYPE_RE.search(selector)
+            if subject is not None and subject.group(1).lower() != "html":
+                continue
+            if _SIMPLE_ID_RE.match(selector):
+                if str(attributes.get("_id")) == selector[1:]:
+                    return True
+                continue
+            if _SIMPLE_CLASSES_RE.match(selector):
+                if set(selector.split(".")[1:]) <= set(str(attributes.get("_class") or "").split()):
+                    return True
+                continue
+        if root._matchElement(root, selector) or root._matches_selector_chain(selector) is True:
+            return True
+    return False
+
+
 def _node_is_connected(node: "Node") -> bool:
     try:
         return isinstance(node.rootNode, Document)
@@ -6328,6 +6388,9 @@ class Element(Node):
         if not query:
             return None
         query = query.strip()
+        if _is_html_root(self) and _html_root_matches(self, query):
+            # domonic's <html> is the document: the first element in it
+            return self
         if re.match(r"^#[\w-]+$", query):
             return self.getElementById(query[1:])
 
@@ -6396,8 +6459,14 @@ class Element(Node):
         """
         if not query:
             return []
+        found = self._query_descendants(query.strip())
+        if _is_html_root(self) and _html_root_matches(self, query.strip()):
+            # domonic's <html> is the document: the first element in it
+            return [self, *(el for el in found if el is not self)]
+        return found
 
-        query = query.strip()
+    def _query_descendants(self, query: str) -> list[Element]:
+        """``querySelectorAll`` over this node's descendants."""
         if re.match(r"^#[\w-]+$", query):
             found = self.getElementById(query[1:])
             return [found] if found is not None else []
@@ -8883,6 +8952,7 @@ class DocumentFragment(Node):
 
     querySelector = Document.querySelector
     querySelectorAll = Document.querySelectorAll
+    _query_descendants = Document._query_descendants
     getElementById = Document.getElementById
     getElementsByTagName = Document.getElementsByTagName
     getElementsByClassName = Element.getElementsByClassName
@@ -9403,6 +9473,10 @@ class _LiveHTMLCollection(HTMLCollection):
                 found = [el for el in hits if matcher(el)] if matcher is not None else hits
             else:
                 found = _elements_by_class_name(self._root, self._classes) if self._classes else []
+            root = self._root
+            if _is_html_root(root) and self._root_matches(root, matcher):
+                # domonic's <html> is the document itself: the first element in it
+                found = [root, *found]
             if _ID_INDEXING_ON:
                 self.__dict__["_elements_cache"] = (_STRUCTURE_EPOCH, found)
             return found
@@ -9420,6 +9494,15 @@ class _LiveHTMLCollection(HTMLCollection):
 
         walk(self._root)
         return out
+
+    def _root_matches(self, root: "Element", matcher: "Callable[[Element], bool] | None") -> bool:
+        if self._tag is not None:
+            hit = self._tag in ("*", "html")
+        elif self._named is not None:
+            hit = root.getAttribute("name") == self._named
+        else:
+            hit = bool(self._classes) and self._classes <= set(str(root.getAttribute("class") or "").split())
+        return hit and (matcher is None or matcher(root))
 
     @property
     def length(self) -> int:

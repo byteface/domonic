@@ -6277,6 +6277,24 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         # a detached tree's top element is still its root
         self.assertTrue(div(span()).matches(":root"))
 
+    def test_document_queries_include_the_html_root(self):
+        doc = parseString('<!DOCTYPE html><html lang=en class="no-js x"><head></head><body><p>x</p></body></html>')
+        self.assertIs(doc.querySelector("html"), doc)
+        self.assertIs(doc.querySelector(":root"), doc)
+        self.assertIs(doc.querySelector("[lang]"), doc)
+        self.assertIs(doc.querySelector(".no-js"), doc)
+        self.assertEqual(doc.querySelector("p").tagName, "P")
+        self.assertEqual([el.tagName for el in doc.querySelectorAll("*")], ["HTML", "HEAD", "BODY", "P"])
+        self.assertEqual([el.tagName for el in doc.querySelectorAll("html p")], ["P"])
+        self.assertEqual([el.tagName for el in doc.querySelectorAll("html.no-js p")], ["P"])
+        self.assertEqual([el.tagName for el in doc.querySelectorAll("p, html")], ["HTML", "P"])
+        self.assertEqual(list(doc.getElementsByTagName("html")), [doc])
+        self.assertEqual(doc.getElementsByTagName("*")[0], doc)
+        self.assertEqual(list(doc.getElementsByClassName("no-js")), [doc])
+        # an element's own queries still see descendants only
+        self.assertIsNone(doc.body.querySelector("html"))
+        self.assertEqual(doc.body.querySelectorAll("body"), [])
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 

@@ -18,7 +18,7 @@ from typing import Any
 from domonic import _cssom
 from domonic import dom as _dom
 from domonic import domonic
-from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text, _text_run_for
+from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text, _is_html_root, _text_run_for
 
 _PARSER_ALIASES = {
     None: "auto",
@@ -1387,6 +1387,10 @@ def _match_descendant_chain(
     rightmost = _descendant_index_candidates(root, parsed_chain[-1])
     if rightmost is None:
         return None
+    # domonic's <html> is also the document: it is an ancestor of everything
+    # in it, so the walks below go up to it rather than stopping short.
+    html_root = _is_html_root(root)
+    stop = None if html_root else root
     # Each ancestor part becomes a cheap predicate: a lower-case tag string
     # (compared directly, no set built), or -- for a class selector -- an
     # identity set of the elements the index says match.
@@ -1396,13 +1400,15 @@ def _match_descendant_chain(
             cands = _descendant_index_candidates(root, part)
             if cands is None:
                 return None
+            if html_root and _match_parsed_selector(root, part):
+                cands = [root, *cands]
             if not cands:  # a required ancestor selector matches nothing
                 return []
             checks.append((None, set(cands)))
         elif part["tag"] != "*":
             tag = part["tag"].lower()
-            if not _tag_index(root).get(tag):  # no element with this tag anywhere
-                return []
+            if not _tag_index(root).get(tag) and not (html_root and tag == "html"):
+                return []  # no element with this tag anywhere
             checks.append((tag, None))
         else:
             checks.append((None, None))  # bare "*" ancestor -> any element
@@ -1418,7 +1424,7 @@ def _match_descendant_chain(
             node = element.__dict__.get("parentNode")
             path: "list[int]" = []
             hit = False
-            while node is not None and node is not root:
+            while node is not None and node is not stop:
                 nid = id(node)
                 cached = memo.get(nid)
                 if cached is not None:
@@ -1443,7 +1449,7 @@ def _match_descendant_chain(
         # ("div span a" matches an <a> whose <span> ancestor has a <div> ancestor)
         need = depth
         node = element.__dict__.get("parentNode")
-        while node is not None and node is not root and need >= 0:
+        while node is not None and node is not stop and need >= 0:
             want_tag, want_set = checks[need]
             if want_set is not None:
                 if node in want_set:
