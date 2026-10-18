@@ -2408,6 +2408,22 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertEqual(rules[1], "p {color: red;}")
         self.assertEqual(rules[2], r".a\{b {color: blue;}")
 
+    def test_a_block_open_at_the_end_of_the_sheet_is_closed(self):
+        self.assertEqual(
+            self.rules("p { color: red } .test { width: 10px; white-space: pre"),
+            ["p {color: red;}", ".test {width: 10px; white-space: pre;}"],
+        )
+        self.assertEqual(
+            self.rules("@media screen { p { color: red } .x { color: blue"),
+            ["@media screen {p {color: red;} .x {color: blue;}}"],
+        )
+
+    def test_cdo_and_cdc_at_the_top_level_are_ignored(self):
+        self.assertEqual(
+            self.rules("<!-- p { color: red } --> .b { border: 1px } <!-- --> .c { color: blue }"),
+            ["p {color: red;}", ".b {border: 1px;}", ".c {color: blue;}"],
+        )
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"

@@ -8214,10 +8214,16 @@ def _parse_rule_list(
     rules = CSSRuleList()
     css = cssText or ""
     index = 0
+    top_level = parentRule is None
     while index < len(css):
         index = _skip_css_whitespace(css, index)
         if index >= len(css):
             break
+        if top_level and css.startswith(("<!--", "-->"), index):
+            # CSS Syntax 3 5.4.1: CDO/CDC tokens at a stylesheet's top level
+            # are ignored (HTML-comment-wrapped <style> contents)
+            index += 4 if css.startswith("<!--", index) else 3
+            continue
         boundary, kind = _find_next_rule_boundary(css, index)
         if boundary == -1:
             break
@@ -8233,7 +8239,9 @@ def _parse_rule_list(
             continue
         close_index = _find_matching_brace(css, boundary)
         if close_index == -1:
-            break
+            # CSS Syntax 3 5.4.x: the end of the input inside a block ends the
+            # block -- the rule is kept, not dropped
+            close_index = len(css)
         block = css[boundary + 1 : close_index]
         rules.append(_parse_block_rule(parentStyleSheet, parentRule, prelude, block))
         index = close_index + 1
