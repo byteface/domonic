@@ -2271,16 +2271,14 @@ class Node(EventTarget):
         if self.__class__.__name__ == "a" and attr == "href":
             return ""
 
-        try:
-            # return getattr(super(), attr)
-            # return getattr(self, attr)
-            # return getattr(Node, attr)  # means overrideing for style etc in element?
-            return getattr(self.__class__, attr)  # means overrideing for style etc in element?
-            # return getattr(Element, attr)
-        except AttributeError as e:
-            raise e
-
-        raise AttributeError
+        # (raises AttributeError when the class has no such attribute either)
+        found = getattr(self.__class__, attr)  # means overrideing for style etc in element?
+        if isinstance(found, property):
+            # Normal lookup already tried the class, so a property seen here is
+            # one whose getter raised AttributeError -- report that, rather than
+            # handing back the property object itself as the value.
+            raise AttributeError(f"{type(self).__name__!r} object's {attr!r} getter raised AttributeError")
+        return found
 
     def __pyml__(self):
         """returns a representation of the object as a pyml string"""

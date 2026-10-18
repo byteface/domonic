@@ -6325,6 +6325,19 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(tags("body:focus-within"), ["BODY"])
         self.assertTrue(doc.querySelector("#c").matches(":not(.a, .b)"))
 
+    def test_a_property_getter_raising_attributeerror_is_not_returned_as_the_value(self):
+        class Broken(Element):
+            @property
+            def thing(self):
+                raise AttributeError("inner")
+
+        element = Broken()
+        with self.assertRaises(AttributeError):
+            element.thing
+        self.assertFalse(hasattr(element, "thing"))
+        # attribute-style reads of real attributes still work
+        self.assertEqual(div(_title="t").title, "t")
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
