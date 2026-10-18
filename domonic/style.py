@@ -207,7 +207,45 @@ def _css_attribute_name(name: str) -> str:
 
 
 def _strip_css_comments(css_text: str) -> str:
-    return re.sub(COMMENT_REGEXP, "", css_text or "")
+    """``css_text`` with its comments removed, strings left whole (a ``/*``
+    inside ``"..."`` is text). CSS Syntax 3 drops a comment but it still ends
+    the token before it: ``rgb(10/**/175)`` is two numbers, not ``10175``, so
+    a comment between two characters that would otherwise run together
+    becomes a space."""
+    text = css_text or ""
+    if "/*" not in text:
+        return text
+    out: list[str] = []
+    index, length, quote = 0, len(text), None
+    while index < length:
+        char = text[index]
+        if quote is not None:
+            out.append(char)
+            if char == "\\" and index + 1 < length:
+                out.append(text[index + 1])
+                index += 2
+                continue
+            if char == quote:
+                quote = None
+            index += 1
+            continue
+        if char in "\"'":
+            quote = char
+        elif char == "\\" and index + 1 < length:
+            out.append(text[index : index + 2])
+            index += 2
+            continue
+        elif char == "/" and text.startswith("/*", index):
+            end = text.find("*/", index + 2)
+            index = length if end < 0 else end + 2
+            before = out[-1][-1:] if out else ""
+            after = text[index] if index < length else ""
+            if (before.isalnum() or before in "%.") and (after.isalnum() or after in "%.-+#"):
+                out.append(" ")
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out)
 
 
 def _split_css_declarations(css_text: str) -> list[str]:
@@ -338,6 +376,8 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
         else:
             entries[existing] = (name, value, priority)
 
+    if "/*" in (css_text or ""):
+        css_text = _strip_css_comments(css_text)
     for declaration in _split_css_declarations(css_text):
         if ":" not in declaration:
             continue

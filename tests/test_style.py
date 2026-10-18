@@ -2387,5 +2387,26 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertNotEqual(_computed(markup, "a", "color"), "rgb(255, 0, 0)")
 
 
+class StylesheetParsingTest(unittest.TestCase):
+    """CSS Syntax 3 details the stylesheet and declaration parsers missed."""
+
+    def rules(self, css):
+        sheet = CSSStyleSheet()
+        sheet.replaceSync(css)
+        return [rule.cssText for rule in sheet.cssRules]
+
+    def test_comments_separate_tokens_and_skip_strings(self):
+        self.assertEqual(self.rules("p { color: rgb(10/**/175/**/10) }"), ["p {color: rgb(10 175 10);}"])
+        self.assertEqual(self.rules('a::after { content: "/*x*/" }'), ['a::after {content: "/*x*/";}'])
+        self.assertEqual(self.rules("/* a { b } */ i { color: red }"), ["i {color: red;}"])
+
+    def test_comments_in_a_declaration_block(self):
+        style = CSSStyleDeclaration()
+        style.cssText = "/* lead */ color: red; /* between */ margin: 1px"
+        self.assertEqual(style.getPropertyValue("color"), "red")
+        self.assertEqual(style.getPropertyValue("margin"), "1px")
+        self.assertEqual(style.cssText, "color: red; margin: 1px;")
+
+
 if __name__ == "__main__":
     unittest.main()
