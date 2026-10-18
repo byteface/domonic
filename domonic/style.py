@@ -6596,14 +6596,23 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         # 0.875rem)`), not just a synthetic one.
         if "var(" in raw.lower():
             raw = _expand_var_references(raw, self._custom_property).strip()
-        if "calc(" in raw.lower():
-            px = _eval_calc_to_px(raw, em_px=parent_px, rem_px=self._root_font_size_px())
+        if _has_math_function(raw):
+            px = _eval_calc_to_px(
+                raw,
+                em_px=parent_px,
+                rem_px=self._root_font_size_px(),
+                percent_px=parent_px,
+                viewport=self._viewport_px(),
+            )
+            if px is not None:
+                px = max(0.0, px)  # (a math function's font-size clamps at 0 -- CSS Values 4 10.12)
         else:
             px = _length_string_to_px(
                 raw,
                 em_px=parent_px,
                 rem_px=self._root_font_size_px(),
                 percent_px=parent_px,
+                viewport=self._viewport_px() if "v" in raw.lower() else None,
             )
         if px is None:
             keyword = raw.lower()
@@ -6649,6 +6658,28 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         if own_monospace == parent_monospace:
             return px
         return px * _MONOSPACE_FONT_SIZE_SCALE if own_monospace else px / _MONOSPACE_FONT_SIZE_SCALE
+
+    def _viewport_px(self) -> "tuple[float, float] | None":
+        """The window's ``(innerWidth, innerHeight)`` -- what viewport units
+        are 1% of -- or None for an element with no window."""
+        cache = self._chain_cache
+        if "__viewport__" in cache:
+            return cache["__viewport__"]
+        window = cache.get("__window__")
+        if window is None:
+            document = getattr(self._element, "ownerDocument", None)
+            window = getattr(document, "defaultView", None) if document else None
+            cache["__window__"] = window
+        viewport = None
+        if window is not None:
+            try:
+                width = float(getattr(window, "innerWidth", 0) or 0)
+                height = float(getattr(window, "innerHeight", 0) or 0)
+            except (TypeError, ValueError):
+                width = height = 0.0
+            viewport = (width, height) if width or height else None
+        cache["__viewport__"] = viewport
+        return viewport
 
     def _root_font_size_px(self) -> float:
         cache = self._chain_cache
@@ -6712,8 +6743,16 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
         font_px = self._font_size_px()
 
-        if "calc(" in value.lower():
-            evaluated = _eval_calc_to_px(value, em_px=font_px, rem_px=self._root_font_size_px())
+        if _has_math_function(value):
+            evaluated = _eval_calc_to_px(
+                value,
+                em_px=font_px,
+                rem_px=self._root_font_size_px(),
+                percent_px=self._percent_base_px(target) if "%" in value and target != "line-height" else None,
+                viewport=self._viewport_px(),
+            )
+            if evaluated is not None and target == "line-height" and "%" in value:
+                evaluated = None  # (a line-height percentage is of the font size; left as written)
             if evaluated is not None:
                 # see the ``target == "line-height"`` branch below for why a
                 # negative result here becomes ``normal`` instead of a real
@@ -6754,6 +6793,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 return _px_str(float(match.group(1)) / 100.0 * font_px)
 
         percent_px = self._percent_base_px(target) if "%" in value else None
+        viewport = self._viewport_px() if "v" in value.lower() else None
 
         parts = []
         changed = False
@@ -6763,6 +6803,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 em_px=font_px,
                 rem_px=self._root_font_size_px(),
                 percent_px=percent_px,
+                viewport=viewport,
             )
             if px is None:
                 parts.append(token)
@@ -7272,10 +7313,17 @@ def set_presentational_hint_resolver(resolver: "Callable[[Any], dict[str, Any] |
     _PRESENTATIONAL_HINT_RESOLVER = resolver
 
 
-def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px: "float | None") -> "float | None":
+def _length_string_to_px(
+    token: str,
+    *,
+    em_px: float,
+    rem_px: float,
+    percent_px: "float | None",
+    viewport: "tuple[float, float] | None" = None,
+) -> "float | None":
     """Convert a single length token to px, or ``None`` if it is not a plain
-    length this resolver handles (``auto``, ``calc(...)``, a bare keyword, or a
-    ``%`` with no base)."""
+    length this resolver handles (``auto``, ``calc(...)``, a bare keyword, a
+    ``%`` with no base, or a viewport unit with no ``viewport``)."""
     stripped = token.strip()
     # Fast path for the tokens a stylesheet overwhelmingly actually uses --
     # a bare integer ``px`` length (``12px``, ``0px``) or a bare ``0`` -- so
@@ -7313,61 +7361,189 @@ def _length_string_to_px(token: str, *, em_px: float, rem_px: float, percent_px:
         return number * 0.5 * em_px
     if unit == "":
         return None  # a unitless non-zero number is not a length
+    if unit in _VIEWPORT_UNIT_AXES:
+        return _viewport_unit_px(number, unit, viewport)
     return None if unit not in _ABSOLUTE_LENGTH_UNITS else number * _ABSOLUTE_LENGTH_UNITS[unit]
 
 
 _CALC_LENGTH_TERM_RE = re.compile(r"(?<![\w.])([+-]?(?:\d+\.?\d*|\.\d+))(px|em|rem|ch|ex|in|cm|mm|q|pt|pc)\b", re.I)
 
 
-def _eval_calc_to_px(expr: str, *, em_px: float, rem_px: float) -> "float | None":
-    """Evaluate a ``calc(...)`` body to px, or ``None`` if it mixes in a
-    percentage / viewport / other unit that needs layout."""
-    body = expr.strip()
-    if body.lower().startswith("calc(") and body.endswith(")"):
-        body = body[5:-1]
-    # any unit we cannot resolve to px -> bail (keep the calc() verbatim)
-    if re.search(r"(?<![\w.])[+-]?(?:\d+\.?\d*|\.\d+)" r"(%|vw|vh|vmin|vmax|fr|svh|lvh|dvh)\b", body, re.I):
-        return None
-    if "calc(" in body.lower():
-        return None  # nested calc -- keep it simple
+#: viewport-percentage units -> the viewport axis they are 1% of (0 width,
+#: 1 height; ``vmin``/``vmax`` handled apart). A static document has no
+#: dynamic toolbars, so the small/large/dynamic forms are the plain ones, and
+#: ``vi``/``vb`` are ``vw``/``vh`` in horizontal writing.
+_VIEWPORT_UNIT_AXES = {
+    prefix + unit: axis
+    for prefix in ("", "s", "l", "d")
+    for unit, axis in (("vw", 0), ("vh", 1), ("vi", 0), ("vb", 1), ("vmin", 2), ("vmax", 3))
+}
+_MATH_FUNCTION_RE = re.compile(r"(?<![\w-])(?:calc|min|max|clamp|-webkit-calc)\(", re.I)
+_MATH_TOKEN_RE = re.compile(
+    r"\s*(?:(?P<num>[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(?P<unit>%|[a-z]+)?"
+    r"|(?P<fn>-?[a-z][\w-]*)\(|(?P<op>[-+*/(),]))",
+    re.I,
+)
 
-    def _sub(match: "re.Match[str]") -> str:
-        px = _length_string_to_px(match.group(0), em_px=em_px, rem_px=rem_px, percent_px=None)
-        return repr(px) if px is not None else match.group(0)
 
-    numeric = _CALC_LENGTH_TERM_RE.sub(_sub, body)
-    if re.search(r"[a-z]", numeric, re.I):  # an unresolved unit slipped through
+def _has_math_function(value: str) -> bool:
+    return bool(value) and _MATH_FUNCTION_RE.search(value) is not None
+
+
+def _viewport_unit_px(number: float, unit: str, viewport: "tuple[float, float] | None") -> "float | None":
+    axis = _VIEWPORT_UNIT_AXES.get(unit)
+    if axis is None or not viewport:
         return None
-    if not re.fullmatch(r"[-+*/()\d.eE\s]+", numeric):
-        return None
+    width, height = viewport
+    basis = (width, height, min(width, height), max(width, height))[axis]
+    return number * basis / 100.0
+
+
+def _eval_math(
+    expr: str,
+    *,
+    em_px: float,
+    rem_px: float,
+    percent_px: "float | None" = None,
+    viewport: "tuple[float, float] | None" = None,
+) -> "tuple[float, bool] | None":
+    """Evaluate a math expression (``calc()``, ``min()``, ``max()``,
+    ``clamp()``, nested, or a bare length) to ``(value, is_length)``: px for a
+    length, the plain number otherwise. ``None`` when it needs something not
+    given (a ``%`` with no base, a viewport unit with no viewport), names an
+    unknown unit or function, or mixes types (CSS Values 4 10.8)."""
+    tokens: list = []
+    position, text = 0, expr.strip()
+    while position < len(text):
+        match = _MATH_TOKEN_RE.match(text, position)
+        if match is None or match.end() == position:
+            return None
+        position = match.end()
+        if match.group("num") is not None:
+            number, unit = float(match.group("num")), (match.group("unit") or "").lower()
+            if not unit:
+                tokens.append(("val", number, False))
+                continue
+            if unit == "%":
+                if percent_px is None:
+                    return None
+                tokens.append(("val", number / 100.0 * percent_px, True))
+                continue
+            px = _viewport_unit_px(number, unit, viewport)
+            if px is None:
+                px = _length_string_to_px(f"{number!r}{unit}", em_px=em_px, rem_px=rem_px, percent_px=None)
+            if px is None:
+                return None
+            tokens.append(("val", px, True))
+        elif match.group("fn") is not None:
+            name = match.group("fn").lower()
+            if name not in ("calc", "min", "max", "clamp", "-webkit-calc"):
+                return None
+            tokens.append(("fn", name))
+        else:
+            tokens.append(("op", match.group("op")))
+    index = 0
+
+    def peek():
+        return tokens[index] if index < len(tokens) else None
+
+    def take(op):
+        nonlocal index
+        token = peek()
+        if token is not None and token[0] == "op" and token[1] == op:
+            index += 1
+            return True
+        return False
+
+    def arguments():
+        values = [expression()]
+        while take(","):
+            values.append(expression())
+        if not take(")"):
+            raise ValueError("unclosed function")
+        return values
+
+    def factor():
+        nonlocal index
+        token = peek()
+        if token is None:
+            raise ValueError("missing operand")
+        if token[0] == "val":
+            index += 1
+            return token[1], token[2]
+        if token[0] == "fn":
+            index += 1
+            values = arguments()
+            if any(value[1] != values[0][1] for value in values):
+                raise ValueError("mixed types")
+            numbers = [value[0] for value in values]
+            if token[1] in ("calc", "-webkit-calc"):
+                if len(values) != 1:
+                    raise ValueError("calc() takes one argument")
+                return values[0]
+            if token[1] == "clamp":
+                if len(values) != 3:
+                    raise ValueError("clamp() takes three arguments")
+                return max(numbers[0], min(numbers[1], numbers[2])), values[0][1]
+            return (min(numbers) if token[1] == "min" else max(numbers)), values[0][1]
+        if take("("):
+            value = expression()
+            if not take(")"):
+                raise ValueError("unclosed paren")
+            return value
+        raise ValueError("unexpected token")
+
+    def term():
+        value = factor()
+        while True:
+            if take("*"):
+                right = factor()
+                if value[1] and right[1]:
+                    raise ValueError("length * length")
+                value = (value[0] * right[0], value[1] or right[1])
+            elif take("/"):
+                right = factor()
+                if right[1] or right[0] == 0:
+                    raise ValueError("bad divisor")
+                value = (value[0] / right[0], value[1])
+            else:
+                return value
+
+    def expression():
+        value = term()
+        while True:
+            if take("+"):
+                right = term()
+            elif take("-"):
+                right = term()
+                right = (-right[0], right[1])
+            else:
+                return value
+            if right[1] != value[1]:
+                raise ValueError("length + number")
+            value = (value[0] + right[0], value[1])
+
     try:
-        node: Any = ast.parse(numeric, "<calc>", "eval")
-    except SyntaxError:
+        result = expression()
+    except (ValueError, ZeroDivisionError, OverflowError):
         return None
+    return result if index == len(tokens) else None
 
-    def _ev(n: Any) -> float:
-        if isinstance(n, ast.Expression):
-            return _ev(n.body)
-        if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
-            return float(n.value)
-        if isinstance(n, ast.UnaryOp) and isinstance(n.op, (ast.UAdd, ast.USub)):
-            v = _ev(n.operand)
-            return v if isinstance(n.op, ast.UAdd) else -v
-        if isinstance(n, ast.BinOp) and isinstance(n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)):
-            a, b = _ev(n.left), _ev(n.right)
-            if isinstance(n.op, ast.Add):
-                return a + b
-            if isinstance(n.op, ast.Sub):
-                return a - b
-            if isinstance(n.op, ast.Mult):
-                return a * b
-            return a / b if b else 0.0
-        raise ValueError("unsupported calc expression")
 
-    try:
-        return _ev(node)
-    except (ValueError, ZeroDivisionError):
-        return None
+def _eval_calc_to_px(
+    expr: str,
+    *,
+    em_px: float,
+    rem_px: float,
+    percent_px: "float | None" = None,
+    viewport: "tuple[float, float] | None" = None,
+) -> "float | None":
+    """Evaluate a math function (``calc()``, ``min()``, ``max()``,
+    ``clamp()``) to px -- or to the plain number for a unitless one -- or
+    ``None`` if it mixes in a percentage / viewport unit with no base given,
+    or anything else that needs layout. See ``_eval_math``."""
+    result = _eval_math(expr, em_px=em_px, rem_px=rem_px, percent_px=percent_px, viewport=viewport)
+    return None if result is None else result[0]
 
 
 def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:

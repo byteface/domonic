@@ -117,9 +117,10 @@ values from the parent, then each property's initial value.
 	print(computed.getPropertyValue("display"))      # inline (initial value)
 
 Like a browser, the computed values are **used values**: colours are reported
-as ``rgb()`` / ``rgba()``, ``em`` / ``rem`` / ``pt`` / ``cm`` lengths and
-``calc()`` are resolved to ``px`` (against the element's font-size and the
-containing block where one can be found without full layout), ``currentColor``
+as ``rgb()`` / ``rgba()``, ``em`` / ``rem`` / ``pt`` / ``cm`` lengths,
+viewport units (once the document has a window) and ``calc()`` / ``min()`` /
+``max()`` / ``clamp()`` are resolved to ``px`` (against the element's font-size
+and the containing block where one can be found without full layout), ``currentColor``
 resolves to the element's ``color``, ``font-weight`` keywords become numbers,
 an out-of-flow ``display: inline`` blockifies, and ``inherit`` / ``initial`` /
 ``unset`` are resolved. ``%`` values that need layout, and a ``transform``

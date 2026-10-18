@@ -2480,6 +2480,33 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "sub", "font-size"), "20px")
         self.assertEqual(_computed(markup, "sup", "font-size"), "28.8px")
 
+    def test_math_functions_and_viewport_units_resolve(self):
+        import domonic
+        from domonic.style import _eval_math
+        from domonic.window import Window
+
+        page = domonic.parseString(
+            "<html><head><style>p { font-size: clamp(1rem, 2vw, 2rem) } i { width: 5vw; margin-left: min(10px, 2em) }"
+            " b { font-size: calc(1rem + 1vw); padding-left: max(1rem, 30px) }</style></head>"
+            "<body><p><i>i</i><b>b</b></p></body></html>"
+        )
+        window = Window()
+        window.attach(page)
+        style = window.getComputedStyle
+        self.assertEqual(style(page.querySelector("p")).getPropertyValue("font-size"), "20.48px")
+        self.assertEqual(style(page.querySelector("i")).getPropertyValue("width"), "51.2px")
+        self.assertEqual(style(page.querySelector("i")).getPropertyValue("margin-left"), "10px")
+        self.assertEqual(style(page.querySelector("b")).getPropertyValue("font-size"), "26.24px")
+        self.assertEqual(style(page.querySelector("b")).getPropertyValue("padding-left"), "30px")
+        # nesting, types and what needs a base
+        self.assertEqual(_eval_math("calc((10px + 5px) / 3)", em_px=16, rem_px=16), (5.0, True))
+        self.assertEqual(_eval_math("calc(1.25 / .875)", em_px=16, rem_px=16)[1], False)
+        self.assertIsNone(_eval_math("calc(10px * 2px)", em_px=16, rem_px=16))
+        self.assertIsNone(_eval_math("calc(1px + 2)", em_px=16, rem_px=16))
+        self.assertIsNone(_eval_math("calc(50% - 10px)", em_px=16, rem_px=16))
+        self.assertEqual(_eval_math("calc(50% - 10px)", em_px=16, rem_px=16, percent_px=200), (90.0, True))
+        self.assertIsNone(_eval_math("clamp(1px, 2px)", em_px=16, rem_px=16))
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

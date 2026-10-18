@@ -36,6 +36,7 @@ from .style import (
     _BORDER_WIDTH_KEYWORD_PX,
     _BORDER_WIDTH_TO_STYLE,
     _eval_calc_to_px,
+    _has_math_function,
     _expand_var_references,
     _length_string_to_px,
 )
@@ -201,7 +202,7 @@ def _parse_length_or_percent(
         if allow_percent:
             return Percent(float(percent_match.group(1)) / 100.0)
         return Keyword(text)
-    if "calc(" in low:
+    if _has_math_function(text):
         # this reads the raw cascaded string, not getComputedStyle's own
         # resolved accessors (which already expand var() -- see
         # _compute_property_value), so a var() reference is still literal
