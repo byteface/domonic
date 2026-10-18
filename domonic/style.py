@@ -5749,17 +5749,31 @@ def _selector_specificity(selector: str) -> tuple[int, int, int]:
 
 
 _RIGHTMOST_KEY = re.compile(r"([#.]?[-\w]+|\*)(?:\([^)]*\))?\s*$")
+# a trailing pseudo-class / pseudo-element, its argument up to two parens deep
+_TRAILING_PSEUDO_RE = re.compile(r"::?[-\w]+(?:\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\))?\s*$")
+
+
+def _without_trailing_pseudos(selector: str) -> str:
+    """``selector`` with every pseudo-class / pseudo-element its last compound
+    ends in removed (``a.btn:not(.x):hover`` -> ``a.btn``)."""
+    while True:
+        stripped = _TRAILING_PSEUDO_RE.sub("", selector, count=1)
+        if stripped == selector:
+            return selector
+        selector = stripped
 
 
 def _rule_bucket_key(selector: str) -> str:
     """The bucket a selector belongs in: ``#id``, ``.class``, ``tag`` from its
     rightmost compound, or ``*`` when that cannot be determined cheaply."""
     sel = selector.strip().rstrip()
-    # drop a trailing pseudo-element / pseudo-class for bucketing purposes; a
-    # selector that is *only* a pseudo (``:root``, ``:hover``, ``:not(...)``)
-    # has no cheap type/id/class key, so it goes in the "*" bucket
-    stripped = re.sub(r"::?[-\w]+(?:\([^)]*\))?\s*$", "", sel).strip()
-    if not stripped:
+    # drop the trailing pseudo-elements / pseudo-classes for bucketing
+    # purposes; a compound that is *only* pseudos (``:root``, ``:hover``,
+    # ``div :first-child``, ``ul > :not(.x)``) is an implicit ``*`` with no
+    # cheap type/id/class key, so it goes in the "*" bucket
+    unstripped = _without_trailing_pseudos(sel)
+    stripped = unstripped.strip()
+    if not stripped or unstripped[-1:].isspace() or stripped[-1] in ">+~":
         return "*"
     match = _RIGHTMOST_KEY.search(stripped)
     if not match:
@@ -5839,8 +5853,23 @@ def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
 
 
 _PSEUDO_ELEMENT_SUFFIX_RE = re.compile(
-    r"::?(before|after|marker|placeholder|first-line|" r"first-letter|selection|backdrop|file-selector-button)\s*$"
+    r"::?(before|after|marker|placeholder|first-line|" r"first-letter|selection|backdrop|file-selector-button)\s*$",
+    re.I,
 )
+
+
+@functools.lru_cache(maxsize=8192)
+def _split_pseudo_element(selector: str) -> "tuple[str, str]":
+    """``(pseudo-element name or "", originating selector)`` for a selector:
+    ``p::BEFORE`` -> ``("before", "p")``. A pseudo-element after a combinator
+    (``section :after``) belongs to an implicit ``*``, not the ``section``."""
+    pe = _PSEUDO_ELEMENT_SUFFIX_RE.search(selector)
+    if pe is None:
+        return "", selector
+    base = selector[: pe.start()]
+    if not base.strip() or base[-1:].isspace() or base.rstrip()[-1] in ">+~":
+        base = base + "*"
+    return pe.group(1).lower(), base.strip()
 
 
 def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = "screen"):
@@ -5868,6 +5897,8 @@ def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = 
         # cached rule index/computed style that was built while it applied.
         if getattr(sheet, "disabled", False):
             continue
+        if not _sheet_media_matches(sheet, viewport, features, media_type):
+            continue
         for rule, layer in _iter_style_rules(
             getattr(sheet, "cssRules", None),
             viewport=viewport,
@@ -5878,18 +5909,44 @@ def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = 
             entries = _expand_shorthands_for_cascade(rule.style._property_entries())
             if not entries:
                 continue
-            for selector in str(rule.selectorText or "").split(","):
-                selector = selector.strip()
-                if not selector:
-                    continue
+            # (top-level commas only: ``:is(p, table)`` is one selector)
+            for selector in _split_top_level_commas(str(rule.selectorText or "")):
                 order += 1
                 index.setdefault(_rule_bucket_key(selector), []).append(
                     (selector, _selector_specificity(selector), order, layer, entries)
                 )
-                pe = _PSEUDO_ELEMENT_SUFFIX_RE.search(selector)
-                if pe:
-                    pseudo_names.add(pe.group(1))
+                pseudo, _ = _split_pseudo_element(selector)
+                if pseudo:
+                    pseudo_names.add(pseudo)
     return index, pseudo_names
+
+
+def _sheet_media_matches(sheet, viewport, features=None, media_type: str = "screen") -> bool:
+    """Whether a stylesheet's own media query applies -- its ``<style>`` /
+    ``<link>``'s ``media`` attribute, else its media list (CSSOM 6.1: a sheet
+    whose media doesn't match contributes nothing). A ``media="print"`` or
+    ``media="(prefers-color-scheme: dark)"`` sheet used to apply on screen."""
+    owner = getattr(sheet, "ownerNode", None)
+    media = None
+    if (getattr(owner, "tagName", "") or "").lower() in ("style", "link"):
+        media = owner.getAttribute("media")
+    if media is None:
+        media_list = getattr(sheet, "media", None)
+        media = getattr(media_list, "mediaText", None) if media_list is not None else None
+    media = (media or "").strip()
+    if not media or media.lower() == "all":
+        return True
+    from domonic.window import MediaQueryList
+
+    width, height = viewport
+    try:
+        return bool(
+            MediaQueryList._evaluate(
+                media, width=width or 0, height=height or 0, features=features, media_type=media_type or "screen"
+            )
+        )
+    except Exception:
+        return True
 
 
 def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, media_type: str = "screen"):
@@ -6125,13 +6182,9 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
             for bucket in buckets:
                 for selector, spec, order, layer, entries in index.get(bucket, ()):
-                    pe = _PSEUDO_ELEMENT_SUFFIX_RE.search(selector)
-                    sel_pseudo = pe.group(1) if pe else ""
+                    sel_pseudo, base_selector = _split_pseudo_element(selector)
                     if sel_pseudo != want_pseudo:
                         continue
-                    base_selector = selector[: pe.start()].strip() if pe else selector
-                    if not base_selector:
-                        base_selector = "*"
                     try:
                         # ``_matchElement`` only understands a small self-contained
                         # subset of pseudo-classes (see ``_STRUCTURAL_PSEUDO_

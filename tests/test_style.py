@@ -2324,5 +2324,49 @@ class TestCase(unittest.TestCase):
         self.assertEqual(window.getComputedStyle(el).getPropertyValue("margin-left"), "auto")
 
 
+
+def _computed(markup, selector, prop, pseudo=None):
+    """``getComputedStyle(<selector>, pseudo).getPropertyValue(prop)`` on a parsed page."""
+    import domonic
+    from domonic.window import window
+
+    page = domonic.parseString(markup)
+    return window.getComputedStyle(page.querySelector(selector), pseudo).getPropertyValue(prop)
+
+
+class CascadeSelectorTest(unittest.TestCase):
+    """Selector shapes the cascade's rule index used to file or match wrongly."""
+
+    def page(self, css, body):
+        return f"<html><head><style>{css}</style></head><body>{body}</body></html>"
+
+    def test_selector_list_splits_at_top_level_commas(self):
+        markup = self.page("div:is(p, .x) { color: red } :is(p, table) span { color: green }", "<p><span>s</span></p>")
+        self.assertEqual(_computed(markup, "span", "color"), "rgb(0, 128, 0)")
+        # the rule is not a bare 'table' / '.x)' selector
+        self.assertNotEqual(_computed(markup, "p", "color"), "rgb(255, 0, 0)")
+
+    def test_pseudo_only_last_compound_is_an_implicit_universal(self):
+        markup = self.page("div :first-child { color: green } section :after { content: \"x\" }",
+                           "<div id=d><b id=b>b</b></div><section><i>i</i></section>")
+        self.assertEqual(_computed(markup, "#b", "color"), "rgb(0, 128, 0)")
+        self.assertNotEqual(_computed(markup, "#d", "color"), "rgb(0, 128, 0)")
+        self.assertIn(_computed(markup, "section", "content", "::after"), ("", "normal", "none"))
+        self.assertEqual(_computed(markup, "i", "content", "::after"), '"x"')
+
+    def test_pseudo_element_names_are_case_insensitive(self):
+        markup = self.page('p::BEFORE { content: "b" } p:After { content: "a" }', "<p>x</p>")
+        self.assertEqual(_computed(markup, "p", "content", "::before"), '"b"')
+        self.assertEqual(_computed(markup, "p", "content", "::after"), '"a"')
+
+    def test_style_element_media_attribute_gates_the_sheet(self):
+        markup = (
+            "<html><head><style>p { color: green }</style><style media=print>p { color: red }</style>"
+            "<style media='(prefers-color-scheme: dark)'>p { color: blue }</style></head><body><p>x</p></body></html>"
+        )
+        self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
+
+
+
 if __name__ == "__main__":
     unittest.main()
