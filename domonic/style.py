@@ -6130,18 +6130,17 @@ def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = 
             continue
         if not _sheet_media_matches(sheet, viewport, features, media_type):
             continue
-        for rule, layer in _iter_style_rules(
+        for selectors, style, layer in _iter_style_rules(
             getattr(sheet, "cssRules", None),
             viewport=viewport,
             layers=layers,
             features=features,
             media_type=media_type,
         ):
-            entries = _expand_shorthands_for_cascade(rule.style._property_entries())
+            entries = _expand_shorthands_for_cascade(style._property_entries())
             if not entries:
                 continue
-            # (top-level commas only: ``:is(p, table)`` is one selector)
-            for selector in _split_top_level_commas(str(rule.selectorText or "")):
+            for selector in selectors:
                 order += 1
                 index.setdefault(_rule_bucket_key(selector), []).append(
                     (selector, _selector_specificity(selector), order, layer, entries)
@@ -6180,11 +6179,16 @@ def _sheet_media_matches(sheet, viewport, features=None, media_type: str = "scre
         return True
 
 
-def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, media_type: str = "screen"):
-    """Yield ``(CSSStyleRule, layer_number)`` pairs, descending into ``@media``
-    blocks whose condition currently matches and tracking ``@layer`` nesting
-    (layer 0 == unlayered; each ``@layer`` block gets the next number in
-    document order)."""
+def _iter_style_rules(
+    rules, *, viewport, layers=None, layer=0, features=None, media_type: str = "screen", parents=None
+):
+    """Yield ``(selectors, style, layer_number)`` for every style rule and
+    nested declarations block that applies, in order -- descending into
+    ``@media`` blocks whose condition currently matches, imported sheets, and
+    (CSS Nesting 1) the rules nested in a style rule, each with its selectors
+    resolved against its parent's (``_resolve_nested_selectors``). Tracks
+    ``@layer`` nesting (layer 0 == unlayered; each ``@layer`` block gets the
+    next number in document order)."""
     if layers is None:
         layers = {}
     for rule in rules or ():
@@ -6195,7 +6199,25 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, m
             continue
         inner = getattr(rule, "cssRules", None)
         if isinstance(rule, CSSStyleRule):
-            yield rule, layer
+            # (top-level commas only: ``:is(p, table)`` is one selector)
+            own = _resolve_nested_selectors(str(rule.selectorText or ""), parents)
+            yield own, rule.style, layer
+            if inner and own:
+                yield from _iter_style_rules(
+                    inner,
+                    viewport=viewport,
+                    layers=layers,
+                    layer=layer,
+                    features=features,
+                    media_type=media_type,
+                    parents=own,
+                )
+            continue
+        if isinstance(rule, CSSNestedDeclarations):
+            # declarations after (or between) nested rules apply with the
+            # parent's selectors, in their place in the order
+            if parents:
+                yield parents, rule.style, layer
             continue
         if isinstance(rule, CSSImportRule):
             imported = getattr(rule.styleSheet, "cssRules", None) if rule.styleSheet is not None else None
@@ -6214,13 +6236,88 @@ def _iter_style_rules(rules, *, viewport, layers=None, layer=0, features=None, m
             layer_name = (rule.name or "").strip() or f"\x00anon{id(rule)}"
             child_layer = layers.setdefault(layer_name, len(layers) + 1)
             yield from _iter_style_rules(
-                inner, viewport=viewport, layers=layers, layer=child_layer, features=features, media_type=media_type
+                inner,
+                viewport=viewport,
+                layers=layers,
+                layer=child_layer,
+                features=features,
+                media_type=media_type,
+                parents=parents,
             )
             continue
         if _condition_rule_matches(rule, viewport, features=features, media_type=media_type):
             yield from _iter_style_rules(
-                inner, viewport=viewport, layers=layers, layer=layer, features=features, media_type=media_type
+                inner,
+                viewport=viewport,
+                layers=layers,
+                layer=layer,
+                features=features,
+                media_type=media_type,
+                parents=parents,
             )
+
+
+#: nested selectors expanded beyond this many (a product of parent lists) are dropped
+_MAX_NESTED_SELECTORS = 512
+
+
+def _resolve_nested_selectors(selector_text: str, parents: "list[str] | None") -> "list[str]":
+    """A style rule's selector list, resolved against its parent rule's
+    resolved selectors (CSS Nesting 1 2): ``&`` is the parent selector, and a
+    selector without one is relative to it (``.d`` is ``& .d``, ``> .c`` is
+    ``& > .c``). Each parent gives its own resolved selector -- ``&`` spliced
+    in, rather than ``:is(<parents>)``, which the matcher can only take
+    around compound selectors."""
+    selectors = _split_top_level_commas(selector_text)
+    if parents is None:
+        return selectors
+    resolved: list[str] = []
+    for parent in parents:
+        for selector in selectors:
+            if _NESTING_SELECTOR_RE.search(_mask_selector_strings(selector)):
+                resolved.append(_replace_nesting_selector(selector, parent))
+            else:
+                resolved.append(f"{parent} {selector}")
+            if len(resolved) > _MAX_NESTED_SELECTORS:
+                return resolved
+    return resolved
+
+
+_NESTING_SELECTOR_RE = re.compile(r"&")
+
+
+def _mask_selector_strings(selector: str) -> str:
+    """``selector`` with quoted strings, attribute selectors and escapes blanked
+    (so a ``&`` inside ``[data-x="a&b"]`` isn't the nesting selector)."""
+    out, depth, quote, escaped = [], 0, None, False
+    for char in selector:
+        if escaped:
+            escaped = False
+            out.append(" ")
+        elif char == "\\":
+            escaped = True
+            out.append(" ")
+        elif quote:
+            quote = None if char == quote else quote
+            out.append(" ")
+        elif char in "\"'":
+            quote = char
+            out.append(" ")
+        elif char == "[":
+            depth += 1
+            out.append(" ")
+        elif char == "]":
+            depth = max(depth - 1, 0)
+            out.append(" ")
+        else:
+            out.append(" " if depth else char)
+    return "".join(out)
+
+
+def _replace_nesting_selector(selector: str, parent: str) -> str:
+    """Each ``&`` outside strings/attributes replaced by ``parent``."""
+    mask = _mask_selector_strings(selector)
+    return "".join(parent if mask[index] == "&" else char for index, char in enumerate(selector))
 
 
 def _import_rule_applies(rule, viewport, *, features=None, media_type: str = "screen") -> bool:

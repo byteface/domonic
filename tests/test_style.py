@@ -2620,6 +2620,36 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(ComputedStyleDeclaration(middle).getPropertyValue("width"), "800px")
         self.assertEqual(ComputedStyleDeclaration(inner).getPropertyValue("width"), "400px")
 
+    def test_nested_rules_cascade(self):
+        import domonic
+        from domonic.window import Window
+
+        page = domonic.parseString(
+            "<html><head><style>"
+            ".a { color: red; .b { color: blue } & + p { margin-left: 1px } > .c { padding-top: 2px }"
+            " @media (min-width: 1px) { border-top-style: solid; .d { margin-top: 3px } } padding-left: 4px }"
+            ' .x, .y { &.z { color: green } .w & { margin-left: 9px } } p[data-a="a&b"] { color: rgb(1, 2, 3) }'
+            "</style></head><body><div class=a><span class=b>b</span><i class=c>c</i><em class=d>d</em></div>"
+            "<p>p</p><div class='y z'>z</div><section class=w><div class=x>x</div></section>"
+            '<p data-a="a&b">q</p></body></html>'
+        )
+        window = Window()
+        window.attach(page)
+
+        def style(selector, prop):
+            return window.getComputedStyle(page.querySelector(selector)).getPropertyValue(prop)
+
+        self.assertEqual(style(".a", "color"), "rgb(255, 0, 0)")
+        self.assertEqual(style(".a", "padding-left"), "4px")  # declarations after nested rules
+        self.assertEqual(style(".a", "border-top-style"), "solid")  # a nested @media's declarations
+        self.assertEqual(style(".b", "color"), "rgb(0, 0, 255)")  # relative: .a .b
+        self.assertEqual(style(".a + p", "margin-left"), "1px")
+        self.assertEqual(style(".c", "padding-top"), "2px")
+        self.assertEqual(style(".d", "margin-top"), "3px")
+        self.assertEqual(style(".y", "color"), "rgb(0, 128, 0)")  # &.z for each parent of a list
+        self.assertEqual(style(".w .x", "margin-left"), "9px")
+        self.assertEqual(style("p[data-a]", "color"), "rgb(1, 2, 3)")  # an & in a string isn't nesting
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",
