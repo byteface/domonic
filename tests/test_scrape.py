@@ -172,6 +172,35 @@ class TestScrape(unittest.TestCase):
         self.assertIn("\u00e9", _decode_stylesheet(b'p::after { content: "\xe9" }', None, "windows-1252"))
         self.assertIn("\ufffd", _decode_stylesheet(b'p::after { content: "\xe9" }'))  # bad UTF-8 doesn't raise
 
+    def test_css_true_fetches_imported_stylesheets(self):
+        page = (
+            "<html><head><style>@import url(a.css);</style><link rel='stylesheet' href='/css/main.css'></head>"
+            "<body><p id='x'>x</p><i id='y'>y</i></body></html>"
+        )
+        bodies = {
+            "https://example.com/page": page,
+            "https://example.com/a.css": "@import 'b.css'; p { color: green }",
+            "https://example.com/b.css": "@import 'a.css'; p { margin-left: 4px }",  # a cycle
+            "https://example.com/css/main.css": "@import url(parts/i.css) print; @import 'parts/j.css';",
+            "https://example.com/css/parts/i.css": "i { color: red }",
+            "https://example.com/css/parts/j.css": "i { color: blue }",
+        }
+        fetched = []
+
+        def respond(method, url, **kwargs):
+            fetched.append(url)
+            return SimpleNamespace(
+                url=url, status_code=200, reason="OK", headers={}, content=bodies[url].encode(), history=[]
+            )
+
+        with patch("requests.request", side_effect=respond):
+            dom = scrape("https://example.com/page", css=True, attach=True)
+        self.assertEqual(fetched.count("https://example.com/a.css"), 1)
+        style = dom.defaultView.getComputedStyle
+        self.assertEqual(style(dom.getElementById("x")).getPropertyValue("color"), "rgb(0, 128, 0)")
+        self.assertEqual(style(dom.getElementById("x")).getPropertyValue("margin-left"), "4px")
+        self.assertEqual(style(dom.getElementById("y")).getPropertyValue("color"), "rgb(0, 0, 255)")
+
     def test_unparsable_base_href_is_ignored(self):
         from domonic._scrape import _document_base_url
 

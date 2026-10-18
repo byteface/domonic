@@ -91,6 +91,13 @@ link uses ``static/css/styles.css``, domonic loads
 on ``sheet.href`` and also records ``sheet._original_href`` and
 ``sheet._resolved_href`` for code that needs to resolve later CSS resources.
 
+``@import`` rules in either kind of sheet are fetched too (against the
+importing sheet's URL), and their sheets land on each rule's ``styleSheet``,
+where the cascade reads them. A stylesheet's bytes are decoded like a browser:
+its byte order mark, the HTTP charset, its ``@charset`` rule, then the page's
+encoding. A cross-origin stylesheet request carries your ``User-Agent`` and
+``Accept-Language`` headers but no cookies or other credentials.
+
 Pass ``attach=True`` when you want the returned document wired to a browsing
 context:
 

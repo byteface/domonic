@@ -243,6 +243,10 @@ def _replace_stylesheet_rules(sheet: Any, css_text: str) -> bool:
     return True
 
 
+# how deep @import chains are followed (each level is a request)
+_MAX_IMPORT_DEPTH = 8
+
+
 def _load_external_stylesheets(
     document: Any,
     source_request: Any,
@@ -251,25 +255,60 @@ def _load_external_stylesheets(
     sheets = document.styleSheets
     fetch_kwargs = dict(request_kwargs or {})
     base_url = _document_base_url(document)
+    encoding = getattr(document, "characterSet", None)
 
     for sheet in sheets:
         href = getattr(sheet, "href", None)
         owner_node = getattr(sheet, "ownerNode", None)
-        if not href or getattr(owner_node, "tagName", "").lower() != "link":
-            continue
-        if len(getattr(sheet, "cssRules", ()) or ()):
-            continue
+        is_link = getattr(owner_node, "tagName", "").lower() == "link"
+        if is_link and href and not len(getattr(sheet, "cssRules", ()) or ()):
+            resolved_href = urljoin(base_url, href)
+            sheet._original_href = href
+            sheet._resolved_href = resolved_href
+            sheet.href = resolved_href
 
-        resolved_href = urljoin(base_url, href)
-        sheet._original_href = href
-        sheet._resolved_href = resolved_href
-        sheet.href = resolved_href
+            css_text = _fetch_stylesheet_text(resolved_href, source_request, fetch_kwargs, encoding)
+            if css_text is not None:
+                _replace_stylesheet_rules(sheet, css_text)
+        sheet_url = sheet.href if is_link and sheet.href else base_url
+        _load_imported_stylesheets(sheet, sheet_url, source_request, fetch_kwargs, encoding, {sheet_url})
 
-        css_text = _fetch_stylesheet_text(
-            resolved_href, source_request, fetch_kwargs, getattr(document, "characterSet", None)
-        )
-        if css_text is not None:
-            _replace_stylesheet_rules(sheet, css_text)
+
+def _load_imported_stylesheets(
+    sheet: Any,
+    sheet_url: str,
+    source_request: Any,
+    request_kwargs: dict[str, Any],
+    encoding: str | None,
+    seen: set,
+    depth: int = 0,
+) -> None:
+    """Fetch the sheets ``sheet``'s ``@import`` rules name (resolved against
+    ``sheet_url``) into each rule's ``styleSheet``, and theirs in turn."""
+    if depth >= _MAX_IMPORT_DEPTH:
+        return
+    from domonic.style import CSSImportRule, CSSStyleSheet
+
+    for rule in list(getattr(sheet, "cssRules", None) or ()):
+        if not isinstance(rule, CSSImportRule) or rule.styleSheet is not None or not rule.href:
+            continue
+        try:
+            url = urljoin(sheet_url, rule.href)
+        except ValueError:
+            continue
+        if url in seen:  # an import cycle
+            continue
+        css_text = _fetch_stylesheet_text(url, source_request, request_kwargs, encoding)
+        if css_text is None:
+            continue
+        imported = CSSStyleSheet()
+        imported.href = url
+        imported.ownerRule = rule
+        if _replace_stylesheet_rules(imported, css_text):
+            rule.styleSheet = imported
+            _load_imported_stylesheets(
+                imported, url, source_request, request_kwargs, encoding, seen | {url}, depth + 1
+            )
 
 
 def _charset_from_headers(response: Any) -> str | None:
