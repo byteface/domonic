@@ -126,6 +126,13 @@ class TestCase(unittest.TestCase):
         # d = Date(millisecs)
         # print(d.getFullYear())
 
+    def test_a_number_is_milliseconds_since_the_epoch(self):
+        self.assertEqual(Date(86400000).getTime(), 86400000)
+        self.assertEqual(Date(86400000).toISOString(), "1970-01-02T00:00:00.000Z")
+        self.assertEqual(Date(1.5).getTime(), 1)  # (JavaScript truncates to whole milliseconds)
+        self.assertEqual(Date(0).toISOString(), "1970-01-01T00:00:00.000Z")
+        self.assertLess(abs(Date().getTime() - Date.now()), 2000)  # (no time-zone offset)
+
     def test_getDate(self):
         Xmas95 = Date("December 25, 1995 23:15:30")
         day = Xmas95.getDate()

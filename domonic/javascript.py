@@ -2206,8 +2206,11 @@ class Date(Object):
         # anything else -- fall back to string parsing
         if args:
             date = " ".join(str(p) for p in ([date] if date is not None else []) + list(args)).strip() or None
-        if isinstance(date, int):
-            self.date = datetime.datetime.fromtimestamp(date)
+        # (self.date is a naive UTC time: getTime() and the getUTC* methods
+        # read it as UTC)
+        if isinstance(date, (int, float)) and not isinstance(date, bool):
+            # new Date(value): milliseconds since the epoch, as in JavaScript
+            self.date = datetime.datetime.fromtimestamp(int(date) / 1000, timezone.utc).replace(tzinfo=None)
             return
         # elif isinstance(date, str):
         #     if formatter == 'python':
@@ -2217,7 +2220,7 @@ class Date(Object):
         #     else:
         #         raise ValueError('Invalid formatter')
         if date is None:
-            self.date = datetime.datetime.now()
+            self.date = datetime.datetime.now(timezone.utc).replace(tzinfo=None)
         else:
             self.date = self.parse_date(date)
 
