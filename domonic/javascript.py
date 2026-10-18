@@ -5849,6 +5849,10 @@ class TypedArray:
 
         arg = args[0]
 
+        if isinstance(arg, TypedArray):
+            # new XArray(typedArray): a copy of its values, in a new buffer
+            args = (arg._values(),)
+            arg = args[0]
         if isinstance(arg, (Int8Array, ArrayBuffer)):
             # self.buffer = arg.buffer
             # self.byteLength = arg.byteLength
@@ -5964,17 +5968,155 @@ class TypedArray:
     def args(self) -> Any:
         return self.buffer
 
-    @staticmethod
-    def of(*args: Any) -> Any:
-        # Creates a new Int8Array with a variable number of arguments
-        return Int8Array(list(args))
+    @classmethod
+    def of(cls, *args: Any) -> Any:
+        """A new typed array of this type holding ``args``."""
+        return cls(list(args))
 
-    @staticmethod
-    def from_(thing: Any) -> Any:
-        # Creates a new Int8Array from an array-like or iterable object
-        if isinstance(thing, tuple):
-            return Int8Array(list(thing))
-        return Int8Array(thing)
+    @classmethod
+    def from_(cls, thing: Any, map_fn: Any = None) -> Any:
+        """A new typed array of this type from an array-like or iterable
+        object, each value optionally through ``map_fn(value, index)``."""
+        values = list(thing) if not isinstance(thing, TypedArray) else thing._values()
+        if map_fn is not None:
+            values = [_js_iteratee(map_fn)(value, index, values) for index, value in enumerate(values)]
+        return cls(values)
+
+    # -- %TypedArray%.prototype (ECMAScript 23.2.3) -------------------------
+    def _values(self) -> list:
+        return [self[index] for index in range(self.length)]
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter(self._values())
+
+    def _relative(self, index: Any, default: int) -> int:
+        if index is None:
+            return default
+        index = int(index)
+        return max(self.length + index, 0) if index < 0 else min(index, self.length)
+
+    def at(self, index: int) -> Any:
+        index = int(index)
+        if index < 0:
+            index += self.length
+        return self[index] if 0 <= index < self.length else undefined
+
+    def includes(self, value: Any, start: int = 0) -> bool:
+        values = self._values()[self._relative(start, 0) :]
+        return any(item == value or (_is_nan(item) and _is_nan(value)) for item in values)
+
+    def indexOf(self, value: Any, start: int = 0) -> int:
+        for index in range(self._relative(start, 0), self.length):
+            if self[index] == value:
+                return index
+        return -1
+
+    def lastIndexOf(self, value: Any, start: Any = None) -> int:
+        last = self.length - 1 if start is None else (int(start) if int(start) >= 0 else self.length + int(start))
+        for index in range(min(last, self.length - 1), -1, -1):
+            if self[index] == value:
+                return index
+        return -1
+
+    def join(self, separator: str = ",") -> str:
+        return str(separator).join(_typed_number_text(value) for value in self._values())
+
+    def toString(self) -> str:
+        return self.join(",")
+
+    def forEach(self, fn: Any) -> None:
+        call = _js_iteratee(fn)
+        for index, value in enumerate(self._values()):
+            call(value, index, self)
+
+    def map(self, fn: Any) -> "TypedArray":
+        call = _js_iteratee(fn)
+        return self.__class__([call(value, index, self) for index, value in enumerate(self._values())])
+
+    def filter(self, fn: Any) -> "TypedArray":
+        call = _js_iteratee(fn)
+        return self.__class__([value for index, value in enumerate(self._values()) if call(value, index, self)])
+
+    def reduce(self, fn: Any, *initial: Any) -> Any:
+        call = _js_reducer(fn)
+        values = self._values()
+        if not initial and not values:
+            raise TypeError("Reduce of empty array with no initial value")
+        accumulator, start = (initial[0], 0) if initial else (values[0], 1)
+        for index in range(start, len(values)):
+            accumulator = call(accumulator, values[index], index, self)
+        return accumulator
+
+    def reduceRight(self, fn: Any, *initial: Any) -> Any:
+        call = _js_reducer(fn)
+        values = self._values()
+        if not initial and not values:
+            raise TypeError("Reduce of empty array with no initial value")
+        accumulator, start = (initial[0], len(values) - 1) if initial else (values[-1], len(values) - 2)
+        for index in range(start, -1, -1):
+            accumulator = call(accumulator, values[index], index, self)
+        return accumulator
+
+    def find(self, fn: Any) -> Any:
+        call = _js_iteratee(fn)
+        return next((value for index, value in enumerate(self._values()) if call(value, index, self)), undefined)
+
+    def findIndex(self, fn: Any) -> int:
+        call = _js_iteratee(fn)
+        return next((index for index, value in enumerate(self._values()) if call(value, index, self)), -1)
+
+    def findLast(self, fn: Any) -> Any:
+        call = _js_iteratee(fn)
+        values = self._values()
+        return next((values[i] for i in range(len(values) - 1, -1, -1) if call(values[i], i, self)), undefined)
+
+    def findLastIndex(self, fn: Any) -> int:
+        call = _js_iteratee(fn)
+        values = self._values()
+        return next((i for i in range(len(values) - 1, -1, -1) if call(values[i], i, self)), -1)
+
+    def every(self, fn: Any) -> bool:
+        call = _js_iteratee(fn)
+        return all(call(value, index, self) for index, value in enumerate(self._values()))
+
+    def some(self, fn: Any) -> bool:
+        call = _js_iteratee(fn)
+        return any(call(value, index, self) for index, value in enumerate(self._values()))
+
+    def fill(self, value: Any, start: Any = None, end: Any = None) -> "TypedArray":
+        for index in range(self._relative(start, 0), self._relative(end, self.length)):
+            self[index] = value
+        return self
+
+    def slice(self, start: Any = None, end: Any = None) -> "TypedArray":
+        """A copy (a new buffer) of ``[start, end)``, unlike ``subarray``."""
+        return self.__class__(self._values()[self._relative(start, 0) : self._relative(end, self.length)])
+
+    def reverse(self) -> "TypedArray":
+        for index, value in enumerate(reversed(self._values())):
+            self[index] = value
+        return self
+
+    def sort(self, compare: Any = None) -> "TypedArray":
+        values = self._values()
+        if compare is None:
+            values.sort()  # (numerically, not as strings like Array.prototype.sort)
+        else:
+            import functools as _functools
+
+            values.sort(key=_functools.cmp_to_key(lambda a, b: compare(a, b)))
+        for index, value in enumerate(values):
+            self[index] = value
+        return self
+
+    def entries(self) -> Iterator[list]:
+        return iter([[index, value] for index, value in enumerate(self._values())])
+
+    def keys(self) -> Iterator[int]:
+        return iter(range(self.length))
+
+    def values(self) -> Iterator[Any]:
+        return iter(self._values())
 
     # def __getitem__(self, index):
     #     return self.buffer[index]
@@ -6074,6 +6216,19 @@ class TypedArray:
             nlen = 0
 
         return self.__class__(self.buffer, self.byteOffset + start * self.BYTES_PER_ELEMENT, nlen)
+
+
+def _typed_number_text(value: Any) -> str:
+    """A typed array element as JavaScript prints it: ``1`` not ``1.0``."""
+    if isinstance(value, float):
+        if value != value:
+            return "NaN"
+        if value in (float("inf"), float("-inf")):
+            return "Infinity" if value > 0 else "-Infinity"
+        if value.is_integer():
+            return str(int(value))
+        return repr(value)
+    return str(value)
 
 
 def as_signed(value: int, bits: int) -> int:

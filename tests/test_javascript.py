@@ -2165,5 +2165,28 @@ _intID = None
 _results = []
 
 
+
+class TypedArrayPrototypeTest(unittest.TestCase):
+    def test_prototype_methods_of_from_and_copying(self):
+        from domonic.javascript import Float32Array, Int8Array, Uint8Array
+
+        values = Uint8Array([3, 1, 2, 250])
+        self.assertEqual(values.map(lambda v: v * 2).join(), "6,2,4,244")  # (wraps like a Uint8Array)
+        self.assertEqual(values.filter(lambda v: v > 1).join(), "3,2,250")
+        self.assertEqual(values.reduce(lambda a, v: a + v, 0), 256)
+        self.assertEqual((values.indexOf(2), values.includes(250), values.at(-1)), (2, True, 250))
+        self.assertEqual(values.slice(1, 3).join(), "1,2")
+        self.assertIsInstance(Uint8Array.of(1, 2), Uint8Array)
+        self.assertIsInstance(Uint8Array.from_([1, 2]), Uint8Array)
+        self.assertEqual(Uint8Array.from_([1, 2], lambda v, i: v + i).join(), "1,3")
+        copy = Uint8Array(values)  # a copy, not a view
+        copy[0] = 9
+        self.assertEqual((values[0], copy[0]), (3, 9))
+        self.assertEqual(Uint8Array([3, 1, 2]).sort().join(), "1,2,3")
+        self.assertEqual(Uint8Array(3).fill(7).join(), "7,7,7")
+        self.assertEqual(list(Uint8Array([5, 6])), [5, 6])
+        self.assertEqual(Float32Array([1.5, 2]).join(), "1.5,2")
+        self.assertEqual(Int8Array([1, -2]).find(lambda v: v < 0), -2)
+
 if __name__ == "__main__":
     unittest.main()
