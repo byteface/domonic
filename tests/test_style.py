@@ -2650,6 +2650,18 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(_computed(markup, ".i", "grid-column-end"), "4")
         self.assertEqual(_computed(markup, ".w", "grid-template-columns"), "1fr 2fr")
 
+    def test_elliptical_border_radius(self):
+        self.assertEqual(
+            self.expand("border-radius", "10px 20px / 5px"),
+            {"border-top-left-radius": "10px 5px", "border-top-right-radius": "20px 5px",
+             "border-bottom-right-radius": "10px 5px", "border-bottom-left-radius": "20px 5px"},
+        )
+        style = CSSStyleDeclaration()
+        style.cssText = "border-radius: 1px 2px 3px 4px / 5px 6px"
+        self.assertEqual(style.getPropertyValue("border-bottom-left-radius"), "4px 6px")
+        self.assertEqual(style.cssText, "border-radius: 1px 2px 3px 4px / 5px 6px;")
+        self.assertIsNone(self.expand("margin", "1px 2px 3px 4px 5px"))
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):

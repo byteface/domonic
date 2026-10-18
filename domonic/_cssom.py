@@ -775,8 +775,17 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     if lower in _GLOBAL_KEYWORDS:
         return [(long, value) for long in longs]
 
+    if name in RADIUS_SHORTHANDS and "/" in value:
+        # elliptical: <horizontal radii>{1,4} / <vertical radii>{1,4}, each
+        # corner "<h> <v>" (CSS Backgrounds 3 5.1)
+        halves = _split_top_level(value, "/")
+        if len(halves) != 2 or not all(halves) or any(len(_tokens(half)) > 4 for half in halves):
+            return None
+        horizontal, vertical = expand_box_values(halves[0]), expand_box_values(halves[1])
+        return [(long, h if h == v else f"{h} {v}") for long, h, v in zip(longs, horizontal, vertical)]
+
     if name in BOX_SHORTHANDS or name in RADIUS_SHORTHANDS:
-        if "/" in value:  # elliptical border-radius - keep as-is
+        if len(_tokens(value)) > 4:
             return None
         top, right, bottom, left = expand_box_values(value)
         return list(zip(longs, (top, right, bottom, left)))
@@ -1083,7 +1092,16 @@ def build_shorthand(name: str, get: Callable[[str], str]) -> str:
     if not longs:
         return ""
 
-    if name in BOX_SHORTHANDS or name in RADIUS_SHORTHANDS:
+    if name in RADIUS_SHORTHANDS:
+        corners = [_tokens(get(long)) for long in longs]
+        if any(not corner or len(corner) > 2 for corner in corners):
+            return ""
+        horizontal = [corner[0] for corner in corners]
+        vertical = [corner[-1] for corner in corners]
+        built = collapse_box_values(*horizontal)
+        return built if horizontal == vertical else f"{built} / {collapse_box_values(*vertical)}"
+
+    if name in BOX_SHORTHANDS:
         vals = [get(long) for long in longs]
         if any(v == "" for v in vals):
             return ""
