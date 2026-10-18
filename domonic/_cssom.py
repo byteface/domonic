@@ -1600,3 +1600,186 @@ def bump_layout_epoch() -> None:
 
 def layout_epoch() -> int:
     return _LAYOUT_EPOCH
+
+
+# --- declaration validity -------------------------------------------------
+# A declaration whose value doesn't match its property's grammar is dropped at
+# parse time, so an earlier valid one still applies (``white-space: pre-wrap;
+# white-space: -o-pre-wrap`` keeps pre-wrap). Only the properties below are
+# checked -- keyword-enumerated and number ones, where invalid values turn up
+# in real stylesheets -- and anything holding var()/attr()/env() is judged
+# only once substituted.
+
+_DISPLAY_OUTSIDE = ("block", "inline")
+_DISPLAY_INSIDE = ("flow", "flow-root", "table", "flex", "grid", "ruby", "math")
+_DISPLAY_SINGLE = frozenset(
+    {
+        "none", "contents", "block", "inline", "inline-block", "flow", "flow-root", "list-item",
+        "table", "inline-table", "table-row-group", "table-header-group", "table-footer-group",
+        "table-row", "table-cell", "table-column-group", "table-column", "table-caption",
+        "flex", "inline-flex", "grid", "inline-grid", "ruby", "ruby-text", "math",
+        "-webkit-box", "-webkit-inline-box", "-webkit-flex", "-webkit-inline-flex",
+    }
+)  # fmt: skip
+_DISPLAY_LEGACY = {
+    ("block", "flow"): "block",
+    ("inline", "flow"): "inline",
+    ("block", "flow-root"): "flow-root",
+    ("inline", "flow-root"): "inline-block",
+    ("block", "table"): "table",
+    ("inline", "table"): "inline-table",
+    ("block", "flex"): "flex",
+    ("inline", "flex"): "inline-flex",
+    ("block", "grid"): "grid",
+    ("inline", "grid"): "inline-grid",
+    ("block", "ruby"): "block ruby",
+    ("inline", "ruby"): "ruby",
+    ("block", "math"): "block math",
+    ("inline", "math"): "math",
+}
+
+
+def _display_multi_keyword(keywords: tuple) -> str | None:
+    """The computed (legacy) keyword of a valid multi-keyword ``display``
+    (CSS Display 3 2), in any order, or None when the combination is invalid."""
+    if len(set(keywords)) != len(keywords):
+        return None
+    outside = [k for k in keywords if k in _DISPLAY_OUTSIDE]
+    inside = [k for k in keywords if k in _DISPLAY_INSIDE]
+    marker = [k for k in keywords if k == "list-item"]
+    if len(outside) > 1 or len(inside) > 1 or len(outside) + len(inside) + len(marker) != len(keywords):
+        return None
+    inner = inside[0] if inside else "flow"
+    outer = outside[0] if outside else ("inline" if inner == "ruby" else "block")
+    if marker:
+        if inner not in ("flow", "flow-root"):
+            return None
+        prefix = "" if outer == "block" else "inline "
+        return prefix + ("list-item" if inner == "flow" else "flow-root list-item")
+    return _DISPLAY_LEGACY[(outer, inner)]
+
+
+#: every valid multi-keyword ``display`` -> what it computes to
+DISPLAY_MULTI_KEYWORDS: dict[str, str] = {}
+for _count in (2, 3):
+    import itertools as _itertools
+
+    for _keywords in _itertools.permutations(_DISPLAY_OUTSIDE + _DISPLAY_INSIDE + ("list-item",), _count):
+        _legacy = _display_multi_keyword(_keywords)
+        if _legacy is not None:
+            DISPLAY_MULTI_KEYWORDS[" ".join(_keywords)] = _legacy
+
+_OVERFLOW_KEYWORDS = frozenset({"visible", "hidden", "clip", "scroll", "auto", "overlay"})
+_CONTENT_DISTRIBUTION = frozenset({"space-between", "space-around", "space-evenly", "stretch"})
+_CONTENT_POSITION = frozenset({"center", "start", "end", "flex-start", "flex-end"})
+_SELF_POSITION = frozenset({"center", "start", "end", "self-start", "self-end", "flex-start", "flex-end"})
+
+#: property -> its keywords, for properties that take exactly one of them
+_SINGLE_KEYWORD_PROPERTIES: dict[str, frozenset] = {
+    "position": frozenset({"static", "relative", "absolute", "fixed", "sticky", "-webkit-sticky"}),
+    "float": frozenset({"none", "left", "right", "inline-start", "inline-end"}),
+    "clear": frozenset({"none", "left", "right", "both", "inline-start", "inline-end"}),
+    "visibility": frozenset({"visible", "hidden", "collapse"}),
+    "box-sizing": frozenset({"content-box", "border-box"}),
+    "overflow-x": _OVERFLOW_KEYWORDS,
+    "overflow-y": _OVERFLOW_KEYWORDS,
+    "table-layout": frozenset({"auto", "fixed"}),
+    "border-collapse": frozenset({"collapse", "separate"}),
+    "empty-cells": frozenset({"show", "hide"}),
+    "caption-side": frozenset({"top", "bottom"}),
+    "flex-direction": frozenset({"row", "row-reverse", "column", "column-reverse"}),
+    "flex-wrap": frozenset({"nowrap", "wrap", "wrap-reverse"}),
+    "direction": frozenset({"ltr", "rtl"}),
+    "writing-mode": frozenset(
+        {"horizontal-tb", "vertical-rl", "vertical-lr", "sideways-rl", "sideways-lr", "lr", "lr-tb", "rl", "rl-tb",
+         "tb", "tb-rl"}
+    ),
+    "text-align": frozenset(
+        {"start", "end", "left", "right", "center", "justify", "match-parent", "justify-all", "-webkit-center",
+         "-webkit-left", "-webkit-right", "-webkit-match-parent", "-webkit-auto"}
+    ),
+}  # fmt: skip
+_WHITE_SPACE_LEGACY = frozenset({"normal", "pre", "nowrap", "pre-wrap", "pre-line", "break-spaces"})
+_WHITE_SPACE_COLLAPSE = frozenset({"collapse", "preserve", "preserve-breaks", "preserve-spaces", "break-spaces"})
+_INTEGER_RE = re.compile(r"^[+-]?\d+$")
+_NON_NEGATIVE_LENGTH_RE = re.compile(r"^\+?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:px|em|rem|ex|ch|in|cm|mm|q|pt|pc|vw|vh|vmin|vmax|vi|vb|lh|rlh|cap|ic)?$", re.I)
+
+
+def _alignment_valid(name: str, words: list[str]) -> bool:
+    """CSS Box Alignment 3's grammars for justify-/align-content/-items/-self."""
+    if not words or len(words) > 2:
+        return False
+    joined = " ".join(words)
+    if joined in ("first baseline", "last baseline") or joined == "baseline":
+        return name != "justify-content"
+    if len(words) == 1:
+        word = words[0]
+        if word == "normal" or (word == "auto" and name.endswith("-self")):
+            return True
+        if word == "anchor-center" and name in ("align-self", "justify-self", "align-items", "justify-items"):
+            return True
+        if name.endswith("-content"):
+            if word in _CONTENT_DISTRIBUTION or word in _CONTENT_POSITION:
+                return True
+        elif word == "stretch" or word in _SELF_POSITION:
+            return True
+        if word in ("left", "right") and name.startswith("justify") and name != "justify-items":
+            return True
+        return word in ("left", "right", "legacy") and name == "justify-items"
+    first, second = words
+    if name == "justify-items" and "legacy" in words:
+        other = second if first == "legacy" else first
+        return other in ("left", "right", "center")
+    if first not in ("safe", "unsafe"):
+        return False
+    positions = _CONTENT_POSITION if name.endswith("-content") else _SELF_POSITION
+    return second in positions or (second in ("left", "right") and name.startswith("justify"))
+
+
+def is_invalid_declaration(name: str, value: str) -> bool:
+    """Whether ``name: value`` is invalid at parse time for one of the
+    properties checked here (see above); False for everything else."""
+    low = value.strip().lower()
+    if not low or low in _GLOBAL_KEYWORDS or "var(" in low or "attr(" in low or "env(" in low:
+        return False
+    keywords = _SINGLE_KEYWORD_PROPERTIES.get(name)
+    if keywords is not None:
+        return low not in keywords
+    words = low.split()
+    if name == "display":
+        return not (low in _DISPLAY_SINGLE if len(words) == 1 else " ".join(words) in DISPLAY_MULTI_KEYWORDS)
+    if name == "overflow":
+        return not (1 <= len(words) <= 2 and all(word in _OVERFLOW_KEYWORDS for word in words))
+    if name == "white-space":
+        if len(words) == 1 and low in _WHITE_SPACE_LEGACY | _WHITE_SPACE_COLLAPSE | {"wrap"}:
+            return False
+        collapse = [word for word in words if word in _WHITE_SPACE_COLLAPSE]
+        wrap = [word for word in words if word in ("wrap", "nowrap")]
+        return not (len(words) == 2 and len(collapse) == 1 and len(wrap) == 1)
+    if name in ("justify-content", "align-content", "align-items", "align-self", "justify-items", "justify-self"):
+        return not _alignment_valid(name, words)
+    if name == "grid-auto-flow":
+        flow = [word for word in words if word in ("row", "column")]
+        dense = [word for word in words if word == "dense"]
+        return not (1 <= len(words) <= 2 and len(flow) <= 1 and len(dense) <= 1 and len(flow) + len(dense) == len(words))
+    if name == "font-style":
+        return not (low in ("normal", "italic", "oblique") or (words[0] == "oblique" and len(words) == 2))
+    if name == "text-transform":
+        cases = [word for word in words if word in ("capitalize", "uppercase", "lowercase")]
+        others = [word for word in words if word in ("full-width", "full-size-kana")]
+        if low in ("none", "math-auto"):
+            return False
+        return not (words and len(cases) <= 1 and len(set(others)) == len(others) and len(cases) + len(others) == len(words))
+    if name == "opacity":
+        number = low[:-1] if low.endswith("%") else low
+        return not (_NUMBER_RE.match(number) or low.startswith(("calc(", "min(", "max(", "clamp(")))
+    if name in ("z-index", "order"):
+        return not ((low == "auto" and name == "z-index") or _INTEGER_RE.match(low) or low.startswith("calc("))
+    if name in ("flex-grow", "flex-shrink"):
+        return not ((_NUMBER_RE.match(low) and not low.startswith("-")) or low.startswith("calc("))
+    if name == "border-spacing":
+        # one or two non-negative lengths -- never a percentage (CSS 2.1 17.6.1)
+        return not (1 <= len(words) <= 2 and all(_NON_NEGATIVE_LENGTH_RE.match(word) or word.startswith("calc(") for word in words))
+    if name == "flex":
+        return expand_shorthand(name, value) is None
+    return False

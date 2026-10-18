@@ -449,12 +449,20 @@ _NEGATIVE_LENGTH_TOKEN_RE = re.compile(
 
 
 def _is_invalid_non_negative_declaration(name: str, value: str) -> bool:
+    """Whether a declaration is invalid at parse time: a negative length for a
+    non-negative property (``-0px`` is zero, not negative), or a value outside
+    a checked property's grammar (``_cssom.is_invalid_declaration``)."""
+    if _cssom.is_invalid_declaration(name, value):
+        return True
     if name not in _NON_NEGATIVE_LENGTH_PROPERTIES:
         return False
     low = value.lower()
     if "var(" in low or "calc(" in low:
         return False
-    return any(_NEGATIVE_LENGTH_TOKEN_RE.match(token) for token in value.split())
+    return any(_NEGATIVE_LENGTH_TOKEN_RE.match(token) and _NONZERO_RE.search(token) for token in value.split())
+
+
+_NONZERO_RE = re.compile(r"[1-9]")
 
 
 def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
@@ -6922,21 +6930,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
 
     #: two-value ``display`` syntax -> the legacy single keyword a browser
     #: reports (CSS Display 3 "computed value" column)
-    _DISPLAY_TWO_VALUE = {
-        "block flow": "block",
-        "inline flow": "inline",
-        "block flow-root": "flow-root",
-        "inline flow-root": "inline-block",
-        "block flex": "flex",
-        "inline flex": "inline-flex",
-        "block grid": "grid",
-        "inline grid": "inline-grid",
-        "block table": "table",
-        "inline table": "inline-table",
-        "block list-item": "list-item",
-        "flow list-item": "list-item",
-        "block flow list-item": "list-item",
-    }
+    _DISPLAY_TWO_VALUE = {**_cssom.DISPLAY_MULTI_KEYWORDS, "flow": "block", "-webkit-flex": "flex",
+                          "-webkit-inline-flex": "inline-flex"}  # fmt: skip
     _DISPLAY_BLOCKIFY = {
         "inline": "block",
         "inline-block": "block",

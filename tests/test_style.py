@@ -2809,6 +2809,25 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertEqual(style.getPropertyValue("border-bottom-style"), "dashed")
         self.assertEqual(style.getPropertyValue("border-right-width"), "4px")
 
+    def test_an_invalid_declaration_is_dropped_so_an_earlier_one_applies(self):
+        markup = (
+            "<html><head><style>.a { white-space: pre-wrap; white-space: -o-pre-wrap } .b { display: flex }"
+            " .b { display: run-in } .c { display: list-item inline } .d { font-size: -0px } .e { grid-auto-flow: columns }"
+            " .f { opacity: 0.5; opacity: yes } .g { border-spacing: 3px; border-spacing: -1px } .h { flex: 2 1 0; flex: 0 0 4 }"
+            " .i { align-self: center; align-self: left }</style></head><body>"
+            + "".join(f"<p class={c}>{c}</p>" for c in "abcdefghi")
+            + "</body></html>"
+        )
+        expected = {".a": ("white-space", "pre-wrap"), ".b": ("display", "flex"), ".c": ("display", "inline list-item"),
+                    ".d": ("font-size", "0px"), ".e": ("grid-auto-flow", "row"), ".f": ("opacity", "0.5"),
+                    ".g": ("border-spacing", "3px"), ".h": ("flex-basis", "0px"), ".i": ("align-self", "center")}
+        for selector, (prop, value) in expected.items():
+            self.assertEqual(_computed(markup, selector, prop), value, selector)
+        style = CSSStyleDeclaration()
+        style.cssText = "display: grid; display: bogus; justify-content: safe flex-start"
+        self.assertEqual(style.getPropertyValue("display"), "grid")
+        self.assertEqual(style.getPropertyValue("justify-content"), "safe flex-start")
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"
