@@ -2448,6 +2448,38 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "div", "width", "::before"), "auto")
         self.assertNotIn("48", _computed(markup, "div", "counter-reset", "::before"))
 
+    def test_unitless_line_height_is_inherited_as_the_number(self):
+        markup = self.page(
+            "body { font: 14px/1.5 serif } h1 { font-size: 2em } h2 { font-size: 20px; line-height: calc(1.25 / .5) }"
+            " h2 b { font-size: 10px } p { line-height: 20px } p b { font-size: 40px }",
+            "<h1>x</h1><h2><b>b</b></h2><p><b>b</b></p>",
+        )
+        self.assertEqual(_computed(markup, "h1", "line-height"), "42px")
+        self.assertEqual(_computed(markup, "h2 b", "line-height"), "25px")
+        self.assertEqual(_computed(markup, "p b", "line-height"), "20px")  # a length is inherited as the length
+
+    def test_currentcolor_is_inherited_as_the_keyword(self):
+        markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
+                           "<div class=c><i>i</i></div>")
+        self.assertEqual(_computed(markup, "i", "background-color"), "rgb(0, 0, 255)")
+
+    def test_inherit_copies_a_percentage_not_the_parents_pixels(self):
+        from domonic.layout import LayoutBox, set_layout_box
+
+        document = Document()
+        outer = document.createElement("div")
+        document.appendChild(outer)
+        middle = document.createElement("div")
+        middle.setAttribute("style", "width: 100%")
+        outer.appendChild(middle)
+        inner = document.createElement("span")
+        inner.setAttribute("style", "width: inherit")
+        middle.appendChild(inner)
+        set_layout_box(outer, LayoutBox(content_width=800.0))
+        set_layout_box(middle, LayoutBox(content_width=400.0))
+        self.assertEqual(ComputedStyleDeclaration(middle).getPropertyValue("width"), "800px")
+        self.assertEqual(ComputedStyleDeclaration(inner).getPropertyValue("width"), "400px")
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",

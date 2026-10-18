@@ -7407,7 +7407,9 @@ class _ResolvedView:
 
     def _inherited(self, name: str) -> str:
         if self._parent is not None:
-            value = self._parent.getPropertyValue(name)
+            value = _inherited_computed_value(self._parent, name)
+            if value is None:
+                value = self._parent.getPropertyValue(name)
             if value:
                 return value
         return _cssom.initial_value(name)
@@ -7425,10 +7427,65 @@ class _ResolvedView:
                 return self._inherited(name) if _cssom.inherits(name) else _cssom.initial_value(name)
             return value
         if _cssom.inherits(name) and self._parent is not None:
-            inherited = self._parent.getPropertyValue(name)
-            if inherited:
-                return inherited
+            return self._inherited(name)
         return _cssom.initial_value(name)
+
+
+#: properties whose computed value keeps a percentage as a percentage (it is
+#: resolved against the containing block only at use), so ``inherit`` copies
+#: the percentage, not the parent's pixels
+_PERCENTAGE_COMPUTED_PROPERTIES = frozenset(
+    [
+        "width", "height", "min-width", "min-height", "max-width", "max-height", "flex-basis", "text-indent",
+        "top", "right", "bottom", "left", "column-gap", "row-gap", "background-position", "background-size",
+        "background-position-x", "background-position-y", "transform-origin", "perspective-origin",
+        "inline-size", "block-size", "min-inline-size", "min-block-size", "max-inline-size", "max-block-size",
+        "inset-block-start", "inset-block-end", "inset-inline-start", "inset-inline-end",
+    ]
+    + [f"{box}-{side}" for box in ("margin", "padding") for side in ("top", "right", "bottom", "left")]
+    + [f"border-{v}-{h}-radius" for v in ("top", "bottom") for h in ("left", "right")]
+)  # fmt: skip
+_PLAIN_NUMBER_RE = re.compile(r"^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$", re.I)
+_NUMBER_WITH_UNIT_RE = re.compile(r"(?:\d|\.\d)\s*(?:[a-z]+|%)", re.I)
+
+
+def _is_unitless_math(value: str) -> bool:
+    """Whether a math function (``calc(1.25 / .875)``) has no unit anywhere --
+    a plain ``<number>``."""
+    body = re.sub(r"(?i)\b(?:calc|min|max|clamp|-webkit-calc)\(", "(", value)
+    return "(" in body and _NUMBER_WITH_UNIT_RE.search(body) is None and not re.search(r"[a-z%]", body, re.I)
+
+
+def _inherited_computed_value(parent, name: str) -> "str | None":
+    """The parent's *computed* value of ``name`` where that differs from the
+    used value ``getPropertyValue`` gives (CSS Cascade 4 7: inheritance passes
+    computed values): a percentage of a box property, a unitless (or
+    ``normal``) ``line-height`` -- a multiplier, so a child with a bigger font
+    gets a taller line (CSS 2.1 10.8.1) -- and ``currentcolor``, which
+    computes to itself. None where the used value is the computed one."""
+    is_color = name != "color" and (name.endswith("-color") or name in ("fill", "stroke"))
+    if not (name == "line-height" or is_color or name in _PERCENTAGE_COMPUTED_PROPERTIES):
+        return None
+    try:
+        raw = parent._resolved.get(name)
+    except Exception:
+        return None
+    if not raw:
+        return None
+    if "var(" in raw:
+        raw = _expand_var_references(raw, parent._custom_property)
+    raw = raw.strip()
+    low = raw.lower()
+    if name == "line-height":
+        if low == "normal" or _PLAIN_NUMBER_RE.match(low):
+            return raw
+        if _is_unitless_math(low):
+            number = _eval_calc_to_px(low if low.startswith("calc(") else f"calc({low})", em_px=0.0, rem_px=0.0)
+            return repr(float(number)) if number is not None else None
+        return None
+    if is_color:
+        return raw if "currentcolor" in low else None
+    return raw if "%" in raw else None
 
 
 def _known_css_property_names() -> set[str]:
