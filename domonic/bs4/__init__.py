@@ -907,16 +907,67 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     return parts
 
 
+# user-action / input / element-state pseudo-classes (Selectors 4 9-13, HTML
+# 4.16.3) matched against a static document: nothing is hovered or active,
+# focus is ``document.activeElement`` and the target is the URL's fragment
+_STATE_PSEUDOS = frozenset(
+    {
+        "checked", "disabled", "enabled", "hover", "active", "focus", "focus-visible", "focus-within",
+        "target", "target-within", "any-link", "placeholder-shown", "read-only", "read-write", "required",
+        "optional", "default", "indeterminate", "defined", "open", "modal", "fullscreen", "popover-open",
+        "autofill", "playing", "paused",
+    }
+)  # fmt: skip
+_TRAILING_STATE_RE = re.compile(r":([-\w]+)$")
+
+
+def _has_top_level_colon(text: str) -> bool:
+    """Whether ``text`` has a ``:`` outside parens, brackets and strings -- a
+    pseudo-class still left on a compound."""
+    depth, quote = 0, None
+    for char in text:
+        if quote:
+            if char == quote:
+                quote = None
+        elif char in "\"'":
+            quote = char
+        elif char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif char == ":" and depth == 0:
+            return True
+    return False
+
+
 def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | None:
+    """``(compound without its trailing pseudo-classes, pseudo)``, or None when
+    the compound can't be parsed here. Several trailing pseudo-classes
+    (``.btn:not(:disabled):not(.x)``) come back combined as ``("all", (...))``."""
+    stripped = _strip_last_pseudo(selector)
+    if stripped is None or stripped[1] is None:
+        return stripped
+    rest, pseudo = stripped
+    if not _has_top_level_colon(rest):
+        return rest, pseudo
+    inner = _strip_simple_pseudo(rest)
+    if inner is None:
+        return None
+    if inner[1] is None:
+        return inner[0], pseudo
+    return inner[0], ("all", (inner[1], pseudo))
+
+
+def _strip_last_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | None:
     if ":" not in selector:
         return selector, None
+    state = _TRAILING_STATE_RE.search(selector)
+    if state is not None and state.group(1).lower() in _STATE_PSEUDOS:
+        return selector[: state.start()], ("state", state.group(1).lower())
     if selector.endswith(":first-child"):
         return selector[: -len(":first-child")], ("first-child", None)
     if selector.endswith(":last-child"):
         return selector[: -len(":last-child")], ("last-child", None)
-    for pseudo in ("checked", "disabled", "enabled"):
-        if selector.endswith(":" + pseudo):
-            return selector[: -len(":" + pseudo)], ("state", pseudo)
     # positional pseudo-classes taking an An+B formula (or odd/even/integer)
     match = re.search(
         r":(nth-child|nth-last-child|nth-of-type|nth-last-of-type)\(([^()]+)\)$",
@@ -977,22 +1028,27 @@ def _strip_simple_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | 
         if parsed is None:
             return None
         return selector[: match.start()], ("has", (combinator, parsed))
-    # :not(<single compound selector>) - the common form; a selector list or a
-    # nested combinator inside :not() bails to the XPath engine.
-    match = re.search(r":not\(([^()]+)\)$", selector)
+    # :not(<compound list>) -- ``:not(a, b)`` is ``:not(a):not(b)``; a nested
+    # combinator inside :not() bails to the XPath engine.
+    match = re.search(r":not\(((?:[^()]|\([^()]*\))+)\)$", selector)
     if match:
-        inner = match.group(1).strip()
-        if "," in inner or any(c in inner for c in " >+~"):
-            return None  # selector list / combinator inside :not() -> XPath
-        if inner.startswith(":"):
-            nested = _strip_simple_pseudo("x" + inner)
-            if nested is None or nested[1] is None:
+        negations = []
+        for inner in _split_selector_groups(match.group(1)) or [""]:
+            if not inner or any(c in inner for c in " >+~"):
+                return None  # combinator inside :not() -> XPath
+            if inner.startswith(":"):
+                nested = _strip_simple_pseudo("x" + inner)
+                if nested is None or nested[1] is None or nested[0] != "x":
+                    return None
+                negations.append(("not-pseudo", nested[1]))
+                continue
+            inner_parsed = Element._parse_simple_selector(inner)
+            if inner_parsed is None:
                 return None
-            return selector[: match.start()], ("not-pseudo", nested[1])
-        inner_parsed = Element._parse_simple_selector(inner)
-        if inner_parsed is None:
+            negations.append(("not", inner_parsed))
+        if not negations:
             return None
-        return selector[: match.start()], ("not", inner_parsed)
+        return selector[: match.start()], negations[0] if len(negations) == 1 else ("all", tuple(negations))
     # A structural pseudo that Element._parse_simple_selector already
     # understands as part of any compound (``:root``, ``:empty``,
     # ``:only-child``, ``:first-of-type``, ``:last-of-type``,
@@ -1199,6 +1255,8 @@ def _match_simple_pseudo(
     if pseudo is None:
         return True
     name, value = pseudo
+    if name == "all":
+        return all(_match_simple_pseudo(element, part, position_cache) for part in value)
     if name == "not":
         return not _match_parsed_selector(element, value)
     if name == "not-pseudo":
@@ -1265,15 +1323,111 @@ def _match_simple_pseudo(
     return False
 
 
+_FORM_ELEMENTS = frozenset({"input", "button", "select", "textarea", "optgroup", "option", "fieldset"})
+# input types whose value is free text (HTML 4.10.5.3: placeholder, readonly)
+_TEXT_INPUT_TYPES = frozenset(
+    {"", "text", "search", "url", "tel", "email", "password", "date", "month", "week", "time", "datetime-local", "number"}
+)
+
+
+def _focused_element(element: Element) -> Element | None:
+    document = getattr(element, "ownerDocument", None)
+    active = getattr(document, "_activeElement", None) if document is not None else None
+    return None if active is None or (getattr(active, "name", "") or "").lower() in ("body", "html") else active
+
+
+def _target_element(element: Element) -> Element | None:
+    """The document's target element: the one its URL's fragment names."""
+    document = getattr(element, "ownerDocument", None)
+    if document is None:
+        return None
+    fragment = str(getattr(document, "URL", "") or "").partition("#")[2]
+    if not fragment:
+        return None
+    from urllib.parse import unquote
+
+    return document.getElementById(unquote(fragment))
+
+
+def _is_inclusive_ancestor(element: Element, node: Any) -> bool:
+    while node is not None:
+        if node is element:
+            return True
+        node = getattr(node, "parentNode", None)
+    return False
+
+
+def _is_writable(element: Element, tag: str) -> bool:
+    """``:read-write`` (HTML 4.16.3): an editable text control or an editing host."""
+    if tag in ("input", "textarea"):
+        kind = str(_get_attribute(element, "type") or "").strip().lower()
+        if tag == "input" and kind not in _TEXT_INPUT_TYPES:
+            return False
+        return _get_attribute(element, "readonly") is None and _get_attribute(element, "disabled") is None
+    editable = _get_attribute(element, "contenteditable")
+    return editable is not None and str(editable).strip().lower() in ("", "true", "plaintext-only")
+
+
 def _match_state_pseudo(element: Element, state: str) -> bool:
-    _FORM_ELEMENTS = {"input", "button", "select", "textarea", "optgroup", "option", "fieldset"}
+    tag = (element.name or "").lower()
     if state == "checked":
         return _get_attribute(element, "checked") is not None or _get_attribute(element, "selected") is not None
     if state == "disabled":
         return _get_attribute(element, "disabled") is not None
     if state == "enabled":
-        return element.name.lower() in _FORM_ELEMENTS and _get_attribute(element, "disabled") is None
+        return tag in _FORM_ELEMENTS and _get_attribute(element, "disabled") is None
+    if state in ("focus", "focus-visible"):
+        return _focused_element(element) is element
+    if state == "focus-within":
+        return _is_inclusive_ancestor(element, _focused_element(element))
+    if state == "target":
+        return _target_element(element) is element
+    if state == "target-within":
+        return _is_inclusive_ancestor(element, _target_element(element))
+    if state == "any-link":
+        return tag in ("a", "area") and _get_attribute(element, "href") is not None
+    if state == "placeholder-shown":
+        if tag not in ("input", "textarea") or _get_attribute(element, "placeholder") is None:
+            return False
+        value = element.__dict__.get("_value", _get_attribute(element, "value")) if tag == "input" else None
+        return not str(value if value is not None else (element.textContent if tag == "textarea" else "") or "")
+    if state == "read-write":
+        return _is_writable(element, tag)
+    if state == "read-only":
+        return not _is_writable(element, tag)
+    if state in ("required", "optional"):
+        if tag not in ("input", "select", "textarea"):
+            return False
+        return (_get_attribute(element, "required") is not None) == (state == "required")
+    if state == "default":
+        if tag == "option":
+            return _get_attribute(element, "selected") is not None
+        return tag == "input" and _get_attribute(element, "checked") is not None
+    if state == "indeterminate":
+        if tag == "progress":
+            return _get_attribute(element, "value") is None
+        return tag == "input" and bool(element.__dict__.get("_indeterminate", False))
+    if state == "defined":
+        # HTML 4.13.3: a custom element is undefined until its definition exists
+        if "-" not in tag:
+            return True
+        registry = _custom_element_registry()
+        return registry is not None and registry.get(tag) is not None
+    if state == "open":
+        return tag in ("details", "dialog") and _get_attribute(element, "open") is not None
+    if state == "popover-open":
+        return _get_attribute(element, "popover") is not None and _get_attribute(element, "open") is not None
+    if state == "paused":
+        return tag in ("audio", "video")
+    # hover / active / modal / fullscreen / autofill / playing: nothing is
+    # hovered, pressed or playing in a static document
     return False
+
+
+def _custom_element_registry() -> Any:
+    from domonic.dom import _get_custom_element_registry
+
+    return _get_custom_element_registry()
 
 
 def _prune_nested_contexts(contexts: list[Any]) -> list[Any]:

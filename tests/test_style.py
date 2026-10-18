@@ -2354,6 +2354,17 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertIn(_computed(markup, "section", "content", "::after"), ("", "normal", "none"))
         self.assertEqual(_computed(markup, "i", "content", "::after"), '"x"')
 
+    def test_compound_with_several_pseudo_classes(self):
+        markup = self.page(".btn:not(:disabled):not(.off) { color: green } .skip:not(:focus) { color: blue }",
+                           "<button class=btn id=on>a</button><button class='btn off'>b</button><a class=skip>s</a>")
+        self.assertEqual(_computed(markup, "#on", "color"), "rgb(0, 128, 0)")
+        self.assertEqual(_computed(markup, ".skip", "color"), "rgb(0, 0, 255)")
+
+    def test_not_takes_a_selector_list(self):
+        markup = self.page("p:not(.a, .b) { color: green }", "<p class=a>a</p><p id=c>c</p>")
+        self.assertEqual(_computed(markup, "#c", "color"), "rgb(0, 128, 0)")
+        self.assertNotEqual(_computed(markup, ".a", "color"), "rgb(0, 128, 0)")
+
     def test_pseudo_element_names_are_case_insensitive(self):
         markup = self.page('p::BEFORE { content: "b" } p:After { content: "a" }', "<p>x</p>")
         self.assertEqual(_computed(markup, "p", "content", "::before"), '"b"')
@@ -2366,6 +2377,14 @@ class CascadeSelectorTest(unittest.TestCase):
         )
         self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
 
+    def test_state_pseudo_classes_in_the_cascade(self):
+        markup = self.page(
+            "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",
+            "<input placeholder=x required><a href=#>l</a>",
+        )
+        self.assertEqual(_computed(markup, "input", "color"), "rgb(0, 128, 0)")
+        self.assertEqual(_computed(markup, "input", "margin-left"), "3px")
+        self.assertNotEqual(_computed(markup, "a", "color"), "rgb(255, 0, 0)")
 
 
 if __name__ == "__main__":

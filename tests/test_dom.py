@@ -6303,6 +6303,28 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertTrue(span_el.matches(":is(div, section) span"))
         self.assertEqual(span_el.closest(":is(div, section)").tagName, "DIV")
 
+    def test_selectors_with_state_pseudo_classes_and_not_lists(self):
+        doc = parseString(
+            "<html><body><p class=a>x</p><p id=c>c</p><input placeholder=hi required>"
+            "<textarea readonly></textarea><a href=#>l</a><my-el></my-el><details open></details></body></html>"
+        )
+
+        def tags(query):
+            return [el.tagName for el in doc.querySelectorAll(query)]
+
+        self.assertEqual(tags("p:not(.a, .b)"), ["P"])
+        self.assertEqual(tags("p:first-child:not(.z)"), ["P"])
+        self.assertEqual(tags("input:placeholder-shown:required"), ["INPUT"])
+        self.assertEqual(tags("textarea:read-only"), ["TEXTAREA"])
+        self.assertEqual(tags("a:any-link"), ["A"])
+        self.assertEqual(tags("a:hover"), [])
+        self.assertEqual(tags(":not(:defined)"), ["MY-EL"])
+        self.assertEqual(tags("details:open"), ["DETAILS"])
+        doc.querySelector("input").focus()
+        self.assertEqual(tags(":focus"), ["INPUT"])
+        self.assertEqual(tags("body:focus-within"), ["BODY"])
+        self.assertTrue(doc.querySelector("#c").matches(":not(.a, .b)"))
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
