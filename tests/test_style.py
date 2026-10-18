@@ -2798,6 +2798,17 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "overflow-wrap"), "break-word")
         self.assertNotEqual(_computed(markup, "p", "font-family"), "x")
 
+    def test_logical_sizes_border_sides_and_spaced_axis_values(self):
+        style = CSSStyleDeclaration()
+        style.cssText = "padding-inline: calc(var(--p) - 1px); inline-size: 100px; max-block-size: 50%"
+        self.assertEqual(style.getPropertyValue("padding-right"), "calc(var(--p) - 1px)")
+        self.assertEqual(style.getPropertyValue("width"), "100px")
+        self.assertEqual(style.getPropertyValue("max-height"), "50%")
+        style.cssText = "border-inline-start: 1px solid red; border-block: 2px dashed; border-inline-width: 3px 4px"
+        self.assertEqual(style.getPropertyValue("border-left-color"), "red")
+        self.assertEqual(style.getPropertyValue("border-bottom-style"), "dashed")
+        self.assertEqual(style.getPropertyValue("border-right-width"), "4px")
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"

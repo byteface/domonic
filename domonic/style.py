@@ -349,6 +349,19 @@ _LOGICAL_AXIS_SHORTHANDS: dict[str, tuple[str, str]] = {
     "margin-block": ("margin-top", "margin-bottom"),
     "inset-inline": ("left", "right"),
     "inset-block": ("top", "bottom"),
+    "border-inline-width": ("border-left-width", "border-right-width"),
+    "border-block-width": ("border-top-width", "border-bottom-width"),
+    "border-inline-style": ("border-left-style", "border-right-style"),
+    "border-block-style": ("border-top-style", "border-bottom-style"),
+    "border-inline-color": ("border-left-color", "border-right-color"),
+    "border-block-color": ("border-top-color", "border-bottom-color"),
+}
+
+#: ``border-inline`` / ``border-block``: one ``border``-style value for both
+#: sides of the axis (CSS Logical 1 4.4)
+_LOGICAL_BOTH_SIDES_SHORTHANDS: dict[str, tuple[str, str]] = {
+    "border-inline": ("border-left", "border-right"),
+    "border-block": ("border-top", "border-bottom"),
 }
 
 #: each single-value logical longhand -> the one physical longhand it aliases.
@@ -365,6 +378,35 @@ _LOGICAL_ALIAS_LONGHANDS: dict[str, str] = {
     "inset-inline-end": "right",
     "inset-block-start": "top",
     "inset-block-end": "bottom",
+    "inline-size": "width",
+    "block-size": "height",
+    "min-inline-size": "min-width",
+    "min-block-size": "min-height",
+    "max-inline-size": "max-width",
+    "max-block-size": "max-height",
+    "border-inline-start": "border-left",
+    "border-inline-end": "border-right",
+    "border-block-start": "border-top",
+    "border-block-end": "border-bottom",
+    **{
+        f"border-{axis}-{edge}-{part}": f"border-{side}-{part}"
+        for axis, edge, side in (
+            ("inline", "start", "left"),
+            ("inline", "end", "right"),
+            ("block", "start", "top"),
+            ("block", "end", "bottom"),
+        )
+        for part in ("width", "style", "color")
+    },
+    **{
+        f"border-{corner}-radius": f"border-{physical}-radius"
+        for corner, physical in (
+            ("start-start", "top-left"),
+            ("start-end", "top-right"),
+            ("end-start", "bottom-left"),
+            ("end-end", "bottom-right"),
+        )
+    },
 }
 
 
@@ -456,9 +498,15 @@ def _parse_css_declarations(css_text: str) -> list[tuple[str, str, str]]:
         # cascade priority (source order, !important) as the declaration it
         # came from, rather than a physical longhand from some unrelated,
         # lower-priority rule winning just by already having a value.
+        both = _LOGICAL_BOTH_SIDES_SHORTHANDS.get(name)
+        if both is not None:
+            emit(both[0], value, priority)
+            emit(both[1], value, priority)
+            continue
         axis = _LOGICAL_AXIS_SHORTHANDS.get(name)
         if axis is not None:
-            parts = value.split()
+            # (top-level spaces only: ``calc(var(--p) - 1px)`` is one value)
+            parts = _cssom._tokens(value)
             if len(parts) == 1:
                 emit(axis[0], parts[0], priority)
                 emit(axis[1], parts[0], priority)
