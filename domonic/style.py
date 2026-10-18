@@ -1726,6 +1726,25 @@ class Style:
 
         self._members_checked = True  # NOTE - this ALWAYS needs to be last or all props will render
 
+    def __getattr__(self, name: str) -> Any:
+        # Only reached once normal lookup has failed: a CSSOM IDL name this
+        # class has no accessor for (``aspectRatio``, ``inset``), or one whose
+        # plain getter read a private field that was never set
+        # (``justifySelf`` on a computed style). Read it through the
+        # declaration, the way the decorated accessors do.
+        if name[:1].isalpha() and name not in _CSS_STYLE_INTERNAL_NAMES:
+            kebab = _css_property_name(name)
+            if (
+                kebab in _cssom.INITIAL_VALUES
+                or kebab in _cssom.INHERITED_PROPERTIES
+                or _cssom.is_shorthand(kebab)
+                or kebab in _known_css_property_names()
+            ):
+                get = getattr(type(self), "getPropertyValue", None)
+                got = get(self, kebab) if get is not None else ""
+                return got or _STYLE_INITIAL_VALUES.get(name, "none")
+        raise AttributeError(f"{type(self).__name__!r} object has no attribute {name!r}")
+
     def __setattr__(self, name: str, value: Any) -> None:
         descriptor = getattr(type(self), name, None)
         if isinstance(descriptor, property) and descriptor.fset is not None:

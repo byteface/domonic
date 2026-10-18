@@ -277,6 +277,7 @@ INITIAL_VALUES: dict[str, str] = {
     "scale": "none",
     "scroll-behavior": "auto",
     "text-overflow": "clip",
+    "text-wrap": "wrap",
     "text-wrap-mode": "wrap",
     "text-wrap-style": "auto",
     "touch-action": "auto",

@@ -2714,6 +2714,22 @@ class InitialValuesTest(unittest.TestCase):
                               "transform-style": "flat", "text-overflow": "clip", "color-scheme": "normal"}.items():
             self.assertEqual(computed.getPropertyValue(name), initial, name)
 
+    def test_camelcase_accessors_on_a_computed_style(self):
+        markup = ("<html><head><style>p { justify-self: end; row-gap: 3px; place-items: center; aspect-ratio: 2 / 1 }"
+                  "</style></head><body><p>a</p></body></html>")
+        import domonic
+        from domonic.window import window
+
+        computed = window.getComputedStyle(domonic.parseString(markup).querySelector("p"))
+        self.assertEqual(computed.justifySelf, "end")
+        self.assertEqual(computed.justifyItems, "center")
+        self.assertEqual(computed.rowGap, "3px")
+        self.assertEqual(computed.placeItems, "center")
+        self.assertEqual(computed.aspectRatio, "2 / 1")
+        self.assertEqual(computed.containerType, "normal")
+        with self.assertRaises(AttributeError):
+            computed.notACssProperty
+
     def test_color_scheme_and_caret_color_inherit(self):
         markup = "<html><head><style>div { color-scheme: dark }</style></head><body><div><p>x</p></div></body></html>"
         self.assertEqual(_computed(markup, "p", "color-scheme"), "dark")
