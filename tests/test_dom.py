@@ -1769,8 +1769,11 @@ class DOMTest(unittest.TestCase):
         doc.appendChild(host)
 
         widget = document.createElement("life-widget")
+        self.assertIs(widget.ownerDocument, document)
         host.appendChild(widget)
         self.assertEqual(widget.connected_calls, 1)
+        # created by one document, inserted into another's tree: adopted
+        self.assertEqual(widget.adoptions, [(document, doc)])
 
         widget.setAttribute("data-state", "ready")
         self.assertEqual(widget.attribute_changes[-1], ("data-state", None, "ready"))
@@ -1780,7 +1783,7 @@ class DOMTest(unittest.TestCase):
 
         other_doc = Document()
         imported = other_doc.importNode(widget, deep=True)
-        self.assertEqual(len(imported.adoptions), 1)
+        self.assertEqual(len(imported.adoptions), 2)
         self.assertIs(imported.adoptions[-1][1], other_doc)
 
     def test_shadow_root_slots_assign_nodes_and_elements(self):
@@ -6364,6 +6367,20 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(select_el.length, 3)
         select_el.remove()  # ChildNode.remove()
         self.assertIsNone(page.querySelector("select"))
+
+    def test_a_documents_factories_give_it_as_the_owner(self):
+        page = parseString("<html><body></body></html>")
+        created = page.createElement("p")
+        self.assertIs(created.ownerDocument, page)
+        self.assertEqual(created.tagName, "P")  # (an HTML document's element)
+        self.assertIs(page.createTextNode("x").ownerDocument, page)
+        self.assertIs(page.createDocumentFragment().ownerDocument, page)
+        self.assertIsNone(Document.createElement("span").ownerDocument)  # the static form is unchanged
+        # inserting into a detached element adopts into that element's document
+        holder = page.createElement("div")
+        loose = Document.createElement("i")
+        holder.appendChild(loose)
+        self.assertIs(loose.ownerDocument, page)
 
     def test_is_connected_means_in_a_document(self):
         self.assertFalse(div().isConnected)

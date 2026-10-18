@@ -1262,8 +1262,11 @@ class TestCase(unittest.TestCase):
         el2 = document.createElement("script")
         sheet = CSSStyleSheet()
         sheet.replaceSync("script { display: block; }")
+        # (the shared module-level document: put it back for the other tests)
+        self.addCleanup(setattr, document, "adoptedStyleSheets", list(document.adoptedStyleSheets))
         document.adoptedStyleSheets = [sheet]
         document.appendChild(el2)
+        self.addCleanup(el2.remove)
         self.assertEqual(ComputedStyleDeclaration(el2).getPropertyValue("display"), "block")
 
     def test_computed_percentage_lengths(self):

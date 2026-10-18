@@ -14,6 +14,7 @@ web-platform concepts rather than a small HTML helper tree.
 from __future__ import annotations
 
 import copy
+import contextvars
 import functools
 import math
 import os
@@ -635,6 +636,37 @@ def _bs4_selector_engine() -> Any:
     return _BS4_SELECTOR_ENGINE
 
 
+class _document_factory:
+    """A Document node factory that works both ways: ``Document.createElement
+    ("p")`` (no document, as it always has) and ``doc.createElement("p")``,
+    whose node then has ``doc`` as its ``ownerDocument`` -- and, made by an
+    HTML document, the upper-case ``tagName`` such a document gives."""
+
+    def __init__(self, func: Callable[..., Any]) -> None:
+        self.func = func
+        functools.update_wrapper(self, func)
+
+    def __get__(self, instance: Any, owner: Any = None) -> Callable[..., Any]:
+        func = self.func
+        if instance is None:
+            return func
+
+        @functools.wraps(func)
+        def create(*args: Any, **kwargs: Any) -> Any:
+            node = func(*args, **kwargs)
+            if isinstance(node, Node):
+                html_doc = bool(instance.__dict__.get("_html_doc"))
+                for current in _iter_dom_nodes(node):
+                    state = current.__dict__
+                    if state.get("_ownerDocument") is None:
+                        state["_ownerDocument"] = instance
+                    if html_doc:
+                        state["_html_doc"] = True
+            return node
+
+        return create
+
+
 def _node_is_connected(node: "Node") -> bool:
     try:
         return isinstance(node.rootNode, Document)
@@ -857,13 +889,19 @@ def _connect_inserted_node(
     if not isinstance(node, Node):
         return
     node.parentNode = parent
-    # Connection already refreshes ownership throughout the subtree. A separate
-    # adoption pass is needed only for callbacks on a document transition.
+    # Insertion adopts the node into its parent's node document, connected or
+    # not (DOM 4.2.3). Connection refreshes ownership throughout the subtree;
+    # the adoption pass is for a document transition (and its callbacks).
+    parent_document = parent if isinstance(parent, Document) else parent.ownerDocument
+    new_document = parent_document if isinstance(parent_document, Document) else None
     if old_document is not None:
-        parent_document = parent.ownerDocument
-        new_document = parent_document if isinstance(parent_document, Document) else None
         if old_document is not new_document:
             _adopt_tree(node, old_document, new_document)
+    elif new_document is not None:
+        # (a node no document made yet: it simply joins this one)
+        for current in _iter_dom_nodes(node):
+            if current.__dict__.get("_ownerDocument") is None:
+                current.__dict__["_ownerDocument"] = new_document
     _connect_tree(node)
 
 
@@ -989,6 +1027,10 @@ _NODE_INIT_STATE: dict[str, Any] = {
 }
 
 
+#: the node ``_deepcopy_subtree`` is copying, while it does
+_DEEPCOPY_ROOT: "contextvars.ContextVar[Any]" = contextvars.ContextVar("domonic_deepcopy_root", default=None)
+
+
 def _deepcopy_subtree(node: "Node") -> "Node":
     """``copy.deepcopy`` of a node without dragging in its parent chain -- a
     bare ``deepcopy`` follows ``parentNode`` *and* every descendant's
@@ -1027,9 +1069,13 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     for current, _owner in saved_owners:
         current.__dict__["_ownerDocument"] = None
         _drop_child_caches(current)
+    # any *other* document the subtree still reaches (a custom element keeping
+    # one in an attribute) is shared by the copy, not copied (Document.__deepcopy__)
+    token = _DEEPCOPY_ROOT.set(node)
     try:
         return copy.deepcopy(node)
     finally:
+        _DEEPCOPY_ROOT.reset(token)
         node.__dict__["parentNode"] = saved_parent
         for current, owner in saved_owners:
             current.__dict__["_ownerDocument"] = owner
@@ -7941,6 +7987,19 @@ class Document(Element):
     # instance (domonic.webapi.url.URL parses it on demand, e.g. Document.host)
     URL: str = ""
 
+    def __deepcopy__(self, memo: dict) -> "Document":
+        # Cloning a node copies that node's subtree; a document it merely
+        # refers to (a custom element holding one) is shared, not copied --
+        # it reaches the window, its storage and locks. Only the document
+        # being cloned itself (cloneNode on a Document) is copied.
+        root = _DEEPCOPY_ROOT.get()
+        if root is not None and root is not self:
+            return self
+        import copy
+
+        reductor = self.__reduce_ex__(4)
+        return copy._reconstruct(self, memo, *reductor)  # type: ignore[attr-defined]
+
     def __init__(self, *args, **kwargs):
         """Constructor for Document objects"""
         self.args = args
@@ -8201,18 +8260,18 @@ class Document(Element):
         # content attribute -- assignment is ignored.
         return None
 
-    @staticmethod
+    @_document_factory
     def createAttribute(name: str) -> Attr:
         """Creates an attribute node"""
         _validate_xml_name(name)
         return Attr(name)
 
-    @staticmethod
+    @_document_factory
     def createComment(message: str) -> "Comment":
         """Creates a Comment node with the specified text"""
         return Comment(message)
 
-    @staticmethod
+    @_document_factory
     def createDocumentFragment(*args: Any) -> "DocumentFragment":
         """Creates an empty DocumentFragment node if not content passed. I added args as optional to pass content"""
         return DocumentFragment(*args)
@@ -8236,7 +8295,7 @@ class Document(Element):
         """Creates an XPathExpression object for the given XPath string."""
         return XPathExpression(xpath, nsResolver)
 
-    @staticmethod
+    @_document_factory
     def createElement(_type: str, *args: Any, **kwargs: Any) -> "Element":
         """Creates an Element node.
 
@@ -8260,7 +8319,7 @@ class Document(Element):
             _upgrade_custom_element_instance(el)
         return el
 
-    @staticmethod
+    @_document_factory
     def createElementNS(namespaceURI: str, qualifiedName: str, options: Any = None) -> "Element":
         """Creates an element with the specified namespace URI and qualified name."""
         # el = type(qualifiedName, (Element,), {'name': qualifiedName})
@@ -8390,7 +8449,7 @@ class Document(Element):
             return factory()
         return Event(event_type)
 
-    @staticmethod
+    @_document_factory
     def createTextNode(text: str) -> "Text":
         """Creates a Text node with the specified text.
 
@@ -8425,7 +8484,7 @@ class Document(Element):
         whatToShow = NodeFilter.SHOW_ALL if whatToShow is None else whatToShow
         return TreeWalker(root, whatToShow, filter, entityReferenceExpansion)
 
-    @staticmethod
+    @_document_factory
     def createProcessingInstruction(target: str, data: str) -> ProcessingInstruction:
         """Creates a ProcessingInstruction node with the specified target and data.
 
@@ -8465,7 +8524,7 @@ class Document(Element):
         """Returns the version of XML used for the document"""
         return "1.0"
 
-    @staticmethod
+    @_document_factory
     def createCDATASection(data: str) -> CDATASection:
         """Creates a CDATASection node with the specified data"""
         return CDATASection(data)
