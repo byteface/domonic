@@ -5192,8 +5192,7 @@ class Element(Node):
         Returns:
             bool: True if the selector matches the Element, otherwise False.
         """
-        selectors = [selector.strip() for selector in str(s).split(",") if selector.strip()]
-        for selector in selectors:
+        for selector in _split_selector_list(str(s)):
             # In matches() / closest() the :scope pseudo-class refers to this
             # element itself (there is no separate scoping element). Strip it
             # from a lone compound selector -- combinator selectors keep it and

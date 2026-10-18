@@ -6295,6 +6295,14 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertIsNone(doc.body.querySelector("html"))
         self.assertEqual(doc.body.querySelectorAll("body"), [])
 
+    def test_matches_splits_selector_lists_at_top_level_commas(self):
+        doc = parseString("<html><body><p class=a>x</p><div><span>y</span></div></body></html>")
+        p, span_el = doc.querySelector("p"), doc.querySelector("span")
+        self.assertTrue(p.matches(":is(.a, .b)"))
+        self.assertTrue(p.matches("div, .a"))
+        self.assertTrue(span_el.matches(":is(div, section) span"))
+        self.assertEqual(span_el.closest(":is(div, section)").tagName, "DIV")
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
