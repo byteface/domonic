@@ -2662,6 +2662,17 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(style.cssText, "border-radius: 1px 2px 3px 4px / 5px 6px;")
         self.assertIsNone(self.expand("margin", "1px 2px 3px 4px 5px"))
 
+    def test_background_layers_and_position_size(self):
+        single = self.expand("background", "url(a.png) 0 0/2ch 2ch no-repeat")
+        self.assertEqual((single["background-position"], single["background-size"]), ("0 0", "2ch 2ch"))
+        cover = self.expand("background", "#fff url(x.png) center / cover no-repeat fixed")
+        self.assertEqual((cover["background-size"], cover["background-color"]), ("cover", "#fff"))
+        layered = self.expand("background", "url(a.svg), linear-gradient(red, blue) no-repeat")
+        self.assertEqual(layered["background-image"], "url(a.svg), linear-gradient(red, blue)")
+        self.assertEqual(layered["background-repeat"], "repeat, no-repeat")
+        self.assertEqual(layered["background-color"], "transparent")
+        self.assertIsNone(self.expand("background", "url(a) red, blue"))  # colour only in the final layer
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):

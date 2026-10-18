@@ -761,6 +761,89 @@ def _expand_grid(value: str) -> list[tuple[str, str]] | None:
     return template + [("grid-auto-rows", "auto"), ("grid-auto-columns", "auto"), ("grid-auto-flow", "row")]
 
 
+_BACKGROUND_REPEAT_KEYWORDS = frozenset({"repeat", "no-repeat", "repeat-x", "repeat-y", "space", "round"})
+_BACKGROUND_ATTACHMENT_KEYWORDS = frozenset({"fixed", "local", "scroll"})
+_BACKGROUND_BOX_KEYWORDS = frozenset({"border-box", "padding-box", "content-box", "text"})
+_POSITION_KEYWORDS = frozenset({"left", "right", "top", "bottom", "center"})
+_IMAGE_FUNCTIONS = ("url(", "image(", "image-set(", "-webkit-image-set(", "cross-fade(", "element(", "paint(")
+
+
+def _is_position_part(token: str) -> bool:
+    return token.lower() in _POSITION_KEYWORDS or _looks_like_length(token)
+
+
+def _expand_background_layer(layer: str, final: bool) -> list[tuple[str, str]] | None:
+    """One ``background`` layer: ``<image> || <position> [ / <size> ]? ||
+    <repeat> || <attachment> || <box> || <box>``, plus ``<color>`` in the
+    final layer. None if it doesn't parse."""
+    tokens = _split_ws_keep_funcs(layer)
+    image = position = size = attachment = origin = clip = color = None
+    repeat: list[str] = []
+    index = 0
+    while index < len(tokens):
+        token = tokens[index]
+        low = token.lower()
+        if _is_position_part(token):
+            if position is not None:
+                return None
+            parts = [token]
+            index += 1
+            while index < len(tokens) and len(parts) < 4 and _is_position_part(tokens[index]):
+                parts.append(tokens[index])
+                index += 1
+            position = " ".join(parts)
+            if index < len(tokens) and tokens[index] == "/":
+                index += 1
+                sizes: list[str] = []
+                if index < len(tokens) and tokens[index].lower() in ("cover", "contain"):
+                    sizes.append(tokens[index].lower())
+                    index += 1
+                else:
+                    while index < len(tokens) and len(sizes) < 2 and (
+                        tokens[index].lower() == "auto" or _looks_like_length(tokens[index])
+                    ):
+                        sizes.append(tokens[index])
+                        index += 1
+                if not sizes:
+                    return None
+                size = " ".join(sizes)
+            continue
+        if token == "/":
+            return None  # a size only follows a position
+        if low in _BACKGROUND_REPEAT_KEYWORDS:
+            if len(repeat) >= 2:
+                return None
+            repeat.append(token)
+        elif low in _BACKGROUND_ATTACHMENT_KEYWORDS:
+            attachment = token
+        elif low in _BACKGROUND_BOX_KEYWORDS:
+            if origin is None:
+                origin = token
+            elif clip is None:
+                clip = token
+            else:
+                return None
+        elif low == "none" or low.startswith(_IMAGE_FUNCTIONS) or "gradient(" in low:
+            if image is not None:
+                return None
+            image = token
+        else:
+            if color is not None or not final:
+                return None
+            color = token
+        index += 1
+    pairs = [
+        ("background-image", image or "none"),
+        ("background-position", position or "0% 0%"),
+        ("background-size", size or "auto"),
+        ("background-repeat", " ".join(repeat) or "repeat"),
+        ("background-origin", origin or "padding-box"),
+        ("background-clip", clip or origin or "border-box"),
+        ("background-attachment", attachment or "scroll"),
+    ]
+    return pairs + [("background-color", color or "transparent")]
+
+
 def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     """Expand ``name: value`` (a shorthand) into ``[(longhand, value), ...]``.
 
@@ -1025,56 +1108,20 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         ]
 
     if name == "background":
-        # single-layer best effort; multiple comma-separated layers keep verbatim
-        # (a comma inside url()/rgb()/gradient() is not a layer separator)
-        if _has_top_level_comma(value):
-            return None
-        bg = {
-            k: ""
-            for k in (
-                "image",
-                "position",
-                "size",
-                "repeat",
-                "attachment",
-                "origin",
-                "clip",
-                "color",
-            )
-        }
-        tokens = _split_ws_keep_funcs(value)
-        i = 0
-        while i < len(tokens):
-            token = tokens[i]
-            tl = token.lower()
-            if tl in ("repeat", "no-repeat", "repeat-x", "repeat-y", "space", "round"):
-                bg["repeat"] = f"{bg['repeat']} {token}".strip()
-            elif tl in ("fixed", "local", "scroll"):
-                bg["attachment"] = token
-            elif tl in ("border-box", "padding-box", "content-box"):
-                bg["origin" if not bg["origin"] else "clip"] = token
-            elif tl == "none" or tl.startswith("url(") or "-gradient(" in tl:
-                bg["image"] = token
-            elif tl in ("left", "right", "top", "bottom", "center") or _looks_like_length(token):
-                bg["position"] = f"{bg['position']} {token}".strip()
-                if i + 1 < len(tokens) and tokens[i + 1] == "/":
-                    if i + 2 < len(tokens):
-                        bg["size"] = tokens[i + 2]
-                    i += 2
-            elif tl in _GLOBAL_KEYWORDS:
-                return [(long, token) for long in longs]
-            else:
-                bg["color"] = f"{bg['color']} {token}".strip()
-            i += 1
+        # layers separated by top-level commas; only the final one may carry
+        # the colour (CSS Backgrounds 3 3.10)
+        layers = _split_top_level(value, ",")
+        expanded = []
+        for index, layer in enumerate(layers):
+            pairs = _expand_background_layer(layer, final=index == len(layers) - 1) if layer else None
+            if pairs is None:
+                return None
+            expanded.append(dict(pairs))
+        if len(expanded) == 1:
+            return list(expanded[0].items())
         return [
-            ("background-image", bg["image"] or "none"),
-            ("background-position", bg["position"] or "0% 0%"),
-            ("background-size", bg["size"] or "auto"),
-            ("background-repeat", bg["repeat"] or "repeat"),
-            ("background-origin", bg["origin"] or "padding-box"),
-            ("background-clip", bg["clip"] or bg["origin"] or "border-box"),
-            ("background-attachment", bg["attachment"] or "scroll"),
-            ("background-color", bg["color"] or "transparent"),
+            (long, expanded[-1][long] if long == "background-color" else ", ".join(layer[long] for layer in expanded))
+            for long in longs
         ]
 
     # transition / animation / grid-template / grid-area:
