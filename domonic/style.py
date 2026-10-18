@@ -7409,7 +7409,17 @@ def _supports_condition(condition_text: str) -> bool:
     if text.lower().startswith("not "):
         return not _supports_condition(text[4:].strip())
 
-    text = _strip_wrapping_parens(text)
+    inner = _strip_wrapping_parens(text)
+    if inner != text and (
+        inner.startswith("(")
+        or inner.lower().startswith("not ")
+        or _split_top_level_word(inner, "or")
+        or _split_top_level_word(inner, "and")
+    ):
+        # a parenthesised group is a condition of its own, not a declaration:
+        # ``not ((a: b) or (c: d))`` (Wikipedia's Vector icon fallbacks)
+        return _supports_condition(inner)
+    text = inner
     lower = text.lower()
     for function_name in (
         "selector",

@@ -9,6 +9,7 @@ import unittest
 from domonic.dom import *
 from domonic.html import *
 from domonic.style import *
+from domonic.style import _supports_condition
 
 
 class TestCase(unittest.TestCase):
@@ -2423,6 +2424,16 @@ class StylesheetParsingTest(unittest.TestCase):
             self.rules("<!-- p { color: red } --> .b { border: 1px } <!-- --> .c { color: blue }"),
             ["p {color: red;}", ".b {border: 1px;}", ".c {color: blue;}"],
         )
+
+    def test_supports_evaluates_a_parenthesised_group_as_a_condition(self):
+        self.assertFalse(CSS.supports("not ((-webkit-mask-image: none) or (mask-image: none))"))
+        self.assertTrue(CSS.supports("((display: grid) and (color: red))"))
+        self.assertFalse(CSS.supports("(not (display: grid))"))
+        self.assertTrue(CSS.supports("((color: red))"))
+        sheet = CSSStyleSheet()
+        sheet.replaceSync("@supports not ((mask-image: none) or (-webkit-mask-image: none)) { p { color: red } }")
+        rule = sheet.cssRules[0]
+        self.assertFalse(_supports_condition(rule.conditionText))
 
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
