@@ -7748,12 +7748,17 @@ def _find_next_rule_boundary(css_text: str, start: int) -> tuple[int, str]:
     depth = 0
     for index in range(start, len(css_text)):
         char = css_text[index]
+        # (CSS Syntax 3 4.3.7: a backslash and the code point after it are
+        # one unit, in a string or not -- an escaped quote in a selector
+        # doesn't open a string)
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
         if quote is not None:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == quote:
+            if char == quote:
                 quote = None
             continue
         if char in ("'", '"'):
@@ -7776,12 +7781,17 @@ def _find_next_top_level_char(css_text: str, start: int, target: str) -> int:
     depth = 0
     for index in range(start, len(css_text)):
         char = css_text[index]
+        # (CSS Syntax 3 4.3.7: a backslash and the code point after it are
+        # one unit, in a string or not -- an escaped quote in a selector
+        # doesn't open a string)
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
         if quote is not None:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == quote:
+            if char == quote:
                 quote = None
             continue
         if char in ("'", '"'):
@@ -7804,12 +7814,17 @@ def _find_matching_brace(css_text: str, open_index: int) -> int:
     depth = 0
     for index in range(open_index, len(css_text)):
         char = css_text[index]
+        # (CSS Syntax 3 4.3.7: a backslash and the code point after it are
+        # one unit, in a string or not -- an escaped quote in a selector
+        # doesn't open a string)
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
         if quote is not None:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == quote:
+            if char == quote:
                 quote = None
             continue
         if char in ("'", '"'):

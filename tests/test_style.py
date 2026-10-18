@@ -2400,6 +2400,14 @@ class StylesheetParsingTest(unittest.TestCase):
         self.assertEqual(self.rules('a::after { content: "/*x*/" }'), ['a::after {content: "/*x*/";}'])
         self.assertEqual(self.rules("/* a { b } */ i { color: red }"), ["i {color: red;}"])
 
+    def test_escapes_outside_strings_do_not_open_strings_or_blocks(self):
+        # Tailwind's escaped class names (react.dev): the escaped quote used to
+        # open a string that ran to the end of the sheet
+        rules = self.rules(r".after\:content-\[\'\'\]:after { content: '' } p { color: red } .a\{b { color: blue }")
+        self.assertEqual(len(rules), 3)
+        self.assertEqual(rules[1], "p {color: red;}")
+        self.assertEqual(rules[2], r".a\{b {color: blue;}")
+
     def test_comments_in_a_declaration_block(self):
         style = CSSStyleDeclaration()
         style.cssText = "/* lead */ color: red; /* between */ margin: 1px"
