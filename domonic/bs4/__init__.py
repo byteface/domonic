@@ -10,6 +10,7 @@ real DOM classes. Returned objects remain normal domonic nodes, not wrappers.
 
 from __future__ import annotations
 
+import contextvars
 import functools
 import re
 from collections.abc import Callable, Iterable, Iterator
@@ -915,9 +916,11 @@ _STATE_PSEUDOS = frozenset(
         "checked", "disabled", "enabled", "hover", "active", "focus", "focus-visible", "focus-within",
         "target", "target-within", "any-link", "placeholder-shown", "read-only", "read-write", "required",
         "optional", "default", "indeterminate", "defined", "open", "modal", "fullscreen", "popover-open",
-        "autofill", "playing", "paused",
+        "autofill", "playing", "paused", "scope",
     }
 )  # fmt: skip
+#: the element a query is run on -- what ``:scope`` matches (else the root)
+SCOPE_ELEMENT: "contextvars.ContextVar[Any]" = contextvars.ContextVar("domonic_scope_element", default=None)
 _TRAILING_STATE_RE = re.compile(r":([-\w]+)$")
 
 
@@ -1369,6 +1372,12 @@ def _is_writable(element: Element, tag: str) -> bool:
 
 
 def _match_state_pseudo(element: Element, state: str) -> bool:
+    if state == "scope":
+        scope = SCOPE_ELEMENT.get()
+        if scope is not None:
+            return element is scope
+        parent = getattr(element, "parentNode", None)
+        return parent is None or not isinstance(parent, Element)  # (no scope: the root, as :root)
     tag = (element.name or "").lower()
     if state == "checked":
         return _get_attribute(element, "checked") is not None or _get_attribute(element, "selected") is not None

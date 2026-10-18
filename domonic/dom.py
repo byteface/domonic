@@ -6407,6 +6407,9 @@ class Element(Node):
         if not query:
             return None
         query = query.strip()
+        if ":scope" in query:
+            found = self.querySelectorAll(query)
+            return found[0] if found else None
         if _is_html_root(self) and _html_root_matches(self, query):
             # domonic's <html> is the document: the first element in it
             return self
@@ -6478,7 +6481,17 @@ class Element(Node):
         """
         if not query:
             return []
-        found = self._query_descendants(query.strip())
+        if ":scope" in query:
+            # (``:scope`` is the element the query runs on)
+            from domonic.bs4 import SCOPE_ELEMENT
+
+            token = SCOPE_ELEMENT.set(self)
+            try:
+                found = self._query_descendants(query.strip())
+            finally:
+                SCOPE_ELEMENT.reset(token)
+        else:
+            found = self._query_descendants(query.strip())
         if _is_html_root(self) and _html_root_matches(self, query.strip()):
             # domonic's <html> is the document: the first element in it
             return [self, *(el for el in found if el is not self)]

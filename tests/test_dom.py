@@ -6447,6 +6447,15 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         root.replaceChildren(page.createElement("b"))
         self.assertEqual(root.innerHTML, "<b></b>")
 
+    def test_scope_in_a_query_is_the_element_queried(self):
+        page = parseString("<html><body><div id=d>text <b>b <i class=n>n</i></b> more <i>i</i></div><i>o</i></body></html>")
+        holder = page.querySelector("#d")
+        self.assertEqual([el.tagName for el in holder.querySelectorAll(":scope > *")], ["B", "I"])  # no Text nodes
+        self.assertEqual(holder.querySelector(":scope > i").textContent, "i")
+        self.assertEqual(len(holder.querySelectorAll(":scope i")), 2)
+        self.assertIsNone(holder.querySelector(":scope"))  # (not one of its own descendants)
+        self.assertEqual([el.textContent for el in page.body.querySelectorAll(":scope > i")], ["o"])
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
