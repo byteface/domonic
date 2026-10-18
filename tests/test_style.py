@@ -2507,6 +2507,12 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_eval_math("calc(50% - 10px)", em_px=16, rem_px=16, percent_px=200), (90.0, True))
         self.assertIsNone(_eval_math("clamp(1px, 2px)", em_px=16, rem_px=16))
 
+    def test_a_custom_property_cycle_takes_the_fallback(self):
+        markup = self.page(":root { --x: var(--x, 1rem); --a: var(--b, red); --b: var(--a) }"
+                           " p { margin-left: var(--x, 2px); color: var(--a, green) }", "<p>x</p>")
+        self.assertEqual(_computed(markup, "p", "margin-left"), "2px")
+        self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

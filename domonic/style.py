@@ -7546,16 +7546,42 @@ def _eval_calc_to_px(
     return None if result is None else result[0]
 
 
-def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
+class _VarCycle(Exception):
+    """A custom property whose value refers back to itself (``args[0]``)."""
+
+
+class _VarInvalid(Exception):
+    """A ``var()`` with no value and no fallback, in strict substitution."""
+
+
+def _expand_var_references(value: str, resolve, _depth: int = 0, *, strict: bool = False) -> "str | None":
     """Substitute ``var(--name[, fallback])`` references in a computed value.
 
     ``resolve(name)`` returns the computed value of custom property ``name``
     (``""`` when unset). Follows the spec fallback rule and is paren-aware so
-    nested ``var()`` in the fallback works; bails out on deep recursion (a
-    custom-property cycle).
+    nested ``var()`` in the fallback works. A custom property that refers back
+    to itself (``--x: var(--x, 1rem)``) is invalid, like an unset one, so the
+    ``var()`` naming it takes its fallback (CSS Variables 1 2.3).
+
+    An unset reference with no fallback contributes nothing -- or, with
+    ``strict``, makes the whole value invalid: ``None`` (3.1, "invalid at
+    computed-value time").
     """
-    if _depth > 20 or "var(" not in value:
+    if "var(" not in value:
         return value
+    try:
+        return _substitute_vars(value, resolve, (), strict)
+    except _VarInvalid:
+        return None
+    except _VarCycle:
+        return None if strict else value
+
+
+def _substitute_vars(value: str, resolve, stack: tuple, strict: bool) -> str:
+    if "var(" not in value:
+        return value
+    if len(stack) > 32:
+        raise _VarCycle(stack[-1])
     out: list[str] = []
     i = 0
     length = len(value)
@@ -7578,12 +7604,22 @@ def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
             else:
                 name = inner[:comma].strip()
                 fallback = inner[comma + 1 :].strip()
+            if name in stack:
+                raise _VarCycle(name)
             substituted = resolve(name) if name.startswith("--") else ""
+            piece = None
             if substituted and substituted.strip():
-                out.append(_expand_var_references(substituted, resolve, _depth + 1))
-            elif fallback is not None:
-                out.append(_expand_var_references(fallback, resolve, _depth + 1))
-            # else: unresolved with no fallback -> contributes nothing
+                try:
+                    piece = _substitute_vars(substituted, resolve, stack + (name,), strict)
+                except _VarCycle as cycle:
+                    if cycle.args[0] != name:
+                        raise
+                    piece = None  # (this property is in a cycle: invalid, like an unset one)
+            if piece is None and fallback is not None:
+                piece = _substitute_vars(fallback, resolve, stack, strict)
+            if piece is None and strict:
+                raise _VarInvalid(name)
+            out.append(piece or "")
             i = j + 1
             continue
         out.append(value[i])
