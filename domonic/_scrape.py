@@ -138,7 +138,13 @@ def _same_origin(left: str, right: str) -> bool:
 def _document_base_url(document: Any) -> str:
     page_url = str(getattr(document, "URL", "") or "")
     base_uri = str(getattr(document, "baseURI", "") or "")
-    return urljoin(page_url, base_uri) if base_uri else page_url
+    if not base_uri:
+        return page_url
+    try:
+        return urljoin(page_url, base_uri)
+    except ValueError:
+        # HTML: a <base href> that fails to parse is ignored
+        return page_url
 
 
 def _stylesheet_request(

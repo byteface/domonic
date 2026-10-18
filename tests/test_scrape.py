@@ -172,6 +172,12 @@ class TestScrape(unittest.TestCase):
         self.assertIn("\u00e9", _decode_stylesheet(b'p::after { content: "\xe9" }', None, "windows-1252"))
         self.assertIn("\ufffd", _decode_stylesheet(b'p::after { content: "\xe9" }'))  # bad UTF-8 doesn't raise
 
+    def test_unparsable_base_href_is_ignored(self):
+        from domonic._scrape import _document_base_url
+
+        document = SimpleNamespace(URL="https://example.com/a/page", baseURI="http://{{hosts[alt][www]}}/")
+        self.assertEqual(_document_base_url(document), "https://example.com/a/page")
+
     def test_css_true_external_rules_feed_attached_computed_style(self):
         with patch("requests.request", side_effect=_link_response):
             dom = scrape("https://example.com/page", css=True, attach=True)
