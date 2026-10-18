@@ -6609,6 +6609,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                         if name not in cascade or key > cascade[name][0]:
                             cascade[name] = (key, value, important)
             _resolve_reverting_keywords(cascade, matched)
+        if not want_pseudo and "direction" not in cascade:
+            # HTML's UA sheet: [dir=ltr i] / [dir=rtl i] { direction: ... } --
+            # the weakest declaration, under any author rule or inline style
+            # (``dir=auto`` needs the element's text; it inherits instead)
+            direction = str(element.getAttribute("dir") or "").strip().lower() if element.hasAttribute("dir") else ""
+            if direction in ("ltr", "rtl"):
+                cascade["direction"] = ((False, (-1, 0), (0, 0, 0), 0), direction, False)
         result = {name: (value, important) for name, (_, value, important) in cascade.items()}
         resolver = _PRESENTATIONAL_HINT_RESOLVER
         # A pseudo-element has no HTML attributes of its own to carry a

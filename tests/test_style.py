@@ -2667,6 +2667,16 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "div .r", "color"), "rgb(0, 0, 255)")  # ...to inheritance
         self.assertEqual(_computed(markup, "script.s", "display"), "none")  # ...to the UA default
 
+    def test_the_dir_attribute_sets_direction_like_the_ua_sheet(self):
+        markup = (
+            "<html dir=rtl><head><style>.x { direction: ltr }</style></head><body><p>a</p><div dir=ltr><i>i</i></div>"
+            "<b dir=RTL>b</b><em dir=foo>e</em><span dir=rtl class=x>x</span><u dir=rtl style='direction: ltr'>u</u>"
+            "</body></html>"
+        )
+        expected = {"p": "rtl", "i": "ltr", "b": "rtl", "em": "rtl", ".x": "ltr", "u": "ltr"}
+        for selector, direction in expected.items():
+            self.assertEqual(_computed(markup, selector, "direction"), direction, selector)
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",
