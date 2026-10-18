@@ -2650,6 +2650,23 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(style(".w .x", "margin-left"), "9px")
         self.assertEqual(style("p[data-a]", "color"), "rgb(1, 2, 3)")  # an & in a string isn't nesting
 
+    def test_revert_layer_and_revert_roll_the_cascade_back(self):
+        markup = self.page(
+            "@layer base, theme; @layer base { p { color: green; margin-left: 2px } }"
+            " @layer theme { p { color: revert-layer; margin-left: revert-layer } .r { color: revert } }"
+            " p.u { margin-left: revert-layer } .n { color: red } .n { color: revert-layer }"
+            " script.s { display: block } script.s { display: revert }",
+            "<p>a</p><p class=r>r</p><p class=u>u</p><p class=n>n</p>"
+            "<div style='color: blue'><p class=r>r2</p></div><script class=s></script>",
+        )
+        self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
+        self.assertEqual(_computed(markup, "p", "margin-left"), "2px")
+        self.assertEqual(_computed(markup, ".r", "color"), "rgb(0, 0, 0)")  # revert: out of the author origin
+        self.assertEqual(_computed(markup, ".u", "margin-left"), "2px")  # rolls back twice
+        self.assertEqual(_computed(markup, ".n", "color"), "rgb(0, 128, 0)")
+        self.assertEqual(_computed(markup, "div .r", "color"), "rgb(0, 0, 255)")  # ...to inheritance
+        self.assertEqual(_computed(markup, "script.s", "display"), "none")  # ...to the UA default
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",

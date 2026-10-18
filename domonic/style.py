@@ -6031,6 +6031,46 @@ def _rule_bucket_key(selector: str) -> str:
     return token.lower()
 
 
+def _resolve_reverting_keywords(cascade: dict, matched: list) -> None:
+    """Roll back each property whose winning author declaration is ``revert``
+    or ``revert-layer`` (CSS Cascade 5 7.3, 7.4). ``revert-layer`` takes the
+    best declaration from an earlier layer in cascade order (again, while that
+    is ``revert-layer`` too); ``revert`` -- and a ``revert-layer`` with no
+    earlier layer -- leaves the author origin entirely, so the property falls
+    back to domonic's user-agent defaults, inheritance or its initial value.
+    Only run through the matched rules when such a keyword won."""
+    reverting = [
+        name for name, (_key, value, _imp) in cascade.items() if str(value).strip().lower() in ("revert", "revert-layer")
+    ]
+    for name in reverting:
+        key, value, important = cascade[name]
+        keyword = str(value).strip().lower()
+        candidates = None
+        while keyword == "revert-layer":
+            if candidates is None:
+                candidates = sorted(
+                    (
+                        ((imp, _layer_sort_key(layer, imp), spec, order), declared, imp)
+                        for spec, order, layer, entries in matched
+                        for long_name, declared, priority in entries
+                        if long_name == name
+                        for imp in (priority == "important",)
+                    ),
+                    key=lambda candidate: candidate[0],
+                    reverse=True,
+                )
+            earlier = next((c for c in candidates if c[0][:2] < key[:2]), None)
+            if earlier is None:
+                keyword = "revert"
+                break
+            key, value, important = earlier
+            keyword = str(value).strip().lower()
+        if keyword == "revert":
+            del cascade[name]
+        else:
+            cascade[name] = (key, value, important)
+
+
 def _layer_sort_key(layer: int, important: bool) -> tuple[int, int]:
     """Cascade-layer ordering term. Unlayered normal declarations beat layered
     ones and later layers beat earlier; for ``!important`` both are reversed
@@ -6517,6 +6557,7 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
             want_pseudo = str(self._pseudo).strip().lower().lstrip(":")
 
         cascade: dict[str, tuple[tuple, str, bool]] = {}
+        matched: list = []  # (specificity, order, layer, entries) of every rule that matched
         # An empty index (no stylesheets at all) and "no rule in these sheets
         # targets this pseudo-element" both mean the bucket scan below has
         # nothing to find -- skip it, but (for a real, non-pseudo element)
@@ -6561,11 +6602,13 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                         ok = False
                     if not ok:
                         continue
+                    matched.append((spec, order, layer, entries))
                     for name, value, priority in entries:
                         important = priority == "important"
                         key = (important, _layer_sort_key(layer, important), spec, order)
                         if name not in cascade or key > cascade[name][0]:
                             cascade[name] = (key, value, important)
+            _resolve_reverting_keywords(cascade, matched)
         result = {name: (value, important) for name, (_, value, important) in cascade.items()}
         resolver = _PRESENTATIONAL_HINT_RESOLVER
         # A pseudo-element has no HTML attributes of its own to carry a
