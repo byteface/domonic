@@ -2513,6 +2513,27 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "margin-left"), "2px")
         self.assertEqual(_computed(markup, "p", "color"), "rgb(0, 128, 0)")
 
+    def test_a_shorthand_with_var_is_expanded_after_substitution(self):
+        markup = self.page(
+            ":root { --m: 0 auto; --f: 2 3 10px; --b: 3px solid red }"
+            " .a { margin: var(--m) } .b { flex: var(--f) } .c { border: var(--b) }"
+            " .d { border: var(--missing, 1px dashed blue) } .e { border: var(--unset) solid black }"
+            " .f { margin: var(--m); margin-left: 7px } .g { font: italic var(--fs, 20px)/2 serif }",
+            "".join(f"<p class={c}>{c}</p>" for c in "abcdefg"),
+        )
+        self.assertEqual([_computed(markup, ".a", f"margin-{side}") for side in ("top", "right", "left")],
+                         ["0px", "auto", "auto"])
+        self.assertEqual([_computed(markup, ".b", p) for p in ("flex-grow", "flex-shrink", "flex-basis")],
+                         ["2", "3", "10px"])
+        self.assertEqual(_computed(markup, ".c", "border-left-color"), "rgb(255, 0, 0)")
+        self.assertEqual(_computed(markup, ".c", "border-top-width"), "3px")
+        self.assertEqual(_computed(markup, ".d", "border-top-style"), "dashed")
+        # an unset var() with no fallback makes the shorthand invalid at computed-value time
+        self.assertEqual(_computed(markup, ".e", "border-top-style"), "none")
+        self.assertEqual(_computed(markup, ".f", "margin-left"), "7px")
+        self.assertEqual(_computed(markup, ".g", "font-size"), "20px")
+        self.assertEqual(_computed(markup, ".g", "line-height"), "40px")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

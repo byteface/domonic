@@ -5934,15 +5934,20 @@ def _expand_shorthands_for_cascade(entries: tuple) -> tuple:
     index_by_name: dict[str, int] = {}
     for name, value, priority in entries:
         pairs = None
+        if _cssom.is_shorthand(name) and "var(" in value and value.strip().lower() not in _CSS_WIDE_KEYWORDS:
+            # CSS Variables 1 3.2: a shorthand holding var() can't be split
+            # until it is substituted -- each longhand gets a pending-
+            # substitution value, resolved on read (``_ResolvedView.get``):
+            # ``margin: var(--m)`` with ``--m: 0 auto`` sets four sides, and
+            # ``flex: var(--f)`` isn't all flex-basis. The shorthand entry
+            # stays too, for the shorthands nothing can split.
+            marker = f"{_PENDING_SUBSTITUTION}{name}\x00{value}"
+            longhands = [long_name for long_name, _ in (_cssom.expand_shorthand(name, "initial") or ())]
+            pairs = [(name, value)] + [(long_name, marker) for long_name in longhands]
         # the box/border/font/background splitters below tokenize on bare
-        # whitespace -- safe for an unresolved var() reference with no
-        # fallback (``var(--gap)``, one token, splits the same as any other
-        # single value), but not for one with a fallback (``var(--missing,
-        # 4px)``): the space after its comma isn't a real token boundary,
-        # and naively splitting there would scatter one value's fallback
-        # across unrelated longhands. Left as the single shorthand entry in
-        # that case, exactly as authored, its var() substituted later.
-        if _cssom.is_shorthand(name) and not _has_paren_internal_whitespace(value):
+        # whitespace, so a value with a space inside a function call's parens
+        # is left as the single shorthand entry, exactly as authored
+        elif _cssom.is_shorthand(name) and not _has_paren_internal_whitespace(value):
             pairs = _cssom.expand_shorthand(name, value)
         for long_name, long_value in pairs if pairs is not None else ((name, value),):
             existing = index_by_name.get(long_name)
@@ -7627,12 +7632,32 @@ def _substitute_vars(value: str, resolve, stack: tuple, strict: bool) -> str:
     return "".join(out)
 
 
+#: a longhand's value while its shorthand still holds an unsubstituted var():
+#: ``<marker><shorthand>\x00<the shorthand's value>``
+_PENDING_SUBSTITUTION = "\x00pending-substitution\x00"
+_CSS_WIDE_KEYWORDS = frozenset({"inherit", "initial", "unset", "revert", "revert-layer"})
+
+
 class _ResolvedView:
     """Lazy property resolver: explicit value -> inherited -> initial."""
 
     def __init__(self, declared: dict[str, str], parent_computed):
         self._declared = declared
         self._parent = parent_computed
+        self._pending: dict[str, dict[str, str]] = {}
+
+    def _substituted_longhand(self, name: str, marker: str) -> "str | None":
+        """A pending-substitution longhand's value: its shorthand's value with
+        var() substituted, expanded, this longhand picked out -- or None if the
+        shorthand is then invalid (CSS Variables 1 3.2)."""
+        pairs = self._pending.get(marker)
+        if pairs is None:
+            shorthand, _, raw = marker[len(_PENDING_SUBSTITUTION) :].partition("\x00")
+            substituted = _expand_var_references(raw, lambda custom: self.get(custom) or "", strict=True)
+            substituted = (substituted or "").strip()
+            expanded = _cssom.expand_shorthand(shorthand, substituted) if substituted else None
+            pairs = self._pending[marker] = dict(expanded or ())
+        return pairs.get(name)
 
     def names(self):
         return list(self._declared)
@@ -7649,6 +7674,10 @@ class _ResolvedView:
     def get(self, name: str) -> str:
         if name in self._declared:
             value = self._declared[name]
+            if value.startswith(_PENDING_SUBSTITUTION):
+                substituted = self._substituted_longhand(name, value)
+                # invalid at computed-value time: as if unset (CSS Variables 1 3.1)
+                value = "unset" if substituted is None else substituted
             low = value.strip().lower()
             # CSS-wide keywords as explicit values
             if low == "inherit":
