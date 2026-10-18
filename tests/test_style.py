@@ -2464,6 +2464,12 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "p", "line-height"), "20px")
         self.assertEqual(_computed(markup, "i", "line-height"), "12px")
 
+    def test_a_percentage_inset_without_layout_stays_a_percentage(self):
+        markup = self.page("div { position: relative; width: 600px } p { position: relative; left: 50%; top: 10% }",
+                           "<div><p>x</p></div>")
+        self.assertEqual(_computed(markup, "p", "left"), "50%")
+        self.assertEqual(_computed(markup, "p", "top"), "10%")
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

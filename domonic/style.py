@@ -6834,6 +6834,11 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
                 used = parent_computed._content_size_from_box(parent_box, vertical)
                 if used is not None:
                     return used
+        if target in ("top", "right", "bottom", "left"):
+            # an inset's containing block depends on the positioning scheme
+            # (the nearest positioned ancestor for absolute): without layout,
+            # keep the computed percentage rather than guess (CSS 2.1 9.3.2)
+            return None
         cache = self._chain_cache
         while node is not None and _is_inheritance_source(node):
             declared = _parse_css_declarations(getattr(node, "getAttribute", lambda *_: "")("style") or "")
