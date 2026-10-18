@@ -2613,6 +2613,32 @@ class CascadeSelectorTest(unittest.TestCase):
         for (selector, prop), value in expected.items():
             self.assertEqual(_computed(markup, selector, prop), value, f"{selector} {prop}")
 
+    def test_computed_urls_are_absolute_against_their_stylesheet(self):
+        import domonic
+        from domonic.window import Window
+
+        page = domonic.parseString(
+            "<html><head><link rel=stylesheet href='/css/main.css'><style>p { background-image: url(img/a.png),"
+            " url(data:image/png;base64,AAA) } i { list-style-image: url('/b.svg'); fill: url(#grad) }</style></head>"
+            "<body><p style='cursor: url(c.cur), auto'>x</p><i>i</i><b>b</b></body></html>"
+        )
+        page.URL = "https://example.com/docs/page.html"
+        linked = page.styleSheets[0]
+        linked.href = "https://cdn.example.org/css/main.css"
+        linked.replaceSync("b { background: url(../img/b.png) no-repeat }")
+        window = Window()
+        window.attach(page)
+
+        def style(selector, prop):
+            return window.getComputedStyle(page.querySelector(selector)).getPropertyValue(prop)
+
+        self.assertEqual(style("p", "background-image"),
+                         'url("https://example.com/docs/img/a.png"), url("data:image/png;base64,AAA")')
+        self.assertEqual(style("i", "list-style-image"), 'url("https://example.com/b.svg")')
+        self.assertEqual(style("i", "fill"), "url(#grad)")  # a fragment reference stays local
+        self.assertEqual(style("p", "cursor"), 'url("https://example.com/docs/c.cur"), auto')
+        self.assertEqual(style("b", "background-image"), 'url("https://cdn.example.org/img/b.png")')
+
     def test_currentcolor_is_inherited_as_the_keyword(self):
         markup = self.page(".c { background-color: currentcolor; color: red } .c i { color: blue; background-color: inherit }",
                            "<div class=c><i>i</i></div>")

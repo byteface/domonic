@@ -6214,6 +6214,8 @@ def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = 
             entries = _expand_shorthands_for_cascade(style._property_entries())
             if not entries:
                 continue
+            if any("url(" in value for _name, value, _priority in entries):
+                entries = _absolutize_entry_urls(entries, _style_base_url(style, sheet))
             for selector in selectors:
                 order += 1
                 index.setdefault(_rule_bucket_key(selector), []).append(
@@ -6223,6 +6225,50 @@ def _build_rule_index(sheet_list, viewport, *, features=None, media_type: str = 
                 if pseudo:
                     pseudo_names.add(pseudo)
     return index, pseudo_names
+
+
+_URL_TOKEN_RE = re.compile(r"""url\(\s*(?:"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|([^)\s"']*))\s*\)""", re.I)
+
+
+def _absolutize_urls(value: str, base: "str | None") -> str:
+    """``value`` with each ``url()`` resolved against ``base`` and written as
+    ``url("...")`` -- a ``<url>``'s computed value is absolute (CSS Values 4
+    4.5). A fragment-only reference (``url(#grad)``) stays local, and with no
+    absolute base nothing changes."""
+    if not base or "url(" not in value.lower() or ":" not in base:
+        return value
+    from urllib.parse import urljoin
+
+    def resolve(match: "re.Match[str]") -> str:
+        target = next(group for group in match.groups() if group is not None)
+        if not target or target.startswith("#"):
+            return match.group(0)
+        try:
+            absolute = urljoin(base, target)
+        except ValueError:
+            return match.group(0)
+        return 'url("' + absolute.replace("\\", "\\\\").replace('"', '\\"') + '")'
+
+    return _URL_TOKEN_RE.sub(resolve, value)
+
+
+def _absolutize_entry_urls(entries: tuple, base: "str | None") -> tuple:
+    return tuple(
+        (name, _absolutize_urls(value, base) if "url(" in value else value, priority)
+        for name, value, priority in entries
+    )
+
+
+def _style_base_url(style, fallback_sheet=None) -> "str | None":
+    """The URL a rule's ``url()``s resolve against: its stylesheet's (an
+    imported sheet's own; a ``<style>``'s is its document's)."""
+    rule = getattr(style, "parentRule", None)
+    sheet = getattr(rule, "parentStyleSheet", None) or fallback_sheet
+    href = getattr(sheet, "href", None)
+    if href:
+        return str(href)
+    owner = getattr(getattr(sheet, "ownerNode", None), "ownerDocument", None)
+    return str(getattr(owner, "URL", "") or "") or None
 
 
 def _sheet_media_matches(sheet, viewport, features=None, media_type: str = "screen") -> bool:
@@ -6718,6 +6764,10 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         # inherits from it -- CSS Style Attributes 1)
         inline = "" if self._pseudo else getattr(element, "getAttribute", lambda *_: "")("style") or ""
         inline_entries = _parse_css_declarations(inline)
+        if "url(" in inline:
+            document = getattr(element, "ownerDocument", None)
+            base = getattr(document, "baseURI", None) or getattr(document, "URL", None)
+            inline_entries = list(_absolutize_entry_urls(tuple(inline_entries), str(base or "") or None))
         if any(name in _LOGICAL_LONGHAND_NAMES or name in _LOGICAL_SIDE_SHORTHANDS for name, _, _ in inline_entries):
             # mapped in order, so the later of a logical and a physical one wins
             writing_mode, direction = self._logical_modes(
