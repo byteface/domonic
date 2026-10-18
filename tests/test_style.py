@@ -2582,6 +2582,25 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertNotEqual(_computed(markup, "a", "color"), "rgb(255, 0, 0)")
 
 
+class ShorthandExpansionTest(unittest.TestCase):
+    """``_cssom.expand_shorthand`` against what browsers set each longhand to."""
+
+    def expand(self, name, value):
+        from domonic._cssom import expand_shorthand
+
+        pairs = expand_shorthand(name, value)
+        return dict(pairs) if pairs is not None else None
+
+    def test_list_style_none_sets_whichever_of_type_and_image_is_unset(self):
+        self.assertEqual(self.expand("list-style", "none")["list-style-type"], "none")
+        self.assertEqual(self.expand("list-style", "none")["list-style-image"], "none")
+        expanded = self.expand("list-style", "none url(a.png)")
+        self.assertEqual((expanded["list-style-type"], expanded["list-style-image"]), ("none", "url(a.png)"))
+        expanded = self.expand("list-style", "square none")
+        self.assertEqual((expanded["list-style-type"], expanded["list-style-image"]), ("square", "none"))
+        self.assertEqual(self.expand("list-style", "inside")["list-style-type"], "disc")
+
+
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):
         import domonic

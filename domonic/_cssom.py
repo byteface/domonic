@@ -731,15 +731,26 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
         return None
 
     if name == "list-style":
+        # <position> || <image> || <type>; a ``none`` sets whichever of image
+        # and type is otherwise unset (both, alone) -- CSS Lists 3 3.6
         type_ = position = image = None
+        nones = 0
         for token in _tokens(value):
             tl = token.lower()
             if tl in ("inside", "outside"):
                 position = token
-            elif tl == "none" or tl.startswith("url(") or "url(" in tl:
+            elif tl == "none":
+                nones += 1
+            elif "(" in tl and not tl.startswith("symbols("):
                 image = token
             else:
                 type_ = token
+        if nones:
+            if image is None:
+                image = "none"
+                nones -= 1
+            if type_ is None and (nones or image == "none"):
+                type_ = "none"
         return [
             ("list-style-type", type_ or "disc"),
             ("list-style-position", position or "outside"),
