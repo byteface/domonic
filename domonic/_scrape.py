@@ -33,6 +33,13 @@ _REQUEST_FIELDS: set[str] | None = None
 # Cross-origin stylesheet requests must not inherit credentials intended for
 # the page request. These transport-only options are safe/useful to retain.
 _CROSS_ORIGIN_CSS_KWARGS = frozenset(("timeout", "verify", "proxies", "allow_redirects"))
+# ...but a browser sends its User-Agent and languages with every subresource
+# request, to any origin (only credentials stay same-origin): without them a
+# cross-origin stylesheet goes out as ``python-requests``, which some CDNs
+# refuse (Wikipedia's load.php answers 403).
+_CROSS_ORIGIN_CSS_HEADERS = ("User-Agent", "Accept-Language")
+# CSS Syntax 3 3.2: exactly ``@charset "label";`` at the very start
+_CHARSET_RULE = re.compile(rb'^@charset "([\x00-\x21\x23-\x7f]*)";')
 
 
 class ScrapeHTTPError(RuntimeError):
@@ -150,11 +157,21 @@ def _stylesheet_request(
         init["redirect"] = redirect
 
     # Authentication/cookie/custom headers are only inherited by same-origin
-    # stylesheets. Cross-origin CSS starts with a clean header set.
+    # stylesheets. Cross-origin CSS starts with a clean header set, bar the
+    # browser-identifying ones.
+    headers = getattr(source_request, "headers", None)
     if same_origin:
-        headers = getattr(source_request, "headers", None)
         if headers is not None:
             init["headers"] = headers
+    elif headers is not None:
+        getter = getattr(headers, "get", None)
+        forwarded = {}
+        for name in _CROSS_ORIGIN_CSS_HEADERS:
+            value = getter(name) if callable(getter) else None
+            if value:
+                forwarded[name] = value
+        if forwarded:
+            init["headers"] = forwarded
 
     fetch_kwargs = dict(request_kwargs)
     for key in ("params", "data", "json", "files"):
@@ -170,10 +187,32 @@ def _stylesheet_request(
     return _make_request(href, init), fetch_kwargs
 
 
+def _decode_stylesheet(data: bytes, protocol: str | None = None, environment: str | None = None) -> str:
+    """A stylesheet's bytes decoded as CSS Syntax 3 3.2 says: by its byte order
+    mark, else the HTTP charset, else its ``@charset`` rule, else the referring
+    document's encoding, else UTF-8 (undecodable bytes replaced, never raised)."""
+    from domonic.ext._encoding import bom_encoding, codec_for_label
+
+    bom_codec, bom_length = bom_encoding(data)
+    if bom_codec:
+        return data[bom_length:].decode(bom_codec, errors="replace")
+    fallback = codec_for_label(protocol)
+    if fallback is None:
+        match = _CHARSET_RULE.match(data[:1024])
+        if match:
+            fallback = codec_for_label(match.group(1).decode("ascii"))
+            if fallback and fallback.replace("_", "-").startswith("utf-16"):
+                fallback = "utf-8"  # a UTF-16 label in an ASCII-compatible rule
+    if fallback is None:
+        fallback = codec_for_label(environment)
+    return data.decode(fallback or "utf-8", errors="replace")
+
+
 def _fetch_stylesheet_text(
     href: str,
     source_request: Any,
     request_kwargs: dict[str, Any],
+    environment_encoding: str | None = None,
 ) -> str | None:
     try:
         request, fetch_kwargs = _stylesheet_request(href, source_request, request_kwargs)
@@ -183,7 +222,11 @@ def _fetch_stylesheet_text(
 
     if getattr(response, "ok", True) is False:
         return None
-    return response.text()
+    try:
+        data = response.bytes()
+    except Exception:
+        return None
+    return _decode_stylesheet(bytes(data), _charset_from_headers(response), environment_encoding)
 
 
 def _replace_stylesheet_rules(sheet: Any, css_text: str) -> bool:
@@ -216,7 +259,9 @@ def _load_external_stylesheets(
         sheet._resolved_href = resolved_href
         sheet.href = resolved_href
 
-        css_text = _fetch_stylesheet_text(resolved_href, source_request, fetch_kwargs)
+        css_text = _fetch_stylesheet_text(
+            resolved_href, source_request, fetch_kwargs, getattr(document, "characterSet", None)
+        )
         if css_text is not None:
             _replace_stylesheet_rules(sheet, css_text)
 

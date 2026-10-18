@@ -140,6 +140,38 @@ class TestScrape(unittest.TestCase):
         self.assertGreater(len(sheet.cssRules), 0)
         self.assertEqual(mock.call_count, 2)
 
+    def test_cross_origin_stylesheet_gets_the_user_agent_but_no_credentials(self):
+        page = (
+            "<html><head><link rel='stylesheet' href='https://cdn.example.org/s.css'>"
+            "<link rel='stylesheet' href='/local.css'></head><body></body></html>"
+        )
+        seen = {}
+
+        def respond(method, url, **kwargs):
+            seen[url] = {key.lower(): value for key, value in (kwargs.get("headers") or {}).items()}
+            body = page if url.endswith("/page") else "p { color: green }"
+            return SimpleNamespace(url=url, status_code=200, reason="OK", headers={}, content=body.encode(), history=[])
+
+        headers = {"User-Agent": "Mozilla/5.0 test", "Accept-Language": "en", "Cookie": "s=1", "Authorization": "x"}
+        with patch("requests.request", side_effect=respond):
+            scrape("https://example.com/page", css=True, headers=headers)
+        cross = seen["https://cdn.example.org/s.css"]
+        self.assertEqual(cross.get("user-agent"), "Mozilla/5.0 test")
+        self.assertEqual(cross.get("accept-language"), "en")
+        self.assertNotIn("cookie", cross)
+        self.assertNotIn("authorization", cross)
+        self.assertEqual(seen["https://example.com/local.css"].get("cookie"), "s=1")
+
+    def test_stylesheet_bytes_are_decoded_like_css_syntax_says(self):
+        from domonic._scrape import _decode_stylesheet
+
+        self.assertEqual(_decode_stylesheet(b"\xef\xbb\xbfp{}"), "p{}")  # the BOM is not a selector
+        latin = b'@charset "iso-8859-1"; p::after { content: "\xe9" }'
+        self.assertIn("\u00e9", _decode_stylesheet(latin))
+        self.assertIn("\u00e9", _decode_stylesheet(b'p::after { content: "\xe9" }', "windows-1252"))
+        self.assertIn("\u00e9", _decode_stylesheet(b'p::after { content: "\xe9" }', None, "windows-1252"))
+        self.assertIn("\ufffd", _decode_stylesheet(b'p::after { content: "\xe9" }'))  # bad UTF-8 doesn't raise
+
     def test_css_true_external_rules_feed_attached_computed_style(self):
         with patch("requests.request", side_effect=_link_response):
             dom = scrape("https://example.com/page", css=True, attach=True)
