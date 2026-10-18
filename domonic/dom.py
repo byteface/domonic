@@ -551,6 +551,13 @@ def _iter_dom_nodes(node):
                 push(children)
 
 
+def _is_html_root(node: Any) -> bool:
+    """Whether ``node`` is domonic's ``<html>`` element that doubles as its own
+    Document (``class html(HTMLDocument)``: nodeType DOCUMENT_NODE). DOM-wise
+    it is the document *and* its document element."""
+    return isinstance(node, Document) and getattr(node, "name", "") == "html"
+
+
 def _node_is_connected(node: "Node") -> bool:
     try:
         return isinstance(node.rootNode, Document)
@@ -2674,9 +2681,12 @@ class Node(EventTarget):
     def parentElement(self) -> "Node | None":
         """This node's parent, but only if that parent is an element -- a
         ``Document`` or ``DocumentFragment`` parent yields ``None``
-        (https://dom.spec.whatwg.org/#dom-node-parentelement)."""
+        (https://dom.spec.whatwg.org/#dom-node-parentelement). domonic's
+        ``<html>`` doubles as the document, so ``body.parentElement`` is it."""
         parent = self.parentNode
-        return parent if getattr(parent, "nodeType", None) == Node.ELEMENT_NODE else None
+        if getattr(parent, "nodeType", None) == Node.ELEMENT_NODE or _is_html_root(parent):
+            return parent
+        return None
 
     @property
     def ownerDocument(self) -> "Node | None":
@@ -4994,8 +5004,9 @@ class Element(Node):
 
         if pseudo == "root":
             # the root element of the document (``<html>`` in HTML): an element
-            # whose parent is the document, or a detached tree's top element
-            return not parent_is_element
+            # whose parent is the document, or a detached tree's top element.
+            # domonic's ``<html>`` *is* the document, so its children aren't.
+            return not parent_is_element and not _is_html_root(parent)
 
         if pseudo == "empty":
             # Per spec, only element nodes and *non-empty* text content count
@@ -5235,7 +5246,7 @@ class Element(Node):
     # https://developer.mozilla.org/en-US/docs/Web/API/Element/closest
     def closest(self, s: str):
         el: Any = self
-        while el is not None and getattr(el, "nodeType", None) == Node.ELEMENT_NODE:
+        while el is not None and (getattr(el, "nodeType", None) == Node.ELEMENT_NODE or _is_html_root(el)):
             if Element.matches(el, s):
                 return el
             el = el.parentElement or el.parentNode

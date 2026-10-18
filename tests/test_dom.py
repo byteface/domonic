@@ -6262,6 +6262,21 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(str(keep.previousSibling), "<b>before-keep</b>")
         self.assertEqual(str(keep.nextSibling), "<b>after-keep</b>")
 
+    def test_html_root_is_an_element_for_parent_root_and_closest(self):
+        # domonic's <html> doubles as the document (nodeType 9)
+        doc = parseString("<!DOCTYPE html><html lang=en><head><title>t</title></head><body><p>x</p></body></html>")
+        self.assertIs(doc.body.parentElement, doc)
+        self.assertIs(doc.head.parentElement, doc)
+        self.assertIsNone(doc.parentElement)
+        self.assertTrue(doc.matches(":root"))
+        self.assertFalse(doc.body.matches(":root"))
+        self.assertFalse(doc.head.matches(":root"))
+        p = doc.querySelector("p")
+        self.assertIs(p.closest("[lang]"), doc)
+        self.assertIs(p.closest("html"), doc)
+        # a detached tree's top element is still its root
+        self.assertTrue(div(span()).matches(":root"))
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
