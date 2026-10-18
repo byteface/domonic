@@ -6711,7 +6711,15 @@ class Element(Node):
             if self.__style.cssText:
                 self.setAttribute("style", self.__style.cssText)
             elif self.getAttribute("style"):
-                self.__style.cssText = self.getAttribute("style")
+                # read the attribute into the declaration without writing the
+                # serialised text back: reading ``el.style`` isn't a mutation
+                # (no MutationObserver record, no style epoch bump, and the
+                # authored attribute stays verbatim until a CSSOM write)
+                object.__setattr__(self, "_syncing_style_attr", True)
+                try:
+                    self.__style.cssText = self.getAttribute("style")
+                finally:
+                    object.__setattr__(self, "_syncing_style_attr", False)
             return
 
         self.__style = Style(self)

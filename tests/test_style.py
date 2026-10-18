@@ -2447,6 +2447,23 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertNotEqual(_computed(markup, "a", "color"), "rgb(255, 0, 0)")
 
 
+class InlineStyleTest(unittest.TestCase):
+    def test_reading_style_does_not_rewrite_the_attribute(self):
+        import domonic
+        from domonic import _cssom
+
+        page = domonic.parseString('<html><body><p style="color:red;MARGIN : 1px">x</p></body></html>')
+        p = page.querySelector("p")
+        epoch = _cssom.dom_style_epoch()
+        self.assertEqual(p.style.color, "red")
+        self.assertEqual(p.style.marginTop, "1px")
+        self.assertEqual(p.getAttribute("style"), "color:red;MARGIN : 1px")
+        self.assertEqual(_cssom.dom_style_epoch(), epoch)
+        # a CSSOM write still serialises the whole block back
+        p.style.color = "blue"
+        self.assertEqual(p.getAttribute("style"), "color: blue; margin: 1px;")
+
+
 class StylesheetParsingTest(unittest.TestCase):
     """CSS Syntax 3 details the stylesheet and declaration parsers missed."""
 
