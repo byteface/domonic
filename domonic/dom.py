@@ -458,8 +458,18 @@ def _serialize_fragment_element(element: "Node", out: list) -> None:
     out.append(">")
 
 
+def _child_args_for_serialization(node: Any) -> tuple:
+    """``node``'s children as serialised -- a ``<template>``'s are its
+    contents' (then any of its own)."""
+    args = getattr(node, "args", None) or ()
+    contents = node.__dict__.get("_template_content") if isinstance(node, Node) else None
+    if contents is not None:
+        return tuple(contents.__dict__.get("args") or ()) + tuple(args)
+    return args
+
+
 def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> None:
-    for child in getattr(node, "args", None) or ():
+    for child in _child_args_for_serialization(node):
         if type(child) is str:
             out.append(_fragment_text_escape(child, raw))
         elif isinstance(child, RawHTML):
@@ -1450,7 +1460,9 @@ def _invalidate_render_cache(node: "Node | None") -> None:
     """
     while node is not None:
         node.__dict__["_render_cache_dirty"] = True
-        node = getattr(node, "parentNode", None)
+        parent = getattr(node, "parentNode", None)
+        # (a template's contents render as part of the template)
+        node = parent if parent is not None else node.__dict__.get("_template_host")
 
 
 def _queue_mutation_record(
@@ -2160,7 +2172,7 @@ class Node(EventTarget):
                 # Push children in reverse so they pop in document order --
                 # cheaper than wrapping each element's args in an iterator and
                 # cycling it back through the stack one child at a time.
-                args = value.args
+                args = value.args if name != "template" else _child_args_for_serialization(value)
                 for i in range(len(args) - 1, -1, -1):
                     stack.append((False, args[i]))
                 continue
@@ -13713,17 +13725,43 @@ class HTMLTemplateElement(HTMLElement):
         )
 
     @property
-    def content(self):
-        # A view of the template's children as a DocumentFragment. Built
-        # without the fragment constructor because that would reparent (steal)
-        # the children out of the template.
-        frag = DocumentFragment()
-        frag.__dict__["args"] = tuple(self.args)
-        return frag
+    def content(self) -> "DocumentFragment":
+        """The template's contents: one DocumentFragment of its own (HTML
+        4.12.3), the same object on every read -- moving a node out of it
+        removes it from the contents. The children the parser (or Python)
+        gave the template move into it on first use; the template itself
+        serialises them as before."""
+        fragment = self.__dict__.get("_template_content")
+        if fragment is None:
+            fragment = DocumentFragment()
+            state = fragment.__dict__
+            state["_template_host"] = self
+            state["_ownerDocument"] = self.ownerDocument
+            children = tuple(self.__dict__.get("args") or ())
+            state["args"] = children
+            for child in children:
+                if isinstance(child, Node):
+                    child.__dict__["parentNode"] = fragment
+            self.__dict__["args"] = ()
+            self.__dict__["_template_content"] = fragment
+            _drop_child_caches(self)
+            _bump_structure_epoch()
+            _bump_dom_epoch()
+        return fragment
 
     @content.setter
     def content(self, ignore):
-        self.__content = "".join([each.__str__() for each in self.args])
+        pass  # (read-only in the DOM)
+
+    @property
+    def innerHTML(self) -> str:
+        return _serialize_html_fragment(self)
+
+    @innerHTML.setter
+    def innerHTML(self, value: Any) -> None:
+        # a template's markup is its contents' (HTML 4.12.3.3)
+        if value is not None:
+            self.content.replaceChildren(*self._parse_html_fragment(value))
 
 
 class HTMLTextAreaElement(HTMLElement):

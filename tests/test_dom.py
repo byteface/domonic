@@ -6408,6 +6408,28 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(element.getAttribute("data-f"), "1.5")
         self.assertEqual(str(element), '<div data-n="16" data-f="1.5"></div>')
 
+    def test_template_content_is_one_persistent_fragment(self):
+        page = parseString(
+            "<html><body><template id=x><p class=a>hi</p><span>s</span></template><main></main></body></html>"
+        )
+        template = page.querySelector("#x")
+        contents = template.content
+        self.assertIs(template.content, contents)
+        self.assertEqual(len(template.childNodes), 0)  # the children are the contents now
+        self.assertIs(contents.firstChild.parentNode, contents)
+        self.assertEqual(str(template), '<template id="x"><p class="a">hi</p><span>s</span></template>')
+        self.assertEqual(template.innerHTML, '<p class="a">hi</p><span>s</span>')
+        # moving a node out of the contents removes it from them
+        page.querySelector("main").appendChild(contents.firstChild)
+        self.assertEqual(str(template), '<template id="x"><span>s</span></template>')
+        self.assertEqual(page.querySelector(".a").parentNode.tagName, "MAIN")
+        template.innerHTML = "<b>new</b>"
+        self.assertEqual(template.content.firstChild.tagName, "B")
+        self.assertEqual(str(template), '<template id="x"><b>new</b></template>')
+        clone = template.cloneNode(True)
+        self.assertIsNot(clone.content, template.content)
+        self.assertEqual(str(clone.content.firstChild), "<b>new</b>")
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
