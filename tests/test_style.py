@@ -1430,8 +1430,9 @@ class TestCase(unittest.TestCase):
         before = ComputedStyleDeclaration(p, "::before")
         self.assertEqual(before.getPropertyValue("color"), "rgb(255, 0, 0)")
         self.assertEqual(before.getPropertyValue("content"), '"* "')
-        # the element's own style is unaffected by ::before rules
-        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("content"), "")
+        # the element's own style is unaffected by ::before rules (normal is
+        # the initial value, as a browser reports it)
+        self.assertEqual(ComputedStyleDeclaration(p).getPropertyValue("content"), "normal")
 
     def test_pseudo_element_inherits_from_its_own_element_not_the_dom_parent(self):
         # per CSS Pseudo-Elements, a generated box's parent is the element
@@ -2672,6 +2673,22 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(layered["background-repeat"], "repeat, no-repeat")
         self.assertEqual(layered["background-color"], "transparent")
         self.assertIsNone(self.expand("background", "url(a) red, blue"))  # colour only in the final layer
+
+
+class InitialValuesTest(unittest.TestCase):
+    def test_common_longhands_report_their_initial_values(self):
+        document = Document()
+        element = document.createElement("div")
+        document.appendChild(element)
+        computed = ComputedStyleDeclaration(element)
+        for name, initial in {"quotes": "auto", "content": "normal", "box-shadow": "none", "filter": "none",
+                              "counter-reset": "none", "will-change": "auto", "aspect-ratio": "auto",
+                              "transform-style": "flat", "text-overflow": "clip", "color-scheme": "normal"}.items():
+            self.assertEqual(computed.getPropertyValue(name), initial, name)
+
+    def test_color_scheme_and_caret_color_inherit(self):
+        markup = "<html><head><style>div { color-scheme: dark }</style></head><body><div><p>x</p></div></body></html>"
+        self.assertEqual(_computed(markup, "p", "color-scheme"), "dark")
 
 
 class InlineStyleTest(unittest.TestCase):
