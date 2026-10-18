@@ -6338,6 +6338,28 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         # attribute-style reads of real attributes still work
         self.assertEqual(div(_title="t").title, "t")
 
+    def test_select_and_option_list_apis(self):
+        page = parseString(
+            "<html><body><div><select><option value=a>  Alpha\n beta </option><option label=L>b</option></select>"
+            "</div></body></html>"
+        )
+        select_el = page.querySelector("select")
+        self.assertEqual((select_el.length, select_el.type), (2, "select-one"))
+        self.assertEqual(select_el.item(0).text, "Alpha beta")
+        self.assertEqual(select_el.item(1).label, "L")
+        self.assertEqual(select_el.item(0).label, "Alpha beta")
+        self.assertEqual(select_el.item(1).index, 1)
+        added = page.createElement("option")
+        added.text = "3.13"
+        select_el.add(added)
+        select_el.add(page.createElement("option"), 0)
+        self.assertEqual([option.text for option in select_el.options], ["", "Alpha beta", "b", "3.13"])
+        self.assertEqual(added.index, 3)
+        select_el.remove(0)
+        self.assertEqual(select_el.length, 3)
+        select_el.remove()  # ChildNode.remove()
+        self.assertIsNone(page.querySelector("select"))
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 

@@ -13017,6 +13017,37 @@ class HTMLOptionElement(HTMLElement):
             self.removeAttribute("selected")
 
     @property
+    def text(self) -> str:
+        """The option's text, white space stripped and collapsed (HTML 4.10.10)."""
+        return " ".join(str(self.textContent or "").split())
+
+    @text.setter
+    def text(self, value: Any) -> None:
+        self.textContent = "" if value is None else str(value)
+
+    @property
+    def label(self) -> str:
+        label = self.getAttribute("label")
+        return str(label) if label else self.text
+
+    @label.setter
+    def label(self, value: Any) -> None:
+        self.setAttribute("label", "" if value is None else str(value))
+
+    @property
+    def index(self) -> int:
+        """The option's position in its select's ``options``, else 0."""
+        owner = self.parentNode
+        while owner is not None and not isinstance(owner, HTMLSelectElement):
+            owner = getattr(owner, "parentNode", None)
+        if owner is None:
+            return 0
+        for position, option in enumerate(owner.options):
+            if option is self:
+                return position
+        return 0
+
+    @property
     def defaultSelected(self) -> bool:
         return bool(getattr(self, "_default_selected", self.selected))
 
@@ -13274,6 +13305,37 @@ class HTMLSelectElement(HTMLElement):
     @property
     def selectedOptions(self) -> list[HTMLOptionElement]:
         return [option for option in self.options if option.selected]
+
+    @property
+    def type(self) -> str:
+        return "select-multiple" if self.hasAttribute("multiple") else "select-one"
+
+    @property
+    def length(self) -> int:
+        """The number of options (HTML 4.10.7: the ``options`` collection's)."""
+        return self.options.length
+
+    def item(self, index: int) -> HTMLOptionElement | None:
+        try:
+            return self.options.item(int(index))
+        except (TypeError, ValueError):
+            return None
+
+    def namedItem(self, name: str) -> HTMLOptionElement | None:
+        return self.options.namedItem(name)
+
+    def add(self, element: HTMLOptionElement, before: int | Node | None = None) -> None:
+        """Insert an ``<option>`` (or ``<optgroup>``), before the option at
+        ``before`` or the node ``before``, else at the end."""
+        self.options.add(element, before)
+
+    def remove(self, index: int | None = None) -> None:  # type: ignore[override]
+        """``select.remove(index)`` removes that option; with no argument it is
+        ChildNode's ``remove()``: the select itself leaves its parent."""
+        if index is None:
+            super().remove()
+            return
+        self.options.remove(int(index))
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
         self.value = new_value
