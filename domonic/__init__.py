@@ -1514,6 +1514,11 @@ class domonic:
 
             string, used = decode_html(bytes(string), encoding)
             character_set = whatwg_name(used)
+        elif isinstance(string, str) and string[:1] == "\ufeff":
+            # a byte order mark that survived decoding (bytes read as
+            # "utf-8", not "utf-8-sig") is not content: a browser's decoder
+            # strips it, and as text it pushed <title>/<style> into <body>
+            string = string[1:]
         from domonic.ext import _rawdom
 
         abandoned: list = []  # nodes normalisation left out of the returned page (see _normalize_parsed_page)

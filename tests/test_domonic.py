@@ -913,6 +913,15 @@ class MalformedMarkupTest(unittest.TestCase):
         self.assertEqual(parsed.querySelector("p").getAttribute("id"), "x")
 
 
+class ByteOrderMarkTest(unittest.TestCase):
+    def test_a_leading_bom_in_a_string_is_not_content(self):
+        source = "\ufeff<!DOCTYPE html><html><head><title>t</title><style>p{}</style></head><body><p>x</p></body></html>"
+        for parser in ("auto", "html5lib", "html.parser"):
+            page = domonic.parseString(source, parser=parser)
+            self.assertEqual([child.tagName for child in page.head.children], ["TITLE", "STYLE"], parser)
+            self.assertNotIn("\ufeff", page.body.textContent)
+
+
 class TextMergingTest(unittest.TestCase):
     def test_character_references_join_the_text_node_before_them(self):
         markup = "<html><body><p>A&nbsp;&nbsp;B &amp; c<b>x</b>&lt;y</p></body></html>"
