@@ -2624,6 +2624,32 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(self.expand("flex", "1 calc(50% - 10px)")["flex-basis"], "calc(50% - 10px)")
         self.assertIsNone(self.expand("flex", "0 0 4"))
 
+    def test_grid_shorthands_expand(self):
+        self.assertEqual(self.expand("grid-row", "foo"), {"grid-row-start": "foo", "grid-row-end": "foo"})
+        self.assertEqual(self.expand("grid-row", "span 2")["grid-row-end"], "auto")
+        self.assertEqual(
+            self.expand("grid-area", "a / b"),
+            {"grid-row-start": "a", "grid-column-start": "b", "grid-row-end": "a", "grid-column-end": "b"},
+        )
+        self.assertEqual(self.expand("grid-area", "1 / 1")["grid-row-end"], "auto")
+        template = self.expand("grid-template", "auto 1fr / 12.25rem minmax(0,1fr)")
+        self.assertEqual(template["grid-template-columns"], "12.25rem minmax(0,1fr)")
+        areas = self.expand("grid-template", '[a] "h h" 50px [b] "s m" 1fr / 100px 1fr')
+        self.assertEqual(areas["grid-template-rows"], "[a] 50px [b] 1fr")
+        self.assertEqual(areas["grid-template-areas"], '"h h" "s m"')
+        grid = self.expand("grid", "auto-flow dense 40px / 1fr 1fr")
+        self.assertEqual((grid["grid-auto-flow"], grid["grid-auto-rows"]), ("row dense", "40px"))
+        self.assertEqual(self.expand("grid", "100px 1fr / auto-flow 3em")["grid-auto-columns"], "3em")
+
+    def test_grid_area_places_an_item_in_the_cascade(self):
+        markup = (
+            "<html><head><style>.i { grid-area: 2 / 1 / 3 / 4 } .w { grid-template: auto 1fr / 1fr 2fr }</style></head>"
+            "<body><div class=w><p class=i>x</p></div></body></html>"
+        )
+        self.assertEqual(_computed(markup, ".i", "grid-row-start"), "2")
+        self.assertEqual(_computed(markup, ".i", "grid-column-end"), "4")
+        self.assertEqual(_computed(markup, ".w", "grid-template-columns"), "1fr 2fr")
+
 
 class InlineStyleTest(unittest.TestCase):
     def test_reading_style_does_not_rewrite_the_attribute(self):

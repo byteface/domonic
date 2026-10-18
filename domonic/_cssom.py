@@ -361,6 +361,14 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
         "grid-template-columns",
         "grid-template-areas",
     ),
+    "grid": (
+        "grid-template-rows",
+        "grid-template-columns",
+        "grid-template-areas",
+        "grid-auto-rows",
+        "grid-auto-columns",
+        "grid-auto-flow",
+    ),
     "grid-column": ("grid-column-start", "grid-column-end"),
     "grid-row": ("grid-row-start", "grid-row-end"),
     "grid-area": (
@@ -648,6 +656,111 @@ def _looks_like_length(token: str) -> bool:
     )
 
 
+def _split_top_level(text: str, separator: str) -> list[str]:
+    """``text`` split at ``separator`` outside parens, brackets and strings."""
+    parts: list[str] = []
+    current: list[str] = []
+    depth = 0
+    quote = None
+    for char in text:
+        if quote is not None:
+            current.append(char)
+            if char == quote:
+                quote = None
+            continue
+        if char in "\"'":
+            quote = char
+        elif char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif char == separator and depth == 0:
+            parts.append("".join(current).strip())
+            current = []
+            continue
+        current.append(char)
+    parts.append("".join(current).strip())
+    return parts
+
+
+_GRID_IDENT_RE = re.compile(r"^-?[A-Za-z_][\w-]*$")
+
+
+def _is_grid_ident(token: str) -> bool:
+    """A ``<custom-ident>`` grid line name (not ``auto``/``span``/a CSS-wide keyword)."""
+    return bool(_GRID_IDENT_RE.match(token)) and token.lower() not in ("auto", "span") and (
+        token.lower() not in _GLOBAL_KEYWORDS
+    )
+
+
+_GRID_TEMPLATE_TOKEN_RE = re.compile(r"\"[^\"]*\"|'[^']*'|\[[^\]]*\]|[^\s\"'\[(]+(?:\((?:[^()]|\([^()]*\))*\))?")
+
+
+def _expand_grid_template(value: str) -> list[tuple[str, str]] | None:
+    """CSS Grid 1 7.4 ``grid-template``: ``none``, ``<rows> / <columns>``, or
+    rows written as area strings -- each with optional line names and a track
+    size -- then an optional ``/ <columns>``."""
+    text = value.strip()
+    if text.lower() == "none":
+        return [("grid-template-rows", "none"), ("grid-template-columns", "none"), ("grid-template-areas", "none")]
+    parts = _split_top_level(text, "/")
+    if len(parts) > 2 or not all(parts):
+        return None
+    if '"' not in parts[0] and "'" not in parts[0]:
+        if len(parts) != 2:
+            return None
+        return [("grid-template-rows", parts[0]), ("grid-template-columns", parts[1]), ("grid-template-areas", "none")]
+    # [ <line-names>? <string> <track-size>? <line-names>? ]+
+    strings: list[str] = []
+    tracks: list[str] = []
+    pending_size = False
+    for token in _GRID_TEMPLATE_TOKEN_RE.findall(parts[0]):
+        if token[0] in "\"'":
+            if pending_size:
+                tracks.append("auto")
+            strings.append('"' + token[1:-1] + '"')
+            pending_size = True
+        elif token.startswith("["):
+            tracks.append(token)
+        elif pending_size:
+            tracks.append(token)
+            pending_size = False
+        else:
+            return None  # a track size not after a string
+    if pending_size:
+        tracks.append("auto")
+    return [
+        ("grid-template-rows", " ".join(tracks)),
+        ("grid-template-columns", parts[1] if len(parts) == 2 else "none"),
+        ("grid-template-areas", " ".join(strings)),
+    ]
+
+
+def _expand_grid(value: str) -> list[tuple[str, str]] | None:
+    """CSS Grid 1 7.8 ``grid``: a ``grid-template``, or one axis as
+    ``auto-flow [dense]`` (with the implicit track size) and the other's
+    explicit tracks; every omitted sub-property is reset."""
+    parts = _split_top_level(value.strip(), "/")
+    if len(parts) == 2 and any("auto-flow" in part.split() for part in parts):
+        row_flow = "auto-flow" in parts[0].split()
+        words = (parts[0] if row_flow else parts[1]).split()
+        dense = "dense" in words
+        size = " ".join(word for word in words if word not in ("auto-flow", "dense")) or "auto"
+        flow = ("row" if row_flow else "column") + (" dense" if dense else "")
+        return [
+            ("grid-template-rows", "none" if row_flow else parts[0]),
+            ("grid-template-columns", parts[1] if row_flow else "none"),
+            ("grid-template-areas", "none"),
+            ("grid-auto-rows", size if row_flow else "auto"),
+            ("grid-auto-columns", "auto" if row_flow else size),
+            ("grid-auto-flow", flow),
+        ]
+    template = _expand_grid_template(value)
+    if template is None:
+        return None
+    return template + [("grid-auto-rows", "auto"), ("grid-auto-columns", "auto"), ("grid-auto-flow", "row")]
+
+
 def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     """Expand ``name: value`` (a shorthand) into ``[(longhand, value), ...]``.
 
@@ -734,14 +847,32 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     if name in ("grid-column", "grid-row"):
         # <grid-line> [ / <grid-line> ]? -- the slash, not whitespace, is the
         # separator (each <grid-line> can itself contain a space: "span 3").
-        parts = [p.strip() for p in value.split("/")]
+        parts = [p.strip() for p in _split_top_level(value, "/")]
         if len(parts) == 1:
-            # no end line given: per spec this leaves -end as auto unless
-            # -start names a line, a narrower case domonic doesn't track.
-            return [(longs[0], parts[0]), (longs[1], "auto")]
-        if len(parts) == 2:
+            # no end line: a lone <custom-ident> sets the end too, else auto
+            # (CSS Grid 1 8.4)
+            return [(longs[0], parts[0]), (longs[1], parts[0] if _is_grid_ident(parts[0]) else "auto")]
+        if len(parts) == 2 and all(parts):
             return list(zip(longs, parts))
         return None
+
+    if name == "grid-area":
+        # <grid-line> [ / <grid-line> ]{0,3}: an omitted column-start copies
+        # the row-start if that is a <custom-ident>, an omitted row-end the
+        # row-start, column-end the column-start; else auto (CSS Grid 1 8.4)
+        parts = [p.strip() for p in _split_top_level(value, "/")]
+        if len(parts) > 4 or not all(parts):
+            return None
+        while len(parts) < 4:
+            source = parts[len(parts) - 2] if len(parts) >= 2 else parts[0]
+            parts.append(source if _is_grid_ident(source) else "auto")
+        return list(zip(longs, (parts[0], parts[1], parts[2], parts[3])))
+
+    if name == "grid-template":
+        return _expand_grid_template(value)
+
+    if name == "grid":
+        return _expand_grid(value)
 
     if name == "flex-flow":
         parts = _tokens(value)
