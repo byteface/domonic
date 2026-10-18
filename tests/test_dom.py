@@ -6456,6 +6456,14 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertIsNone(holder.querySelector(":scope"))  # (not one of its own descendants)
         self.assertEqual([el.textContent for el in page.body.querySelectorAll(":scope > i")], ["o"])
 
+    def test_attribute_selector_case_insensitive_flag(self):
+        page = parseString('<html><body><input type=HIDDEN><a href=X.PDF>x</a><b title="x i">b</b></body></html>')
+        self.assertEqual(len(page.querySelectorAll("input[type=hidden i]")), 1)
+        self.assertEqual(len(page.querySelectorAll('a[href$=".pdf" i]')), 1)
+        self.assertTrue(page.querySelector("input").matches('[type="hidden" i]'))
+        self.assertEqual(page.querySelectorAll("input[type=hidden]"), [])  # case-sensitive without it
+        self.assertEqual(len(page.querySelectorAll('b[title="x i"]')), 1)  # an " i" inside the quotes is the value
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 

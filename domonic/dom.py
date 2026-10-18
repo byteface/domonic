@@ -5036,15 +5036,20 @@ class Element(Node):
                     return None
                 content = selector[position + 1 : end]
                 attribute = re.match(
-                    r"^\s*([^\s~|^$*=\]]+)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(.*?)\s*)?$",
+                    r"^\s*([^\s~|^$*=\]]+)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(.*?)(?:\s+([iIsS]))?\s*)?$",
                     content,
                 )
                 if not attribute:
                     return None
+                operator = attribute.group(2) or ""
+                if operator and (attribute.group(4) or "").lower() == "i":
+                    # Selectors 4 [attr=value i]: an ASCII case-insensitive value
+                    # (the flag rides on the operator: "=i", "^=i", ...)
+                    operator += "i"
                 parsed["attributes"].append(
                     (
                         Element._css_unescape(attribute.group(1)),
-                        attribute.group(2) or "",
+                        operator,
                         Element._css_unescape(Element._strip_selector_quotes(attribute.group(3) or "")),
                     )
                 )
@@ -5151,6 +5156,8 @@ class Element(Node):
         attr_value = str(attr_value)
         if operator == "":
             return True
+        if operator[-1:] == "i":  # the case-insensitive flag
+            attr_value, value, operator = attr_value.lower(), value.lower(), operator[:-1]
         if operator == "=":
             return attr_value == value
         if operator == "~=":
