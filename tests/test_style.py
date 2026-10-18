@@ -2437,6 +2437,17 @@ class CascadeSelectorTest(unittest.TestCase):
         page.styleSheets[1].replaceSync("p { color: blue }")
         self.assertEqual(window.getComputedStyle(page.querySelector("p")).getPropertyValue("color"), "rgb(0, 0, 255)")
 
+    def test_pseudo_element_inherits_from_its_element_not_its_parent(self):
+        markup = self.page('body { font-size: 10px } div { font-size: 20px } div::before { content: "x"; font-size: 2em }',
+                           "<div>x</div>")
+        self.assertEqual(_computed(markup, "div", "font-size", "::before"), "40px")
+
+    def test_inline_style_is_not_applied_to_pseudo_elements(self):
+        markup = self.page('div::before { content: "x" }', '<div style="counter-reset: c 48; width: 10px">x</div>')
+        self.assertEqual(_computed(markup, "div", "width"), "10px")
+        self.assertEqual(_computed(markup, "div", "width", "::before"), "auto")
+        self.assertNotIn("48", _computed(markup, "div", "counter-reset", "::before"))
+
     def test_state_pseudo_classes_in_the_cascade(self):
         markup = self.page(
             "input:placeholder-shown { color: green } input:required { margin-left: 3px } a:hover { color: red }",

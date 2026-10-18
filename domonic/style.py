@@ -6388,7 +6388,9 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         merged: list[tuple[str, str, str]] = [
             (name, value, "important" if imp else "") for name, (value, imp) in author.items()
         ]
-        inline = getattr(element, "getAttribute", lambda *_: "")("style") or ""
+        # (an element's style attribute is its own: a pseudo-element only
+        # inherits from it -- CSS Style Attributes 1)
+        inline = "" if self._pseudo else getattr(element, "getAttribute", lambda *_: "")("style") or ""
         for name, value, priority in _parse_css_declarations(inline):
             if priority != "important":
                 covering = _cssom.LONGHAND_TO_SHORTHANDS.get(name, ())
@@ -6662,7 +6664,8 @@ class ComputedStyleDeclaration(CSSStyleDeclaration):
         return px
 
     def _parent_computed(self):
-        parent = getattr(self._element, "parentNode", None)
+        # a pseudo-element's parent is its originating element (see _resolve)
+        parent = self._element if self._pseudo else getattr(self._element, "parentNode", None)
         if parent is None or not _is_inheritance_source(parent):
             return None
         cache = self._chain_cache
