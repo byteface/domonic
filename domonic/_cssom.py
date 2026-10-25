@@ -1581,12 +1581,8 @@ def _hwb_to_rgb(arguments: str) -> str | None:
     if white + black >= 1:
         gray = int(round(white / (white + black) * 255))
         return _fmt_rgb(gray, gray, gray, alpha)
-    red, green, blue = _hsl_to_rgb(hue, 1.0, 0.5)
-    scale = 1 - white - black
-    return _fmt_rgb(
-        *(int(round(channel * scale + white * 255)) for channel in (red, green, blue)),
-        alpha,
-    )
+    red, green, blue = (int(round(channel * (1 - white - black) + white * 255)) for channel in _hsl_to_rgb(hue, 1.0, 0.5))
+    return _fmt_rgb(red, green, blue, alpha)
 
 
 def _hsl_to_rgb(h: float, s: float, ll: float) -> tuple[int, int, int]:
@@ -1665,7 +1661,9 @@ for _old, _new in {
 
 
 def _split_function_arguments(text: str) -> list[str]:
-    parts, depth, current = [], 0, []
+    parts: list[str] = []
+    current: list[str] = []
+    depth = 0
     for char in text:
         if char == "(":
             depth += 1

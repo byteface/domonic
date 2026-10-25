@@ -939,6 +939,10 @@ class StyleSheetList(list):
     iterate over as a Python list.
     """
 
+    #: a document's own list is live: rebuilt when the tree's structure epoch moves
+    _live: bool = False
+    _epoch: "int | None" = None
+
     def _populate_stylesheets_from_document(self, doc) -> None:
         """(Re)build the list from ``doc``'s ``<style>`` and stylesheet
         ``<link>`` elements, in tree order (CSSOM 6.2.2). Each element keeps
@@ -6278,7 +6282,7 @@ def _sheet_media_matches(sheet, viewport, features=None, media_type: str = "scre
     ``media="(prefers-color-scheme: dark)"`` sheet used to apply on screen."""
     owner = getattr(sheet, "ownerNode", None)
     media = None
-    if (getattr(owner, "tagName", "") or "").lower() in ("style", "link"):
+    if owner is not None and (getattr(owner, "tagName", "") or "").lower() in ("style", "link"):
         media = owner.getAttribute("media")
     if media is None:
         media_list = getattr(sheet, "media", None)
@@ -8067,7 +8071,7 @@ class _VarInvalid(Exception):
     """A ``var()`` with no value and no fallback, in strict substitution."""
 
 
-def _expand_var_references(value: str, resolve, _depth: int = 0, *, strict: bool = False) -> "str | None":
+def _expand_var_references(value: str, resolve, _depth: int = 0) -> str:
     """Substitute ``var(--name[, fallback])`` references in a computed value.
 
     ``resolve(name)`` returns the computed value of custom property ``name``
@@ -8076,18 +8080,28 @@ def _expand_var_references(value: str, resolve, _depth: int = 0, *, strict: bool
     to itself (``--x: var(--x, 1rem)``) is invalid, like an unset one, so the
     ``var()`` naming it takes its fallback (CSS Variables 1 2.3).
 
-    An unset reference with no fallback contributes nothing -- or, with
-    ``strict``, makes the whole value invalid: ``None`` (3.1, "invalid at
-    computed-value time").
+    An unset reference with no fallback contributes nothing (see
+    ``_expand_var_references_strict`` for the invalid-at-computed-value-time
+    reading).
     """
     if "var(" not in value:
         return value
     try:
-        return _substitute_vars(value, resolve, (), strict)
-    except _VarInvalid:
-        return None
+        return _substitute_vars(value, resolve, (), False)
     except _VarCycle:
-        return None if strict else value
+        return value
+
+
+def _expand_var_references_strict(value: str, resolve) -> "str | None":
+    """``_expand_var_references``, but a ``var()`` with no value and no
+    fallback makes the whole value invalid: None (CSS Variables 1 3.1,
+    "invalid at computed-value time")."""
+    if "var(" not in value:
+        return value
+    try:
+        return _substitute_vars(value, resolve, (), True)
+    except (_VarInvalid, _VarCycle):
+        return None
 
 
 def _substitute_vars(value: str, resolve, stack: tuple, strict: bool) -> str:
@@ -8164,7 +8178,7 @@ class _ResolvedView:
         pairs = self._pending.get(marker)
         if pairs is None:
             shorthand, _, raw = marker[len(_PENDING_SUBSTITUTION) :].partition("\x00")
-            substituted = _expand_var_references(raw, lambda custom: self.get(custom) or "", strict=True)
+            substituted = _expand_var_references_strict(raw, lambda custom: self.get(custom) or "")
             substituted = (substituted or "").strip()
             expanded = _cssom.expand_shorthand(shorthand, substituted) if substituted else None
             pairs = self._pending[marker] = dict(expanded or ())

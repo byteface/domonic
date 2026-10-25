@@ -575,7 +575,9 @@ def _split_selector_list(text: str) -> "list[str]":
     if "," not in text:
         stripped = text.strip()
         return [stripped] if stripped else []
-    parts, current, depth, quote, escaped = [], [], 0, None, False
+    parts: list[str] = []
+    current: list[str] = []
+    depth, quote, escaped = 0, None, False
     for char in text:
         if escaped:
             escaped = False
@@ -654,7 +656,8 @@ class _document_factory:
 
     def __init__(self, func: Callable[..., Any]) -> None:
         self.func = func
-        functools.update_wrapper(self, func)
+        self.__doc__ = func.__doc__
+        self.__name__ = func.__name__
 
     def __get__(self, instance: Any, owner: Any = None) -> Callable[..., Any]:
         func = self.func
@@ -9635,7 +9638,7 @@ class _LiveHTMLCollection(HTMLCollection):
                 found = [el for el in hits if matcher(el)] if matcher is not None else hits
             else:
                 found = _elements_by_class_name(self._root, self._classes) if self._classes else []
-            root = self._root
+            root: Any = self._root
             if _is_html_root(root) and self._root_matches(root, matcher):
                 # domonic's <html> is the document itself: the first element in it
                 found = [root, *found]
@@ -9663,7 +9666,8 @@ class _LiveHTMLCollection(HTMLCollection):
         elif self._named is not None:
             hit = root.getAttribute("name") == self._named
         else:
-            hit = bool(self._classes) and self._classes <= set(str(root.getAttribute("class") or "").split())
+            classes = self._classes or frozenset()
+            hit = bool(classes) and classes <= set(str(root.getAttribute("class") or "").split())
         return hit and (matcher is None or matcher(root))
 
     @property
@@ -13479,7 +13483,7 @@ class HTMLSelectElement(HTMLElement):
         ``before`` or the node ``before``, else at the end."""
         self.options.add(element, before)
 
-    def remove(self, index: int | None = None) -> None:  # type: ignore[override]
+    def remove(self, index: int | None = None) -> None:
         """``select.remove(index)`` removes that option; with no argument it is
         ChildNode's ``remove()``: the select itself leaves its parent."""
         if index is None:

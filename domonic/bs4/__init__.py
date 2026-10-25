@@ -980,12 +980,12 @@ def _has_relative_match(element: Element, relatives: list) -> bool:
     relative to ``element`` matches (Selectors 4 17)."""
     for combinator, simple, rest in relatives:
         if simple is not None:
-            pool = _element_children(element) if combinator == ">" else _element_descendants(element)
-            if any(_match_parsed_selector(node, simple) for node in pool):
+            candidates = _element_children(element) if combinator == ">" else _element_descendants(element)
+            if any(_match_parsed_selector(node, simple) for node in candidates):
                 return True
             continue
+        pool: list = []
         if combinator in ("+", "~"):
-            pool = []
             sibling = getattr(element, "nextElementSibling", None)
             while sibling is not None:
                 pool.append(sibling)

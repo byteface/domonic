@@ -108,11 +108,12 @@ def _media_value(text: str, kind: str, context: "_MediaContext") -> "float | Non
         if len(parts) > 2:
             return None
         numbers = [_media_value(part, "number", context) for part in parts]
-        if any(number is None for number in numbers):
+        if None in numbers:
             return None
-        if len(numbers) == 1:
-            return numbers[0]
-        return numbers[0] / numbers[1] if numbers[1] else float("inf")
+        values = [float(number or 0.0) for number in numbers]
+        if len(values) == 1:
+            return values[0]
+        return values[0] / values[1] if values[1] else float("inf")
     if kind == "resolution":
         match = re.fullmatch(r"([+-]?(?:\d+\.?\d*|\.\d+))(dppx|x|dpi|dpcm)", text)
         if match:
@@ -195,8 +196,8 @@ def _evaluate_media_condition(text: str, context: "_MediaContext") -> "bool | No
     """A ``<media-condition>`` in three-valued logic (True / False / None)."""
     text = text.strip()
     if text.startswith("not ") or text.startswith("not("):
-        inner = _evaluate_media_condition(text[3:], context)
-        return None if inner is None else not inner
+        negated = _evaluate_media_condition(text[3:], context)
+        return None if negated is None else not negated
     for word, combine in ((" or ", any), (" and ", all)):
         parts = _split_top_level(text, word)
         if len(parts) > 1:

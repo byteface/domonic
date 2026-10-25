@@ -184,7 +184,7 @@ class DomonicHTMLParser(HTMLParser):
         args = parent.__dict__.get("args")
         last = args[-1] if args else None
         if type(last) is Text:
-            held = last.__dict__.get("args") or ()
+            held: tuple = last.__dict__.get("args") or ()
             if len(held) == 1 and isinstance(held[0], str):
                 last.__dict__["args"] = (held[0] + data,)
                 return
