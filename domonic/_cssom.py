@@ -99,6 +99,7 @@ INHERITED_PROPERTIES: frozenset[str] = frozenset(
         "text-emphasis-color",
         "text-emphasis-position",
         "word-break",
+        "-webkit-text-stroke",
         # custom properties inherit
     }
 )
@@ -277,6 +278,8 @@ INITIAL_VALUES: dict[str, str] = {
     "scale": "none",
     "scroll-behavior": "auto",
     "text-overflow": "clip",
+    "-webkit-text-stroke-width": "0px",
+    "-webkit-text-stroke-color": "currentcolor",
     "text-wrap": "wrap",
     "text-wrap-mode": "wrap",
     "text-wrap-style": "auto",
@@ -360,6 +363,14 @@ SHORTHANDS: dict[str, tuple[str, ...]] = {
         for axis in ("block", "inline")
         for edge in ("start", "end")
     },
+    "border-image": (
+        "border-image-source",
+        "border-image-slice",
+        "border-image-width",
+        "border-image-outset",
+        "border-image-repeat",
+    ),
+    "-webkit-text-stroke": ("-webkit-text-stroke-width", "-webkit-text-stroke-color"),
     "outline": ("outline-width", "outline-style", "outline-color"),
     "overflow": ("overflow-x", "overflow-y"),
     "gap": ("row-gap", "column-gap"),
@@ -937,6 +948,42 @@ def _expand_background_layer(layer: str, final: bool) -> list[tuple[str, str]] |
     return pairs + [("background-color", color or "transparent")]
 
 
+_BORDER_IMAGE_REPEATS = frozenset({"stretch", "repeat", "round", "space"})
+
+
+def _expand_border_image(value: str) -> list[tuple[str, str]] | None:
+    """CSS Backgrounds 3 6.7 ``border-image``: ``<source> || <slice> [ /
+    <width> | / <width>? / <outset> ]? || <repeat>``; None if invalid."""
+    tokens = _split_ws_keep_funcs(value)
+    source = None
+    repeat: list[str] = []
+    groups: list[list[str]] = [[]]
+    for token in tokens:
+        low = token.lower()
+        if token == "/":
+            groups.append([])
+        elif low in _BORDER_IMAGE_REPEATS:
+            if len(repeat) >= 2:
+                return None
+            repeat.append(low)
+        elif low == "none" or ("(" in low and not low.startswith(_MATH_FUNCTION_PREFIXES)):
+            if source is not None:
+                return None
+            source = token
+        else:
+            groups[-1].append(token)
+    if len(groups) > 3 or (len(groups) > 1 and not groups[0]):
+        return None  # (a width or outset only follows a slice)
+    slice_, width, outset = ([" ".join(group) for group in groups] + ["", "", ""])[:3]
+    return [
+        ("border-image-source", source or "none"),
+        ("border-image-slice", slice_ or "100%"),
+        ("border-image-width", width or "1"),
+        ("border-image-outset", outset or "0"),
+        ("border-image-repeat", " ".join(repeat) or "stretch"),
+    ]
+
+
 def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     """Expand ``name: value`` (a shorthand) into ``[(longhand, value), ...]``.
 
@@ -950,6 +997,21 @@ def expand_shorthand(name: str, value: str) -> list[tuple[str, str]] | None:
     lower = value.lower()
     if lower in _GLOBAL_KEYWORDS:
         return [(long, value) for long in longs]
+
+    if name == "border-image":
+        return _expand_border_image(value)
+
+    if name == "-webkit-text-stroke":
+        # <line-width> || <color>
+        width = color = None
+        for token in _tokens(value):
+            if width is None and _looks_like_length(token):
+                width = token
+            elif color is None:
+                color = token
+            else:
+                return None
+        return [("-webkit-text-stroke-width", width or "0px"), ("-webkit-text-stroke-color", color or "currentcolor")]
 
     if name in RADIUS_SHORTHANDS and "/" in value:
         # elliptical: <horizontal radii>{1,4} / <vertical radii>{1,4}, each

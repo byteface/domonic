@@ -2824,6 +2824,19 @@ class ShorthandExpansionTest(unittest.TestCase):
         self.assertEqual(layered["background-color"], "transparent")
         self.assertIsNone(self.expand("background", "url(a) red, blue"))  # colour only in the final layer
 
+    def test_border_image_and_webkit_text_stroke_expand(self):
+        expanded = self.expand("border-image", "linear-gradient(red, blue) 10% 20 fill / 2px / 1px space repeat")
+        self.assertEqual(expanded["border-image-source"], "linear-gradient(red, blue)")
+        self.assertEqual(expanded["border-image-slice"], "10% 20 fill")
+        self.assertEqual((expanded["border-image-width"], expanded["border-image-outset"]), ("2px", "1px"))
+        self.assertEqual(expanded["border-image-repeat"], "space repeat")
+        self.assertEqual(self.expand("border-image", "url(a.png) 30 round")["border-image-width"], "1")
+        self.assertIsNone(self.expand("border-image", "/ 2px url(x)"))
+        self.assertEqual(self.expand("-webkit-text-stroke", "2px red"),
+                         {"-webkit-text-stroke-width": "2px", "-webkit-text-stroke-color": "red"})
+        markup = "<html><head><style>div { -webkit-text-stroke: 1px blue }</style></head><body><div><p>x</p></div></body></html>"
+        self.assertEqual(_computed(markup, "p", "-webkit-text-stroke-width"), "1px")  # (inherited)
+
     def test_all_resets_every_longhand_but_direction(self):
         self.assertEqual(self.expand("all", "unset")["color"], "unset")
         self.assertNotIn("direction", self.expand("all", "initial"))
