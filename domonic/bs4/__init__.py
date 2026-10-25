@@ -924,6 +924,89 @@ SCOPE_ELEMENT: "contextvars.ContextVar[Any]" = contextvars.ContextVar("domonic_s
 _TRAILING_STATE_RE = re.compile(r":([-\w]+)$")
 
 
+def _trailing_functional_pseudo(selector: str, names: tuple) -> "tuple[int, str, str] | None":
+    """``(start, name, argument)`` when ``selector`` ends in ``:name(...)`` for
+    one of ``names`` (balanced parens, any depth), else None."""
+    if not selector.endswith(")"):
+        return None
+    depth, quote = 0, None
+    for index in range(len(selector) - 1, -1, -1):
+        char = selector[index]
+        if quote:
+            if char == quote:
+                quote = None
+            continue
+        if char in "\"'":
+            quote = char
+        elif char == ")":
+            depth += 1
+        elif char == "(":
+            depth -= 1
+            if depth == 0:
+                head = selector[:index]
+                for name in names:
+                    if head.lower().endswith(":" + name) and not head.lower().endswith("::" + name):
+                        return len(head) - len(name) - 1, name, selector[index + 1 : -1]
+                return None
+    return None
+
+
+def _selector_branch(branch: str) -> "tuple[str, Any] | None":
+    """One argument of :is()/:not(): ``("compound", parsed)`` when it is a
+    plain compound, ``("selector", text)`` for the chain matcher, or None when
+    neither can parse it (``*|*``) -- the caller then leaves the whole
+    compound to the full selector engine."""
+    if not any(c in branch for c in " >+~:"):
+        parsed = Element._parse_simple_selector(branch)
+        if parsed is not None:
+            return ("compound", parsed)
+    if _parse_selector_chain(branch) is None:
+        return None
+    return ("selector", branch)
+
+
+def _branch_matches(element: Element, branch: "tuple[str, Any]") -> bool:
+    kind, value = branch
+    if kind == "compound":
+        return _match_parsed_selector(element, value)
+    try:
+        return element._matches_selector_chain(value) is True
+    except Exception:
+        return False
+
+
+def _has_relative_match(element: Element, relatives: list) -> bool:
+    """``:has(<relative selector list>)``: some element in the right place
+    relative to ``element`` matches (Selectors 4 17)."""
+    for combinator, simple, rest in relatives:
+        if simple is not None:
+            pool = _element_children(element) if combinator == ">" else _element_descendants(element)
+            if any(_match_parsed_selector(node, simple) for node in pool):
+                return True
+            continue
+        if combinator in ("+", "~"):
+            pool = []
+            sibling = getattr(element, "nextElementSibling", None)
+            while sibling is not None:
+                pool.append(sibling)
+                pool.extend(_element_descendants(sibling))
+                if combinator == "+" and not any(c in rest for c in " >+~"):
+                    break
+                sibling = getattr(sibling, "nextElementSibling", None)
+        else:
+            pool = list(_element_descendants(element))
+        anchored = f":scope {combinator} {rest}" if combinator else f":scope {rest}"
+        token = SCOPE_ELEMENT.set(element)
+        try:
+            if any(node._matches_selector_chain(anchored) is True for node in pool):
+                return True
+        except Exception:
+            pass
+        finally:
+            SCOPE_ELEMENT.reset(token)
+    return False
+
+
 def _has_top_level_colon(text: str) -> bool:
     """Whether ``text`` has a ``:`` outside parens, brackets and strings -- a
     pseudo-class still left on a compound."""
@@ -999,59 +1082,71 @@ def _strip_last_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | No
         if not direction:
             return None
         return selector[: match.start()], ("dir", direction)
-    # :is() / :where() -- a comma-separated list of compound selectors; match if
-    # any branch matches. (:where() differs from :is() only in specificity,
-    # which isn't computed here.) A combinator inside a branch bails to XPath.
-    match = re.search(r":(?:is|where)\(([^()]*(?:\([^()]*\)[^()]*)*)\)$", selector)
-    if match:
-        branches = []
-        for raw in match.group(1).split(","):
-            branch = raw.strip()
-            if not branch or any(c in branch for c in " >+~"):
+    # :is() / :where() -- a selector list; match if any branch matches. A
+    # branch is a compound (matched directly) or a complex selector (matched
+    # right to left up the tree); an unparseable branch is forgiven (it just
+    # never matches). :where() differs only in specificity.
+    trailing = _trailing_functional_pseudo(selector, ("is", "where", "matches", "-webkit-any"))
+    if trailing is not None:
+        start, _name, inner = trailing
+        branches = [_selector_branch(branch) for branch in _split_selector_groups(inner) or ()]
+        if not branches or None in branches:
+            return None
+        return selector[:start], ("is", branches)
+    # :has() -- a relative selector list (CSS Selectors 4 17): descendant,
+    # child, next-sibling and subsequent-sibling forms, any depth
+    trailing = _trailing_functional_pseudo(selector, ("has",))
+    if trailing is not None:
+        start, _name, inner = trailing
+        relatives = []
+        for relative in _split_selector_groups(inner) or ():
+            combinator = relative[0] if relative[:1] in (">", "+", "~") else None
+            rest = relative[1:].strip() if combinator else relative
+            if not rest:
                 return None
-            parsed = Element._parse_simple_selector(branch)
-            if parsed is None:
+            simple = None
+            if combinator in (None, ">") and not any(c in rest for c in " >+~"):
+                simple = Element._parse_simple_selector(rest)
+            relatives.append((combinator, simple, rest))
+        if not relatives:
+            return None
+        return selector[:start], ("has-any", relatives)
+    # :not(<selector list>) -- ``:not(a, b)`` is ``:not(a):not(b)``; a complex
+    # argument (``:not(.a .b)``) goes to the chain matcher
+    trailing = _trailing_functional_pseudo(selector, ("not",))
+    if trailing is not None:
+        start, _name, argument = trailing
+        negations: list = []
+        for inner in _split_selector_groups(argument) or [""]:
+            if not inner:
                 return None
-            branches.append(parsed)
-        if not branches:
-            return None
-        return selector[: match.start()], ("is", branches)
-    # :has() -- a relative selector; support the descendant (default) and direct
-    # child (`> `) forms, which cover the overwhelming majority of real use.
-    match = re.search(r":has\(([^()]+)\)$", selector)
-    if match:
-        inner = match.group(1).strip()
-        combinator = None
-        if inner.startswith(">"):
-            combinator = ">"
-            inner = inner[1:].strip()
-        if not inner or any(c in inner for c in " >+~"):
-            return None
-        parsed = Element._parse_simple_selector(inner)
-        if parsed is None:
-            return None
-        return selector[: match.start()], ("has", (combinator, parsed))
-    # :not(<compound list>) -- ``:not(a, b)`` is ``:not(a):not(b)``; a nested
-    # combinator inside :not() bails to the XPath engine.
-    match = re.search(r":not\(((?:[^()]|\([^()]*\))+)\)$", selector)
-    if match:
-        negations = []
-        for inner in _split_selector_groups(match.group(1)) or [""]:
-            if not inner or any(c in inner for c in " >+~"):
-                return None  # combinator inside :not() -> XPath
+            if any(c in inner for c in " >+~"):
+                branch = _selector_branch(inner)
+                if branch is None:
+                    return None
+                negations.append(("not-selector", branch))
+                continue
             if inner.startswith(":"):
                 nested = _strip_simple_pseudo("x" + inner)
                 if nested is None or nested[1] is None or nested[0] != "x":
-                    return None
+                    branch = _selector_branch(inner)
+                    if branch is None:
+                        return None
+                    negations.append(("not-selector", branch))
+                    continue
                 negations.append(("not-pseudo", nested[1]))
                 continue
             inner_parsed = Element._parse_simple_selector(inner)
             if inner_parsed is None:
-                return None
+                branch = _selector_branch(inner)
+                if branch is None:
+                    return None
+                negations.append(("not-selector", branch))
+                continue
             negations.append(("not", inner_parsed))
         if not negations:
             return None
-        return selector[: match.start()], negations[0] if len(negations) == 1 else ("all", tuple(negations))
+        return selector[:start], negations[0] if len(negations) == 1 else ("all", tuple(negations))
     # A structural pseudo that Element._parse_simple_selector already
     # understands as part of any compound (``:root``, ``:empty``,
     # ``:only-child``, ``:first-of-type``, ``:last-of-type``,
@@ -1267,7 +1362,11 @@ def _match_simple_pseudo(
     if name == "state":
         return _match_state_pseudo(element, value)
     if name == "is":
-        return any(_match_parsed_selector(element, branch) for branch in value)
+        return any(_branch_matches(element, branch) for branch in value)
+    if name == "not-selector":
+        return not _branch_matches(element, value)
+    if name == "has-any":
+        return _has_relative_match(element, value)
     if name == "has":
         combinator, parsed = value
         scope = _element_children(element) if combinator == ">" else _element_descendants(element)

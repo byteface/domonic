@@ -6464,6 +6464,28 @@ class TestTraversalCachesAndIndexes(unittest.TestCase):
         self.assertEqual(page.querySelectorAll("input[type=hidden]"), [])  # case-sensitive without it
         self.assertEqual(len(page.querySelectorAll('b[title="x i"]')), 1)  # an " i" inside the quotes is the value
 
+    def test_is_not_and_has_take_complex_and_relative_selectors(self):
+        page = parseString(
+            "<html><body><nav class=left-sidebar><a id=a1>a</a></nav><div class=x><a id=a2>b</a></div>"
+            "<h2 id=h>t</h2><p class=browsers>p</p><ul id=u><li class=a><b class=b>x</b></li></ul>"
+            "<section id=s><p>no</p></section><div id=deep><span><i class=z>z</i></span></div></body></html>"
+        )
+
+        def ids(query):
+            return [el.getAttribute("id") for el in page.querySelectorAll(query)]
+
+        self.assertEqual(ids(":is(.left-sidebar a):not(:hover)"), ["a1"])  # MDN's compiled nesting
+        self.assertEqual(ids("a:not(.left-sidebar a)"), ["a2"])
+        self.assertEqual(ids(":where(nav, .x) > a"), ["a1", "a2"])
+        self.assertEqual(ids(":is(:is(nav) a)"), ["a1"])
+        self.assertEqual(ids("h2:has(+ .browsers)"), ["h"])
+        self.assertEqual(ids("h2:has(~ section p)"), ["h"])
+        self.assertEqual(ids("ul:has(.a .b)"), ["u"])
+        self.assertEqual(ids("ul:has(> li > b)"), ["u"])
+        self.assertEqual(ids("section:has(+ p)"), [])
+        self.assertEqual(ids("div:has(span i.z)"), ["deep"])
+        self.assertEqual(page.querySelectorAll(":not(*|*)"), [])
+
     def test_iterate_skips_str_subclass_children(self):
         from domonic.javascript import String
 
