@@ -410,7 +410,9 @@ def _physical_side(axis: str, edge: str, writing_mode: str, direction: str) -> s
     return {"left": "right", "right": "left", "top": "bottom", "bottom": "top"}[start]
 
 
-_LOGICAL_SIDE_SHORTHANDS = frozenset(f"border-{axis}-{edge}" for axis in ("block", "inline") for edge in ("start", "end"))
+_LOGICAL_SIDE_SHORTHANDS = frozenset(
+    f"border-{axis}-{edge}" for axis in ("block", "inline") for edge in ("start", "end")
+)
 
 
 def _physical_side_shorthand(name: str, writing_mode: str, direction: str) -> str:
@@ -6078,7 +6080,9 @@ def _resolve_reverting_keywords(cascade: dict, matched: list) -> None:
     back to domonic's user-agent defaults, inheritance or its initial value.
     Only run through the matched rules when such a keyword won."""
     reverting = [
-        name for name, (_key, value, _imp) in cascade.items() if str(value).strip().lower() in ("revert", "revert-layer")
+        name
+        for name, (_key, value, _imp) in cascade.items()
+        if str(value).strip().lower() in ("revert", "revert-layer")
     ]
     for name in reverting:
         key, value, important = cascade[name]
@@ -6351,7 +6355,12 @@ def _iter_style_rules(
                     layer_name = rule.layerName.strip() or f"\x00anon{id(rule)}"
                     child_layer = layers.setdefault(layer_name, len(layers) + 1)
                 yield from _iter_style_rules(
-                    imported, viewport=viewport, layers=layers, layer=child_layer, features=features, media_type=media_type
+                    imported,
+                    viewport=viewport,
+                    layers=layers,
+                    layer=child_layer,
+                    features=features,
+                    media_type=media_type,
                 )
             continue
         if not inner:

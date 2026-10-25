@@ -528,7 +528,12 @@ def computed_registered_value(syntax: str | None, value: str | None) -> str | No
     Values API 1 2.4): for a ``<length>`` syntax a unitless zero is ``0px`` --
     Tailwind 4's ``initial-value: 0`` ring offsets made ``calc(1px + 0)``, a
     length plus a number, and every ring vanished."""
-    if isinstance(value, str) and syntax and _LENGTH_SYNTAX_RE.search(syntax) and _UNITLESS_ZERO_RE.match(value.strip()):
+    if (
+        isinstance(value, str)
+        and syntax
+        and _LENGTH_SYNTAX_RE.search(syntax)
+        and _UNITLESS_ZERO_RE.match(value.strip())
+    ):
         return "0px"
     return value
 
@@ -1581,7 +1586,8 @@ def _hwb_to_rgb(arguments: str) -> str | None:
     if white + black >= 1:
         gray = int(round(white / (white + black) * 255))
         return _fmt_rgb(gray, gray, gray, alpha)
-    red, green, blue = (int(round(channel * (1 - white - black) + white * 255)) for channel in _hsl_to_rgb(hue, 1.0, 0.5))
+    scale = 1 - white - black
+    red, green, blue = (int(round(channel * scale + white * 255)) for channel in _hsl_to_rgb(hue, 1.0, 0.5))
     return _fmt_rgb(red, green, blue, alpha)
 
 
@@ -1902,7 +1908,10 @@ _SINGLE_KEYWORD_PROPERTIES: dict[str, frozenset] = {
 _WHITE_SPACE_LEGACY = frozenset({"normal", "pre", "nowrap", "pre-wrap", "pre-line", "break-spaces"})
 _WHITE_SPACE_COLLAPSE = frozenset({"collapse", "preserve", "preserve-breaks", "preserve-spaces", "break-spaces"})
 _INTEGER_RE = re.compile(r"^[+-]?\d+$")
-_NON_NEGATIVE_LENGTH_RE = re.compile(r"^\+?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:px|em|rem|ex|ch|in|cm|mm|q|pt|pc|vw|vh|vmin|vmax|vi|vb|lh|rlh|cap|ic)?$", re.I)
+_NON_NEGATIVE_LENGTH_RE = re.compile(
+    r"^\+?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?(?:px|em|rem|ex|ch|in|cm|mm|q|pt|pc|vw|vh|vmin|vmax|vi|vb|lh|rlh|cap|ic)?$",
+    re.I,
+)
 
 
 def _alignment_valid(name: str, words: list[str]) -> bool:
@@ -1961,7 +1970,9 @@ def is_invalid_declaration(name: str, value: str) -> bool:
     if name == "grid-auto-flow":
         flow = [word for word in words if word in ("row", "column")]
         dense = [word for word in words if word == "dense"]
-        return not (1 <= len(words) <= 2 and len(flow) <= 1 and len(dense) <= 1 and len(flow) + len(dense) == len(words))
+        return not (
+            1 <= len(words) <= 2 and len(flow) <= 1 and len(dense) <= 1 and len(flow) + len(dense) == len(words)
+        )
     if name == "font-style":
         return not (low in ("normal", "italic", "oblique") or (words[0] == "oblique" and len(words) == 2))
     if name == "text-transform":
@@ -1969,7 +1980,9 @@ def is_invalid_declaration(name: str, value: str) -> bool:
         others = [word for word in words if word in ("full-width", "full-size-kana")]
         if low in ("none", "math-auto"):
             return False
-        return not (words and len(cases) <= 1 and len(set(others)) == len(others) and len(cases) + len(others) == len(words))
+        return not (
+            words and len(cases) <= 1 and len(set(others)) == len(others) and len(cases) + len(others) == len(words)
+        )
     if name == "opacity":
         number = low[:-1] if low.endswith("%") else low
         return not (_NUMBER_RE.match(number) or low.startswith(("calc(", "min(", "max(", "clamp(")))
@@ -1979,7 +1992,10 @@ def is_invalid_declaration(name: str, value: str) -> bool:
         return not ((_NUMBER_RE.match(low) and not low.startswith("-")) or low.startswith("calc("))
     if name == "border-spacing":
         # one or two non-negative lengths -- never a percentage (CSS 2.1 17.6.1)
-        return not (1 <= len(words) <= 2 and all(_NON_NEGATIVE_LENGTH_RE.match(word) or word.startswith("calc(") for word in words))
+        return not (
+            1 <= len(words) <= 2
+            and all(_NON_NEGATIVE_LENGTH_RE.match(word) or word.startswith("calc(") for word in words)
+        )
     if name == "flex":
         return expand_shorthand(name, value) is None
     return False

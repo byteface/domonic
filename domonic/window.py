@@ -207,8 +207,11 @@ def _evaluate_media_condition(text: str, context: "_MediaContext") -> "bool | No
             return False if False in values else (None if None in values else True)
     if text.startswith("(") and text.endswith(")"):
         inner = text[1:-1].strip()
-        if inner.startswith("(") or inner.startswith("not ") or _split_top_level(inner, " and ")[1:] or (
-            _split_top_level(inner, " or ")[1:]
+        if (
+            inner.startswith("(")
+            or inner.startswith("not ")
+            or _split_top_level(inner, " and ")[1:]
+            or (_split_top_level(inner, " or ")[1:])
         ):
             return _evaluate_media_condition(inner, context)
         return _evaluate_media_feature(inner, context)
@@ -228,7 +231,7 @@ def _evaluate_media_query(query: str, context: "_MediaContext") -> "bool | None"
     if words[0] in _MEDIA_TYPES:
         media_type = words[0]
         result: "bool | None" = media_type == "all" or media_type == context.media_type
-        rest = query[len(media_type):].strip()
+        rest = query[len(media_type) :].strip()
         if rest:
             if not rest.startswith("and "):
                 return None

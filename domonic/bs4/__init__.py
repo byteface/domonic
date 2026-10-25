@@ -1428,7 +1428,21 @@ def _match_simple_pseudo(
 _FORM_ELEMENTS = frozenset({"input", "button", "select", "textarea", "optgroup", "option", "fieldset"})
 # input types whose value is free text (HTML 4.10.5.3: placeholder, readonly)
 _TEXT_INPUT_TYPES = frozenset(
-    {"", "text", "search", "url", "tel", "email", "password", "date", "month", "week", "time", "datetime-local", "number"}
+    {
+        "",
+        "text",
+        "search",
+        "url",
+        "tel",
+        "email",
+        "password",
+        "date",
+        "month",
+        "week",
+        "time",
+        "datetime-local",
+        "number",
+    }
 )
 
 
