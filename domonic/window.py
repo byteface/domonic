@@ -17,6 +17,7 @@ import re
 import sys
 import threading
 import time
+import urllib.parse
 from typing import Any, Callable
 
 from domonic import domonic
@@ -264,6 +265,31 @@ def _split_top_level(text: str, separator: str) -> list[str]:
         i += 1
     parts.append(text[start:].strip())
     return [p for p in parts if p]
+
+
+def _url_origin(url: str | None) -> str | None:
+    """``scheme://host[:port]`` of an http(s) URL, else ``None``."""
+    parts = urllib.parse.urlsplit(url or "")
+    if parts.scheme.lower() not in ("http", "https") or not parts.hostname:
+        return None
+    return f"{parts.scheme.lower()}://{parts.netloc.rsplit('@', 1)[-1].lower()}"
+
+
+def _referrer_header(referrer: str | None, target: str) -> str | None:
+    """The ``Referer`` a browser sends under its default policy,
+    strict-origin-when-cross-origin: the full URL (no fragment or
+    credentials) to the same origin, the origin elsewhere, nothing from
+    https to http (https://w3c.github.io/webappsec-referrer-policy/)."""
+    origin = _url_origin(referrer)
+    if origin is None or referrer is None:
+        return None
+    if referrer.lower().startswith("https:") and target.lower().startswith("http:"):
+        return None
+    if origin != _url_origin(target):
+        return origin + "/"
+    parts = urllib.parse.urlsplit(referrer)
+    netloc = parts.netloc.rsplit("@", 1)[-1]
+    return urllib.parse.urlunsplit((parts.scheme, netloc, parts.path, parts.query, ""))
 
 
 class MediaQueryList(EventTarget):
@@ -895,21 +921,62 @@ class Window(JavaScriptWindow, EventTarget):
                 )
             )
 
-    def _fetch_document(self, url: str) -> Document | None:
-        try:
+    def _http_session(self) -> Any:
+        """One ``requests.Session`` per window, so cookies a page sets (a
+        login, say) are sent with the window's later navigations."""
+        session = self.__dict__.get("_requests_session")
+        if session is None:
             import requests
+
+            session = requests.Session()
+            self.__dict__["_requests_session"] = session
+        return session
+
+    def _fetch_document(
+        self,
+        url: str,
+        method: str = "GET",
+        data: Any = None,
+        files: Any = None,
+        headers: dict[str, str] | None = None,
+        referrer: str | None = None,
+    ) -> Document | None:
+        """Load ``url`` as a document, or ``None`` when it can't be loaded (not
+        http(s), a network error, an error status). After a redirect
+        ``page.URL`` is where it ended up."""
+        if urllib.parse.urlsplit(url).scheme.lower() not in ("http", "https"):
+            return None
+        try:
+            import requests  # noqa: F401
         except ModuleNotFoundError:
             return None
 
+        request_headers: dict[str, str] = {}
+        referer = _referrer_header(referrer, url)
+        if referer:
+            request_headers["Referer"] = referer
+        if method.upper() != "GET":
+            request_headers["Origin"] = _url_origin(referrer) or "null"
+        request_headers.update(headers or {})
         try:
-            response = requests.get(url, timeout=5)
+            response = self._http_session().request(
+                method, url, data=data, files=files, headers=request_headers, timeout=5
+            )
             response.raise_for_status()
         except Exception:
             return None
 
-        page = domonic.parseString(response.text)
+        # always a Document, as scrape() does: a response that is only a fragment
+        # (<p>...</p>) would otherwise come back as that element
+        page = domonic.parseString(response.text, document=True)
         if page is not None:
-            page.URL = url
+            final_url = url
+            if getattr(response, "history", None):  # redirected
+                final_url = str(response.url)
+                fragment = urllib.parse.urlsplit(url).fragment
+                if fragment and "#" not in final_url:  # a redirect keeps the request's fragment
+                    final_url += "#" + fragment
+            page.URL = final_url
         return page
 
     @property
@@ -998,19 +1065,48 @@ class Window(JavaScriptWindow, EventTarget):
     def location(self, value: str | Location) -> None:
         if value is None:
             return
+        self._navigate(self._normalize_url(value))
+
+    def _navigate(
+        self,
+        href: str,
+        *,
+        method: str = "GET",
+        data: Any = None,
+        files: Any = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
+        """Navigate to ``href`` (https://html.spec.whatwg.org/#navigate): what
+        ``location = url``, a link click and a form submission do.
+
+        A change of fragment only stays on the document and fires
+        ``hashchange``. Anything else loads the response (a GET, or a form's
+        POST) as the new document; when the load fails the old document stays.
+        """
         previous_href = self._location.href
-        href = self._normalize_url(value)
         if getattr(self._history, "skip_update", False) is False:
             self._history._update(href)
         self._location = Location(href)
         self._document.URL = href
         self._document.referrer = previous_href or ""
-        if previous_href != href and previous_href.split("#", 1)[0] == href.split("#", 1)[0]:
+        same_document = previous_href.split("#", 1)[0] == href.split("#", 1)[0]
+        if previous_href != href and same_document:
             self.dispatchEvent(HashChangeEvent("hashchange", {"oldURL": previous_href, "newURL": href}))
+        if same_document and "#" in href and method.upper() == "GET":
+            return  # a fragment navigation: the document stays
 
-        loaded_document = self._fetch_document(href)
-        if loaded_document is not None:
-            self._set_document(loaded_document, referrer=previous_href)
+        loaded_document = self._fetch_document(
+            href, method=method, data=data, files=files, headers=headers, referrer=previous_href
+        )
+        if loaded_document is None:
+            return
+        final_url = str(getattr(loaded_document, "URL", "") or href)
+        if final_url != href:  # redirected: the window ends up at the final URL
+            self._location = Location(final_url)
+            entry = self._history._current_entry()
+            if entry is not None and getattr(self._history, "skip_update", False) is False:
+                entry.url = final_url
+        self._set_document(loaded_document, referrer=previous_href)
 
     def blur(self):
         host_blur = getattr(self._host, "blur", None)

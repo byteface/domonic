@@ -1976,28 +1976,31 @@ def _append_form_data_value(data: dict[str, Any], name: str | None, value: Any) 
     data[name] = value
 
 
-def _append_custom_element_value(data: dict[str, Any], name: str | None, value: Any) -> None:
+def _custom_element_entries(name: str | None, value: Any) -> list[tuple[str, Any]]:
     """A form-associated custom element's ``setFormValue()`` value: entries of
     a dict / FormData go in under their own names, anything else under the
     element's ``name``."""
     if value is None:
-        return
+        return []
     entries: Any = value.items if isinstance(value, dict) else getattr(value, "entries", None)
     if callable(entries):
-        for key, item in entries():
-            _append_form_data_value(data, key, item)
-        return
-    _append_form_data_value(data, name, value)
+        return [(key, item) for key, item in entries() if key]
+    return [(name, value)] if name else []
 
 
-def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = None) -> dict[str, Any]:
-    data: dict[str, Any] = {}
+def _form_entries(
+    form: "HTMLFormElement", submitter: "Element | None" = None, files: bool = False
+) -> list[tuple[str, Any]]:
+    """The form's entry list in order (https://html.spec.whatwg.org/#constructing-the-form-data-set).
+    With ``files`` a file input contributes its ``File`` objects (an empty
+    file when none is chosen), as a multipart submission needs."""
+    entries: list[tuple[str, Any]] = []
     for control in form.elements:
         if not isinstance(control, Element) or control.hasAttribute("disabled"):
             continue
         internals = control.__dict__.get("_element_internals")
         if internals is not None and _is_form_associated_custom(control):
-            _append_custom_element_value(data, control.getAttribute("name"), internals._form_value)
+            entries.extend(_custom_element_entries(control.getAttribute("name"), internals._form_value))
             continue
         name = control.getAttribute("name")
         if not name:
@@ -2012,23 +2015,148 @@ def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = 
                 continue
             if input_type in {"checkbox", "radio"} and not control.checked:
                 continue
-            _append_form_data_value(data, name, control.value)
+            if files and input_type == "file":
+                from domonic.webapi.file import File
+
+                chosen = list(control.files or [])
+                entries.extend((name, item) for item in chosen or [File([], "", {"type": "application/octet-stream"})])
+                continue
+            entries.append((name, control.value))
         elif isinstance(control, HTMLSelectElement):
             if control.hasAttribute("multiple"):
-                for option in control.selectedOptions:
-                    _append_form_data_value(data, name, option.value)
+                entries.extend((name, option.value) for option in control.selectedOptions)
             else:
-                _append_form_data_value(data, name, control.value)
+                entries.append((name, control.value))
         elif isinstance(control, HTMLTextAreaElement):
-            _append_form_data_value(data, name, control.value)
+            entries.append((name, control.value))
         elif isinstance(control, HTMLOutputElement):
             continue  # listed and resettable, but not submittable
         elif hasattr(control, "value"):
-            _append_form_data_value(data, name, getattr(control, "value"))
+            entries.append((name, getattr(control, "value")))
 
     if isinstance(submitter, Element) and not submitter.hasAttribute("disabled") and submitter.getAttribute("name"):
-        _append_form_data_value(data, submitter.getAttribute("name"), submitter.value)
+        entries.append((submitter.getAttribute("name"), submitter.value))
+    return entries
+
+
+def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = None) -> dict[str, Any]:
+    data: dict[str, Any] = {}
+    for name, value in _form_entries(form, submitter):
+        _append_form_data_value(data, name, value)
     return data
+
+
+def _browsing_window(node: Any) -> Any:
+    """The window ``node``'s document is showing in, or ``None``: a document
+    with no window (``html(...)``, ``DOMParser``) or one the window has
+    navigated away from can't navigate."""
+    document = getattr(node, "ownerDocument", None)
+    if not isinstance(document, Document):
+        return None
+    view = getattr(document, "defaultView", None)
+    if view is None or getattr(view, "document", None) is not document:
+        return None
+    return view
+
+
+def _navigation_target(view: Any, document: Any, target: str) -> Any:
+    """The window a link or form with ``target`` navigates: this one for
+    ``""`` / ``_self``, else what ``window.open(url, target)`` picks."""
+    if not target:
+        base = document.querySelector("base[target]")
+        target = _r.as_string(base.getAttribute("target")) if base is not None else ""
+    return view.open("", target or "_self")
+
+
+def _encode_form_entries(entries: list[tuple[str, Any]]) -> str:
+    """application/x-www-form-urlencoded, a file as its name."""
+    import urllib.parse
+
+    return urllib.parse.urlencode([(name, getattr(value, "name", value)) for name, value in entries])
+
+
+def _submit_form_navigation(form: "HTMLFormElement", submitter: "Element | None") -> None:
+    """The navigation half of the form submission algorithm
+    (https://html.spec.whatwg.org/#form-submission-algorithm): GET puts the
+    entries in the action's query, POST sends them as the body in the form's
+    enctype, ``method="dialog"`` closes the form's dialog. A form whose
+    document has no window, or an action that isn't http(s), goes nowhere."""
+    import urllib.parse
+
+    def pick(attribute: str, submitter_value: Any, form_value: Any) -> Any:
+        if submitter is not None and submitter.hasAttribute(attribute):
+            return submitter_value
+        return form_value
+
+    method = pick("formmethod", getattr(submitter, "formMethod", None), form.method)
+    if method == "dialog":
+        dialog_element = next(
+            (node for node in _iter_ancestors_inclusive(form) if isinstance(node, HTMLDialogElement)), None
+        )
+        if dialog_element is not None:
+            result = getattr(submitter, "value", None) if submitter is not None else None
+            dialog_element.close(result)
+        return
+
+    view = _browsing_window(form)
+    if view is None:
+        return
+    action = pick("formaction", getattr(submitter, "formAction", None), form.action)
+    if urllib.parse.urlsplit(action).scheme.lower() not in ("http", "https"):
+        return
+    enctype = pick("formenctype", getattr(submitter, "formEnctype", None), form.enctype)
+    target = pick("formtarget", getattr(submitter, "formTarget", None), form.target)
+    window = _navigation_target(view, form.ownerDocument, target)
+
+    if method == "get":
+        query = _encode_form_entries(_form_entries(form, submitter))
+        window._navigate(urllib.parse.urlsplit(action)._replace(query=query).geturl())
+        return
+    if enctype == "multipart/form-data":
+        entries = _form_entries(form, submitter, files=True)
+        fields = [(name, value) for name, value in entries if not hasattr(value, "bytes")]
+        uploads = [
+            (name, (value.name, value.bytes(), value.type or "application/octet-stream"))
+            for name, value in entries
+            if hasattr(value, "bytes")
+        ]
+        window._navigate(action, method="POST", data=fields, files=uploads or None)
+    elif enctype == "text/plain":
+        body = "".join(f"{name}={getattr(value, 'name', value)}\r\n" for name, value in _form_entries(form, submitter))
+        window._navigate(
+            action, method="POST", data=body.encode(), headers={"Content-Type": "text/plain;charset=UTF-8"}
+        )
+    else:
+        body = _encode_form_entries(_form_entries(form, submitter))
+        window._navigate(
+            action,
+            method="POST",
+            data=body,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+
+def _follow_hyperlink(element: "Element") -> None:
+    """An ``<a>`` / ``<area>``'s activation: navigate its window to ``href``
+    (https://html.spec.whatwg.org/#following-hyperlinks). Nothing happens
+    without a window, without ``href``, for a ``download`` link, or for a
+    URL that isn't http(s) or a fragment of the current page."""
+    import urllib.parse
+
+    if not element.hasAttribute("href") or element.hasAttribute("download"):
+        return
+    view = _browsing_window(element)
+    if view is None:
+        return
+    url = str(element.href or "")
+    current = str(view.location.href or "")
+    if url.startswith("#"):
+        url = current.split("#", 1)[0] + url
+    same_document_fragment = "#" in url and url.split("#", 1)[0] == current.split("#", 1)[0]
+    if urllib.parse.urlsplit(url).scheme.lower() not in ("http", "https") and not same_document_fragment:
+        return
+    window = _navigation_target(view, element.ownerDocument, _r.as_string(element.getAttribute("target")))
+    window._navigate(url)
 
 
 def _radio_group_members(control: "Element", *, include_disabled: bool = True) -> list["HTMLInputElement"]:
@@ -12307,6 +12435,14 @@ class HTMLAnchorElement(HTMLElement):
     def interestForElement(self, target: Any) -> None:
         _set_id_reference(self, "interestfor", target)
 
+    def click(self):
+        """Dispatch a click; unless a listener cancels it, follow the link
+        (in a document that is showing in a window)."""
+        result = super().click()
+        if result:
+            _follow_hyperlink(self)
+        return result
+
     def _get_href_value(self) -> str:
         """``href`` resolved against the document's base URL, for the ``URL``
         mixin the ``<a>`` tag carries: ``a.href`` and its parts
@@ -12323,6 +12459,14 @@ class HTMLAreaElement(HTMLElement):
     name = "area"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     href = _r.URL("href")
+
+    def click(self):
+        """Dispatch a click; unless a listener cancels it, follow the link."""
+        result = super().click()
+        if result:
+            _follow_hyperlink(self)
+        return result
+
     alt = _r.String("alt")
     coords = _r.String("coords")
     shape = _r.String("shape")
@@ -13058,6 +13202,7 @@ class HTMLFormElement(HTMLElement):
                 {"bubbles": False, "cancelable": False, "formData": form_data},
             )
         )
+        _submit_form_navigation(self, submitter)
         return True
 
     def reset(self):

@@ -53,6 +53,40 @@ from ``DOMParser``), and assigning to it navigates too.
 	# {'page': 2, 'filter': 'new'}
 
 
+Following links and submitting forms
+------------------------------------
+
+In a document that is showing in a window, ``a.click()`` follows the link and
+submitting a form (``button.click()``, ``form.requestSubmit()``,
+``form.submit()``) sends it, as a browser does: GET puts the fields in the
+query, POST sends them as the body (urlencoded, ``multipart/form-data`` with
+file uploads, or ``text/plain``), redirects are followed, and the window keeps
+the cookies a page sets. The response becomes ``window.document``.
+
+.. code-block :: python
+
+	from domonic.window import Window
+
+	win = Window()
+	win.location = "https://example.com/login"
+
+	page = win.document
+	page.querySelector("[name=user]").value = "ann"
+	page.querySelector("[name=password]").value = "secret"
+	page.querySelector("button[type=submit]").click()   # POST, then the redirect
+
+	win.location.href                  # where the site sent you
+	win.document.querySelector("a.next").click()          # follow a link
+
+A listener that cancels the ``click`` or ``submit`` event stops the
+navigation; a link to a fragment of the same page stays on the document and
+fires ``hashchange``; ``download`` links, non-http(s) URLs and
+``target="_blank"`` leave the window where it is (``_blank`` opens a new
+``Window``). A ``method="dialog"`` form closes its ``<dialog>`` with the
+button's value. Documents without a window -- ``html(...)`` trees and
+``DOMParser`` results -- never make a request.
+
+
 Screen, resize and move
 ------------------------
 
