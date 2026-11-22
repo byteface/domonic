@@ -390,6 +390,28 @@ reflected, because ``element.name`` is the tag name in domonic -- use
 ``getAttribute("name")``.
 
 
+Tables
+------
+
+Tables have the browser's table API: ``rows``, ``tBodies``, ``tHead``,
+``tFoot``, ``caption`` and the ``insert`` / ``create`` / ``delete`` methods on
+the table, its sections and its rows. ``rows`` and ``cells`` are live.
+
+.. code-block :: python
+
+	from domonic.html import table, td, th, tr
+
+	t = table(tr(th("Name"), th("Score")))
+	row = t.insertRow()                # appended after the last row
+	row.insertCell().textContent = "Ann"
+	row.insertCell().textContent = "4"
+
+	[[cell.textContent for cell in r.cells] for r in t.rows]
+	# [['Name', 'Score'], ['Ann', '4']]
+	row.rowIndex                       # 1
+	td(_colspan="0").colSpan           # 1 (clamped to 1..1000)
+
+
 DOMConfig
 ----------------
 

@@ -9714,6 +9714,19 @@ class _LiveHTMLCollection(HTMLCollection):
         return HTMLCollection.namedItem(self._snapshot(), name)
 
 
+class _ComputedHTMLCollection(_LiveHTMLCollection):
+    """A live ``HTMLCollection`` whose members ``compute()`` lists afresh on
+    every access, for collections that are not a descendant filter
+    (``table.rows``, ``tr.cells``, ``table.tBodies``)."""
+
+    def __init__(self, root: "Node", compute: "Callable[[], list]") -> None:
+        super().__init__(root)
+        self._compute = compute
+
+    def _elements(self) -> list:
+        return self._compute()
+
+
 MutationCallback = Callable[[list["MutationRecord"], "MutationObserver"], Any]
 
 
@@ -13799,19 +13812,89 @@ class HTMLTableCaptionElement(HTMLElement):
 
 class HTMLTableCellElement(HTMLElement):
     name = "td"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    colSpan = _r.UnsignedLong("colspan", default=1, clamp=(1, 1000))
+    rowSpan = _r.UnsignedLong("rowspan", default=1, clamp=(0, 65534))
+    headers = _r.String("headers")
+    abbr = _r.String("abbr")
+    scope = _r.Enumerated("scope", ("row", "col", "rowgroup", "colgroup"))
+
+    @property
+    def cellIndex(self) -> int:
+        """This cell's index in its row's ``cells``, or -1 outside a ``<tr>``."""
+        row = self.parentNode
+        if _table_local_name(row) != "tr":
+            return -1
+        return _index_of(_table_children(row, "td", "th"), self)
 
 
 class HTMLTableColElement(HTMLElement):
     name = "col"
     __isempty = True
+    span = _r.UnsignedLong("span", default=1, clamp=(1, 1000))
 
 
 class HTMLTableDataCellElement(HTMLTableCellElement):
     name = "td"
 
 
+_TABLE_SECTIONS = ("thead", "tbody", "tfoot")
+
+
+def _table_local_name(node: Any) -> str:
+    return str(getattr(node, "localName", "") or "").lower() if isinstance(node, Element) else ""
+
+
+def _table_children(parent: Any, *names: str) -> list:
+    return [child for child in getattr(parent, "args", ()) if _table_local_name(child) in names]
+
+
+def _table_rows(table: Any) -> list:
+    """``table.rows``: rows in ``<thead>`` first, then rows that are children of
+    the table or a ``<tbody>``, then rows in ``<tfoot>`` -- each in tree order
+    (https://html.spec.whatwg.org/#dom-table-rows)."""
+    head: list = []
+    body: list = []
+    foot: list = []
+    for child in _table_children(table, "tr", *_TABLE_SECTIONS):
+        name = _table_local_name(child)
+        if name == "tr":
+            body.append(child)
+        else:
+            {"thead": head, "tbody": body, "tfoot": foot}[name].extend(_table_children(child, "tr"))
+    return head + body + foot
+
+
+def _index_of(items: list, node: Any) -> int:
+    return next((index for index, item in enumerate(items) if item is node), -1)
+
+
+def _check_table_index(index: Any, length: int, insert: bool = False) -> int:
+    index = _r.to_long(index)
+    if index < -1 or index > length or (index == length and not insert):
+        raise DOMException(f"The index provided ({index}) is outside the range [-1, {length}].", "IndexSizeError")
+    return index
+
+
+def _create_table_part(context: Any, tag: str) -> Any:
+    document = context.ownerDocument
+    if isinstance(document, Document):
+        return document.createElement(tag)
+    return Document.createElement(tag)
+
+
 class HTMLTableElement(HTMLElement):
     name = "table"
+    # obsolete, still reflected (https://html.spec.whatwg.org/#HTMLTableElement-partial)
+    align = _r.String("align")
+    border = _r.String("border")
+    frame = _r.String("frame")
+    rules = _r.String("rules")
+    summary = _r.String("summary")
+    width = _r.String("width")
+    bgColor = _r.String("bgcolor")
+    cellPadding = _r.String("cellpadding")
+    cellSpacing = _r.String("cellspacing")
 
     def __init__(
         self,
@@ -13862,6 +13945,150 @@ class HTMLTableElement(HTMLElement):
         if width is not None:
             self.setAttribute("width", width)
 
+    # https://html.spec.whatwg.org/#htmltableelement
+
+    @property
+    def caption(self) -> "HTMLTableCaptionElement | None":
+        """The first ``<caption>`` child, or ``None``. Assigning replaces it."""
+        found = _table_children(self, "caption")
+        return found[0] if found else None
+
+    @caption.setter
+    def caption(self, value: Any) -> None:
+        if value is not None and _table_local_name(value) != "caption":
+            raise TypeError("table.caption must be a <caption> element or None")
+        self.deleteCaption()
+        if value is not None:
+            self.prepend(value)
+
+    def createCaption(self) -> "HTMLTableCaptionElement":
+        """The first ``<caption>`` child, created as the first child if there is none."""
+        found = self.caption
+        if found is not None:
+            return found
+        created = _create_table_part(self, "caption")
+        self.prepend(created)
+        return created
+
+    def deleteCaption(self) -> None:
+        found = self.caption
+        if found is not None:
+            self.removeChild(found)
+
+    @property
+    def tHead(self) -> "HTMLTableSectionElement | None":
+        """The first ``<thead>`` child, or ``None``. Assigning replaces it."""
+        found = _table_children(self, "thead")
+        return found[0] if found else None
+
+    @tHead.setter
+    def tHead(self, value: Any) -> None:
+        if value is not None and _table_local_name(value) != "thead":
+            raise DOMException("table.tHead must be a <thead> element or None", "HierarchyRequestError")
+        self.deleteTHead()
+        if value is not None:
+            self._insert_thead(value)
+
+    def _insert_thead(self, thead: Any) -> None:
+        # before the first element child that is neither a caption nor a colgroup
+        for child in getattr(self, "args", ()):
+            if isinstance(child, Element) and _table_local_name(child) not in ("caption", "colgroup"):
+                self.insertBefore(thead, child)
+                return
+        self.appendChild(thead)
+
+    def createTHead(self) -> "HTMLTableSectionElement":
+        found = self.tHead
+        if found is not None:
+            return found
+        created = _create_table_part(self, "thead")
+        self._insert_thead(created)
+        return created
+
+    def deleteTHead(self) -> None:
+        found = self.tHead
+        if found is not None:
+            self.removeChild(found)
+
+    @property
+    def tFoot(self) -> "HTMLTableSectionElement | None":
+        """The first ``<tfoot>`` child, or ``None``. Assigning replaces it."""
+        found = _table_children(self, "tfoot")
+        return found[0] if found else None
+
+    @tFoot.setter
+    def tFoot(self, value: Any) -> None:
+        if value is not None and _table_local_name(value) != "tfoot":
+            raise DOMException("table.tFoot must be a <tfoot> element or None", "HierarchyRequestError")
+        self.deleteTFoot()
+        if value is not None:
+            self.appendChild(value)
+
+    def createTFoot(self) -> "HTMLTableSectionElement":
+        found = self.tFoot
+        if found is not None:
+            return found
+        created = _create_table_part(self, "tfoot")
+        self.appendChild(created)
+        return created
+
+    def deleteTFoot(self) -> None:
+        found = self.tFoot
+        if found is not None:
+            self.removeChild(found)
+
+    @property
+    def tBodies(self) -> "HTMLCollection":
+        """The table's ``<tbody>`` children, live."""
+        return _ComputedHTMLCollection(self, lambda: _table_children(self, "tbody"))
+
+    def createTBody(self) -> "HTMLTableSectionElement":
+        """A new ``<tbody>``, inserted after the last one (or at the end)."""
+        created = _create_table_part(self, "tbody")
+        bodies = _table_children(self, "tbody")
+        following = bodies[-1].nextElementSibling if bodies else None
+        if following is not None:
+            self.insertBefore(created, following)
+        else:
+            self.appendChild(created)
+        return created
+
+    @property
+    def rows(self) -> "HTMLCollection":
+        """Every row of the table, live: ``<thead>`` rows, then body rows, then
+        ``<tfoot>`` rows."""
+        return _ComputedHTMLCollection(self, lambda: _table_rows(self))
+
+    def insertRow(self, index: int = -1) -> "HTMLTableRowElement":
+        """Insert a new ``<tr>`` at ``index`` in ``rows`` (-1 appends) and return it.
+        An empty table gets a ``<tbody>`` to hold it."""
+        rows = _table_rows(self)
+        index = _check_table_index(index, len(rows), insert=True)
+        row = _create_table_part(self, "tr")
+        if not rows:
+            bodies = _table_children(self, "tbody")
+            if bodies:
+                bodies[-1].appendChild(row)
+            else:
+                body = _create_table_part(self, "tbody")
+                body.appendChild(row)
+                self.appendChild(body)
+        elif index == -1 or index == len(rows):
+            rows[-1].parentNode.appendChild(row)
+        else:
+            rows[index].parentNode.insertBefore(row, rows[index])
+        return row
+
+    def deleteRow(self, index: int) -> None:
+        """Remove the row at ``index`` in ``rows`` (-1 removes the last one, if any)."""
+        rows = _table_rows(self)
+        index = _check_table_index(index, len(rows))
+        if index == -1:
+            if rows:
+                rows[-1].parentNode.removeChild(rows[-1])
+            return
+        rows[index].parentNode.removeChild(rows[index])
+
 
 class HTMLTableHeaderCellElement(HTMLTableCellElement):
     name = "th"
@@ -13870,9 +14097,83 @@ class HTMLTableHeaderCellElement(HTMLTableCellElement):
 class HTMLTableRowElement(HTMLElement):
     name = "tr"
 
+    @property
+    def cells(self) -> "HTMLCollection":
+        """The row's ``<td>`` and ``<th>`` children, live."""
+        return _ComputedHTMLCollection(self, lambda: _table_children(self, "td", "th"))
+
+    @property
+    def rowIndex(self) -> int:
+        """This row's index in its table's ``rows``, or -1 outside a table."""
+        parent = self.parentNode
+        table = parent if _table_local_name(parent) == "table" else getattr(parent, "parentNode", None)
+        if _table_local_name(table) != "table" or (
+            parent is not table and _table_local_name(parent) not in _TABLE_SECTIONS
+        ):
+            return -1
+        return _index_of(_table_rows(table), self)
+
+    @property
+    def sectionRowIndex(self) -> int:
+        """This row's index in its parent table or section's ``rows``, else -1."""
+        parent = self.parentNode
+        name = _table_local_name(parent)
+        if name == "table":
+            return _index_of(_table_rows(parent), self)
+        if name in _TABLE_SECTIONS:
+            return _index_of(_table_children(parent, "tr"), self)
+        return -1
+
+    def insertCell(self, index: int = -1) -> "HTMLTableCellElement":
+        """Insert a new ``<td>`` at ``index`` (-1 appends) and return it."""
+        cells = _table_children(self, "td", "th")
+        index = _check_table_index(index, len(cells), insert=True)
+        cell = _create_table_part(self, "td")
+        if index == -1 or index == len(cells):
+            self.appendChild(cell)
+        else:
+            self.insertBefore(cell, cells[index])
+        return cell
+
+    def deleteCell(self, index: int) -> None:
+        """Remove the cell at ``index`` (-1 removes the last one, if any)."""
+        cells = _table_children(self, "td", "th")
+        index = _check_table_index(index, len(cells))
+        if index == -1:
+            if cells:
+                self.removeChild(cells[-1])
+            return
+        self.removeChild(cells[index])
+
 
 class HTMLTableSectionElement(HTMLElement):
     name = "tbody"
+
+    @property
+    def rows(self) -> "HTMLCollection":
+        """The section's ``<tr>`` children, live."""
+        return _ComputedHTMLCollection(self, lambda: _table_children(self, "tr"))
+
+    def insertRow(self, index: int = -1) -> "HTMLTableRowElement":
+        """Insert a new ``<tr>`` at ``index`` (-1 appends) and return it."""
+        rows = _table_children(self, "tr")
+        index = _check_table_index(index, len(rows), insert=True)
+        row = _create_table_part(self, "tr")
+        if index == -1 or index == len(rows):
+            self.appendChild(row)
+        else:
+            self.insertBefore(row, rows[index])
+        return row
+
+    def deleteRow(self, index: int) -> None:
+        """Remove the row at ``index`` (-1 removes the last one, if any)."""
+        rows = _table_children(self, "tr")
+        index = _check_table_index(index, len(rows))
+        if index == -1:
+            if rows:
+                self.removeChild(rows[-1])
+            return
+        self.removeChild(rows[index])
 
 
 class HTMLDetailsElement(HTMLElement):
