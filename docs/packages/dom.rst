@@ -371,10 +371,10 @@ Assigning ``None`` removes it.
 	el.width = 64
 	print(el)                  # <img alt="A cat" width="64"/>
 
-URL properties (``src``, ``href`` on ``<link>``, ``cite``, ``formAction`` ...)
-resolve against the document's URL, so a scraped page gives absolute links.
-Without a document URL the value comes back as written. ``a.href`` keeps its
-existing behaviour.
+URL properties (``src``, ``href``, ``cite``, ``formAction`` ...) resolve
+against the document's URL, so a scraped page gives absolute links, and an
+``<a>``'s ``host`` / ``pathname`` / ``search`` ... read the resolved URL.
+Without a document URL the value comes back as written.
 
 .. code-block :: python
 

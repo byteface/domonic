@@ -168,6 +168,7 @@ class URL:
 
     @protocol.setter
     def protocol(self, p: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         self.__protocol = (p or "").rstrip(":")
         self.__update__()
 
@@ -178,6 +179,7 @@ class URL:
 
     @hostname.setter
     def hostname(self, h: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if h is None:
             return
         if ":" in h:
@@ -192,6 +194,7 @@ class URL:
 
     @port.setter
     def port(self, p: int | str | None):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if p in ("", None):
             self.__port = None
         else:
@@ -205,6 +208,7 @@ class URL:
 
     @username.setter
     def username(self, value: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         self.__username = "" if value is None else str(value)
         self.__update__()
 
@@ -215,6 +219,7 @@ class URL:
 
     @password.setter
     def password(self, value: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         self.__password = "" if value is None else str(value)
         self.__update__()
 
@@ -230,6 +235,7 @@ class URL:
 
     @host.setter
     def host(self, h: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if h is None:
             return
         p = self.port
@@ -248,6 +254,7 @@ class URL:
 
     @pathname.setter
     def pathname(self, p: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if p is None:
             p = ""
         elif p and not str(p).startswith("/"):
@@ -264,6 +271,7 @@ class URL:
 
     @search.setter
     def search(self, value: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if value is None:
             value = ""
         self.__search = value if value == "" else value.lstrip("?")
@@ -278,6 +286,7 @@ class URL:
 
     @hash.setter
     def hash(self, h: str):
+        self._ensure_url_state()  # load the current href first, or __update__ reloads over this change
         if h is None or h == "":
             self.__hash = ""
         else:

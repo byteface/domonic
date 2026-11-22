@@ -12300,10 +12300,22 @@ class HTMLAnchorElement(HTMLElement):
     def interestForElement(self, target: Any) -> None:
         _set_id_reference(self, "interestfor", target)
 
+    def _get_href_value(self) -> str:
+        """``href`` resolved against the document's base URL, for the ``URL``
+        mixin the ``<a>`` tag carries: ``a.href`` and its parts
+        (``pathname``, ``host`` ...) read the absolute URL, like a browser's
+        HTMLHyperlinkElementUtils. Without a document URL it is the value as
+        written."""
+        value = self.getAttribute("href")
+        if value is None:
+            return ""
+        return _r.resolve_url(self, _r.as_string(value))
+
 
 class HTMLAreaElement(HTMLElement):
     name = "area"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    href = _r.URL("href")
     alt = _r.String("alt")
     coords = _r.String("coords")
     shape = _r.String("shape")

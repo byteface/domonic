@@ -109,6 +109,21 @@ class TestURLReflection(unittest.TestCase):
         self.assertEqual(second.action, "https://example.com/dir/search")
         self.assertEqual(doc.querySelector("button").formAction, "https://example.com/dir/page.html")
 
+    def test_anchor_href_and_its_parts_resolve(self):
+        doc = _page('<a href="/docs?x=1#top">d</a><a href="../up">u</a><a>none</a><area href="map">')
+        docs, up, bare = doc.querySelectorAll("a")
+        self.assertEqual(docs.href, "https://example.com/docs?x=1#top")
+        self.assertEqual((docs.host, docs.pathname, docs.search, docs.hash), ("example.com", "/docs", "?x=1", "#top"))
+        self.assertEqual(up.href, "https://example.com/up")
+        self.assertEqual(bare.href, "")
+        self.assertEqual(doc.querySelector("area").href, "https://example.com/dir/map")
+        self.assertEqual(a(_href="/raw").href, "/raw")  # no document URL: as written
+
+    def test_setting_an_anchor_url_part_writes_the_whole_url(self):
+        link = _page('<a href="/docs?x=1">d</a>').querySelector("a")
+        link.pathname = "/other"
+        self.assertEqual(link.getAttribute("href"), "https://example.com/other?x=1")
+
     def test_base_href_resolves_against_the_document_url(self):
         doc = _page("")
         self.assertEqual(base(_href="/root/").href, "/root/")
