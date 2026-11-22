@@ -11855,48 +11855,6 @@ class HTMLAreaElement(HTMLElement):
         _set_id_reference(self, "interestfor", target)
 
 
-class HTMLAudioElement(HTMLElement):
-    name = "audio"
-
-    def __init__(
-        self,
-        *args,
-        autoplay: bool | None = None,
-        controls=None,
-        crossorigin=None,
-        loading=None,
-        loop=None,
-        muted=None,
-        preload=None,
-        src=None,
-        **kwargs,
-    ):
-        """HTMLAudioElement
-
-        Args:
-            autoplay (bool, optional): if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading
-            controls (_type_, optional): _description_. Defaults to None.
-            loop (_type_, optional): _description_. Defaults to None.
-            muted (_type_, optional): _description_. Defaults to None.
-            preload (_type_, optional): _description_. Defaults to None.
-            src (_type_, optional): _description_. Defaults to None.
-        """
-        super().__init__(*args, **kwargs)
-        _set_attributes(
-            self,
-            {
-                "autoplay": autoplay,
-                "controls": controls,
-                "crossorigin": crossorigin,
-                "loading": loading,
-                "loop": loop,
-                "muted": muted,
-                "preload": preload,
-                "src": src,
-            },
-        )
-
-
 class HTMLBRElement(HTMLElement):
     name = "br"
     __isempty = True
@@ -13493,8 +13451,58 @@ class HTMLMapElement(HTMLElement):
             self.setAttribute("name", name)
 
 
+_PLAYABLE_MEDIA_TYPES = frozenset(
+    {
+        "application/ogg",
+        "audio/aac",
+        "audio/flac",
+        "audio/mp3",
+        "audio/mp4",
+        "audio/mpeg",
+        "audio/ogg",
+        "audio/wav",
+        "audio/wave",
+        "audio/webm",
+        "audio/x-wav",
+        "video/mp4",
+        "video/ogg",
+        "video/webm",
+    }
+)
+
+
 class HTMLMediaElement(HTMLElement):
+    """The shared base of ``<audio>`` and ``<video>``
+    (https://html.spec.whatwg.org/#htmlmediaelement).
+
+    domonic plays nothing: there is no media data, so ``duration`` is NaN and
+    the ``buffered`` / ``played`` / ``seekable`` ranges are empty. The playback
+    state (``paused``, ``currentTime``, ``volume``, ``muted``, rates) is kept and
+    fires the events a browser does when it changes.
+    """
+
     name = ""
+
+    NETWORK_EMPTY = 0
+    NETWORK_IDLE = 1
+    NETWORK_LOADING = 2
+    NETWORK_NO_SOURCE = 3
+    HAVE_NOTHING = 0
+    HAVE_METADATA = 1
+    HAVE_CURRENT_DATA = 2
+    HAVE_FUTURE_DATA = 3
+    HAVE_ENOUGH_DATA = 4
+
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    src = _r.URL("src")
+    crossOrigin = _r.cross_origin()
+    preload = _r.Enumerated(
+        "preload", ("none", "metadata", "auto"), missing="metadata", invalid="metadata", aliases={"": "auto"}
+    )
+    autoplay = _r.Boolean("autoplay")
+    loop = _r.Boolean("loop")
+    controls = _r.Boolean("controls")
+    defaultMuted = _r.Boolean("muted")
 
     def __init__(
         self,
@@ -13523,20 +13531,172 @@ class HTMLMediaElement(HTMLElement):
             },
         )
 
+    def _fire(self, event_type: str) -> None:
+        self.dispatchEvent(Event(event_type, {"bubbles": False, "cancelable": False}))
+
+    def _media_state(self, key: str, default: Any) -> Any:
+        return self.__dict__.get("_media_" + key, default)
+
+    def _set_media_state(self, key: str, value: Any) -> None:
+        self.__dict__["_media_" + key] = value
+
     def load(self):
-        self.dispatchEvent(Event("loadstart", {"bubbles": False, "cancelable": False}))
-        self.dispatchEvent(Event("loadedmetadata", {"bubbles": False, "cancelable": False}))
-        self.dispatchEvent(Event("loadeddata", {"bubbles": False, "cancelable": False}))
+        """Reset playback and (pretend to) load ``src``: fires ``loadstart``,
+        ``loadedmetadata`` and ``loadeddata``."""
+        self._set_media_state("paused", True)
+        self._set_media_state("current_time", 0.0)
+        self._set_media_state("current_src", self.src)
+        self._set_media_state("network_state", self.NETWORK_IDLE)
+        self._set_media_state("ready_state", self.HAVE_CURRENT_DATA)
+        self._fire("loadstart")
+        self._fire("loadedmetadata")
+        self._fire("loadeddata")
         return self
 
     def play(self):
-        self.dispatchEvent(Event("play", {"bubbles": False, "cancelable": False}))
-        self.dispatchEvent(Event("playing", {"bubbles": False, "cancelable": False}))
-        return True
+        """Start playback; returns a (settled) ``Promise`` like a browser."""
+        from domonic.javascript import Promise
 
-    def pause(self):
-        self.dispatchEvent(Event("pause", {"bubbles": False, "cancelable": False}))
+        if self.paused:
+            self._set_media_state("paused", False)
+            self._fire("play")
+            self._fire("playing")
+        return Promise.resolve(None)
+
+    def pause(self) -> None:
+        if not self.paused:
+            self._set_media_state("paused", True)
+            self._fire("timeupdate")
+            self._fire("pause")
         return None
+
+    @property
+    def paused(self) -> bool:
+        return bool(self._media_state("paused", True))
+
+    @property
+    def ended(self) -> bool:
+        return False
+
+    @property
+    def seeking(self) -> bool:
+        return False
+
+    @property
+    def currentTime(self) -> float:
+        return float(self._media_state("current_time", 0.0))
+
+    @currentTime.setter
+    def currentTime(self, value: Any) -> None:
+        self._set_media_state("current_time", max(0.0, _r.to_double(value)))
+        self._fire("timeupdate")
+
+    def fastSeek(self, time: Any) -> None:
+        self.currentTime = time
+
+    @property
+    def duration(self) -> float:
+        """NaN: there is no media data to have a length."""
+        return float("nan")
+
+    @property
+    def currentSrc(self) -> str:
+        """The URL ``load()`` picked up, ``""`` before that."""
+        return str(self._media_state("current_src", ""))
+
+    @property
+    def networkState(self) -> int:
+        return int(self._media_state("network_state", self.NETWORK_EMPTY))
+
+    @property
+    def readyState(self) -> int:
+        return int(self._media_state("ready_state", self.HAVE_NOTHING))
+
+    @property
+    def error(self) -> None:
+        return None
+
+    @property
+    def srcObject(self) -> Any:
+        return self._media_state("src_object", None)
+
+    @srcObject.setter
+    def srcObject(self, value: Any) -> None:
+        self._set_media_state("src_object", value)
+
+    @property
+    def buffered(self) -> "TimeRanges":
+        return TimeRanges()
+
+    @property
+    def played(self) -> "TimeRanges":
+        return TimeRanges()
+
+    @property
+    def seekable(self) -> "TimeRanges":
+        return TimeRanges()
+
+    @property
+    def muted(self) -> bool:
+        """Starts as the ``muted`` attribute (``defaultMuted``); assigning it
+        doesn't touch the attribute."""
+        found = self._media_state("muted", None)
+        return self.defaultMuted if found is None else bool(found)
+
+    @muted.setter
+    def muted(self, value: Any) -> None:
+        changed = bool(value) != self.muted
+        self._set_media_state("muted", bool(value))
+        if changed:
+            self._fire("volumechange")
+
+    @property
+    def volume(self) -> float:
+        return float(self._media_state("volume", 1.0))
+
+    @volume.setter
+    def volume(self, value: Any) -> None:
+        volume = _r.to_double(value)
+        if not 0.0 <= volume <= 1.0:
+            raise DOMException(f"The volume provided ({volume}) is outside the range [0, 1].", "IndexSizeError")
+        changed = volume != self.volume
+        self._set_media_state("volume", volume)
+        if changed:
+            self._fire("volumechange")
+
+    @property
+    def playbackRate(self) -> float:
+        return float(self._media_state("playback_rate", 1.0))
+
+    @playbackRate.setter
+    def playbackRate(self, value: Any) -> None:
+        self._set_media_state("playback_rate", _r.to_double(value))
+        self._fire("ratechange")
+
+    @property
+    def defaultPlaybackRate(self) -> float:
+        return float(self._media_state("default_playback_rate", 1.0))
+
+    @defaultPlaybackRate.setter
+    def defaultPlaybackRate(self, value: Any) -> None:
+        self._set_media_state("default_playback_rate", _r.to_double(value))
+        self._fire("ratechange")
+
+    @property
+    def preservesPitch(self) -> bool:
+        return bool(self._media_state("preserves_pitch", True))
+
+    @preservesPitch.setter
+    def preservesPitch(self, value: Any) -> None:
+        self._set_media_state("preserves_pitch", bool(value))
+
+    def canPlayType(self, type: str) -> str:
+        """``"maybe"`` for a common audio/video MIME type, ``"probably"`` when
+        it also names codecs, ``""`` otherwise (https://html.spec.whatwg.org/#dom-navigator-canplaytype)."""
+        mime, _sep, parameters = str(type).partition(";")
+        if mime.strip().lower() not in _PLAYABLE_MEDIA_TYPES:
+            return ""
+        return "probably" if "codecs" in parameters.lower() else "maybe"
 
     def addTextTrack(self, kind: str, label: str = "", language: str = "") -> dict[str, Any]:
         from domonic.events import TrackEvent
@@ -13568,6 +13728,48 @@ class HTMLMediaElement(HTMLElement):
                 TrackEvent.REMOVETRACK,
                 {"bubbles": False, "cancelable": False, "track": track},
             )
+        )
+
+
+class HTMLAudioElement(HTMLMediaElement):
+    name = "audio"
+
+    def __init__(
+        self,
+        *args,
+        autoplay: bool | None = None,
+        controls=None,
+        crossorigin=None,
+        loading=None,
+        loop=None,
+        muted=None,
+        preload=None,
+        src=None,
+        **kwargs,
+    ):
+        """HTMLAudioElement
+
+        Args:
+            autoplay (bool, optional): if specified, the audio will automatically begin playback as soon as it can do so, without waiting for the entire audio file to finish downloading
+            controls (_type_, optional): _description_. Defaults to None.
+            loop (_type_, optional): _description_. Defaults to None.
+            muted (_type_, optional): _description_. Defaults to None.
+            preload (_type_, optional): _description_. Defaults to None.
+            src (_type_, optional): _description_. Defaults to None.
+        """
+        super().__init__(*args, **kwargs)
+        _set_attributes(
+            self,
+            {
+                "autoplay": autoplay,
+                "controls": controls,
+                "crossorigin": crossorigin,
+                "loading": loading,
+                "loop": loop,
+                "muted": muted,
+                "preload": preload,
+                "src": src,
+            },
         )
 
 
@@ -15038,8 +15240,23 @@ class HTMLUnknownElement(HTMLElement):
     name = "unknown"
 
 
-class HTMLVideoElement(HTMLElement):
+class HTMLVideoElement(HTMLMediaElement):
     name = "video"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    width = _r.UnsignedLong("width")
+    height = _r.UnsignedLong("height")
+    poster = _r.URL("poster")
+    playsInline = _r.Boolean("playsinline")
+    disablePictureInPicture = _r.Boolean("disablepictureinpicture")
+
+    @property
+    def videoWidth(self) -> int:
+        """0: there is no video data to have a size."""
+        return 0
+
+    @property
+    def videoHeight(self) -> int:
+        return 0
 
     def __init__(
         self,

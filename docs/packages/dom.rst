@@ -446,6 +446,25 @@ Text inputs and textareas have the selection API (``selectionStart``,
 	meter(_value="15", _max="10").value                                 # 10.0
 
 
+Media
+-----
+
+``<audio>`` and ``<video>`` are ``HTMLMediaElement`` s. Nothing is decoded, so
+``duration`` is ``nan`` and the time ranges are empty, but the playback state
+works and fires the browser's events (``play``, ``playing``, ``pause``,
+``timeupdate``, ``volumechange``, ``ratechange``).
+
+.. code-block :: python
+
+	from domonic.html import video
+
+	clip = video(_src="intro.mp4", _muted="")
+	clip.play()                          # a resolved Promise; clip.paused is now False
+	clip.muted                           # True (from the attribute)
+	clip.volume = 0.5                    # a value outside 0..1 raises IndexSizeError
+	clip.canPlayType("video/webm")       # 'maybe'
+
+
 DOMConfig
 ----------------
 
