@@ -33,6 +33,7 @@ files = [
     "domonic/__main__.py",
     "domonic/_cssom.py",
     "domonic/_fontmetrics.py",
+    "domonic/_reflect.py",
     "domonic/animation.py",
     "domonic/cmd.py",
     "domonic/components.py",

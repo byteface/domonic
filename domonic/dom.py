@@ -45,6 +45,7 @@ def _escape_html(value: str, quote: bool = True) -> str:
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic import _cssom, _fontmetrics
+from domonic import _reflect as _r
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
 from domonic.javascript import undefined
@@ -4197,15 +4198,26 @@ class Selection:
 class DOMTokenList(list):
     """DOMTokenList represents a set of space-separated tokens."""
 
-    def __init__(self, element: "Node"):
+    def __init__(self, element: "Node", attribute: str = "class", supported: "frozenset[str] | None" = None):
+        """A token list over ``element``'s ``attribute`` -- ``class`` for
+        ``classList``, or e.g. ``rel`` / ``sandbox`` / ``for`` for the other
+        reflected token lists. ``supported`` is the set of tokens
+        ``supports()`` recognises; ``None`` means it has none and throws."""
         self.el = element
+        self._attribute = attribute
+        self._supported = supported
         tokens = self._tokens_from_element()
         self.classes = tokens
         super().__init__(tokens)
 
+    def _attribute_value(self) -> str:
+        if self._attribute == "class":
+            return str(self.el.className or "")
+        return _r.as_string(self.el.getAttribute(self._attribute))
+
     def _tokens_from_element(self) -> list[str]:
         tokens = []
-        for token in str(self.el.className or "").split():
+        for token in self._attribute_value().split():
             if token not in tokens:
                 tokens.append(token)
         return tokens
@@ -4234,11 +4246,14 @@ class DOMTokenList(list):
 
     def _sync(self) -> None:
         self.classes = list(list.__iter__(self))
-        # DOM update steps: if the element has no ``class`` attribute and the
+        # DOM update steps: if the element has no such attribute and the
         # token set is empty, do nothing -- do not materialise ``class=""``.
-        if not self.classes and not self.el.hasAttribute("class"):
+        if not self.classes and not self.el.hasAttribute(self._attribute):
             return
-        self.el.className = " ".join(self.classes)
+        if self._attribute == "class":
+            self.el.className = " ".join(self.classes)
+        else:
+            self.el.setAttribute(self._attribute, " ".join(self.classes))
 
     @property
     def length(self) -> int:
@@ -4382,9 +4397,13 @@ class DOMTokenList(list):
         return list.__contains__(self, str(token))
 
     def supports(self, token) -> bool:
-        """A ``classList`` has no defined set of supported tokens, so per the
-        DOM spec ``supports()`` always throws ``TypeError``."""
-        raise TypeError("classList has no supported tokens")
+        """Whether ``token`` is one the attribute's processing model knows
+        (``relList.supports("noopener")``). A list with no defined set of
+        supported tokens, such as ``classList``, throws ``TypeError`` (DOM spec)."""
+        if self._supported is None:
+            name = "classList" if self._attribute == "class" else self._attribute
+            raise TypeError(f"{name} has no supported tokens")
+        return str(token).lower() in self._supported
 
     def item(self, index: int):
         """Returns the token at the specified index, or ``None`` if out of range."""
@@ -4395,7 +4414,7 @@ class DOMTokenList(list):
         """The stringifier returns the associated attribute's value verbatim --
         it is *not* normalised (DOM spec: the stringifier is the ``class``
         attribute's value, so ``"  a  a b"`` stringifies to ``"  a  a b"``)."""
-        return str(self.el.className or "")
+        return self._attribute_value()
 
     def entries(self) -> Iterable[tuple[int, str]]:
         """Returns an iterator over index/token pairs."""
@@ -5749,15 +5768,8 @@ class Element(Node):
         """Returns the value of the dataset attribute of an element"""
         return DOMStringMap(element=self)
 
-    @property
-    def dir(self):
-        """returns the value of the dir attribute of an element"""
-        return self.getAttribute("dir")
-
-    @dir.setter
-    def dir(self, direction: str = "auto"):
-        """Sets the value of the dir attribute of an element"""
-        self.setAttribute("dir", direction)
+    # "ltr" / "rtl" / "auto", or "" when absent or unrecognised
+    dir = _r.Enumerated("dir", ("ltr", "rtl", "auto"))
 
     def exitFullscreen(self):
         """Cancels an element in fullscreen mode"""
@@ -6227,14 +6239,7 @@ class Element(Node):
             return True
         return False
 
-    @property
-    def lang(self) -> str | None:
-        """Sets or returns the value of the lang attribute of an element."""
-        return self.getAttribute("lang")
-
-    @lang.setter
-    def lang(self, value: str) -> None:
-        self.setAttribute("lang", value)
+    lang = _r.String("lang")
 
     @property
     def lastElementChild(self) -> Node | None:
@@ -6817,22 +6822,7 @@ class Element(Node):
     # def textContent(self, content):
     #     self.nodeValue = content
 
-    @property
-    def title(self):
-        """returns the value of the title attribute of an element"""
-        return self.getAttribute("title")
-
-    @title.setter
-    def title(self, newtitle: str):
-        """Sets the value of the title attribute of an element.
-
-        Args:
-            newtitle (str): The new title value.
-        """
-        self.setAttribute(
-            "title",
-            newtitle if newtitle is None or isinstance(newtitle, str) else str(newtitle),
-        )
+    title = _r.String("title")
 
     def toString(self) -> str:
         """Converts an element to a string"""
@@ -11682,6 +11672,15 @@ class HTMLElement(Element):
 
 class HTMLAnchorElement(HTMLElement):
     name = "a"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    target = _r.String("target")
+    download = _r.String("download")
+    ping = _r.String("ping")
+    rel = _r.String("rel")
+    relList = _r.TokenList("rel", _r.HYPERLINK_REL_TOKENS)
+    hreflang = _r.String("hreflang")
+    type = _r.String("type")
+    referrerPolicy = _r.referrer_policy()
 
     def __init__(
         self,
@@ -11731,6 +11730,17 @@ class HTMLAnchorElement(HTMLElement):
 
 class HTMLAreaElement(HTMLElement):
     name = "area"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    alt = _r.String("alt")
+    coords = _r.String("coords")
+    shape = _r.String("shape")
+    target = _r.String("target")
+    download = _r.String("download")
+    ping = _r.String("ping")
+    rel = _r.String("rel")
+    relList = _r.TokenList("rel", _r.HYPERLINK_REL_TOKENS)
+    referrerPolicy = _r.referrer_policy()
+    noHref = _r.Boolean("nohref")
 
     def __init__(
         self,
@@ -11841,6 +11851,8 @@ class HTMLBRElement(HTMLElement):
 
 class HTMLBaseElement(HTMLElement):
     name = "base"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    target = _r.String("target")
 
     def __init__(self, *args, href=None, target=None, **kwargs):
         """HTMLBaseElement
@@ -11854,6 +11866,24 @@ class HTMLBaseElement(HTMLElement):
             self.setAttribute("href", href)
         if target is not None:
             self.setAttribute("target", target)
+
+    @property
+    def href(self) -> str:
+        """The ``href`` attribute resolved against the document's URL (not
+        against itself), or the document's URL when the attribute is absent
+        (https://html.spec.whatwg.org/#dom-base-href)."""
+        value = self.getAttribute("href")
+        page_url = _r.document_url(self)
+        if value is None:
+            return page_url
+        return _r.join_url(page_url, _r.as_string(value))
+
+    @href.setter
+    def href(self, value: Any) -> None:
+        if value is None:
+            self.removeAttribute("href")
+        else:
+            self.setAttribute("href", str(value))
 
 
 class HTMLBaseFontElement(HTMLElement):
@@ -11920,6 +11950,14 @@ class HTMLBodyElement(HTMLElement):
 
 class HTMLButtonElement(HTMLElement):
     name = "button"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    disabled = _r.Boolean("disabled")
+    formAction = _r.FormAction("formaction")
+    formEnctype = _r.form_enctype()
+    formMethod = _r.form_method()
+    formNoValidate = _r.Boolean("formnovalidate")
+    formTarget = _r.String("formtarget")
+    type = _r.Enumerated("type", ("submit", "reset", "button"), missing="submit", invalid="submit")
 
     # autofocus?
     def __init__(
@@ -12038,6 +12076,9 @@ class HTMLButtonElement(HTMLElement):
 
 class HTMLCanvasElement(HTMLElement):
     name = "canvas"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    width = _r.UnsignedLong("width", default=300)
+    height = _r.UnsignedLong("height", default=150)
 
     def __init__(self, *args, width: int | None = None, height: int | None = None, **kwargs):
         """HTMLCanvasElement
@@ -12115,6 +12156,8 @@ class HTMLDListElement(HTMLElement):
 
 class HTMLDataElement(HTMLElement):
     name = "data"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    value = _r.String("value")
 
     def __init__(self, *args, value=None, **kwargs):
         """HTMLDataElement
@@ -12224,10 +12267,17 @@ class HTMLDocument(Document):
 
 class HTMLEmbedElement(HTMLElement):
     name = "embed"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    src = _r.URL("src")
+    type = _r.String("type")
+    width = _r.String("width")
+    height = _r.String("height")
 
 
 class HTMLFieldSetElement(HTMLElement):
     name = "fieldset"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    disabled = _r.Boolean("disabled")
 
     def __init__(self, *args, disabled=None, form=None, name=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -12297,6 +12347,17 @@ class HTMLFormControlsCollection(HTMLCollection):
 
 class HTMLFormElement(HTMLElement):
     name = "form"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    acceptCharset = _r.String("accept-charset")
+    action = _r.FormAction("action")
+    autocomplete = _r.Enumerated("autocomplete", ("on", "off"), missing="on", invalid="on")
+    enctype = _r.form_enctype("enctype", missing="application/x-www-form-urlencoded")
+    encoding = _r.form_enctype("enctype", missing="application/x-www-form-urlencoded")
+    method = _r.form_method("method", missing="get")
+    noValidate = _r.Boolean("novalidate")
+    target = _r.String("target")
+    rel = _r.String("rel")
+    relList = _r.TokenList("rel", _r.HYPERLINK_REL_TOKENS)
 
     # accept-charset??
     def __init__(
@@ -12428,6 +12489,17 @@ class HTMLHeadingElement(HTMLElement):
 
 class HTMLIFrameElement(HTMLElement):
     name = "iframe"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    src = _r.URL("src")
+    srcdoc = _r.String("srcdoc")
+    sandbox = _r.TokenList("sandbox", _r.SANDBOX_TOKENS)
+    allow = _r.String("allow")
+    allowFullscreen = _r.Boolean("allowfullscreen")
+    credentialless = _r.Boolean("credentialless")
+    width = _r.String("width")
+    height = _r.String("height")
+    referrerPolicy = _r.referrer_policy()
+    loading = _r.loading()
 
     def __init__(
         self,
@@ -12474,6 +12546,20 @@ class HTMLIFrameElement(HTMLElement):
 
 class HTMLImageElement(HTMLElement):
     name = "img"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    alt = _r.String("alt")
+    src = _r.URL("src")
+    srcset = _r.String("srcset")
+    sizes = _r.String("sizes")
+    crossOrigin = _r.cross_origin()
+    useMap = _r.String("usemap")
+    isMap = _r.Boolean("ismap")
+    width = _r.UnsignedLong("width")
+    height = _r.UnsignedLong("height")
+    referrerPolicy = _r.referrer_policy()
+    decoding = _r.Enumerated("decoding", ("sync", "async", "auto"), missing="auto", invalid="auto")
+    loading = _r.loading()
+    fetchPriority = _r.fetch_priority()
     __isempty = True
 
     def __init__(
@@ -12552,6 +12638,36 @@ class HTMLImageElement(HTMLElement):
 
 class HTMLInputElement(HTMLElement):
     name = "input"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    accept = _r.String("accept")
+    alpha = _r.Boolean("alpha")
+    alt = _r.String("alt")
+    autocomplete = _r.String("autocomplete")
+    capture = _r.Enumerated("capture", ("user", "environment"))
+    colorSpace = _r.Enumerated(
+        "colorspace", ("limited-srgb", "display-p3"), missing="limited-srgb", invalid="limited-srgb"
+    )
+    dirName = _r.String("dirname")
+    disabled = _r.Boolean("disabled")
+    formAction = _r.FormAction("formaction")
+    formEnctype = _r.form_enctype()
+    formMethod = _r.form_method()
+    formNoValidate = _r.Boolean("formnovalidate")
+    formTarget = _r.String("formtarget")
+    height = _r.UnsignedLong("height")
+    width = _r.UnsignedLong("width")
+    max = _r.String("max")
+    min = _r.String("min")
+    maxLength = _r.Long("maxlength", default=-1, non_negative=True)
+    minLength = _r.Long("minlength", default=-1, non_negative=True)
+    multiple = _r.Boolean("multiple")
+    pattern = _r.String("pattern")
+    placeholder = _r.String("placeholder")
+    readOnly = _r.Boolean("readonly")
+    required = _r.Boolean("required")
+    size = _r.UnsignedLong("size", default=20, positive=True, fallback=True)
+    src = _r.URL("src")
+    step = _r.String("step")
     __isempty = True
 
     def __init__(
@@ -12847,10 +12963,15 @@ class HTMLKeygenElement(HTMLElement):
 
 class HTMLLIElement(HTMLElement):
     name = "li"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    value = _r.Long("value")
+    type = _r.String("type")
 
 
 class HTMLLabelElement(HTMLElement):
     name = "label"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    htmlFor = _r.String("for")
 
     # def __init__(self, *args, _for=None, **kwargs):
     #     """_summary_
@@ -12877,6 +12998,23 @@ def _linkstyle_sheet(element: "Element") -> Any:
 
 class HTMLLinkElement(HTMLElement):
     name = "link"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    href = _r.URL("href")
+    crossOrigin = _r.cross_origin()
+    rel = _r.String("rel")
+    relList = _r.TokenList("rel", _r.LINK_REL_TOKENS)
+    as_ = _r.Enumerated("as", _r.POTENTIAL_DESTINATIONS)
+    media = _r.String("media")
+    integrity = _r.String("integrity")
+    hreflang = _r.String("hreflang")
+    type = _r.String("type")
+    sizes = _r.TokenList("sizes")
+    imageSrcset = _r.String("imagesrcset")
+    imageSizes = _r.String("imagesizes")
+    referrerPolicy = _r.referrer_policy()
+    blocking = _r.TokenList("blocking", ("render",))
+    disabled = _r.Boolean("disabled")
+    fetchPriority = _r.fetch_priority()
 
     @property
     def sheet(self) -> "Any":
@@ -12936,6 +13074,11 @@ class HTMLLinkElement(HTMLElement):
                 "type": type,
             },
         )
+
+
+# ``as`` is a Python keyword, so the property is ``link.as_``; getattr(link, "as")
+# also works, the way a JS port spells it.
+_r.install_keyword_alias(HTMLLinkElement, "as", HTMLLinkElement.__dict__["as_"])
 
 
 class HTMLMapElement(HTMLElement):
@@ -13031,6 +13174,10 @@ class HTMLMenuElement(HTMLElement):
 
 class HTMLMetaElement(HTMLElement):
     name = "meta"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    httpEquiv = _r.String("http-equiv")
+    content = _r.String("content")
+    media = _r.String("media")
     __isempty = True
 
     def __init__(self, *args, charset=None, content=None, http_equiv=None, name=None, **kwargs):
@@ -13096,6 +13243,9 @@ class HTMLMeterElement(HTMLElement):
 
 class HTMLModElement(HTMLElement):
     name = "mod"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    cite = _r.URL("cite")
+    dateTime = _r.String("datetime")
 
     def __init__(self, *args, datetime=None, **kwargs):
         """HTMLModElement
@@ -13110,18 +13260,32 @@ class HTMLModElement(HTMLElement):
 
 class HTMLOListElement(HTMLElement):
     name = "ol"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    reversed = _r.Boolean("reversed")
+    start = _r.Long("start", default=1)
+    type = _r.String("type")
 
 
 class HTMLObjectElement(HTMLElement):
     name = "object"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    data = _r.URL("data")
+    type = _r.String("type")
+    width = _r.String("width")
+    height = _r.String("height")
 
 
 class HTMLOptGroupElement(HTMLElement):
     name = "optgroup"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    disabled = _r.Boolean("disabled")
+    label = _r.String("label")
 
 
 class HTMLOptionElement(HTMLElement):
     name = "option"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    disabled = _r.Boolean("disabled")
 
     def __init__(self, *args, disabled=None, label=None, selected=None, value=None, **kwargs):
         """HTMLOptionElement
@@ -13278,6 +13442,8 @@ class HTMLOptionsCollection(HTMLCollection):
 
 class HTMLOutputElement(HTMLElement):
     name = "output"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    htmlFor = _r.TokenList("for")
 
 
 class HTMLParagraphElement(HTMLElement):
@@ -13286,6 +13452,8 @@ class HTMLParagraphElement(HTMLElement):
 
 class HTMLParamElement(HTMLElement):
     name = "param"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    value = _r.String("value")
     __isempty = True
 
     def __init__(self, *args, name=None, value=None, **kwargs):
@@ -13336,6 +13504,8 @@ class HTMLProgressElement(HTMLElement):
 
 class HTMLQuoteElement(HTMLElement):
     name = "q"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    cite = _r.URL("cite")
 
     def __init__(self, *args, cite=None, **kwargs):
         """HTMLQuoteElement
@@ -13350,6 +13520,17 @@ class HTMLQuoteElement(HTMLElement):
 
 class HTMLScriptElement(HTMLElement):
     name = "script"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    src = _r.URL("src")
+    type = _r.String("type")
+    noModule = _r.Boolean("nomodule")
+    async_ = _r.Boolean("async")
+    defer = _r.Boolean("defer")
+    crossOrigin = _r.cross_origin()
+    integrity = _r.String("integrity")
+    referrerPolicy = _r.referrer_policy()
+    blocking = _r.TokenList("blocking", ("render",))
+    fetchPriority = _r.fetch_priority()
 
     def __init__(
         self,
@@ -13385,8 +13566,19 @@ class HTMLScriptElement(HTMLElement):
         )
 
 
+# ``async`` is a Python keyword, so the property is ``script.async_``; getattr(script, "async")
+# also works, the way a JS port spells it.
+_r.install_keyword_alias(HTMLScriptElement, "async", HTMLScriptElement.__dict__["async_"])
+
+
 class HTMLSelectElement(HTMLElement):
     name = "select"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    autocomplete = _r.String("autocomplete")
+    disabled = _r.Boolean("disabled")
+    multiple = _r.Boolean("multiple")
+    required = _r.Boolean("required")
+    size = _r.UnsignedLong("size")
 
     def __init__(
         self,
@@ -13528,6 +13720,14 @@ class HTMLShadowElement(HTMLElement):
 
 class HTMLSourceElement(HTMLElement):
     name = "source"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    src = _r.URL("src")
+    type = _r.String("type")
+    srcset = _r.String("srcset")
+    sizes = _r.String("sizes")
+    media = _r.String("media")
+    width = _r.UnsignedLong("width")
+    height = _r.UnsignedLong("height")
     __isempty = True
 
     def __init__(
@@ -13571,6 +13771,9 @@ class HTMLSpanElement(HTMLElement):
 
 class HTMLStyleElement(HTMLElement):
     name = "style"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    media = _r.String("media")
+    blocking = _r.TokenList("blocking", ("render",))
 
     def __init__(self, *args, blocking=None, media=None, scoped=None, type=None, **kwargs):
         """HTMLStyleElement
@@ -13822,6 +14025,18 @@ class HTMLTemplateElement(HTMLElement):
 
 class HTMLTextAreaElement(HTMLElement):
     name = "textarea"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    autocomplete = _r.String("autocomplete")
+    cols = _r.UnsignedLong("cols", default=20, positive=True, fallback=True)
+    dirName = _r.String("dirname")
+    disabled = _r.Boolean("disabled")
+    maxLength = _r.Long("maxlength", default=-1, non_negative=True)
+    minLength = _r.Long("minlength", default=-1, non_negative=True)
+    placeholder = _r.String("placeholder")
+    readOnly = _r.Boolean("readonly")
+    required = _r.Boolean("required")
+    rows = _r.UnsignedLong("rows", default=2, positive=True, fallback=True)
+    wrap = _r.String("wrap")
 
     def __init__(
         self,
@@ -13932,6 +14147,8 @@ HTMLFormControlsCollection.CONTROL_TYPES = (
 
 class HTMLTimeElement(HTMLElement):
     name = "time"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    dateTime = _r.String("datetime")
 
     def __init__(self, *args, datetime=None, **kwargs):
         """HTMLTimeElement
@@ -13950,6 +14167,17 @@ class HTMLTitleElement(HTMLElement):
 
 class HTMLTrackElement(HTMLElement):
     name = "track"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    kind = _r.Enumerated(
+        "kind",
+        ("subtitles", "captions", "descriptions", "chapters", "metadata"),
+        missing="subtitles",
+        invalid="metadata",
+    )
+    src = _r.URL("src")
+    srclang = _r.String("srclang")
+    label = _r.String("label")
+    default = _r.Boolean("default")
 
     def __init__(
         self,

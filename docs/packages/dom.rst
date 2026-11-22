@@ -342,6 +342,53 @@ defined token set.
 	el.classList.replace("a", "c")   # True  ->  class="c b"
 	el.classList.toggle("c", True)   # no-op force toggle leaves class="c b" untouched
 
+``relList``, ``sandbox``, ``<link>.sizes``, ``blocking`` and ``<output>.htmlFor``
+are the same ``DOMTokenList`` over their own attribute. Where the attribute
+has a known set of tokens, ``supports()`` answers instead of throwing:
+``a().relList.supports("noopener")`` is ``True``.
+
+
+Attribute properties
+--------------------
+
+HTML elements expose their attributes as typed properties, the way a browser
+does. An absent attribute reads as its default (``""``, ``False``, ``0`` or the
+spec's keyword) instead of raising, and assigning writes the attribute.
+Assigning ``None`` removes it.
+
+.. code-block :: python
+
+	from domonic.html import button, canvas, img, input
+
+	img().alt                  # ''
+	input().required           # False
+	canvas().width             # 300
+	button().type              # 'submit'
+	img(_crossorigin="").crossOrigin   # 'anonymous'
+
+	el = img()
+	el.alt = "A cat"
+	el.width = 64
+	print(el)                  # <img alt="A cat" width="64"/>
+
+URL properties (``src``, ``href`` on ``<link>``, ``cite``, ``formAction`` ...)
+resolve against the document's URL, so a scraped page gives absolute links.
+Without a document URL the value comes back as written. ``a.href`` keeps its
+existing behaviour.
+
+.. code-block :: python
+
+	from domonic.dom import DOMParser
+
+	page = DOMParser().parseFromString('<img src="cat.png">', "text/html")
+	page.URL = "https://example.com/blog/"   # scrape() sets this for you
+	page.querySelector("img").src            # 'https://example.com/blog/cat.png'
+
+``script.async`` and ``link.as`` are Python keywords, so the properties are
+``async_`` and ``as_``; ``getattr(el, "async")`` also works. ``name`` is not
+reflected, because ``element.name`` is the tag name in domonic -- use
+``getAttribute("name")``.
+
 
 DOMConfig
 ----------------
