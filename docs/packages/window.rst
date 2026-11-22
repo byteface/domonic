@@ -27,6 +27,7 @@ A default instance is also importable directly, matching a browser's global
 	from domonic.window import window, alert, confirm
 
 	print(window.location.href)
+	# about:blank -- a window without a url= starts there, like a new browser tab
 	alert("hello")
 
 
@@ -34,7 +35,9 @@ Location and history
 ---------------------
 
 Setting ``location`` navigates the window, updating ``document.URL`` and
-pushing an entry onto ``history``.
+pushing an entry onto ``history``. ``document.location`` is the same object
+as ``window.location`` (``None`` for a document with no window, such as one
+from ``DOMParser``), and assigning to it navigates too.
 
 .. code-block :: python
 

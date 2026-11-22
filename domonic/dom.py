@@ -8155,6 +8155,22 @@ class Document(Element):
         self._defaultView = value
 
     @property
+    def location(self) -> "Location | None":
+        """The ``Location`` of this document's window, or ``None`` for a
+        document without one, such as a ``DOMParser`` result
+        (https://html.spec.whatwg.org/#dom-document-location)."""
+        view = self.defaultView
+        return getattr(view, "location", None) if view is not None else None
+
+    @location.setter
+    def location(self, url: Any) -> None:
+        # [PutForwards=href]: navigates the window, like ``window.location = url``
+        view = self.defaultView
+        if view is None:
+            raise TypeError("This document has no window to navigate.")
+        view.location = url
+
+    @property
     def designMode(self) -> str:
         return self._designMode
 

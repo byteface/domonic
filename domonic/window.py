@@ -677,7 +677,8 @@ class Window(JavaScriptWindow, EventTarget):
         self._navigator: Navigator = Navigator()
         self._navigator.gamepads.eventTarget = self
         self._screen: Screen = self._navigator._screen
-        self._location: Location = Location(url or "https://eventual.technology")
+        # a new browsing context starts on about:blank (HTML: creating a new browsing context)
+        self._location: Location = Location(url or "about:blank")
         self._document: Document = doc if doc is not None else document
         self.attach(self._document)
         self._document.URL = self._location.href
@@ -968,6 +969,9 @@ class Window(JavaScriptWindow, EventTarget):
     @property
     def isSecureContext(self) -> bool:
         href = self.location.href or ""
+        # about:blank / about:srcdoc are potentially trustworthy (Secure Contexts 3.1)
+        if href.split("#", 1)[0] in ("about:blank", "about:srcdoc"):
+            return True
         return href.startswith(("https:", "wss:", "file:")) or href.startswith(("http://localhost", "http://127.0.0.1"))
 
     @property

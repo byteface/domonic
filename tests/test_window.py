@@ -21,7 +21,7 @@ class TestCase(unittest.TestCase):
         win = Window()
 
         self.assertIs(win.document.defaultView, win)
-        self.assertEqual(win.location.href, "https://eventual.technology")
+        self.assertEqual(win.location.href, "about:blank")  # a new window starts on about:blank
         self.assertEqual(win.innerWidth, win.screen.width)
         self.assertEqual(win.innerHeight, win.screen.height)
         self.assertFalse(win.closed)
@@ -493,6 +493,28 @@ class TestCase(unittest.TestCase):
         win._host_scale_changed(2.0)
         self.assertEqual(win.devicePixelRatio, 2.0)
         self.assertTrue(win.matchMedia("(min-resolution: 2dppx)").matches)
+
+    def test_new_window_is_about_blank(self):
+        win = Window()
+        self.assertEqual(win.document.URL, "about:blank")
+        self.assertTrue(win.isSecureContext)  # about:blank is potentially trustworthy
+        self.assertEqual(Window(url="https://example.com/").location.href, "https://example.com/")
+
+    def test_document_location_is_the_window_location(self):
+        win = Window()
+        self.assertIs(win.document.location, win.location)
+        with patch.object(Window, "_fetch_document", return_value=None):
+            win.document.location = "https://example.com/next"
+        self.assertEqual(win.location.href, "https://example.com/next")
+        self.assertIs(win.document.location, win.location)
+
+    def test_document_without_a_window_has_no_location(self):
+        from domonic.dom import DOMParser
+
+        parsed = DOMParser().parseFromString("<p>x</p>", "text/html")
+        self.assertIsNone(parsed.location)
+        with self.assertRaises(TypeError):
+            parsed.location = "https://example.com/"
 
 
 if __name__ == "__main__":
