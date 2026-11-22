@@ -322,11 +322,36 @@ Pass ``{"extends": "<tag>"}`` when defining, then create the host element with
     doc.createElement("button", {"is": "fancy-button"})    # DOM options form
     # <button is="fancy-button"> in parsed HTML upgrades too
 
+**Form-associated custom elements.** Set ``formAssociated = True`` on the class
+and call ``self.attachInternals()``. The element then shows up in
+``form.elements``, submits what ``internals.setFormValue()`` was given, takes
+part in form validation through ``internals.setValidity()``, can be labelled, and
+gets ``formResetCallback()`` on a form reset. ``internals.states`` holds custom
+states.
+
+.. code-block :: python
+
+    class StarRating(HTMLElement):
+        formAssociated = True
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.internals = self.attachInternals()
+
+    window.customElements.define("star-rating", StarRating)
+
+    rating = StarRating(_name="stars")
+    rating.internals.setFormValue("4")       # submitted as stars=4
+    rating.internals.setValidity({"valueMissing": True}, "Pick a rating")
+
 **Shadow DOM.** ``element.attachShadow({"mode": "open"})`` returns a
 ``ShadowRoot``; ``<slot>`` elements expose ``assignedNodes()`` /
-``assignedElements()`` and fire ``slotchange``. For server-side rendering, emit
-Declarative Shadow DOM with a ``<template shadowrootmode="open">`` child (see the
-``profile-card`` example above).
+``assignedElements()`` and fire ``slotchange``. ``attachShadow`` also takes
+``delegatesFocus``, ``clonable`` (only a clonable shadow root is copied by
+``cloneNode()``), ``serializable`` and ``slotAssignment: "manual"``, where
+``slot.assign(*nodes)`` decides what each slot shows. For server-side rendering,
+emit Declarative Shadow DOM with a ``<template shadowrootmode="open">`` child
+(see the ``profile-card`` example above).
 
 
 Decorators

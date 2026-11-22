@@ -465,6 +465,32 @@ works and fires the browser's events (``play``, ``playing``, ``pause``,
 	clip.canPlayType("video/webm")       # 'maybe'
 
 
+More element APIs
+-----------------
+
+- The global attributes reflect too: ``inert``, ``autofocus``, ``accessKey``,
+  ``inputMode``, ``enterKeyHint``, ``autocapitalize``, ``draggable``,
+  ``nonce``, and ``translate`` / ``spellcheck``, which inherit from ancestors.
+- ``checkVisibility()`` is ``False`` for an element with no box: not in a
+  document, ``display: none`` on it or an ancestor (including the ``hidden``
+  attribute and UA-hidden elements such as ``<script>``) or
+  ``display: contents``. ``{"opacityProperty": True}`` and
+  ``{"visibilityProperty": True}`` also check ``opacity`` and ``visibility``.
+  ``getClientRects()`` is empty for the same elements.
+- ``scroll()`` / ``scrollTo()`` / ``scrollBy()`` take ``(x, y)`` or
+  ``{"left": ..., "top": ...}`` and fire ``scroll``.
+- ``moveBefore(node, child)`` moves a node within the same tree.
+- ``getElementsByTagNameNS()`` and ``document.createAttributeNS()`` take a
+  namespace.
+
+.. code-block :: python
+
+	from domonic.html import div, p, span
+
+	div(p(span()), _translate="no").querySelector("span").translate   # False
+	div(span(), span()).getElementsByTagNameNS("*", "span").length    # 2
+
+
 DOMConfig
 ----------------
 

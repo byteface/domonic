@@ -541,6 +541,131 @@ def _get_custom_element_registry():
     return getattr(_WINDOW_MODULE.window, "customElements", None)
 
 
+def _custom_element_definition(element: Any) -> "type | None":
+    """The registered class ``element`` is an instance of, or ``None``."""
+    registry = _get_custom_element_registry()
+    store = getattr(registry, "store", None)
+    if not store:
+        return None
+    cls = type(element)
+    return cls if cls in store.values() else None
+
+
+def _is_form_associated_custom(element: Any) -> bool:
+    definition = _custom_element_definition(element)
+    return definition is not None and bool(getattr(definition, "formAssociated", False))
+
+
+_VALIDITY_FLAGS = (
+    "valueMissing",
+    "typeMismatch",
+    "patternMismatch",
+    "tooLong",
+    "tooShort",
+    "rangeUnderflow",
+    "rangeOverflow",
+    "stepMismatch",
+    "badInput",
+    "customError",
+)
+
+
+class _InternalsValidityState:
+    """The ``ValidityState`` an ``ElementInternals.setValidity()`` call set."""
+
+    def __init__(self, flags: dict[str, bool]) -> None:
+        self._flags = flags
+
+    def __getattr__(self, name: str) -> bool:
+        if name in _VALIDITY_FLAGS:
+            return bool(self._flags.get(name, False))
+        raise AttributeError(name)
+
+    @property
+    def valid(self) -> bool:
+        return not any(self._flags.get(flag, False) for flag in _VALIDITY_FLAGS)
+
+
+class ElementInternals:
+    """What ``element.attachInternals()`` returns: lets a custom element take
+    part in forms (with ``formAssociated = True`` on its class) and carry
+    custom states (https://html.spec.whatwg.org/#elementinternals)."""
+
+    def __init__(self, target: "Element") -> None:
+        self._target = target
+        self._form_value: Any = None
+        self._form_state: Any = None
+        self._validity: dict[str, bool] = {}
+        self._validation_message = ""
+        self._validation_anchor: Any = None
+        self.states = CustomStateSet()
+
+    def _require_form_associated(self) -> None:
+        if not _is_form_associated_custom(self._target):
+            raise DOMException(
+                "The target element is not a form-associated custom element (set formAssociated = True).",
+                "NotSupportedError",
+            )
+
+    @property
+    def shadowRoot(self) -> "ShadowRoot | None":
+        """The target's shadow root, whatever its mode."""
+        return getattr(self._target, "shadowRoot", None)
+
+    @property
+    def form(self) -> "HTMLFormElement | None":
+        self._require_form_associated()
+        return _form_owner(self._target)
+
+    def setFormValue(self, value: Any, state: Any = None) -> None:
+        """The value the element submits: a string, a ``File``, a dict / FormData
+        of entries, or ``None`` for nothing. ``state`` defaults to ``value``."""
+        self._require_form_associated()
+        self._form_value = value
+        self._form_state = value if state is None else state
+
+    def setValidity(self, flags: "dict[str, bool] | None" = None, message: Any = None, anchor: Any = None) -> None:
+        self._require_form_associated()
+        flags = {name: bool(value) for name, value in (flags or {}).items() if name in _VALIDITY_FLAGS}
+        invalid = any(flags.values())
+        if invalid and not message:
+            raise TypeError("setValidity() needs a message when a validity flag is set.")
+        self._validity = flags
+        self._validation_message = str(message) if invalid else ""
+        self._validation_anchor = anchor if invalid else None
+
+    @property
+    def willValidate(self) -> bool:
+        self._require_form_associated()
+        target = self._target
+        return not (target.hasAttribute("disabled") or target.hasAttribute("readonly"))
+
+    @property
+    def validity(self) -> _InternalsValidityState:
+        self._require_form_associated()
+        return _InternalsValidityState(self._validity)
+
+    @property
+    def validationMessage(self) -> str:
+        self._require_form_associated()
+        return self._validation_message if self.willValidate else ""
+
+    def checkValidity(self) -> bool:
+        self._require_form_associated()
+        if not self.willValidate or self.validity.valid:
+            return True
+        self._target.dispatchEvent(Event("invalid", {"bubbles": False, "cancelable": True}))
+        return False
+
+    def reportValidity(self) -> bool:
+        return self.checkValidity()
+
+    @property
+    def labels(self) -> "HTMLCollection | None":
+        self._require_form_associated()
+        return _control_labels(self._target)
+
+
 def _iter_dom_nodes(node):
     """``node`` and every Node under it, in tree (pre-)order.
 
@@ -1129,6 +1254,152 @@ def _prepare_detached_clone(
     return node
 
 
+def _drop_unclonable_shadow_roots(clone: "Node") -> None:
+    """A deep clone copied every shadow root in the subtree; keep only the
+    clonable ones (https://dom.spec.whatwg.org/#concept-node-clone)."""
+    stack = [clone]
+    while stack:
+        node = stack.pop()
+        if not isinstance(node, Element):
+            continue
+        shadow = node.__dict__.get("shadowRoot")
+        if isinstance(shadow, ShadowRoot):
+            if getattr(shadow, "clonable", False):
+                stack.extend(shadow.args)
+            else:
+                node.__dict__["shadowRoot"] = None
+        stack.extend(getattr(node, "args", ()))
+
+
+def _clone_shadow_root_shallow(original: "Node", clone: "Node") -> None:
+    """``copy.copy`` shares the original's shadow root; a shallow clone gets
+    its own copy instead when the root is clonable, and none otherwise."""
+    shadow = original.__dict__.get("shadowRoot")
+    if not isinstance(shadow, ShadowRoot):
+        return
+    clone.__dict__["shadowRoot"] = None
+    if not getattr(shadow, "clonable", False) or not isinstance(clone, Element):
+        return
+    copied = clone.attachShadow(
+        {
+            "mode": shadow.mode,
+            "clonable": True,
+            "serializable": shadow.serializable,
+            "delegatesFocus": shadow.delegatesFocus,
+            "slotAssignment": shadow.slotAssignment,
+        }
+    )
+    for child in list(shadow.args):
+        copied.appendChild(child.cloneNode(True) if isinstance(child, Node) else child)
+
+
+# display: none in the UA stylesheet (https://html.spec.whatwg.org/#hidden-elements)
+_UA_HIDDEN_TAGS = frozenset(
+    {
+        "area",
+        "base",
+        "basefont",
+        "datalist",
+        "head",
+        "link",
+        "meta",
+        "noembed",
+        "noframes",
+        "param",
+        "rp",
+        "script",
+        "style",
+        "template",
+        "title",
+    }
+)
+
+
+def _computed_value(element: "Element", property_name: str) -> str:
+    try:
+        from domonic.style import ComputedStyleDeclaration
+
+        return str(ComputedStyleDeclaration(element).getPropertyValue(property_name) or "").strip()
+    except Exception:
+        return ""
+
+
+def _element_has_box(element: "Element") -> bool:
+    """Whether ``element`` would generate a box: it is in a document and
+    neither it nor an ancestor is ``display: none`` (author CSS, the ``hidden``
+    attribute, or a UA-hidden element such as ``<script>``)."""
+    if not isinstance(element.rootNode, Document):
+        return False
+    node: Any = element
+    while isinstance(node, Element) and not isinstance(node, Document):
+        display = _computed_value(node, "display")
+        if display == "none":
+            return False
+        if display in ("", "inline"):  # not set by an author: the UA sheet decides
+            tag = str(node.localName or "").lower()
+            if tag in _UA_HIDDEN_TAGS:
+                return False
+            hidden = node.getAttribute("hidden")
+            if hidden is not None and _r.as_string(hidden).lower() != "until-found":
+                return False
+        node = node.parentNode
+    return True
+
+
+def _scroll_target(element: "Element", x: Any, y: Any, relative: bool) -> tuple[float, float]:
+    left = float(getattr(element, "_scroll_left", 0) or 0)
+    top = float(getattr(element, "_scroll_top", 0) or 0)
+    if isinstance(x, dict):
+        new_left = x.get("left")
+        new_top = x.get("top")
+    else:
+        new_left, new_top = x, y
+    if relative:
+        return left + float(new_left or 0), top + float(new_top or 0)
+    return (left if new_left is None else float(new_left)), (top if new_top is None else float(new_top))
+
+
+def _set_scroll_position(element: "Element", left: float, top: float) -> None:
+    left, top = max(0.0, left), max(0.0, top)
+    if (left, top) == (float(getattr(element, "_scroll_left", 0) or 0), float(getattr(element, "_scroll_top", 0) or 0)):
+        return
+    element._scroll_left = left
+    element._scroll_top = top
+    element.dispatchEvent(Event("scroll", {"bubbles": False, "cancelable": False}))
+
+
+def _move_before(parent: "Node", node: Any, child: Any) -> None:
+    # the move's pre-checks (https://dom.spec.whatwg.org/#move)
+    if not isinstance(node, Node):
+        raise TypeError("moveBefore() needs a node to move")
+    if _shadow_including_root(parent) is not _shadow_including_root(node):
+        raise DOMException("The node to move is in a different tree.", "HierarchyRequestError")
+    ancestor: Any = parent
+    while ancestor is not None:
+        if ancestor is node:
+            raise DOMException("A node can't be moved into itself.", "HierarchyRequestError")
+        ancestor = ancestor.host if isinstance(ancestor, ShadowRoot) else getattr(ancestor, "parentNode", None)
+    if child is not None and getattr(child, "parentNode", None) is not parent:
+        raise DOMException("The reference node is not a child of this node.", "NotFoundError")
+    if not isinstance(node, (Element, Text, CharacterData, Comment, ProcessingInstruction, CDATASection)):
+        raise DOMException("Only elements and character data can be moved.", "HierarchyRequestError")
+    if isinstance(parent, Document) and isinstance(node, Text):
+        raise DOMException("Text can't be a child of a document.", "HierarchyRequestError")
+    if child is node:
+        child = node.nextSibling
+    if child is None:
+        parent.appendChild(node)
+    else:
+        parent.insertBefore(node, child)
+
+
+def _shadow_including_root(node: Any) -> Any:
+    root = node.getRootNode() if hasattr(node, "getRootNode") else node
+    while isinstance(root, ShadowRoot):
+        root = root.host.getRootNode()
+    return root
+
+
 def _upgrade_custom_element_instance(element: "Element") -> "Element":
     registry = _get_custom_element_registry()
     # Nothing is ever registered in the common case -- skip the per-element work.
@@ -1223,6 +1494,9 @@ def _assigned_slot_for_node(node: "Node") -> "HTMLSlotElement | None":
     shadow_root = getattr(parent, "shadowRoot", None)
     if not isinstance(shadow_root, ShadowRoot):
         return None
+    if getattr(shadow_root, "slotAssignment", "named") == "manual":
+        slot = node.__dict__.get("_manual_slot") if isinstance(node, Node) else None
+        return slot if isinstance(slot, HTMLSlotElement) and slot.parentNode is shadow_root else None
     slot_name = ""
     if isinstance(node, Element):
         slot_name = node.getAttribute("slot") or ""
@@ -1622,7 +1896,7 @@ def _is_labelable(node: Any) -> bool:
         return False
     tag = str(getattr(node, "localName", "") or "").lower()
     if tag not in _LABELABLE_TAGS:
-        return False
+        return _is_form_associated_custom(node)
     return not (tag == "input" and str(node.getAttribute("type") or "").lower() == "hidden")
 
 
@@ -1702,10 +1976,28 @@ def _append_form_data_value(data: dict[str, Any], name: str | None, value: Any) 
     data[name] = value
 
 
+def _append_custom_element_value(data: dict[str, Any], name: str | None, value: Any) -> None:
+    """A form-associated custom element's ``setFormValue()`` value: entries of
+    a dict / FormData go in under their own names, anything else under the
+    element's ``name``."""
+    if value is None:
+        return
+    entries: Any = value.items if isinstance(value, dict) else getattr(value, "entries", None)
+    if callable(entries):
+        for key, item in entries():
+            _append_form_data_value(data, key, item)
+        return
+    _append_form_data_value(data, name, value)
+
+
 def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = None) -> dict[str, Any]:
     data: dict[str, Any] = {}
     for control in form.elements:
         if not isinstance(control, Element) or control.hasAttribute("disabled"):
+            continue
+        internals = control.__dict__.get("_element_internals")
+        if internals is not None and _is_form_associated_custom(control):
+            _append_custom_element_value(data, control.getAttribute("name"), internals._form_value)
             continue
         name = control.getAttribute("name")
         if not name:
@@ -1899,6 +2191,9 @@ class ValidityState:
 def _is_control_valid(control: "Element") -> bool:
     if not isinstance(control, Element) or control.hasAttribute("disabled"):
         return True
+    internals = control.__dict__.get("_element_internals")
+    if internals is not None and _is_form_associated_custom(control):
+        return not internals.willValidate or internals.validity.valid
     return not getattr(control, "willValidate", True) or control.validity.valid
 
 
@@ -3103,9 +3398,11 @@ class Node(EventTarget):
             # Copy this subtree only -- a bare deepcopy follows parentNode and
             # copies the whole document just to throw all of it away.
             clone = _deepcopy_subtree(self)
+            _drop_unclonable_shadow_roots(clone)
         else:
             clone = copy.copy(self)  # shallow copy
             _drop_child_caches(clone)
+            _clone_shadow_root_shallow(self, clone)
             # A shallow clone drops child nodes, but a Text node's ``args`` hold
             # its character data, not children -- Text/Comment/CDATA/PI have no
             # children, so a shallow clone must preserve their data (DOM spec).
@@ -3589,9 +3886,10 @@ class Attr(Node):
 
     @property
     def namespaceURI(self) -> str | None:  # type: ignore[override]
-        # Always None: domonic's setAttributeNS() does not record a
-        # namespace against the attribute, a known, documented gap.
-        return None
+        # Set by document.createAttributeNS(); otherwise None, since
+        # domonic's setAttributeNS() does not record a namespace against the
+        # stored attribute (a known, documented gap).
+        return self.__dict__.get("_namespace")
 
     @property
     def specified(self) -> bool:
@@ -5560,14 +5858,25 @@ class Element(Node):
 
     # elem.attachShadow({mode: open|closed})
     def attachShadow(self, obj):
+        """Attach a shadow root. ``obj`` is the ``ShadowRootInit`` dict:
+        ``mode`` (required in a browser; ``"open"`` here by default),
+        ``delegatesFocus``, ``slotAssignment`` (``"named"`` / ``"manual"``),
+        ``clonable`` and ``serializable``."""
         options = obj or {}
         mode = options.get("mode", "open")
         if mode not in ("open", "closed"):
             raise TypeError("attachShadow: mode must be 'open' or 'closed'")
+        slot_assignment = options.get("slotAssignment", "named")
+        if slot_assignment not in ("named", "manual"):
+            raise TypeError("attachShadow: slotAssignment must be 'named' or 'manual'")
         if getattr(self, "shadowRoot", None) is not None:
             # DOM spec: an element can host at most one shadow root.
             raise DOMException("The element already hosts a shadow tree.", "NotSupportedError")
         self.shadowRoot = ShadowRoot(self, mode)
+        self.shadowRoot.delegatesFocus = bool(options.get("delegatesFocus", False))
+        self.shadowRoot.slotAssignment = slot_assignment
+        self.shadowRoot.clonable = bool(options.get("clonable", False))
+        self.shadowRoot.serializable = bool(options.get("serializable", False))
         return self.shadowRoot
 
     # def accessKey( key: str ): -> None
@@ -6117,6 +6426,73 @@ class Element(Node):
         # case-insensitively). Anything that is not a real tag name -- "",
         # "a.b", "has space" -- simply matches nothing.
         return _LiveHTMLCollection(self, tag=str(tagName).lower())
+
+    def getElementsByTagNameNS(self, namespace: "str | None", localName: str) -> "HTMLCollection":
+        """Descendant elements in ``namespace`` (``"*"`` for any, ``None`` for
+        none) with local name ``localName`` (``"*"`` for any), live and
+        case-sensitive (https://dom.spec.whatwg.org/#concept-getelementsbytagnamens)."""
+        wanted_ns = None if namespace in (None, "") else str(namespace)
+        wanted_name = str(localName)
+
+        def matches(element: Any) -> bool:
+            if wanted_ns != "*" and (getattr(element, "namespaceURI", None) or None) != wanted_ns:
+                return False
+            return wanted_name == "*" or element.localName == wanted_name
+
+        def compute() -> list:
+            found = _LiveHTMLCollection(self, matches)._elements()
+            if _is_html_root(self) and matches(self):
+                found = [self, *found]  # domonic's <html> is the document itself
+            return found
+
+        return _ComputedHTMLCollection(self, compute)
+
+    def getClientRects(self) -> "DOMRectList":
+        """The element's border box as a one-item list, or an empty list when
+        it has no box (not in a document, or ``display: none``)."""
+        if not _element_has_box(self):
+            return DOMRectList()
+        return DOMRectList([self.getBoundingClientRect()])
+
+    def checkVisibility(self, options: "dict[str, Any] | None" = None) -> bool:
+        """False when the element has no box (it, or an ancestor, is
+        ``display: none``, or it is ``display: contents``) or, if asked,
+        is ``opacity: 0`` / not ``visibility: visible``
+        (https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility)."""
+        options = options or {}
+        if not _element_has_box(self) or _computed_value(self, "display") == "contents":
+            return False
+        if options.get("opacityProperty") or options.get("checkOpacity"):
+            node: Any = self
+            while isinstance(node, Element) and not isinstance(node, Document):
+                if _computed_value(node, "opacity") in ("0", "0.0"):
+                    return False
+                node = node.parentNode
+        if options.get("visibilityProperty") or options.get("checkVisibilityCSS"):
+            if _computed_value(self, "visibility") != "visible":
+                return False
+        return True
+
+    def scroll(self, x: Any = None, y: Any = None) -> None:
+        """Scroll to ``(x, y)`` or ``{"left": ..., "top": ...}``; fires ``scroll``
+        when the position changes. Same as ``scrollTo``."""
+        left, top = _scroll_target(self, x, y, relative=False)
+        _set_scroll_position(self, left, top)
+
+    def scrollTo(self, x: Any = None, y: Any = None) -> None:
+        self.scroll(x, y)
+
+    def scrollBy(self, x: Any = None, y: Any = None) -> None:
+        """Scroll by ``(dx, dy)`` or ``{"left": ..., "top": ...}``."""
+        left, top = _scroll_target(self, x, y, relative=True)
+        _set_scroll_position(self, left, top)
+
+    def moveBefore(self, movedNode: "Node", child: "Node | None") -> None:
+        """Move ``movedNode`` to before ``child`` (or to the end) within the
+        same tree (https://dom.spec.whatwg.org/#dom-parentnode-movebefore).
+        domonic has no state for a move to preserve, so custom elements get
+        ``disconnectedCallback`` / ``connectedCallback`` as for an insert."""
+        _move_before(self, movedNode, child)
 
     def __contains__(self, item: Any) -> bool:
         """``x in element``.
@@ -8353,6 +8729,26 @@ class Document(Element):
             _upgrade_custom_element_instance(el)
         return el
 
+    @staticmethod
+    def createAttributeNS(namespaceURI: "str | None", qualifiedName: str) -> "Attr":
+        """A namespaced attribute node, after the DOM's "validate and extract"
+        checks (https://dom.spec.whatwg.org/#dom-document-createattributens)."""
+        namespace = None if namespaceURI in (None, "") else str(namespaceURI)
+        _validate_xml_name(qualifiedName, qualified=True)
+        name = str(qualifiedName)
+        prefix = name.split(":", 1)[0] if ":" in name else None
+        xml_ns = "http://www.w3.org/XML/1998/namespace"
+        xmlns_ns = "http://www.w3.org/2000/xmlns/"
+        if prefix is not None and namespace is None:
+            raise DOMException("A prefixed name needs a namespace.", "NamespaceError")
+        if prefix == "xml" and namespace != xml_ns:
+            raise DOMException("The xml prefix is only for the XML namespace.", "NamespaceError")
+        if (name == "xmlns" or prefix == "xmlns") != (namespace == xmlns_ns):
+            raise DOMException("xmlns names belong to the XMLNS namespace, and only they do.", "NamespaceError")
+        attr = Attr(name)
+        attr.__dict__["_namespace"] = namespace
+        return attr
+
     @_document_factory
     def createElementNS(namespaceURI: str, qualifiedName: str, options: Any = None) -> "Element":
         """Creates an element with the specified namespace URI and qualified name."""
@@ -9170,6 +9566,9 @@ def _cdata_coerce_string(value: Any) -> str:
     return value if isinstance(value, str) else str(value)
 
 
+DocumentFragment.moveBefore = Element.moveBefore  # type: ignore[attr-defined]
+
+
 class ShadowRoot(DocumentFragment):
     """An element's shadow tree root (DOM 4.8): a DocumentFragment, so it has
     the ParentNode query and mutation methods, plus ``innerHTML``."""
@@ -9177,6 +9576,9 @@ class ShadowRoot(DocumentFragment):
     def __init__(self, host, mode="open"):
         self.adoptedStyleSheets = []
         self.delegatesFocus = False
+        self.slotAssignment = "named"
+        self.clonable = False
+        self.serializable = False
         self.host = host
         self.mode = mode
         self.parentNode = host
@@ -11617,8 +12019,98 @@ class MathMLElement(Element):
 _FORM_ASSOCIATED_TAGS = frozenset({"button", "fieldset", "input", "object", "output", "select", "textarea"})
 
 
+def _inherited_flag(
+    element: "Element", attribute: str, on: tuple[str, ...], off: tuple[str, ...], default: bool
+) -> bool:
+    """An inherited true/false attribute (``translate``, ``spellcheck``): the
+    nearest inclusive ancestor that sets a recognised value decides."""
+    node: Any = element
+    while isinstance(node, Element):
+        value = node.getAttribute(attribute)
+        if value is not None:
+            keyword = _r.as_string(value).lower()
+            if keyword in on:
+                return True
+            if keyword in off:
+                return False
+        node = node.parentNode
+    return default
+
+
 class HTMLElement(Element):
     name = ""
+    # global attributes (https://html.spec.whatwg.org/#htmlelement)
+    inert = _r.Boolean("inert")
+    autofocus = _r.Boolean("autofocus")
+    accessKey = _r.String("accesskey")
+    inputMode = _r.Enumerated("inputmode", ("none", "text", "tel", "url", "email", "numeric", "decimal", "search"))
+    enterKeyHint = _r.Enumerated("enterkeyhint", ("enter", "done", "go", "next", "previous", "search", "send"))
+    autocapitalize = _r.Enumerated(
+        "autocapitalize",
+        ("none", "sentences", "words", "characters"),
+        invalid="sentences",
+        aliases={"off": "none", "on": "sentences"},
+    )
+
+    @property
+    def translate(self) -> bool:
+        """``translate="no"`` on this element or an ancestor turns it off."""
+        return _inherited_flag(self, "translate", ("", "yes"), ("no",), True)
+
+    @translate.setter
+    def translate(self, value: Any) -> None:
+        self.setAttribute("translate", "yes" if value else "no")
+
+    @property
+    def spellcheck(self) -> bool:
+        """``spellcheck="false"`` on this element or an ancestor turns it off."""
+        return _inherited_flag(self, "spellcheck", ("", "true"), ("false",), True)
+
+    @spellcheck.setter
+    def spellcheck(self, value: Any) -> None:
+        self.setAttribute("spellcheck", "true" if value else "false")
+
+    @property
+    def draggable(self) -> bool:
+        """``draggable="true"`` / ``"false"``; otherwise images and links are
+        draggable and other elements are not."""
+        value = _r.as_string(self.getAttribute("draggable")).lower()
+        if value in ("true", "false"):
+            return value == "true"
+        tag = str(self.localName or "").lower()
+        return tag == "img" or (tag in ("a", "area") and self.hasAttribute("href"))
+
+    @draggable.setter
+    def draggable(self, value: Any) -> None:
+        self.setAttribute("draggable", "true" if value else "false")
+
+    @property
+    def nonce(self) -> str:
+        """The element's cryptographic nonce: the ``nonce`` attribute, until
+        assigned (assigning doesn't change the attribute)."""
+        stored = self.__dict__.get("_nonce")
+        return _r.as_string(self.getAttribute("nonce")) if stored is None else stored
+
+    @nonce.setter
+    def nonce(self, value: Any) -> None:
+        self.__dict__["_nonce"] = "" if value is None else str(value)
+
+    def attachInternals(self) -> "ElementInternals":
+        """The ``ElementInternals`` of an autonomous custom element: its form
+        value, validity, labels and custom states
+        (https://html.spec.whatwg.org/#dom-attachinternals)."""
+        if self.getAttribute("is") is not None:
+            raise DOMException("Customized built-in elements can't attach internals.", "NotSupportedError")
+        definition = _custom_element_definition(self)
+        if definition is None:
+            raise DOMException("Only custom elements can attach internals.", "NotSupportedError")
+        if "internals" in (getattr(definition, "disabledFeatures", None) or ()):
+            raise DOMException("Internals are disabled for this custom element.", "NotSupportedError")
+        if self.__dict__.get("_element_internals") is not None:
+            raise DOMException("ElementInternals were already attached.", "NotSupportedError")
+        internals = ElementInternals(self)
+        self.__dict__["_element_internals"] = internals
+        return internals
 
     @property
     def form(self) -> "HTMLFormElement | None":
@@ -12354,7 +12846,7 @@ class HTMLFormControlsCollection(HTMLCollection):
         def walk(node):
             if not isinstance(node, Element):
                 return
-            if node is not self._form and isinstance(node, self.CONTROL_TYPES):
+            if node is not self._form and (isinstance(node, self.CONTROL_TYPES) or _is_form_associated_custom(node)):
                 controls.append(node)
             for child in getattr(node, "childNodes", []):
                 walk(child)
@@ -12506,6 +12998,10 @@ class HTMLFormElement(HTMLElement):
                     option.selected = option.defaultSelected
             elif isinstance(control, HTMLOutputElement):
                 control._reset()
+            elif _is_form_associated_custom(control):
+                callback = getattr(control, "formResetCallback", None)
+                if callable(callback):
+                    callback()
         return self.dispatchEvent(Event("reset", {"bubbles": True, "cancelable": True}))
 
     def reportValidity(self) -> bool:
@@ -14948,6 +15444,26 @@ class HTMLSummaryElement(HTMLElement):
 class HTMLSlotElement(HTMLElement):
     name = "slot"
 
+    def assign(self, *nodes: Any) -> None:
+        """Manually assign ``nodes`` to this slot, for a shadow root with
+        ``slotAssignment: "manual"``; replaces any earlier assignment
+        (https://html.spec.whatwg.org/#dom-slot-assign)."""
+        for node in self.__dict__.get("_manually_assigned", []):
+            node.__dict__.pop("_manual_slot", None)
+        assigned: list[Node] = []
+        for node in nodes:
+            if not isinstance(node, (Element, Text)):
+                raise TypeError("slot.assign() takes elements and text nodes")
+            previous = node.__dict__.get("_manual_slot")
+            if isinstance(previous, HTMLSlotElement) and previous is not self:
+                previous.__dict__["_manually_assigned"] = [
+                    other for other in previous.__dict__.get("_manually_assigned", []) if other is not node
+                ]
+            node.__dict__["_manual_slot"] = self
+            if not any(node is other for other in assigned):
+                assigned.append(node)
+        self.__dict__["_manually_assigned"] = assigned
+
     def assignedNodes(self, options: dict[str, Any] | None = None) -> list[Node]:
         flatten = bool((options or {}).get("flatten"))
         root = getattr(self, "parentNode", None)
@@ -14956,7 +15472,15 @@ class HTMLSlotElement(HTMLElement):
 
         slot_name = self.getAttribute("name") or ""
         assigned: list[Node] = []
-        for child in getattr(root.host, "childNodes", []):
+        if getattr(root, "slotAssignment", "named") == "manual":
+            # in assign() order, but only those still children of the host
+            host_children = getattr(root.host, "args", ())
+            assigned = [
+                node
+                for node in self.__dict__.get("_manually_assigned", [])
+                if any(node is child for child in host_children)
+            ]
+        for child in getattr(root.host, "childNodes", []) if root.slotAssignment == "named" else []:
             if isinstance(child, Element):
                 child_slot = child.getAttribute("slot") or ""
                 if child_slot == slot_name:
@@ -14984,6 +15508,11 @@ class HTMLSlotElement(HTMLElement):
 
 class HTMLTemplateElement(HTMLElement):
     name = "template"
+    # reflected content attributes (https://html.spec.whatwg.org/#reflect)
+    shadowRootMode = _r.Enumerated("shadowrootmode", ("open", "closed"))
+    shadowRootDelegatesFocus = _r.Boolean("shadowrootdelegatesfocus")
+    shadowRootClonable = _r.Boolean("shadowrootclonable")
+    shadowRootSerializable = _r.Boolean("shadowrootserializable")
 
     def __init__(
         self,
