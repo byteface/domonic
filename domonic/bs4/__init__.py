@@ -1538,10 +1538,16 @@ def _match_state_pseudo(element: Element, state: str) -> bool:
     if state == "open":
         return tag in ("details", "dialog") and _get_attribute(element, "open") is not None
     if state == "popover-open":
-        return _get_attribute(element, "popover") is not None and _get_attribute(element, "open") is not None
+        return _get_attribute(element, "popover") is not None and bool(element.__dict__.get("_popover_open", False))
+    if state == "modal":
+        return (
+            tag == "dialog"
+            and bool(element.__dict__.get("_dialog_modal", False))
+            and _get_attribute(element, "open") is not None
+        )
     if state == "paused":
         return tag in ("audio", "video")
-    # hover / active / modal / fullscreen / autofill / playing: nothing is
+    # hover / active / fullscreen / autofill / playing: nothing is
     # hovered, pressed or playing in a static document
     return False
 

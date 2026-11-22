@@ -465,6 +465,32 @@ works and fires the browser's events (``play``, ``playing``, ``pause``,
 	clip.canPlayType("video/webm")       # 'maybe'
 
 
+Dialogs and popovers
+--------------------
+
+``dialog.show()`` opens a dialog, ``showModal()`` opens it as a modal (it then
+matches ``:modal``), and opening it the other way while open raises
+``InvalidStateError``. ``close(value)`` sets ``returnValue``; ``requestClose()``
+fires a cancelable ``cancel`` event first. A popover's showing state is
+internal, as in a browser: ``showPopover()`` adds no attribute, and
+``:popover-open`` matches it.
+
+.. code-block :: python
+
+	from domonic.html import body, dialog, div, html
+
+	page = html(body(dialog("Saved", _id="note"), div("Menu", _id="menu", _popover="")))
+	note = page.querySelector("#note")
+	note.showModal()
+	page.querySelector(":modal") is note        # True
+	note.close("ok")
+	note.returnValue                            # 'ok'
+
+	menu = page.querySelector("#menu")
+	menu.togglePopover()                        # True: it is showing now
+	page.querySelector(":popover-open") is menu # True
+
+
 More element APIs
 -----------------
 

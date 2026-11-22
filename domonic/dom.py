@@ -12196,10 +12196,17 @@ class HTMLElement(Element):
             value = "auto"
         self.setAttribute("popover", value)
 
+    def _popover_showing(self) -> bool:
+        """The popover visibility state. It is internal, like a browser's:
+        showing a popover adds no attribute; ``:popover-open`` matches it."""
+        return bool(self.__dict__.get("_popover_open", False))
+
     def _set_popover_open(self, is_open: bool):
         from domonic.events import ToggleEvent
 
-        old_state = "open" if self.hasAttribute("open") else "closed"
+        if self.popover is None:
+            raise DOMException("The element does not have a popover attribute.", "NotSupportedError")
+        old_state = "open" if self._popover_showing() else "closed"
         new_state = "open" if is_open else "closed"
         if old_state == new_state:
             return self
@@ -12207,17 +12214,14 @@ class HTMLElement(Element):
             ToggleEvent.BEFORETOGGLE,
             {
                 "bubbles": False,
-                "cancelable": True,
+                "cancelable": is_open,  # only showing can be cancelled
                 "oldState": old_state,
                 "newState": new_state,
             },
         )
-        if not self.dispatchEvent(before_toggle):
+        if not self.dispatchEvent(before_toggle) and is_open:
             return self
-        if is_open:
-            self.setAttribute("open", True)
-        else:
-            self.removeAttribute("open")
+        self.__dict__["_popover_open"] = is_open
         self.dispatchEvent(
             ToggleEvent(
                 ToggleEvent.TOGGLE,
@@ -12237,10 +12241,13 @@ class HTMLElement(Element):
     def hidePopover(self):
         return self._set_popover_open(False)
 
-    def togglePopover(self, force: bool | None = None):
+    def togglePopover(self, force: bool | None = None) -> bool:
+        """Show or hide (or ``force``) the popover; returns whether it is
+        showing afterwards."""
         if force is None:
-            force = not self.hasAttribute("open")
-        return self._set_popover_open(bool(force))
+            force = not self._popover_showing()
+        self._set_popover_open(bool(force))
+        return self._popover_showing()
 
 
 class HTMLAnchorElement(HTMLElement):
@@ -12745,9 +12752,11 @@ class HTMLDialogElement(HTMLElement):
         previous = self.open
         old_state = "open" if previous else "closed"
         if is_open:
-            self.setAttribute("open", True)
+            if not previous:
+                self.setAttribute("open", "")
         else:
             self.removeAttribute("open")
+            self.__dict__["_dialog_modal"] = False
         if previous != self.open:
             self.dispatchEvent(
                 ToggleEvent(
@@ -12761,18 +12770,64 @@ class HTMLDialogElement(HTMLElement):
                 )
             )
 
+    def _is_modal(self) -> bool:
+        return bool(self.__dict__.get("_dialog_modal", False)) and self.open
+
+    @property
+    def returnValue(self) -> str:
+        """The value ``close()`` / a ``method="dialog"`` form left; ``""`` until then."""
+        return str(self.__dict__.get("_return_value", ""))
+
+    @returnValue.setter
+    def returnValue(self, value: Any) -> None:
+        self.__dict__["_return_value"] = "" if value is None else str(value)
+
+    @property
+    def closedBy(self) -> str:
+        """``"any"``, ``"closerequest"`` or ``"none"``; without a valid
+        ``closedby`` attribute a modal dialog is ``"closerequest"`` and a
+        non-modal one ``"none"`` (https://html.spec.whatwg.org/#dom-dialog-closedby)."""
+        value = _r.as_string(self.getAttribute("closedby")).lower()
+        if value in ("any", "closerequest", "none"):
+            return value
+        return "closerequest" if self._is_modal() else "none"
+
+    @closedBy.setter
+    def closedBy(self, value: Any) -> None:
+        self.setAttribute("closedby", str(value))
+
     def show(self):
+        """Open the dialog non-modally (https://html.spec.whatwg.org/#dom-dialog-show)."""
+        if self.open:
+            if self._is_modal():
+                raise DOMException("The dialog is already open as a modal dialog.", "InvalidStateError")
+            return self
         self.open = True
         return self
 
     def showModal(self):
+        """Open the dialog as a modal: ``:modal`` matches it. Throws
+        ``InvalidStateError`` if it is already open non-modally or is a
+        showing popover (https://html.spec.whatwg.org/#dom-dialog-showmodal)."""
+        if self.open:
+            if not self._is_modal():
+                raise DOMException("The dialog is already open as a non-modal dialog.", "InvalidStateError")
+            return self
+        if self._popover_showing():
+            raise DOMException("The dialog is already open as a popover.", "InvalidStateError")
+        self.__dict__["_dialog_modal"] = True
         self.open = True
         return self
 
-    def close(self, returnValue: Any = ""):
+    def close(self, returnValue: Any = None):
+        """Close the dialog, setting ``returnValue`` if one is given, and fire
+        ``close``. Closing a closed dialog does nothing."""
         from domonic.events import CloseEvent
 
-        self.returnValue = returnValue
+        if not self.open:
+            return self
+        if returnValue is not None:
+            self.returnValue = returnValue
         self.open = False
         self.dispatchEvent(
             CloseEvent(
@@ -12781,11 +12836,20 @@ class HTMLDialogElement(HTMLElement):
                     "bubbles": False,
                     "cancelable": False,
                     "code": 0,
-                    "reason": str(returnValue),
+                    "reason": self.returnValue,
                     "wasClean": True,
                 },
             )
         )
+        return self
+
+    def requestClose(self, returnValue: Any = None):
+        """Ask to close: fires a cancelable ``cancel`` event first, and closes
+        only if no listener cancels it (https://html.spec.whatwg.org/#dom-dialog-requestclose)."""
+        if not self.open:
+            return self
+        if self.dispatchEvent(Event("cancel", {"bubbles": False, "cancelable": True})):
+            self.close(returnValue)
         return self
 
 

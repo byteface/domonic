@@ -2050,9 +2050,11 @@ class DOMTest(unittest.TestCase):
         target.popover = True
         self.assertEqual(target.getAttribute("popover"), "auto")
         self.assertIs(target.showPopover(), target)
-        self.assertTrue(target.hasAttribute("open"))
-        self.assertIs(target.togglePopover(False), target)
+        # the showing state is internal: no attribute, but :popover-open matches
         self.assertFalse(target.hasAttribute("open"))
+        self.assertIs(root.querySelector(":popover-open"), target)
+        self.assertFalse(target.togglePopover(False))
+        self.assertIsNone(root.querySelector(":popover-open"))
 
         control.popoverTargetElement = target
         self.assertEqual(control.getAttribute("popovertarget"), "menu")
@@ -2066,7 +2068,7 @@ class DOMTest(unittest.TestCase):
 
         target.addEventListener("beforetoggle", lambda event: event.preventDefault())
         self.assertIs(target.showPopover(), target)
-        self.assertFalse(target.hasAttribute("open"))
+        self.assertIsNone(root.querySelector(":popover-open"))
 
     def test_modern_dom_constructor_reflected_attributes(self):
         anchor = HTMLAnchorElement(
