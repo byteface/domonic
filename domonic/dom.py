@@ -22,6 +22,7 @@ import re
 import time
 import warnings
 from collections.abc import Iterable as IterableABC
+from decimal import Decimal
 from email.utils import formatdate
 from html import escape as _stdlib_escape_html
 
@@ -45,6 +46,7 @@ def _escape_html(value: str, quote: bool = True) -> str:
 from typing import Any, Callable, ClassVar, Iterable, Iterator
 
 from domonic import _cssom, _fontmetrics
+from domonic import _input_types
 from domonic import _reflect as _r
 from domonic.events import EVENT_HANDLER_NAMES, Event, EventTarget, MouseEvent
 from domonic.geom.vec3 import vec3
@@ -1611,6 +1613,54 @@ def _form_owner(control: "Element") -> "HTMLFormElement | None":
     return None
 
 
+# https://html.spec.whatwg.org/#category-label
+_LABELABLE_TAGS = frozenset({"button", "input", "meter", "output", "progress", "select", "textarea"})
+
+
+def _is_labelable(node: Any) -> bool:
+    if not isinstance(node, Element):
+        return False
+    tag = str(getattr(node, "localName", "") or "").lower()
+    if tag not in _LABELABLE_TAGS:
+        return False
+    return not (tag == "input" and str(node.getAttribute("type") or "").lower() == "hidden")
+
+
+def _label_control(label: "Element") -> "Element | None":
+    """A ``<label>``'s labeled control: the element its ``for`` names, or
+    else its first labelable descendant (https://html.spec.whatwg.org/#labeled-control)."""
+    for_id = label.getAttribute("for")
+    if for_id is not None:
+        root = label.getRootNode()
+        finder = getattr(root, "getElementById", None)
+        target = finder(str(for_id)) if callable(finder) and for_id != "" else None
+        return target if _is_labelable(target) else None
+    stack = [child for child in reversed(getattr(label, "args", ())) if isinstance(child, Element)]
+    while stack:
+        node = stack.pop()
+        if _is_labelable(node):
+            return node
+        stack.extend(child for child in reversed(getattr(node, "args", ())) if isinstance(child, Element))
+    return None
+
+
+def _control_labels(control: "Element") -> "HTMLCollection | None":
+    """``control.labels``: the ``<label>`` elements whose labeled control is
+    ``control``, in tree order and live; ``None`` for ``<input type=hidden>``."""
+    if not _is_labelable(control):
+        return None
+
+    def compute() -> list:
+        root = control.getRootNode()
+        labels = [root] if str(getattr(root, "localName", "")).lower() == "label" else []
+        finder = getattr(root, "getElementsByTagName", None)
+        if callable(finder):
+            labels.extend(finder("label"))
+        return [label for label in labels if _label_control(label) is control]
+
+    return _ComputedHTMLCollection(control, compute)
+
+
 def _dispatch_value_change_events(control: "Element") -> None:
     from domonic.events import Event, InputEvent
 
@@ -1679,6 +1729,8 @@ def _construct_form_data(form: "HTMLFormElement", submitter: "Element | None" = 
                 _append_form_data_value(data, name, control.value)
         elif isinstance(control, HTMLTextAreaElement):
             _append_form_data_value(data, name, control.value)
+        elif isinstance(control, HTMLOutputElement):
+            continue  # listed and resettable, but not submittable
         elif hasattr(control, "value"):
             _append_form_data_value(data, name, getattr(control, "value"))
 
@@ -12072,6 +12124,8 @@ class HTMLButtonElement(HTMLElement):
     def value(self, new_value: Any) -> None:
         self.setAttribute("value", new_value)
 
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
+
     def click(self):
         result = super().click()
         if not result or self.hasAttribute("disabled"):
@@ -12301,6 +12355,15 @@ class HTMLFieldSetElement(HTMLElement):
         if name is not None:
             self.setAttribute("name", name)
 
+    @property
+    def elements(self) -> "HTMLFormControlsCollection":
+        """The form controls inside this fieldset, live."""
+        return HTMLFormControlsCollection(self)  # type: ignore[arg-type]
+
+    @property
+    def type(self) -> str:
+        return "fieldset"
+
 
 class HTMLFormControlsCollection(HTMLCollection):
     """Live collection of a form's listed controls."""
@@ -12467,6 +12530,8 @@ class HTMLFormElement(HTMLElement):
             elif isinstance(control, HTMLSelectElement):
                 for option in control.options:
                     option.selected = option.defaultSelected
+            elif isinstance(control, HTMLOutputElement):
+                control._reset()
         return self.dispatchEvent(Event("reset", {"bubbles": True, "cancelable": True}))
 
     def reportValidity(self) -> bool:
@@ -12649,7 +12714,144 @@ class HTMLImageElement(HTMLElement):
         return None
 
 
-class HTMLInputElement(HTMLElement):
+class _TextControlSelection:
+    """The selection API of text controls, shared by ``<input>`` and
+    ``<textarea>`` (https://html.spec.whatwg.org/#textFieldSelection).
+
+    The selection lives on the element. With none set the cursor is at the end
+    of the value, and assigning ``value`` moves it back there.
+    """
+
+    value: str
+
+    def _selection_applies(self) -> bool:
+        return True
+
+    def _selection(self) -> tuple[int, int, str]:
+        length = len(self.value)
+        start, end, direction = self.__dict__.get("_selection_range") or (length, length, "none")
+        return min(start, length), min(end, length), direction
+
+    def _require_selection(self) -> None:
+        if not self._selection_applies():
+            raise DOMException("This element's type does not support selection.", "InvalidStateError")
+
+    def _set_selection_range(self, start: Any, end: Any, direction: Any = None) -> None:
+        length = len(self.value)
+        end = min(_r.to_long(0 if end is None else end) & 0xFFFFFFFF, length)
+        start = min(_r.to_long(0 if start is None else start) & 0xFFFFFFFF, end)
+        direction = direction if direction in ("forward", "backward") else "none"
+        previous = self._selection()
+        self.__dict__["_selection_range"] = (start, end, direction)
+        if (start, end, direction) != previous:
+            from domonic.events import Event
+
+            self.dispatchEvent(Event("select", {"bubbles": True, "cancelable": False}))  # type: ignore[attr-defined]
+
+    @property
+    def selectionStart(self) -> int | None:
+        return self._selection()[0] if self._selection_applies() else None
+
+    @selectionStart.setter
+    def selectionStart(self, value: Any) -> None:
+        self._require_selection()
+        _start, end, direction = self._selection()
+        value = _r.to_long(value)
+        self._set_selection_range(value, max(end, value), direction)
+
+    @property
+    def selectionEnd(self) -> int | None:
+        return self._selection()[1] if self._selection_applies() else None
+
+    @selectionEnd.setter
+    def selectionEnd(self, value: Any) -> None:
+        self._require_selection()
+        start, _end, direction = self._selection()
+        self._set_selection_range(start, value, direction)
+
+    @property
+    def selectionDirection(self) -> str | None:
+        return self._selection()[2] if self._selection_applies() else None
+
+    @selectionDirection.setter
+    def selectionDirection(self, value: Any) -> None:
+        self._require_selection()
+        start, end, _direction = self._selection()
+        self._set_selection_range(start, end, value)
+
+    def select(self) -> None:
+        """Select all of the value (a no-op for types without a text selection)."""
+        if self._selection_applies():
+            self._set_selection_range(0, len(self.value), "none")
+
+    def setSelectionRange(self, start: Any, end: Any, direction: Any = None) -> None:
+        self._require_selection()
+        self._set_selection_range(start, end, direction)
+
+    def setRangeText(
+        self, replacement: Any, start: Any = None, end: Any = None, selectionMode: str = "preserve"
+    ) -> None:
+        """Replace ``value[start:end]`` (the selection by default) with
+        ``replacement``; ``selectionMode`` is ``"select"``, ``"start"``,
+        ``"end"`` or ``"preserve"`` (https://html.spec.whatwg.org/#dom-textarea/input-setrangetext)."""
+        self._require_selection()
+        sel_start, sel_end, direction = self._selection()
+        if start is None and end is None:
+            start, end = sel_start, sel_end
+        start, end = _r.to_long(start) & 0xFFFFFFFF, _r.to_long(end) & 0xFFFFFFFF
+        if start > end:
+            raise DOMException("The start offset is greater than the end offset.", "IndexSizeError")
+        value = self.value
+        start, end = min(start, len(value)), min(end, len(value))
+        replacement = str(replacement)
+        new_end = start + len(replacement)
+        self._replace_value(value[:start] + replacement + value[end:])
+        if selectionMode == "select":
+            sel_start, sel_end = start, new_end
+        elif selectionMode == "start":
+            sel_start = sel_end = start
+        elif selectionMode == "end":
+            sel_start = sel_end = new_end
+        else:  # preserve
+            delta = len(replacement) - (end - start)
+            if sel_start > end:
+                sel_start += delta
+            elif sel_start > start:
+                sel_start = start
+            if sel_end > end:
+                sel_end += delta
+            elif sel_end > start:
+                sel_end = new_end
+        self._set_selection_range(sel_start, sel_end, direction)
+
+    def _replace_value(self, new_value: str) -> None:
+        """Change the value without moving the selection (setRangeText)."""
+        kept = self.__dict__.get("_selection_range")
+        self.value = new_value
+        self.__dict__["_selection_range"] = kept
+
+
+_TEXT_SELECTION_INPUT_TYPES = frozenset({"text", "search", "url", "tel", "password"})
+
+
+def _date_to_ms(date: Any) -> int | None:
+    """Milliseconds since the epoch for a JS-style ``Date`` (``getTime()``) or
+    a Python ``datetime`` / ``date`` (a naive datetime is read as UTC)."""
+    import datetime as _datetime
+
+    if hasattr(date, "getTime"):
+        ms = float(date.getTime())
+        return None if math.isnan(ms) else int(ms)
+    if isinstance(date, _datetime.datetime):
+        if date.tzinfo is not None:
+            date = date.astimezone(_datetime.timezone.utc).replace(tzinfo=None)
+        return int((date - _datetime.datetime(1970, 1, 1)) / _datetime.timedelta(milliseconds=1))
+    if isinstance(date, _datetime.date):
+        return _input_types.days_from_civil(date.year, date.month, date.day) * _input_types.MS_PER_DAY
+    raise TypeError("valueAsDate must be a Date, a datetime / date, or None")
+
+
+class HTMLInputElement(_TextControlSelection, HTMLElement):
     name = "input"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     accept = _r.String("accept")
@@ -12871,6 +13073,167 @@ class HTMLInputElement(HTMLElement):
     @value.setter
     def value(self, new_value: Any) -> None:
         self.setAttribute("value", new_value)
+        self.__dict__.pop("_selection_range", None)  # the cursor moves to the end
+
+    def _selection_applies(self) -> bool:
+        return self.type in _TEXT_SELECTION_INPUT_TYPES
+
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
+
+    @property
+    def indeterminate(self) -> bool:
+        """A checkbox's third state. It is not an attribute; clicking clears it."""
+        return bool(self.__dict__.get("_indeterminate", False))
+
+    @indeterminate.setter
+    def indeterminate(self, value: Any) -> None:
+        self.__dict__["_indeterminate"] = bool(value)
+
+    # -- number / range / date-like values (https://html.spec.whatwg.org/#dom-input-valueasnumber)
+
+    def _input_bound(self, attribute: str) -> "Decimal | None":
+        input_type = self.type
+        raw = self.getAttribute(attribute)
+        parsed = _input_types.parse(input_type, _r.as_string(raw)) if raw is not None else None
+        if parsed is None and input_type == "range":
+            return Decimal(0 if attribute == "min" else 100)
+        return parsed
+
+    def _allowed_step(self) -> "Decimal | None":
+        """The step in the type's unit, or ``None`` for ``step="any"``."""
+        default, scale, _base = _input_types.STEP_DEFAULTS[self.type]
+        raw = self.getAttribute("step")
+        if raw is not None and _r.as_string(raw).strip(_r.ASCII_WHITESPACE).lower() == "any":
+            return None
+        parsed = _r.parse_float(raw)
+        if parsed is None or parsed <= 0:
+            return Decimal(default * scale)
+        return Decimal(repr(parsed)) * scale
+
+    def _step_base(self) -> "Decimal":
+        for attribute in ("min", "value"):
+            raw = self.getAttribute(attribute)
+            if raw is not None:
+                parsed = _input_types.parse(self.type, _r.as_string(raw))
+                if parsed is not None:
+                    return parsed
+        return Decimal(_input_types.STEP_DEFAULTS[self.type][2])
+
+    def _numeric_value(self) -> "Decimal | None":
+        input_type = self.type
+        if input_type not in _input_types.NUMERIC_TYPES:
+            return None
+        parsed = _input_types.parse(input_type, self.value)
+        if input_type != "range":
+            return parsed
+        # a range always has a value: the default (the midpoint) when the
+        # attribute is not a number, clamped to min/max and snapped to the step
+        minimum, maximum = self._input_bound("min"), self._input_bound("max")
+        assert minimum is not None and maximum is not None
+        if parsed is None:
+            parsed = minimum if maximum < minimum else minimum + (maximum - minimum) / 2
+        if parsed < minimum:
+            parsed = minimum
+        elif maximum >= minimum and parsed > maximum:
+            parsed = maximum
+        step = self._allowed_step()
+        if step is not None:
+            base = self._step_base()
+            down = _input_types.aligned(parsed, base, step, "down")
+            up = down if down == parsed else down + step
+            nearest = up if (up - parsed) <= (parsed - down) else down
+            if maximum >= minimum and nearest > maximum:
+                nearest = down
+            if nearest >= minimum:
+                parsed = nearest
+        return parsed
+
+    def _require_numeric(self, what: str) -> None:
+        if self.type not in _input_types.NUMERIC_TYPES:
+            raise DOMException(f"This input element does not support {what}.", "InvalidStateError")
+
+    @property
+    def valueAsNumber(self) -> float:
+        """The value as a number (``nan`` when it isn't one): a float for
+        number / range, milliseconds for date / week / time / datetime-local,
+        months since 1970-01 for month."""
+        number = self._numeric_value()
+        return float("nan") if number is None else float(number)
+
+    @valueAsNumber.setter
+    def valueAsNumber(self, number: Any) -> None:
+        number = float(number)
+        if math.isinf(number):
+            raise TypeError("The provided double value is non-finite.")
+        self._require_numeric("Number values")
+        if math.isnan(number):
+            self.value = ""
+            return
+        self.value = _input_types.serialize(self.type, Decimal(repr(number))) or ""
+
+    @property
+    def valueAsDate(self) -> Any:
+        """The value as a ``domonic.javascript.Date`` (date / month / week /
+        time types), or ``None``. Assigning also takes a Python ``datetime``."""
+        input_type = self.type
+        if input_type not in _input_types.DATE_TYPES:
+            return None
+        number = _input_types.parse(input_type, self.value)
+        if number is None:
+            return None
+        from domonic.javascript import Date
+
+        return Date(_input_types.to_date_ms(input_type, number))
+
+    @valueAsDate.setter
+    def valueAsDate(self, date: Any) -> None:
+        input_type = self.type
+        if input_type not in _input_types.DATE_TYPES:
+            raise DOMException("This input element does not support Date values.", "InvalidStateError")
+        ms = None if date is None else _date_to_ms(date)
+        if ms is None:
+            self.value = ""
+            return
+        self.value = _input_types.serialize(input_type, _input_types.from_date_ms(input_type, ms)) or ""
+
+    def stepUp(self, n: int = 1) -> None:
+        """Increase the value by ``n`` steps, staying within min / max."""
+        self._step(n, up=True)
+
+    def stepDown(self, n: int = 1) -> None:
+        """Decrease the value by ``n`` steps, staying within min / max."""
+        self._step(n, up=False)
+
+    def _step(self, n: Any, up: bool) -> None:
+        # https://html.spec.whatwg.org/#dom-input-stepup
+        self._require_numeric("stepping")
+        step = self._allowed_step()
+        if step is None:
+            raise DOMException('This input element has step="any".', "InvalidStateError")
+        aligned = _input_types.aligned
+        minimum, maximum = self._input_bound("min"), self._input_bound("max")
+        base = self._step_base()
+        if minimum is not None and maximum is not None:
+            if minimum > maximum or aligned(minimum, base, step, "up") > maximum:
+                return
+        value = self._numeric_value()
+        if value is None:
+            value = Decimal(0)
+        before = value
+        if not _input_types.is_aligned(value, base, step):
+            value = aligned(value, base, step, "up" if up else "down")
+        else:
+            delta = step * _r.to_long(n)
+            value = value + delta if up else value - delta
+        if minimum is not None and value < minimum:
+            value = aligned(minimum, base, step, "up")
+        if maximum is not None and value > maximum:
+            value = aligned(maximum, base, step, "down")
+        if (up and value < before) or (not up and value > before):
+            return
+        text = _input_types.serialize(self.type, value)
+        if text is not None:
+            self.value = text
 
     @property
     def files(self):
@@ -12936,6 +13299,8 @@ class HTMLInputElement(HTMLElement):
         input_type = self.type
         if input_type in {"checkbox", "radio"}:
             was_checked = self.checked
+            if input_type == "checkbox":
+                self.indeterminate = False
             if input_type == "radio":
                 if not was_checked:
                     self.checked = True
@@ -12958,6 +13323,19 @@ class HTMLInputElement(HTMLElement):
 
     def reportValidity(self) -> bool:
         return self.checkValidity()
+
+    @property
+    def list(self) -> "HTMLDataListElement | None":
+        """The ``<datalist>`` the ``list`` attribute names, or ``None``."""
+        if self.type in {"hidden", "checkbox", "radio", "file", "submit", "image", "reset", "button", "password"}:
+            return None
+        list_id = self.getAttribute("list")
+        if not list_id:
+            return None
+        root = self.getRootNode()
+        finder = getattr(root, "getElementById", None)
+        target = finder(str(list_id)) if callable(finder) else None
+        return target if isinstance(target, HTMLDataListElement) else None
 
 
 class HTMLIsIndexElement(HTMLElement):
@@ -12985,6 +13363,18 @@ class HTMLLabelElement(HTMLElement):
     name = "label"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     htmlFor = _r.String("for")
+
+    @property
+    def control(self) -> "Element | None":
+        """The control this label labels: the element ``for`` names, or else
+        its first labelable descendant (https://html.spec.whatwg.org/#dom-label-control)."""
+        return _label_control(self)
+
+    @property
+    def form(self) -> "HTMLFormElement | None":
+        """The form owner of this label's control, or ``None``."""
+        control = _label_control(self)
+        return getattr(control, "form", None) if control is not None else None
 
     # def __init__(self, *args, _for=None, **kwargs):
     #     """_summary_
@@ -13213,8 +13603,60 @@ class HTMLMetaElement(HTMLElement):
             self.setAttribute("name", name)
 
 
+def _meter_number(element: "Element", attribute: str) -> float | None:
+    return _r.parse_float(element.getAttribute(attribute))
+
+
+def _double_setter(attribute: str) -> Callable[[Any, Any], None]:
+    def setter(element: Any, value: Any) -> None:
+        if value is None:
+            element.removeAttribute(attribute)
+        else:
+            element.setAttribute(attribute, _r.format_number(_r.to_double(value)))
+
+    return setter
+
+
 class HTMLMeterElement(HTMLElement):
     name = "meter"
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
+
+    # The getters return the "actual" values the spec derives
+    # (https://html.spec.whatwg.org/#the-meter-element): min defaults to 0,
+    # max to 1 and never below min, value is clamped to min..max, low/high
+    # default to min/max and stay ordered, optimum defaults to the midpoint.
+
+    def _minimum(self) -> float:
+        found = _meter_number(self, "min")
+        return 0.0 if found is None else found
+
+    def _maximum(self) -> float:
+        found = _meter_number(self, "max")
+        return max(self._minimum(), 1.0 if found is None else found)
+
+    def _value(self) -> float:
+        found = _meter_number(self, "value")
+        return min(max(0.0 if found is None else found, self._minimum()), self._maximum())
+
+    def _low(self) -> float:
+        found = _meter_number(self, "low")
+        return min(max(self._minimum() if found is None else found, self._minimum()), self._maximum())
+
+    def _high(self) -> float:
+        found = _meter_number(self, "high")
+        return max(min(self._maximum() if found is None else found, self._maximum()), self._low())
+
+    def _optimum(self) -> float:
+        found = _meter_number(self, "optimum")
+        low, high = self._minimum(), self._maximum()
+        return min(max((low + high) / 2 if found is None else found, low), high)
+
+    min = property(_minimum, _double_setter("min"))
+    max = property(_maximum, _double_setter("max"))
+    value = property(_value, _double_setter("value"))
+    low = property(_low, _double_setter("low"))
+    high = property(_high, _double_setter("high"))
+    optimum = property(_optimum, _double_setter("optimum"))
 
     def __init__(
         self,
@@ -13457,6 +13899,43 @@ class HTMLOutputElement(HTMLElement):
     name = "output"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     htmlFor = _r.TokenList("for")
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
+
+    # https://html.spec.whatwg.org/#the-output-element: the value is the text
+    # content. Assigning it the first time remembers the old text as the
+    # default value, which a form reset puts back.
+
+    @property
+    def value(self) -> str:
+        return self.textContent or ""
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        if self.__dict__.get("_default_value_override") is None:
+            self.__dict__["_default_value_override"] = self.textContent or ""
+        self.textContent = "" if new_value is None else str(new_value)
+
+    @property
+    def defaultValue(self) -> str:
+        override = self.__dict__.get("_default_value_override")
+        return self.textContent or "" if override is None else override
+
+    @defaultValue.setter
+    def defaultValue(self, new_value: Any) -> None:
+        text = "" if new_value is None else str(new_value)
+        if self.__dict__.get("_default_value_override") is None:
+            self.textContent = text
+        else:
+            self.__dict__["_default_value_override"] = text
+
+    def _reset(self) -> None:
+        override = self.__dict__.pop("_default_value_override", None)
+        if override is not None:
+            self.textContent = override
+
+    @property
+    def type(self) -> str:
+        return "output"
 
 
 class HTMLParagraphElement(HTMLElement):
@@ -13500,6 +13979,33 @@ class HTMLPreElement(HTMLElement):
 
 class HTMLProgressElement(HTMLElement):
     name = "progress"
+    max = _r.Double("max", default=1.0, positive=True)
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
+
+    @property
+    def value(self) -> float:
+        """The current value, clamped to 0..max; 0 when indeterminate (no
+        ``value`` attribute) (https://html.spec.whatwg.org/#dom-progress-value)."""
+        if not self.hasAttribute("value"):
+            return 0.0
+        current = _r.parse_float(self.getAttribute("value"))
+        if current is None or current < 0:
+            return 0.0
+        return min(current, self.max)
+
+    @value.setter
+    def value(self, new_value: Any) -> None:
+        if new_value is None:
+            self.removeAttribute("value")
+            return
+        self.setAttribute("value", _r.format_number(_r.to_double(new_value)))
+
+    @property
+    def position(self) -> float:
+        """``value / max``, or -1 for an indeterminate progress bar."""
+        if not self.hasAttribute("value"):
+            return -1.0
+        return self.value / self.max
 
     def __init__(self, *args, value=None, max=None, **kwargs):
         """HTMLProgressElement
@@ -13586,6 +14092,7 @@ _r.install_keyword_alias(HTMLScriptElement, "async", HTMLScriptElement.__dict__[
 
 class HTMLSelectElement(HTMLElement):
     name = "select"
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     autocomplete = _r.String("autocomplete")
     disabled = _r.Boolean("disabled")
@@ -14324,7 +14831,7 @@ class HTMLTemplateElement(HTMLElement):
             self.content.replaceChildren(*self._parse_html_fragment(value))
 
 
-class HTMLTextAreaElement(HTMLElement):
+class HTMLTextAreaElement(_TextControlSelection, HTMLElement):
     name = "textarea"
     # reflected content attributes (https://html.spec.whatwg.org/#reflect)
     autocomplete = _r.String("autocomplete")
@@ -14411,6 +14918,17 @@ class HTMLTextAreaElement(HTMLElement):
     @value.setter
     def value(self, new_value: Any) -> None:
         self.textContent = "" if new_value is None else str(new_value)
+        self.__dict__.pop("_selection_range", None)  # the cursor moves to the end
+
+    @property
+    def textLength(self) -> int:
+        return len(self.value)
+
+    @property
+    def type(self) -> str:
+        return "textarea"
+
+    labels = property(_control_labels, doc="The ``<label>`` elements for this control (live).")
 
     def setValue(self, new_value: Any, *, dispatch_events: bool = True) -> str:
         if dispatch_events and not _dispatch_before_input_event(self, new_value):

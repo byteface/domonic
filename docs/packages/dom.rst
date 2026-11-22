@@ -412,6 +412,40 @@ the table, its sections and its rows. ``rows`` and ``cells`` are live.
 	td(_colspan="0").colSpan           # 1 (clamped to 1..1000)
 
 
+Form controls
+-------------
+
+Number, range and date-like inputs have ``valueAsNumber``, ``valueAsDate``,
+``stepUp()`` and ``stepDown()``, which honour ``min``, ``max`` and ``step``.
+Text inputs and textareas have the selection API (``selectionStart``,
+``setSelectionRange()``, ``setRangeText()``, ``select()``). Controls have
+``labels``, labels have ``control``, and ``<output>``, ``<progress>`` and
+``<meter>`` expose their values.
+
+.. code-block :: python
+
+	import datetime
+	from domonic.html import form, input, label, meter
+
+	qty = input(_type="number", _min="1", _max="10", _step="2", _value="3")
+	qty.stepUp(2)
+	qty.value                          # '7'
+
+	day = input(_type="date")
+	day.valueAsDate = datetime.date(2026, 11, 22)   # a JS-style Date works too
+	day.value                          # '2026-11-22'
+	day.valueAsDate.toISOString()      # '2026-11-22T00:00:00.000Z'
+
+	name = input(_value="hello world")
+	name.setSelectionRange(0, 5)
+	name.setRangeText("HELLO")
+	name.value                         # 'HELLO world'
+
+	page = form(label("Name", input(_id="n")))
+	page.querySelector("label").control is page.querySelector("#n")   # True
+	meter(_value="15", _max="10").value                                 # 10.0
+
+
 DOMConfig
 ----------------
 
