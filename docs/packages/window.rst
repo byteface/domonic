@@ -98,6 +98,10 @@ browser sends them.
 	win.location = "https://example.com/account"
 	data = win.fetch("/api/orders").data.json()   # logged in, like the page
 
+	# or, in async code
+	response = await win.fetch("/api/orders")
+	data = response.json()   # the body methods return the value itself
+
 ``document.cookie`` and ``window.cookieStore`` read and write the same cookies
 for the page's URL: the server's cookies show up there (except ``HttpOnly``
 ones), and a cookie the page sets -- with ``Path``, ``Domain``,

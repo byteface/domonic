@@ -40,7 +40,7 @@ from collections.abc import Iterable as IterableABC
 from collections.abc import Mapping as MappingABC
 from datetime import timezone
 from email.utils import parsedate_to_datetime
-from typing import Any, Callable, Iterable, Iterator, Mapping, Sequence
+from typing import Any, Callable, Generator, Iterable, Iterator, Mapping, Sequence
 from urllib.parse import quote, unquote
 
 # import requests
@@ -2916,6 +2916,31 @@ class Promise:
                 errors.append(item.data)
         return Promise()._settle_rejected(AggregateError(errors, "All promises were rejected"))
 
+    def __await__(self) -> Generator[Any, None, Any]:
+        """``await promise`` -- its value once it fulfils; once it rejects, the
+        reason is raised (wrapped in an ``Error``, as its ``cause``, when it
+        isn't an exception). A pending promise waits without blocking the
+        event loop, and may be settled from another thread."""
+        if self.state == "pending":
+            import asyncio
+
+            loop = asyncio.get_running_loop()
+            future = loop.create_future()
+
+            def settle(apply: Callable[[Any], Any]) -> Callable[[Any], Any]:
+                def callback(value: Any) -> Any:
+                    loop.call_soon_threadsafe(lambda: future.done() or apply(value))
+                    return value
+
+                return callback
+
+            self._then_callbacks.append(settle(future.set_result))
+            self._catch_callbacks.append(settle(lambda reason: future.set_exception(_rejection_error(reason))))
+            return (yield from future.__await__())
+        if self.state == "rejected":
+            raise _rejection_error(self.data)
+        return self.data
+
     def _run_then(self, func: Callable[[Any], Any]) -> None:
         try:
             self.data = func(self.data)
@@ -2927,6 +2952,12 @@ class Promise:
 
 
 setattr(Promise, "finally", Promise.finally_)
+
+
+def _rejection_error(reason: Any) -> BaseException:
+    if isinstance(reason, BaseException):
+        return reason
+    return Error(reason, {"cause": reason})
 
 
 class FetchedSet:  # not a promise

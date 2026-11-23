@@ -77,6 +77,20 @@ Promises and Timers
 
 	Promise(work).then(lambda value: print(value))
 
+A ``Promise`` can be awaited in ``async`` code. A rejection is raised: the
+reason itself if it is an exception, otherwise an ``Error`` with the reason as
+its ``cause``. A pending promise waits without blocking the event loop.
+
+.. code-block :: python
+
+	import asyncio
+
+	async def main():
+	    value = await Promise(work)        # "done", after 50ms
+	    results = await asyncio.gather(Promise.resolve(1), Promise.resolve(2))
+
+	asyncio.run(main())
+
 
 Date class
 ----------------

@@ -240,6 +240,15 @@ class TestWindowFetch(_LocalServer):
         self.assertEqual(self.last_request()["referer"], self.base + "/start")
         self.assertIsNone(self.last_request()["origin"])
 
+    def test_await_fetch(self):
+        import asyncio
+
+        async def run():
+            response = await self.win.fetch("/api")
+            return response.status, response.json()
+
+        self.assertEqual(asyncio.run(run()), (200, {"answer": 42}))
+
     def test_same_origin_fetch_shares_the_window_cookies(self):
         self.q("#in").click()  # logs in: session=s3cret
         self.win.fetch("/api")

@@ -987,6 +987,31 @@ class TestCase(unittest.TestCase):
             self.assertIsNone(Window._do_request("https://example.com"))
         print_mock.assert_called()
 
+    def test_await_promise(self):
+        import asyncio
+        import threading as _threading
+
+        from domonic.javascript import Error
+
+        async def run():
+            results = [
+                await Promise(lambda resolve, reject: resolve(5)),
+                await Promise.resolve(2).then(lambda v: v * 10),
+            ]
+            with self.assertRaises(KeyError):
+                await Promise(lambda resolve, reject: reject(KeyError("k")))
+            try:
+                await Promise.reject({"code": 1})
+            except Error as error:  # a reason that isn't an exception arrives as the cause
+                results.append(error.cause)
+            pending = Promise()
+            _threading.Timer(0.01, lambda: pending.resolve("from a thread")).start()
+            results.append(await pending)
+            results.append(await asyncio.gather(Promise.resolve(1), Promise.resolve(2)))
+            return results
+
+        self.assertEqual(asyncio.run(run()), [5, 20, {"code": 1}, "from a thread", [1, 2]])
+
     def test_javascript_promise(self):
         myPromise = Promise(lambda resolve, reject: resolve("once!"))
         returned = myPromise.then(lambda successMessage: str(successMessage).upper())
