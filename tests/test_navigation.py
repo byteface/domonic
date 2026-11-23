@@ -82,6 +82,8 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(200, '{"answer": 42}')
         elif path.path == "/set":
             self._send(200, "ok", headers=[("Set-Cookie", "fetched=1; Path=/")])
+        elif path.path == "/private":
+            self._send(200, "ok", headers=[("Set-Cookie", "hidden=1; HttpOnly; Path=/")])
         else:
             self._send(404, "<p>missing</p>")
 
@@ -271,6 +273,28 @@ class TestWindowFetch(_LocalServer):
     def test_a_network_error_rejects(self):
         promise = self.win.fetch("http://127.0.0.1:9/nothing", timeout=1)
         self.assertEqual(promise.state, "rejected")
+
+
+class TestDocumentCookies(_LocalServer):
+    def test_the_page_sees_the_cookies_its_server_set(self):
+        self.q("#in").click()
+        self.assertEqual(self.win.document.cookie, "session=s3cret")
+        self.assertEqual(self.win.cookieStore.get("session").data.value, "s3cret")
+
+    def test_a_cookie_the_page_sets_goes_with_the_next_request(self):
+        self.win.document.cookie = "theme=dark; path=/"
+        self.win.location = self.base + "/home"
+        self.assertEqual(self.result(), "home:theme=dark")
+        self.win.cookieStore.set("mode", "test")
+        self.win.fetch("/api")
+        self.assertEqual(self.last_request()["cookie"], "theme=dark; mode=test")
+
+    def test_http_only_cookies_are_hidden_from_the_page(self):
+        self.win.fetch("/private")
+        self.assertEqual(self.win.document.cookie, "")
+        self.win.document.cookie = "hidden=0; path=/"  # can't replace it either
+        self.win.fetch("/api")
+        self.assertEqual(self.last_request()["cookie"], "hidden=1")
 
 
 class TestNoWindow(unittest.TestCase):

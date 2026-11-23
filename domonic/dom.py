@@ -8730,23 +8730,22 @@ class Document(Element):
 
     @property
     def cookie(self) -> str:
-        pairs = []
-        for name, value in self._cookie_store.items():
-            if isinstance(value, dict):
-                value = value.get("value", "")
-            pairs.append(f"{name}={value}")
-        return "; ".join(pairs)
+        """The page's cookies as ``name=value; ...``. In a window on an
+        http(s) URL these are the window's cookies for this URL -- the ones
+        its server set, less HttpOnly ones -- and assigning one (with
+        ``Path``, ``Domain``, ``Max-Age``/``Expires``, ``Secure``) sends it
+        with the window's next requests. Any other document keeps its own."""
+        from domonic import _cookies
+
+        return _cookies.DocumentCookies(self).cookie_string()
 
     @cookie.setter
     def cookie(self, value: str) -> None:
         if value is None:
             return
-        text = str(value).strip()
-        if not text or "=" not in text:
-            return
-        first_pair = text.split(";", 1)[0]
-        name, cookie_value = first_pair.split("=", 1)
-        self._cookie_store[name.strip()] = cookie_value.strip()
+        from domonic import _cookies
+
+        _cookies.DocumentCookies(self).set_cookie_string(str(value).strip())
 
     @property
     def charset(self):

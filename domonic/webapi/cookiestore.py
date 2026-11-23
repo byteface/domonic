@@ -7,6 +7,7 @@ https://developer.mozilla.org/en-US/docs/Web/API/Cookie_Store_API
 from __future__ import annotations
 
 import time
+from collections.abc import MutableMapping
 from typing import Any
 
 from domonic.events import Event, EventTarget
@@ -41,12 +42,14 @@ class CookieChangeEvent(Event):
 
 
 class CookieStore(EventTarget):
-    """In-memory Cookie Store API backed by a dictionary."""
+    """Cookie Store API over a ``name -> cookie`` mapping: a window's is its
+    document's cookies (``domonic._cookies.DocumentCookies``), otherwise a
+    plain dict."""
 
-    def __init__(self, store: dict[str, Any] | None = None) -> None:
+    def __init__(self, store: MutableMapping[str, Any] | None = None) -> None:
         super().__init__()
         self.onchange = None
-        self._store = store if store is not None else {}
+        self._store: MutableMapping[str, Any] = store if store is not None else {}
 
     def get(self, name_or_options: str | dict[str, Any]):
         """Return a Promise resolving with the first matching cookie or ``None``."""

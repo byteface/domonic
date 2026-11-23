@@ -31,6 +31,7 @@ files = [
     "domonic/CDN.py",
     "domonic/bs4/__init__.py",
     "domonic/__main__.py",
+    "domonic/_cookies.py",
     "domonic/_cssom.py",
     "domonic/_fontmetrics.py",
     "domonic/_input_types.py",

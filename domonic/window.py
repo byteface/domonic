@@ -21,6 +21,7 @@ import urllib.parse
 from typing import Any, Callable
 
 from domonic import _reflect as _r
+from domonic._cookies import DocumentCookies
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
 from domonic.events import (
@@ -723,7 +724,7 @@ class Window(JavaScriptWindow, EventTarget):
         self.attach(self._document)
         self._document.URL = self._location.href
         self._console: Console = Console()
-        self.cookieStore: CookieStore = CookieStore(self._document._cookie_store)
+        self.cookieStore: CookieStore = CookieStore(DocumentCookies(self._document))
         self.crypto: Crypto = Crypto()
         self.FontFaceSet = FontFaceSet
         self.Notification = Notification
@@ -773,7 +774,7 @@ class Window(JavaScriptWindow, EventTarget):
         self.attach(doc)
         self._document.URL = self._location.href
         if hasattr(self, "cookieStore"):
-            self.cookieStore = CookieStore(self._document._cookie_store)
+            self.cookieStore = CookieStore(DocumentCookies(self._document))
 
         if referrer is not None:
             self._document.referrer = referrer

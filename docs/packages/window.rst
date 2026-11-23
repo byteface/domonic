@@ -98,6 +98,17 @@ browser sends them.
 	win.location = "https://example.com/account"
 	data = win.fetch("/api/orders").data.json()   # logged in, like the page
 
+``document.cookie`` and ``window.cookieStore`` read and write the same cookies
+for the page's URL: the server's cookies show up there (except ``HttpOnly``
+ones), and a cookie the page sets -- with ``Path``, ``Domain``,
+``Max-Age``/``Expires`` and ``Secure`` honoured -- goes with the window's next
+request. A document without a window, or on ``about:blank``, keeps its own.
+
+.. code-block :: python
+
+	win.document.cookie                         # 'session=...'
+	win.document.cookie = "theme=dark; path=/"  # sent with the next request
+
 Screen, resize and move
 ------------------------
 
