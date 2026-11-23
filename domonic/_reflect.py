@@ -145,7 +145,12 @@ def document_base_url(element: Any) -> str:
     """The absolute base URL for ``element``'s document, or ``""`` when there
     is none to resolve against (a detached element, or a document without an
     http(s)/file URL)."""
-    document = getattr(element, "ownerDocument", None)
+    return base_url_of(getattr(element, "ownerDocument", None))
+
+
+def base_url_of(document: Any) -> str:
+    """``document``'s absolute base URL (its ``<base href>`` resolved against
+    its URL), or ``""`` when it has none to resolve against."""
     if document is None:
         return ""
     page_url = str(getattr(document, "URL", "") or "")

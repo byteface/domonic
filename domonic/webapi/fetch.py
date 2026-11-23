@@ -537,8 +537,15 @@ def _response_from_requests(response: Any) -> Response:
 
 def fetch(input: str | Request, init: Mapping[str, Any] | None = None, **kwargs: Any) -> Promise:
     """Fetch a resource and return a domonic ``Promise`` fulfilled with ``Response``."""
-    promise = Promise()
     request = input if isinstance(input, Request) else Request(input, init=init)
+    return _fetch(request, kwargs)
+
+
+def _fetch(request: Request, kwargs: Mapping[str, Any], session: Any = None) -> Promise:
+    """``fetch()`` for a built ``request``. A ``session`` (``requests.Session``)
+    sends its cookies and keeps the ones the response sets -- a window passes
+    its own when the request includes credentials."""
+    promise = Promise()
 
     if str(request.url).startswith("blob:"):
         from domonic.webapi.file import resolveObjectURL
@@ -579,7 +586,8 @@ def fetch(input: str | Request, init: Mapping[str, Any] | None = None, **kwargs:
     try:
         import requests
 
-        response = requests.request(request.method, request.url, **_requests_kwargs(request, kwargs))
+        sender = requests if session is None else session
+        response = sender.request(request.method, request.url, **_requests_kwargs(request, kwargs))
         if request.redirect == "error" and 300 <= response.status_code <= 399:
             return promise.reject(RuntimeError("Fetch redirect blocked"))
         return promise.resolve(_response_from_requests(response))

@@ -86,6 +86,17 @@ fires ``hashchange``; ``download`` links, non-http(s) URLs and
 button's value. Documents without a window -- ``html(...)`` trees and
 ``DOMParser`` results -- never make a request.
 
+``window.fetch()`` is the page's own ``fetch``. It returns a ``Promise`` for a
+``domonic.webapi.fetch.Response``, resolves a relative URL against the
+document, and shares the window's cookies: a request to the page's own origin
+sends them and keeps any the response sets (``credentials: "include"`` does
+that for any origin, ``"omit"`` never). ``Referer`` and ``Origin`` are sent as a
+browser sends them.
+
+.. code-block :: python
+
+	win.location = "https://example.com/account"
+	data = win.fetch("/api/orders").data.json()   # logged in, like the page
 
 Screen, resize and move
 ------------------------

@@ -20,6 +20,7 @@ import time
 import urllib.parse
 from typing import Any, Callable
 
+from domonic import _reflect as _r
 from domonic import domonic
 from domonic.dom import Document, Element, Location, document
 from domonic.events import (
@@ -275,21 +276,34 @@ def _url_origin(url: str | None) -> str | None:
     return f"{parts.scheme.lower()}://{parts.netloc.rsplit('@', 1)[-1].lower()}"
 
 
-def _referrer_header(referrer: str | None, target: str) -> str | None:
-    """The ``Referer`` a browser sends under its default policy,
-    strict-origin-when-cross-origin: the full URL (no fragment or
-    credentials) to the same origin, the origin elsewhere, nothing from
-    https to http (https://w3c.github.io/webappsec-referrer-policy/)."""
+def _referrer_header(referrer: str | None, target: str, policy: str = "") -> str | None:
+    """The ``Referer`` a browser sends from ``referrer`` to ``target`` under
+    referrer ``policy`` (https://w3c.github.io/webappsec-referrer-policy/).
+    The default, strict-origin-when-cross-origin, sends the full URL (no
+    fragment or credentials) to the same origin, the origin elsewhere, and
+    nothing from https to http."""
     origin = _url_origin(referrer)
-    if origin is None or referrer is None:
+    if origin is None or referrer is None or policy == "no-referrer":
         return None
-    if referrer.lower().startswith("https:") and target.lower().startswith("http:"):
-        return None
-    if origin != _url_origin(target):
-        return origin + "/"
     parts = urllib.parse.urlsplit(referrer)
-    netloc = parts.netloc.rsplit("@", 1)[-1]
-    return urllib.parse.urlunsplit((parts.scheme, netloc, parts.path, parts.query, ""))
+    full = urllib.parse.urlunsplit((parts.scheme, parts.netloc.rsplit("@", 1)[-1], parts.path, parts.query, ""))
+    same_origin = origin == _url_origin(target)
+    downgrade = referrer.lower().startswith("https:") and target.lower().startswith("http:")
+    if policy == "unsafe-url":
+        return full
+    if policy == "origin":
+        return origin + "/"
+    if policy == "same-origin":
+        return full if same_origin else None
+    if policy == "origin-when-cross-origin":
+        return full if same_origin else origin + "/"
+    if policy == "no-referrer-when-downgrade":
+        return None if downgrade else full
+    if downgrade:
+        return None
+    if policy == "strict-origin":
+        return origin + "/"
+    return full if same_origin else origin + "/"
 
 
 class MediaQueryList(EventTarget):
@@ -978,6 +992,54 @@ class Window(JavaScriptWindow, EventTarget):
                     final_url += "#" + fragment
             page.URL = final_url
         return page
+
+    def fetch(self, input: Any, init: Any = None, **kwargs: Any) -> Promise:  # type: ignore[override]
+        """``fetch()`` as the page calls it
+        (https://fetch.spec.whatwg.org/#fetch-method): a ``Promise`` for a
+        :class:`domonic.webapi.fetch.Response`.
+
+        A relative URL resolves against the document's base URL. The
+        window's cookies go with the request, and cookies the response sets
+        are kept, when its ``credentials`` say so: ``"same-origin"`` (the
+        default) for the page's own origin, ``"include"`` for any,
+        ``"omit"`` never. ``Referer`` follows the request's referrer policy;
+        ``Origin`` goes with a cross-origin or non-GET request. Other keyword
+        arguments go to ``requests``.
+        """
+        from domonic.webapi import fetch as fetch_api
+
+        request = fetch_api.Request(input, init=init)
+        page_url = str(getattr(self._document, "URL", "") or "")
+        request.url = _r.join_url(_r.base_url_of(self._document), request.url)
+        page_origin = _url_origin(page_url)
+        target_origin = _url_origin(request.url)
+        same_origin = page_origin is not None and page_origin == target_origin
+
+        if not request.headers.has("referer"):
+            referrer = page_url if request.referrer == "about:client" else str(request.referrer or "")
+            if referrer and _url_origin(referrer) != page_origin:
+                referrer = page_url  # a script may only claim a referrer on its own origin
+            referer = _referrer_header(referrer, request.url, str(request.referrerPolicy or ""))
+            if referer:
+                request.headers.set("Referer", referer)
+        if not request.headers.has("origin") and (
+            (target_origin is not None and not same_origin and request.mode == "cors")
+            or request.method not in ("GET", "HEAD")
+        ):
+            no_referrer = request.referrerPolicy == "no-referrer"
+            request.headers.set("Origin", "null" if no_referrer or page_origin is None else page_origin)
+
+        session = None
+        if request.credentials == "include" or (request.credentials == "same-origin" and same_origin):
+            try:
+                session = self._http_session()
+            except ModuleNotFoundError:
+                session = None
+        promise = fetch_api._fetch(request, kwargs, session=session)
+        response = promise.data if promise.state == "fulfilled" else None
+        if isinstance(response, fetch_api.Response) and target_origin is not None:
+            response.type = "basic" if same_origin else "cors"
+        return promise
 
     @property
     def history(self) -> History:

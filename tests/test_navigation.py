@@ -78,6 +78,10 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(200, f"<p id=result>home:{self.headers.get('Cookie', '')}</p>")
         elif path.path == "/next":
             self._send(200, "<p id=result>next</p>")
+        elif path.path == "/api":
+            self._send(200, '{"answer": 42}')
+        elif path.path == "/set":
+            self._send(200, "ok", headers=[("Set-Cookie", "fetched=1; Path=/")])
         else:
             self._send(404, "<p>missing</p>")
 
@@ -91,18 +95,25 @@ class _Handler(BaseHTTPRequestHandler):
             self._send(200, "<p id=result>echo</p>")
 
 
-class TestNavigation(unittest.TestCase):
+def _serve():
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    return server, f"http://127.0.0.1:{server.server_address[1]}"
+
+
+class _LocalServer(unittest.TestCase):
+    """A window on /start of a local server; ``other`` is a second origin."""
+
     @classmethod
     def setUpClass(cls):
-        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
-        cls.base = f"http://127.0.0.1:{cls.server.server_address[1]}"
-        cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
-        cls.thread.start()
+        cls.server, cls.base = _serve()
+        cls.other_server, cls.other = _serve()
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.shutdown()
-        cls.server.server_close()
+        for server in (cls.server, cls.other_server):
+            server.shutdown()
+            server.server_close()
 
     def setUp(self):
         _Handler.requests_seen.clear()
@@ -119,6 +130,9 @@ class TestNavigation(unittest.TestCase):
 
     def result(self):
         return self.q("#result").textContent
+
+
+class TestNavigation(_LocalServer):
 
     # -- forms --------------------------------------------------------------------
 
@@ -214,6 +228,49 @@ class TestNavigation(unittest.TestCase):
         _Handler.requests_seen.clear()
         old_link.click()
         self.assertEqual(_Handler.requests_seen, [])
+
+
+class TestWindowFetch(_LocalServer):
+    def test_relative_url_and_a_fetch_response(self):
+        response = self.win.fetch("api").data  # relative to /start
+        self.assertEqual((response.status, response.type, response.json()), (200, "basic", {"answer": 42}))
+        self.assertEqual(self.last_request()["path"], "/api")
+        self.assertEqual(self.last_request()["referer"], self.base + "/start")
+        self.assertIsNone(self.last_request()["origin"])
+
+    def test_same_origin_fetch_shares_the_window_cookies(self):
+        self.q("#in").click()  # logs in: session=s3cret
+        self.win.fetch("/api")
+        self.assertEqual(self.last_request()["cookie"], "session=s3cret")
+        self.win.fetch("/set")  # the response's cookie is kept for the next navigation
+        self.win.location = self.base + "/home"
+        self.assertEqual(self.result(), "home:session=s3cret; fetched=1")
+
+    def test_credentials(self):
+        self.q("#in").click()
+        self.win.fetch("/api", {"credentials": "omit"})
+        self.assertIsNone(self.last_request()["cookie"])
+        self.win.fetch(self.other + "/api")  # cross-origin: same-origin credentials send none
+        self.assertIsNone(self.last_request()["cookie"])
+        self.win.fetch(self.other + "/api", {"credentials": "include"})
+        self.assertEqual(self.last_request()["cookie"], "session=s3cret")
+
+    def test_cross_origin_headers(self):
+        response = self.win.fetch(self.other + "/api").data
+        sent = self.last_request()
+        self.assertEqual((sent["referer"], sent["origin"]), (self.base + "/", self.base))
+        self.assertEqual(response.type, "cors")
+
+    def test_post_sends_origin_and_referrer_policy(self):
+        self.win.fetch("/echo", {"method": "POST", "body": "x=1", "referrerPolicy": "no-referrer"})
+        sent = self.last_request()
+        self.assertEqual((sent["method"], sent["body"]), ("POST", b"x=1"))
+        self.assertIsNone(sent["referer"])
+        self.assertEqual(sent["origin"], "null")
+
+    def test_a_network_error_rejects(self):
+        promise = self.win.fetch("http://127.0.0.1:9/nothing", timeout=1)
+        self.assertEqual(promise.state, "rejected")
 
 
 class TestNoWindow(unittest.TestCase):
