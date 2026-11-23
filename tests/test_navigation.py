@@ -63,6 +63,10 @@ class _Handler(BaseHTTPRequestHandler):
                 "referer": self.headers.get("Referer"),
                 "origin": self.headers.get("Origin"),
                 "cookie": self.headers.get("Cookie"),
+                "user_agent": self.headers.get("User-Agent"),
+                "accept": self.headers.get("Accept"),
+                "accept_language": self.headers.get("Accept-Language"),
+                "upgrade_insecure": self.headers.get("Upgrade-Insecure-Requests"),
             }
         )
 
@@ -143,6 +147,20 @@ class TestNavigation(_LocalServer):
         self.assertEqual(self.win.location.href, self.base + "/search?q=hello")
         self.assertEqual(self.result(), "search:hello")
         self.assertEqual(self.last_request()["referer"], self.base + "/start")
+
+    def test_requests_send_a_browser_s_headers(self):
+        self.win.location = self.base + "/next"
+        sent = self.last_request()
+        self.assertEqual(sent["user_agent"], self.win.navigator.userAgent)
+        self.assertEqual(sent["accept"], "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+        self.assertEqual(sent["accept_language"], "en-US,en;q=0.9")
+        self.assertEqual(sent["upgrade_insecure"], "1")
+        self.win.navigator.userAgent = "MyBot/1.0"
+        self.win.navigator.languages = ["fr-FR", "fr", "en"]
+        self.win.location = self.base + "/start"
+        self.q("#go").click()  # a form submission too
+        sent = self.last_request()
+        self.assertEqual((sent["user_agent"], sent["accept_language"]), ("MyBot/1.0", "fr-FR,fr;q=0.9,en;q=0.8"))
 
     def test_post_follows_the_redirect_and_keeps_the_cookie(self):
         self.q("#in").click()
@@ -239,6 +257,17 @@ class TestWindowFetch(_LocalServer):
         self.assertEqual(self.last_request()["path"], "/api")
         self.assertEqual(self.last_request()["referer"], self.base + "/start")
         self.assertIsNone(self.last_request()["origin"])
+
+    def test_fetch_sends_a_browser_s_headers(self):
+        self.win.navigator.userAgent = "MyBot/1.0"
+        for url in ("/api", self.other + "/api"):  # with and without the window's cookie jar
+            self.win.fetch(url)
+            sent = self.last_request()
+            self.assertEqual(
+                (sent["user_agent"], sent["accept"], sent["accept_language"]), ("MyBot/1.0", "*/*", "en-US,en;q=0.9")
+            )
+        self.win.fetch("/api", {"headers": {"Accept": "application/json"}})
+        self.assertEqual(self.last_request()["accept"], "application/json")
 
     def test_await_fetch(self):
         import asyncio

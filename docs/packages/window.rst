@@ -113,6 +113,16 @@ request. A document without a window, or on ``about:blank``, keeps its own.
 	win.document.cookie                         # 'session=...'
 	win.document.cookie = "theme=dark; path=/"  # sent with the next request
 
+The window's requests -- navigations, form submissions and ``fetch()`` -- send
+the headers a browser sends: ``User-Agent`` from ``navigator.userAgent``,
+``Accept``, and ``Accept-Language`` from ``navigator.languages``. Both can be
+set:
+
+.. code-block :: python
+
+	win.navigator.userAgent = "MyCrawler/1.0 (+https://example.com/bot)"
+	win.navigator.languages = ["de-DE", "de", "en"]   # Accept-Language: de-DE,de;q=0.9,en;q=0.8
+
 Screen, resize and move
 ------------------------
 

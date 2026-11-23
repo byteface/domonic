@@ -559,6 +559,10 @@ class CustomElementRegistry:
         return promise
 
 
+# what a browser accepts when it navigates (https://fetch.spec.whatwg.org/#fetching)
+_NAVIGATION_ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+
+
 class Navigator:
     """Minimal browsing-environment navigator object."""
 
@@ -588,6 +592,10 @@ class Navigator:
         self.buildID = None
         self.contacts = None
         self._screen = Screen()
+        self._user_agent: str | None = None
+        # the user's preferred languages, most preferred first
+        # (https://html.spec.whatwg.org/#dom-navigator-languages)
+        self.languages: list[str] = ["en-US", "en"]
 
     @property
     def gamepads(self) -> GamepadManager:
@@ -624,8 +632,29 @@ class Navigator:
 
     @property
     def userAgent(self) -> str:
-        """Returns the user-agent header sent by the browser Navigator"""
+        """The ``User-Agent`` header the window sends. Read-only in a browser;
+        here it can be set, and the window's requests send the new value."""
+        if self._user_agent is not None:
+            return self._user_agent
         return f"domonic/{self.appName} ({self.platform})"
+
+    @userAgent.setter
+    def userAgent(self, value: str) -> None:
+        self._user_agent = None if value is None else str(value)
+
+    @property
+    def language(self) -> str:
+        """The most preferred of ``languages``."""
+        return self.languages[0] if self.languages else "en-US"
+
+    def _accept_language(self) -> str:
+        """``languages`` as an ``Accept-Language`` value, weighted the way
+        Chrome weights them: ``en-US,en;q=0.9``."""
+        values = []
+        for index, tag in enumerate(self.languages or [self.language]):
+            weight = max(1.0 - index / 10, 0.1)
+            values.append(tag if index == 0 else f"{tag};q={weight:g}")
+        return ",".join(values)
 
     @property
     def deviceMemory(self) -> float:
@@ -947,6 +976,17 @@ class Window(JavaScriptWindow, EventTarget):
             self.__dict__["_requests_session"] = session
         return session
 
+    def _default_headers(self, accept: str) -> dict[str, str]:
+        """The headers a browser adds to every request it makes
+        (https://fetch.spec.whatwg.org/#fetching): ``User-Agent`` from
+        ``navigator.userAgent``, ``Accept`` for what is being fetched, and
+        ``Accept-Language`` from ``navigator.languages``."""
+        return {
+            "User-Agent": self._navigator.userAgent,
+            "Accept": accept,
+            "Accept-Language": self._navigator._accept_language(),
+        }
+
     def _fetch_document(
         self,
         url: str,
@@ -966,7 +1006,8 @@ class Window(JavaScriptWindow, EventTarget):
         except ModuleNotFoundError:
             return None
 
-        request_headers: dict[str, str] = {}
+        request_headers: dict[str, str] = self._default_headers(_NAVIGATION_ACCEPT)
+        request_headers["Upgrade-Insecure-Requests"] = "1"
         referer = _referrer_header(referrer, url)
         if referer:
             request_headers["Referer"] = referer
@@ -1016,6 +1057,9 @@ class Window(JavaScriptWindow, EventTarget):
         target_origin = _url_origin(request.url)
         same_origin = page_origin is not None and page_origin == target_origin
 
+        for name, value in self._default_headers("*/*").items():
+            if not request.headers.has(name):
+                request.headers.set(name, value)
         if not request.headers.has("referer"):
             referrer = page_url if request.referrer == "about:client" else str(request.referrer or "")
             if referrer and _url_origin(referrer) != page_origin:
