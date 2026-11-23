@@ -215,6 +215,36 @@ script actually executes):
 	# <body><script>if (a && b) x("y");</script></body>
 
 
+innerText
+---------
+
+``textContent`` is every character in the tree, scripts and hidden elements
+included. ``innerText`` is the text as a browser renders it: hidden and
+non-rendered elements left out, white space collapsed, a line break at each
+block's edges (two around a ``<p>``), ``<br>`` as a newline, tabs between table
+cells. The page's CSS counts -- a stylesheet or ``style`` attribute that sets
+``display``, ``visibility``, ``white-space``, ``text-transform``, ``float`` or
+``position`` -- but there is no layout, so ``::first-line`` and
+``::first-letter`` don't apply. It passes the web-platform-tests getter suite
+apart from those.
+
+.. code-block :: python
+
+	from domonic.dom import DOMParser
+
+	doc = DOMParser().parseFromString(
+	    "<style>.ad{display:none}</style>"
+	    "<h1>News</h1><p>Hello   world</p><p class=ad>Buy now</p><script>track()</script>",
+	    "text/html",
+	)
+	doc.body.textContent   # 'NewsHello   worldBuy nowtrack()'
+	doc.body.innerText     # 'News\n\nHello world'
+
+Setting ``innerText`` replaces the children with the text, a ``<br>`` for each
+line break; ``outerText`` reads the same and setting it replaces the element
+itself. ``innerText`` used to be a method, and ``el.innerText()`` still works.
+
+
 Parsing documents and pretty-printing
 -------------------------------------
 

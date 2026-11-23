@@ -1315,6 +1315,28 @@ _UA_HIDDEN_TAGS = frozenset(
 )
 
 
+class _RenderedText(str):
+    """``element.innerText``: a ``str``, still callable the way domonic's old
+    ``innerText()`` method was -- ``el.innerText()`` returns the text and
+    ``el.innerText("new")`` sets ``textContent``."""
+
+    _element: Any
+
+    def __new__(cls, text: str, element: Any = None) -> "_RenderedText":
+        value = super().__new__(cls, text)
+        value._element = element
+        return value
+
+    def __reduce__(self) -> tuple:
+        return (str, (str(self),))  # a copy or pickle is plain text, not the element too
+
+    def __call__(self, *args: Any) -> str:
+        if args:
+            self._element.textContent = "".join(str(each) for each in args)
+            return self._element.innerText
+        return str(self)
+
+
 def _computed_value(element: "Element", property_name: str) -> str:
     try:
         from domonic.style import ComputedStyleDeclaration
@@ -6700,12 +6722,43 @@ class Element(Node):
         """Sets or returns the value of the id attribute of an element"""
         self.setAttribute("id", newid if newid is None or isinstance(newid, str) else str(newid))
 
-    # Sets or returns the text content of a node and its descendants
-    def innerText(self, *args: Any) -> str:
-        if args:
-            self.textContent = "".join(str(each) for each in args)
-            return self.textContent
-        return self.textContent
+    @property
+    def innerText(self) -> "_RenderedText":
+        """The element's text as it renders
+        (https://html.spec.whatwg.org/#dom-innertext): hidden and non-rendered
+        elements left out, white space collapsed as CSS collapses it, a line
+        break at each block's edges (two around a ``<p>``), ``<br>`` as a
+        newline, tabs between table cells. ``display``, ``visibility``,
+        ``white-space`` and ``text-transform`` set by the page's CSS are
+        honoured. An element that isn't rendered itself gives its
+        ``textContent``.
+
+        Setting it replaces the children with the text, a ``<br>`` for each
+        line break. (``el.innerText()`` -- the old method form -- still works.)
+        """
+        from domonic import _rendered_text
+
+        return _RenderedText(_rendered_text.inner_text(self), self)
+
+    @innerText.setter
+    def innerText(self, value: Any) -> None:
+        from domonic import _rendered_text
+
+        _rendered_text.set_inner_text(self, value)
+
+    @property
+    def outerText(self) -> str:
+        """Reads as ``innerText``; setting it replaces the element itself with
+        the text (https://html.spec.whatwg.org/#dom-outertext)."""
+        from domonic import _rendered_text
+
+        return _rendered_text.inner_text(self)
+
+    @outerText.setter
+    def outerText(self, value: Any) -> None:
+        from domonic import _rendered_text
+
+        _rendered_text.set_outer_text(self, value)
 
     # Inserts an element adjacent to the current element
     def _normalize_adjacent_position(self, position: str) -> str:

@@ -60,6 +60,10 @@ constants, `Element.hasAttribute(s)` / `-webkitMatchesSelector`,
 `TreeWalker` (`NodeFilter` constants, `currentNode`, `previousNode`
 respecting the filter, surviving detachment/regrafting).
 
+Outside `dom/`: `html/dom/elements/the-innertext-and-outertext-properties/`
+`getter-tests.js` (`test_html_inner_text.py`), the whole `testText` table
+run through `innerText` and `outerText`.
+
 ## When a port fails
 
 It's one of two things:

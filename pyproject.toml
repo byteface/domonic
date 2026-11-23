@@ -36,6 +36,7 @@ files = [
     "domonic/_fontmetrics.py",
     "domonic/_input_types.py",
     "domonic/_reflect.py",
+    "domonic/_rendered_text.py",
     "domonic/animation.py",
     "domonic/cmd.py",
     "domonic/components.py",
