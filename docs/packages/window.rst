@@ -113,6 +113,10 @@ request. A document without a window, or on ``about:blank``, keeps its own.
 	win.document.cookie                         # 'session=...'
 	win.document.cookie = "theme=dark; path=/"  # sent with the next request
 
+``localStorage`` and ``sessionStorage`` belong to the page's origin, as in a
+browser: another site gets its own, and coming back finds yours again. Pages
+without an http(s) origin (``about:blank``, ``file:``) share one.
+
 The window's requests -- navigations, form submissions and ``fetch()`` -- send
 the headers a browser sends: ``User-Agent`` from ``navigator.userAgent``,
 ``Accept``, and ``Accept-Language`` from ``navigator.languages``. Both can be

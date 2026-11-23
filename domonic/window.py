@@ -742,8 +742,8 @@ class Window(JavaScriptWindow, EventTarget):
         # renderers such as Chromonic attach a real OS-window implementation.
         self._host = None
         self.customElements = CustomElementRegistry()
-        self._localStorage: Storage = Storage()
-        self._sessionStorage: Storage = Storage()
+        # (kind, origin) -> Storage: each origin has its own
+        self._storage_areas: dict[tuple[str, str], Storage] = {}
         self._navigator: Navigator = Navigator()
         self._navigator.gamepads.eventTarget = self
         self._screen: Screen = self._navigator._screen
@@ -1150,11 +1150,22 @@ class Window(JavaScriptWindow, EventTarget):
 
     @property
     def localStorage(self) -> Storage:  # type: ignore[override]
-        return self._localStorage
+        return self._storage_area("local")
 
     @property
     def sessionStorage(self) -> Storage:
-        return self._sessionStorage
+        return self._storage_area("session")
+
+    def _storage_area(self, kind: str) -> Storage:
+        """The current document's origin's storage
+        (https://html.spec.whatwg.org/#dom-localstorage): a page on another
+        origin gets its own. Pages without an http(s) origin (``about:blank``,
+        ``file:``) share one."""
+        origin = _url_origin(str(getattr(self._document, "URL", "") or "")) or ""
+        area = self._storage_areas.get((kind, origin))
+        if area is None:
+            area = self._storage_areas[(kind, origin)] = Storage()
+        return area
 
     @property
     def document(self) -> Document:

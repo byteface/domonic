@@ -162,6 +162,17 @@ class TestNavigation(_LocalServer):
         sent = self.last_request()
         self.assertEqual((sent["user_agent"], sent["accept_language"]), ("MyBot/1.0", "fr-FR,fr;q=0.9,en;q=0.8"))
 
+    def test_storage_belongs_to_the_origin(self):
+        self.win.localStorage.setItem("token", "a")
+        self.win.sessionStorage.setItem("tab", "1")
+        self.win.location = self.other + "/start"
+        self.assertIsNone(self.win.localStorage.getItem("token"))
+        self.assertIsNone(self.win.sessionStorage.getItem("tab"))
+        self.win.localStorage.setItem("token", "b")
+        self.win.location = self.base + "/next"
+        self.assertEqual(self.win.localStorage.getItem("token"), "a")
+        self.assertEqual(self.win.sessionStorage.getItem("tab"), "1")
+
     def test_post_follows_the_redirect_and_keeps_the_cookie(self):
         self.q("#in").click()
         login, home = _Handler.requests_seen
