@@ -287,8 +287,18 @@ work with ``fetch``, ``FormData`` and drag-and-drop helpers.
 Sanitizer API
 ----------------
 
-``Sanitizer`` cleans HTML fragments into domonic nodes without evaluating the
-input. It supports the current ``elements``/``removeElements`` and
+``element.setHTML()``, ``Document.parseHTML()`` and ``Sanitizer`` clean
+untrusted HTML -- a comment, a forum post, a CMS field -- as the browser API
+does. The input is parsed by the same parser as ``innerHTML``, then everything
+that can run script is removed: ``<script>``, ``<iframe>``, ``<frame>``,
+``<object>``, ``<embed>``, SVG ``<use>``, ``on*`` handlers, ``srcdoc``,
+``javascript:`` URLs (also through SVG ``<animate>``/``<set>``). Raw text or
+comments that contain markup are dropped too, since browsers don't all agree
+where raw text starts. Serialise the result with ``innerHTML`` or ``str()``;
+both escape it so a browser builds the same tree. ``setHTMLUnsafe()`` and
+``parseHTMLUnsafe()`` apply only the config you pass.
+
+It supports the current ``elements``/``removeElements`` and
 ``attributes``/``removeAttributes`` configuration names, plus the older domonic
 aliases.
 
@@ -305,6 +315,9 @@ aliases.
 	target = div()
 	target.setHTML('<a href="javascript:evil()">link</a>')
 	assert str(target) == "<div><a>link</a></div>"
+
+	target.setHTML("<b>Tom & Jerry</b><img src=x onerror=alert(1)>")
+	assert target.innerHTML == '<b>Tom &amp; Jerry</b><img src="x">'
 
 
 Notifications and Gamepad

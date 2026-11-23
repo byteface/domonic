@@ -180,9 +180,10 @@ most server-side rendering wants.
 
 ``innerHTML``, ``outerHTML`` and ``getHTML()`` instead follow the WHATWG HTML
 fragment serialisation algorithm, so their output is byte-compatible with a
-browser: ``<br>`` (no slash), ``checked=""``, and only ``&``, ``"`` and the
-non-breaking space escaped in attribute values. Reach for these when a port or
-a test diffs against real browser output.
+browser: ``<br>`` (no slash), ``checked=""``, and ``&``, ``"``, ``<``, ``>``
+and the non-breaking space escaped in attribute values (browsers escape ``<``
+and ``>`` there since Chrome 138 and Firefox 140). Reach for these when a port
+or a test diffs against real browser output.
 
 .. code-block :: python
 
@@ -194,7 +195,7 @@ a test diffs against real browser output.
 	# <div title="a&lt;b&gt;"><input type="checkbox" checked/><br/></div>
 
 	el.outerHTML
-	# <div title="a<b>"><input type="checkbox" checked=""><br></div>
+	# <div title="a&lt;b&gt;"><input type="checkbox" checked=""><br></div>
 
 Rendering behaviour of ``str(node)`` is configurable through ``DOMConfig``
 (below); the fragment serialisation is not.
@@ -202,7 +203,9 @@ Rendering behaviour of ``str(node)`` is configurable through ``DOMConfig``
 ``<script>`` / ``<style>`` and the other HTML "raw text" elements are always
 serialised verbatim in every one of these forms -- their text content is
 never entity-escaped, matching a browser (escaping it would change what the
-script actually executes):
+script actually executes). That applies to HTML elements only: an SVG or
+MathML ``<style>`` is escaped like any other element, and so is
+``<noscript>``, because domonic parses its content as markup (scripting off):
 
 .. code-block :: python
 

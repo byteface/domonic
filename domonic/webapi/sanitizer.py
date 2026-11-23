@@ -8,31 +8,21 @@ from __future__ import annotations
 
 import copy
 import re
-from html import escape as _escape_html
-from html.parser import HTMLParser
 from typing import Any
 
-from domonic.dom import Comment, Document, DocumentFragment, Element, Node
+from domonic.dom import CDATASection, Comment, Document, DocumentFragment, Element, Node, Text
 
 _UNSAFE_ELEMENTS = frozenset({"script", "frame", "iframe", "embed", "object", "use"})
-_VOID_ELEMENTS = frozenset(
-    {
-        "area",
-        "base",
-        "br",
-        "col",
-        "embed",
-        "hr",
-        "img",
-        "input",
-        "link",
-        "meta",
-        "param",
-        "source",
-        "track",
-        "wbr",
-    }
-)
+# SVG animation elements can set an attribute to a ``javascript:`` URL
+# (``<animate attributeName="href" values="javascript:...">``), so their
+# ``attributeName`` may not name a URL attribute.
+_SVG_ANIMATION_ELEMENTS = frozenset({"animate", "animatemotion", "animatetransform", "set"})
+_ANIMATABLE_URL_ATTRIBUTES = frozenset({"href", "xlink:href"})
+# Text that looks like markup, in a raw-text element or a comment. Parsers
+# don't all agree on where raw text starts (``<style>`` inside ``<select>``,
+# ``<noscript>`` with scripting on or off), so in safe mode such content is
+# removed rather than trusted to be read as text. The same rule as DOMPurify.
+_MARKUP_IN_TEXT = re.compile(r"<[/\w]")
 _URL_ATTRIBUTES = frozenset(
     {
         "action",
@@ -196,17 +186,11 @@ def _is_unsafe_attribute(name: str, value: Any) -> bool:
     return False
 
 
-def _safe_text(value: Any) -> str:
-    return _escape_html(str(value), quote=False)
-
-
-def _safe_attribute_value(value: Any) -> str:
-    return _escape_html("" if value is None else str(value), quote=True)
-
-
-def _safe_comment(value: Any) -> str:
-    data = str(value).replace("--", "- -")
-    return f"{data} " if data.endswith("-") else data
+def _text(data: Any) -> Text:
+    """A text node that ``str()`` escapes, as it does parsed text."""
+    node = Text(str(data))
+    node._escape_text_on_render = True
+    return node
 
 
 class Sanitizer:
@@ -214,9 +198,9 @@ class Sanitizer:
 
     The implementation follows the current Sanitizer API shape while retaining
     domonic's older ``allowElements``/``dropElements``/``allowAttributes`` names
-    as aliases. It builds a domonic ``DocumentFragment`` directly from
-    ``HTMLParser`` events, so untrusted strings are not run through domonic's
-    Python-expression loader.
+    as aliases. Input is parsed by domonic's HTML parser, the same one that
+    ``innerHTML`` uses, and the resulting tree is then cleaned: what is left is
+    exactly what a browser will build when it reads the output.
     """
 
     def __init__(self, config: dict[str, Any] | "Sanitizer" | None = None) -> None:
@@ -467,23 +451,104 @@ class Sanitizer:
             return _attribute_rule_applies(self._allow_attributes, name, tag)
         return True
 
-    def _sanitize_attrs(self, tag: str, attrs: list[tuple[str, Any]]) -> dict[str, str]:
-        sanitized: dict[str, str] = {}
-        for raw_name, raw_value in attrs:
-            name = _normalize_attribute_name(raw_name)
-            if not name or name in sanitized:
+    def _clean_attributes(self, element: Element, tag: str) -> None:
+        kwargs = element.kwargs
+        if not kwargs:
+            return
+        seen: set[str] = set()
+        for key in list(kwargs):
+            name = _normalize_attribute_name(key)
+            value = kwargs[key]
+            if not name or name in seen or not self._allow_attribute(tag, name, value):
+                del kwargs[key]
                 continue
-            if not self._allow_attribute(tag, name, raw_value):
+            if (
+                self._remove_unsafe
+                and tag in _SVG_ANIMATION_ELEMENTS
+                and name == "attributename"
+                and str(value).strip().lower() in _ANIMATABLE_URL_ATTRIBUTES
+            ):
+                del kwargs[key]
                 continue
-            sanitized[name] = _safe_attribute_value(raw_value)
-        return sanitized
+            seen.add(name)
+
+    @staticmethod
+    def _hides_markup(element: Element, tag: str) -> bool:
+        """Whether ``element`` is written out as raw text that contains markup."""
+        from domonic.dom import _serializes_raw
+
+        if not _serializes_raw(element, tag):
+            return False
+        text = "".join(
+            str(child.data) if isinstance(child, Text) else child
+            for child in element.args
+            if isinstance(child, (Text, str))
+        )
+        return _MARKUP_IN_TEXT.search(text) is not None
+
+    def _clean(self, root: Node) -> None:
+        """Clean ``root``'s subtree in place. Iterative, so a deeply nested
+        input can't exhaust the stack."""
+        pending: list[Any] = [root]
+        while pending:
+            parent = pending.pop()
+            queue = list(getattr(parent, "args", None) or ())
+            queue.reverse()
+            kept: list[Any] = []
+            changed = False
+            while queue:
+                child = queue.pop()
+                if isinstance(child, Element):
+                    tag = _normalize_element_name(child.name)
+                    action = self._element_action(tag)
+                    if action == "drop":
+                        changed = True
+                        continue
+                    if action == "unwrap":
+                        changed = True
+                        grandchildren = list(child.args or ())
+                        grandchildren.reverse()
+                        queue.extend(grandchildren)
+                        continue
+                    if self._remove_unsafe and self._hides_markup(child, tag):
+                        changed = True
+                        continue
+                    self._clean_attributes(child, tag)
+                    kept.append(child)
+                    pending.append(child)
+                    content = child.__dict__.get("_template_content")
+                    if content is not None:
+                        pending.append(content)
+                elif isinstance(child, Comment):
+                    if self.comments and not (self._remove_unsafe and _MARKUP_IN_TEXT.search(str(child.data))):
+                        kept.append(child)
+                    else:
+                        changed = True
+                elif isinstance(child, Text):
+                    child._escape_text_on_render = True
+                    kept.append(child)
+                elif isinstance(child, CDATASection):
+                    kept.append(_text(child.data))
+                    changed = True
+                elif isinstance(child, Node):
+                    # doctypes, processing instructions, nested fragments
+                    changed = True
+                else:
+                    # a bare string child: domonic writes those out verbatim,
+                    # so make it a text node that is escaped like parsed text
+                    kept.append(_text(child))
+                    changed = True
+            if changed:
+                parent.replaceChildren(*kept)
 
     def sanitize(self, input: Any) -> DocumentFragment:
         """Return a sanitized ``DocumentFragment`` for a string or DOM node."""
-        parser = _SanitizerHTMLParser(self)
-        parser.feed("" if input is None else str(input))
-        parser.close()
-        return parser.fragment
+        from domonic.html import create_element
+
+        text = "" if input is None else str(input)
+        fragment = DocumentFragment(*create_element("div")._parse_html_fragment(text))
+        self._clean(fragment)
+        return fragment
 
     def sanitizeToString(self, input: Any) -> str:
         """Return a sanitized HTML string."""
@@ -497,91 +562,6 @@ class Sanitizer:
         node = create_element(tag)
         node.replaceChildren(*self.sanitize(input).args)
         return node
-
-
-class _SanitizerHTMLParser(HTMLParser):
-    def __init__(self, sanitizer: Sanitizer) -> None:
-        super().__init__(convert_charrefs=True)
-        self.sanitizer = sanitizer
-        self.fragment = DocumentFragment()
-        self._stack: list[tuple[str, Node | None, str]] = [("#document-fragment", self.fragment, "keep")]
-
-    @property
-    def _dropping(self) -> bool:
-        return any(mode == "drop" for _, _, mode in self._stack[1:])
-
-    @property
-    def _current_container(self) -> Node:
-        for _, node, _ in reversed(self._stack):
-            if node is not None:
-                return node
-        return self.fragment
-
-    def _append(self, node: Any) -> None:
-        container = self._current_container
-        if hasattr(container, "append"):
-            container.append(node)
-        else:
-            container.appendChild(node)
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, Any]]) -> None:
-        tag = _normalize_element_name(tag)
-        if not tag:
-            return
-        if self._dropping:
-            self._stack.append((tag, None, "drop"))
-            return
-
-        action = self.sanitizer._element_action(tag)
-        if action == "drop":
-            if tag not in _VOID_ELEMENTS:
-                self._stack.append((tag, None, "drop"))
-            return
-        if action == "unwrap":
-            if tag not in _VOID_ELEMENTS:
-                self._stack.append((tag, None, "unwrap"))
-            return
-
-        from domonic.html import create_element
-
-        element = create_element(tag)
-        for name, value in self.sanitizer._sanitize_attrs(tag, attrs).items():
-            element.setAttribute(name, value)
-        self._append(element)
-        if tag not in _VOID_ELEMENTS:
-            self._stack.append((tag, element, "keep"))
-
-    def handle_startendtag(self, tag: str, attrs: list[tuple[str, Any]]) -> None:
-        self.handle_starttag(tag, attrs)
-
-    def handle_endtag(self, tag: str) -> None:
-        tag = _normalize_element_name(tag)
-        if not tag:
-            return
-        for index in range(len(self._stack) - 1, 0, -1):
-            if self._stack[index][0] == tag:
-                del self._stack[index:]
-                return
-
-    def handle_data(self, data: str) -> None:
-        if self._dropping or data == "":
-            return
-        self._append(_safe_text(data))
-
-    def handle_entityref(self, name: str) -> None:
-        if self._dropping:
-            return
-        self._append(f"&amp;{name};")
-
-    def handle_charref(self, name: str) -> None:
-        if self._dropping:
-            return
-        self._append(f"&amp;#{name};")
-
-    def handle_comment(self, data: str) -> None:
-        if self._dropping or not self.sanitizer.comments:
-            return
-        self._append(Comment(_safe_comment(data)))
 
 
 def _coerce_sanitizer(options: Any = None, *, safe: bool = True) -> Sanitizer | None:

@@ -397,7 +397,8 @@ _BOOLEAN_ATTRIBUTES = frozenset(
 )
 
 # "escape a string" -- text mode replaces & \xa0 < > ; attribute mode replaces
-# & \xa0 and the (double) quote, but never < or >.
+# & \xa0 " < > (< and > since May 2025: Chrome 138, Firefox 140 -- markup in an
+# attribute value can no longer turn into tags when the output is re-parsed).
 _FRAGMENT_TEXT_ESCAPE = {
     ord("&"): "&amp;",
     ord("\xa0"): "&nbsp;",
@@ -408,7 +409,24 @@ _FRAGMENT_ATTR_ESCAPE = {
     ord("&"): "&amp;",
     ord("\xa0"): "&nbsp;",
     ord('"'): "&quot;",
+    ord("<"): "&lt;",
+    ord(">"): "&gt;",
 }
+_XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml"
+# Elements whose text is written out verbatim. Only HTML ones: an SVG or
+# MathML <style> parses its content as markup, so text there is escaped like
+# anywhere else. <noscript> isn't raw either -- domonic parses with scripting
+# off, so its content is markup, and text in it written verbatim would come
+# back as tags when a browser (scripting on) reads it.
+_SERIALIZE_RAWTEXT_ELEMENTS = _HTML_RAWTEXT_ELEMENTS - {"noscript"}
+
+
+def _serializes_raw(element: Any, lname: str) -> bool:
+    return lname in _SERIALIZE_RAWTEXT_ELEMENTS and getattr(element, "namespaceURI", None) in (
+        _XHTML_NAMESPACE,
+        None,
+        "",
+    )
 _FRAGMENT_ATTR_NAME_ALIASES = {
     "accept_charset": "accept-charset",
     "http_equiv": "http-equiv",
@@ -455,7 +473,7 @@ def _serialize_fragment_element(element: "Node", out: list) -> None:
     lname = tagname.lower()
     if lname in _HTML_VOID_ELEMENTS:
         return
-    _serialize_fragment_children(element, out, raw=lname in _HTML_RAWTEXT_ELEMENTS)
+    _serialize_fragment_children(element, out, raw=_serializes_raw(element, lname))
     out.append("</")
     out.append(tagname)
     out.append(">")
@@ -2617,7 +2635,7 @@ class Node(EventTarget):
         autoescape = DOMConfig.GLOBAL_AUTOESCAPE
         render_optional = DOMConfig.RENDER_OPTIONAL_CLOSING_TAGS
         optional_closing_tags = _OPTIONAL_CLOSING_TAGS
-        rawtext = _HTML_RAWTEXT_ELEMENTS
+        rawtext = _SERIALIZE_RAWTEXT_ELEMENTS
         escape_html = _escape_html
         node_stream = Node.stream
         stack: list[tuple[bool, Any]] = [(False, self)]
@@ -2656,7 +2674,7 @@ class Node(EventTarget):
                         continue
                 name = value.name
                 yield f"<{name}{value.__attributes__}>"
-                if name in rawtext:
+                if name in rawtext and _serializes_raw(value, name):
                     # raw-text elements (<script>, <style>, ...): content is
                     # serialised verbatim, never entity-escaped
                     for child in value.args:
@@ -6104,7 +6122,8 @@ class Element(Node):
             # parsing the empty string yields an empty fragment -- no child,
             # not an empty text node
             return []
-        if "<" not in value or ">" not in value:
+        if ("<" not in value or ">" not in value) and "&" not in value:
+            # no markup and no character references: the text is the value
             return [value]
 
         try:
