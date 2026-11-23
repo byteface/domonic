@@ -447,7 +447,8 @@ def _serialize_html_fragment(node: "Node") -> str:
     return "".join(out)
 
 
-def _serialize_fragment_element(element: "Node", out: list) -> None:
+def _open_fragment_tag(element: "Node", out: list) -> str:
+    """Write ``element``'s start tag; return its tag name."""
     tagname = element.name or ""
     out.append("<")
     out.append(tagname)
@@ -470,6 +471,11 @@ def _serialize_fragment_element(element: "Node", out: list) -> None:
             out.append(str(value).translate(_FRAGMENT_ATTR_ESCAPE))
             out.append('"')
     out.append(">")
+    return tagname
+
+
+def _serialize_fragment_element(element: "Node", out: list) -> None:
+    tagname = _open_fragment_tag(element, out)
     lname = tagname.lower()
     if lname in _HTML_VOID_ELEMENTS:
         return
@@ -490,34 +496,55 @@ def _child_args_for_serialization(node: Any) -> tuple:
 
 
 def _serialize_fragment_children(node: "Node", out: list, raw: bool = False) -> None:
-    for child in _child_args_for_serialization(node):
-        if type(child) is str:
-            out.append(_fragment_text_escape(child, raw))
-        elif isinstance(child, RawHTML):
-            out.append(str(child))
-        elif isinstance(child, Text):
-            out.append(_fragment_text_escape(child.args[0] if child.args else "", raw))
-        elif isinstance(child, Comment):
-            out.append("<!--")
-            out.append(str(child.data))
-            out.append("-->")
-        elif isinstance(child, ProcessingInstruction):
-            out.append("<?")
-            out.append(str(child.target))
-            out.append(" ")
-            out.append(str(child.data))
-            out.append(">")
-        elif isinstance(child, DocumentType):
-            out.append("<!DOCTYPE ")
-            out.append(str(getattr(child, "name", "") or ""))
-            out.append(">")
-        elif isinstance(child, Element):
-            _serialize_fragment_element(child, out)
-        elif isinstance(child, Node):
-            # DocumentFragment or other container: serialize its children
-            _serialize_fragment_children(child, out)
+    # Iterative -- an explicit stack of (children, raw, end tag) -- so a deep
+    # tree can't exhaust the recursion limit. Hot path: names bound locally.
+    append = out.append
+    text_escape = _fragment_text_escape
+    child_args = _child_args_for_serialization
+    open_tag = _open_fragment_tag
+    void = _HTML_VOID_ELEMENTS
+    text_type, element_type, node_type = Text, Element, Node
+    stack: list[tuple[Iterator[Any], bool, str]] = [(iter(child_args(node)), raw, "")]
+    while stack:
+        children, raw, end_tag = stack[-1]
+        for child in children:
+            if type(child) is str:
+                append(text_escape(child, raw))
+            elif isinstance(child, element_type):
+                tagname = open_tag(child, out)
+                lname = tagname.lower()
+                if lname in void:
+                    continue
+                stack.append((iter(child_args(child)), _serializes_raw(child, lname), "</" + tagname + ">"))
+                break
+            elif isinstance(child, text_type):
+                append(text_escape(child.args[0] if child.args else "", raw))
+            elif isinstance(child, RawHTML):
+                append(str(child))
+            elif isinstance(child, Comment):
+                append("<!--")
+                append(str(child.data))
+                append("-->")
+            elif isinstance(child, ProcessingInstruction):
+                append("<?")
+                append(str(child.target))
+                append(" ")
+                append(str(child.data))
+                append(">")
+            elif isinstance(child, DocumentType):
+                append("<!DOCTYPE ")
+                append(str(getattr(child, "name", "") or ""))
+                append(">")
+            elif isinstance(child, node_type):
+                # DocumentFragment or other container: serialize its children
+                stack.append((iter(child_args(child)), False, ""))
+                break
+            else:
+                append(text_escape(str(child), raw))
         else:
-            out.append(_fragment_text_escape(str(child), raw))
+            stack.pop()
+            if end_tag:
+                append(end_tag)
 
 
 def _find_wrapper_div(parsed: "Node") -> "Node | None":
@@ -1232,7 +1259,7 @@ def _deepcopy_subtree(node: "Node") -> "Node":
     # one in an attribute) is shared by the copy, not copied (Document.__deepcopy__)
     token = _DEEPCOPY_ROOT.set(node)
     try:
-        return copy.deepcopy(node)
+        return _deepcopy_children_first(node)
     finally:
         _DEEPCOPY_ROOT.reset(token)
         node.__dict__["parentNode"] = saved_parent
@@ -1244,6 +1271,44 @@ def _deepcopy_subtree(node: "Node") -> "Node":
         for current, cache in saved_sibling_caches:
             if cache is not _DEEPCOPY_MISSING:
                 current.__dict__["_sibling_positions_cache"] = cache
+
+
+def _deepcopy_children_first(root: "Node") -> "Node":
+    """``copy.deepcopy(root)`` one node at a time, children before parents.
+
+    A plain deepcopy recurses through ``args`` -- about six Python frames per
+    tree level -- so a subtree ~170 levels deep exhausted the recursion limit.
+    Here each node is copied with its children and parent hidden, then given
+    its children's copies, so the stack never grows with the tree's depth.
+    The shared ``memo`` keeps every other reference into the subtree pointing
+    at the copies."""
+    import copy
+
+    memo: dict[int, Any] = {}
+    node_type = Node
+    for current in reversed(list(_iter_dom_nodes(root))):
+        state = current.__dict__
+        children = state.get("args")
+        hide_children = bool(children) and any(isinstance(child, node_type) for child in children)
+        parent = state.get("parentNode")
+        if hide_children:
+            state["args"] = ()
+        if parent is not None:
+            state["parentNode"] = None
+        try:
+            clone = copy.deepcopy(current, memo)
+        finally:
+            if hide_children:
+                state["args"] = children
+            if parent is not None:
+                state["parentNode"] = parent
+        if hide_children:
+            copied = [memo[id(child)] if isinstance(child, node_type) else copy.deepcopy(child, memo) for child in children]
+            for child in copied:
+                if isinstance(child, node_type):
+                    child.__dict__["parentNode"] = clone
+            clone.__dict__["args"] = type(children)(copied) if isinstance(children, (tuple, list)) else tuple(copied)
+    return memo[id(root)]
 
 
 def _prepare_detached_clone(
@@ -3097,21 +3162,23 @@ class Node(EventTarget):
         Lists are tolerated for backwards compatibility with older code that
         passed child groups directly.
         """
-        callback(element)
-        elements = []
-        if isinstance(element, Node):
-            elements = element.args
-        elif isinstance(element, list):
-            elements = element
-        for el in elements:
-            # anything that isn't a Node is text -- including a ``str`` subclass
-            # such as ``domonic.javascript.String``
-            if isinstance(el, Node):
-                el._iterate(el, callback)
-            elif isinstance(el, list):  # if someone is incorrectly using a list as a child
-                for e in el:
-                    if isinstance(e, Node):
-                        e._iterate(e, callback)
+        # tree order, with an explicit stack so a deep tree can't exhaust
+        # the recursion limit
+        stack = [element]
+        while stack:
+            current = stack.pop()
+            callback(current)
+            elements = current.args if isinstance(current, Node) else current if isinstance(current, list) else ()
+            children = []
+            for el in elements:
+                # anything that isn't a Node is text -- including a ``str`` subclass
+                # such as ``domonic.javascript.String``
+                if isinstance(el, Node):
+                    children.append(el)
+                elif isinstance(el, list):  # if someone is incorrectly using a list as a child
+                    children.extend(e for e in el if isinstance(e, Node))
+            children.reverse()
+            stack.extend(children)
 
     def __bool__(self) -> bool:
         # Nodes should be truthy by existence, not by child count.
@@ -3588,21 +3655,34 @@ class Node(EventTarget):
         interface-specific fields, an equal (unordered) attribute set, and
         recursively equal children in order (https://dom.spec.whatwg.org/#concept-node-equals).
         Not the same as ``==`` / ``isSameNode`` (identity)."""
-        if node is self:
-            return True
+        pairs: list[tuple[Any, Any]] = [(self, node)]  # a stack, so a deep tree can't exhaust it
+        while pairs:
+            mine, theirs = pairs.pop()
+            if theirs is mine:
+                continue
+            if not mine._equal_ignoring_children(theirs):
+                return False
+            own = list(mine.args)
+            other = list(theirs.args)
+            if len(own) != len(other):
+                return False
+            for x, y in zip(own, other):
+                if isinstance(x, Node):
+                    pairs.append((x, y))
+                elif isinstance(y, Node) or str(x) != str(y):
+                    return False
+        return True
+
+    def _equal_ignoring_children(self, node: Any) -> bool:
         if not isinstance(node, Node) or getattr(node, "nodeType", None) != getattr(self, "nodeType", None):
             return False
-
         if isinstance(self, DocumentType):
-            if (self.name, self.publicId, self.systemId) != (node.name, node.publicId, node.systemId):
-                return False
-        elif isinstance(self, ProcessingInstruction):
-            if (self.target, self.data) != (node.target, node.data):
-                return False
-        elif isinstance(self, (Text, Comment, CDATASection)):
-            if str(self.data) != str(getattr(node, "data", None)):
-                return False
-        elif isinstance(self, Element):
+            return (self.name, self.publicId, self.systemId) == (node.name, node.publicId, node.systemId)
+        if isinstance(self, ProcessingInstruction):
+            return (self.target, self.data) == (node.target, node.data)
+        if isinstance(self, (Text, Comment, CDATASection)):
+            return str(self.data) == str(getattr(node, "data", None))
+        if isinstance(self, Element):
             if (
                 getattr(self, "namespaceURI", None) != getattr(node, "namespaceURI", None)
                 or getattr(self, "prefix", None) != getattr(node, "prefix", None)
@@ -3612,17 +3692,6 @@ class Node(EventTarget):
             a = {(at.name, str(at.value)) for at in self.attributes}
             b = {(at.name, str(at.value)) for at in node.attributes}
             if a != b or len(list(self.attributes)) != len(list(node.attributes)):
-                return False
-
-        own = list(self.args)
-        other = list(node.args)
-        if len(own) != len(other):
-            return False
-        for x, y in zip(own, other):
-            if isinstance(x, Node):
-                if not x.isEqualNode(y):
-                    return False
-            elif isinstance(y, Node) or str(x) != str(y):
                 return False
         return True
 
@@ -3704,24 +3773,29 @@ class Node(EventTarget):
         if run is not None:  # a parsed document that has not changed since: no walk
             text = "".join([node.__dict__["args"][0] for node in run[0]])
             return text if text else None
-        outp = ""
-        for each in self.args:
-            if type(each) is str:
-                outp = outp + each
-            else:
-                if getattr(each, "nodeType", None) in (
-                    Node.COMMENT_NODE,
-                    Node.PROCESSING_INSTRUCTION_NODE,
-                ):
+        # Iterative: descend into children that use this same getter rather
+        # than calling it on each, so a deep tree can't exhaust the stack.
+        parts: list[str] = []
+        skipped = (Node.COMMENT_NODE, Node.PROCESSING_INSTRUCTION_NODE)
+        stack = [iter(self.args)]
+        while stack:
+            for each in stack[-1]:
+                if type(each) is str:
+                    parts.append(each)
                     continue
+                if getattr(each, "nodeType", None) in skipped:
+                    continue
+                if isinstance(each, Node) and type(each).textContent is _NODE_TEXT_CONTENT:
+                    stack.append(iter(each.args))
+                    break
                 val = getattr(each, "textContent", None)
                 if val is None and not isinstance(each, Node):
                     val = str(each)  # a stray non-node child
                 if val is not None:
-                    outp = outp + val
-        if outp == "":
-            outp = None
-        return outp
+                    parts.append(val)
+            else:
+                stack.pop()
+        return "".join(parts) or None
 
     @textContent.setter
     def textContent(self, content):
@@ -3821,6 +3895,11 @@ class Node(EventTarget):
         if default_namespace and getattr(self, "namespace", None) != default_namespace:
             return False
         return True
+
+
+# Node's own textContent getter: a child that still uses it can be walked
+# into instead of called (see the getter)
+_NODE_TEXT_CONTENT = Node.__dict__["textContent"]
 
 
 class ParentNode:

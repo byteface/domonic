@@ -278,47 +278,56 @@ class _Collector:
     # -- the rendered text collection steps -----------------------------------------
 
     def collect(self, node: Any, parent: _State, items: list, parent_node: Any) -> None:
-        if isinstance(node, str) or isinstance(node, self.Text):
-            if parent.visible and parent.svg_text:
-                text = node if isinstance(node, str) else str(node.data or "")
-                if not (parent.table_box and not text.strip(" \t\n\r\f")):  # white space between table parts
-                    self.text(text, parent, items, parent_node)
-            return
-        if not isinstance(node, self.Element):
-            return  # comments, processing instructions
-        tag = _tag(node)
-        declared = self.declared(node)
-        display = self.display(node, declared, tag)
-        if display == "none":
-            return
-        state = self.state(node, parent, declared, display, tag)
-        children = self.rendered_children(node, display, tag, state.in_select)
-        if not state.visible:
-            for child in children:
-                self.collect(child, state, items, node)
-            return
-        if tag == "br":
-            items.append(("f", "\n"))
-            return
-        if display == "contents":
-            for child in children:
-                self.collect(child, state, items, node)
-            return
-        edge = 2 if tag == "p" else 1 if display in _BLOCK_LEVEL or display.startswith("block") else 0
-        # a block's edges are line breaks; an inline-block's, a replaced
-        # element's or a table part's only start and end the lines inside it
-        opening, closing = (edge, edge) if edge else (_OPEN, _CLOSE)
-        boxed = edge or display in _ATOMIC_INLINE or display.startswith("table") or tag in _REPLACED
-        if boxed:
-            items.append(opening)
-        for child in children:
-            self.collect(child, state, items, node)
-        if boxed:
-            items.append(closing)
-        if display == "table-cell" and not self.is_last(node, "table-cell"):
-            items.append(("f", "\t"))
-        elif display == "table-row" and not self.is_last(node, "table-row"):
-            items.append(("f", "\n"))
+        # Iterative, so a deep tree can't exhaust the recursion limit: a stack
+        # of (children left to visit, their inherited state, their parent,
+        # items to append once they are done). Hot path: names bound locally.
+        text_type, element_type = self.Text, self.Element
+        declared_of, display_of, state_of = self.declared, self.display, self.state
+        rendered_children, add_text, is_last = self.rendered_children, self.text, self.is_last
+        add, extend = items.append, items.extend
+        stack: list[tuple[Any, _State, Any, list | None]] = [(iter((node,)), parent, parent_node, None)]
+        while stack:
+            children, parent, parent_node, after = stack[-1]
+            for node in children:
+                if isinstance(node, str) or isinstance(node, text_type):
+                    if parent.visible and parent.svg_text:
+                        text = node if isinstance(node, str) else str(node.data or "")
+                        if not (parent.table_box and not text.strip(" \t\n\r\f")):  # white space between table parts
+                            add_text(text, parent, items, parent_node)
+                    continue
+                if not isinstance(node, element_type):
+                    continue  # comments, processing instructions
+                tag = _tag(node)
+                declared = declared_of(node)
+                display = display_of(node, declared, tag)
+                if display == "none":
+                    continue
+                state = state_of(node, parent, declared, display, tag)
+                if state.visible and tag == "br":
+                    add(("f", "\n"))
+                    continue
+                closing: list | None = None
+                if state.visible and display != "contents":
+                    edge = 2 if tag == "p" else 1 if display in _BLOCK_LEVEL or display.startswith("block") else 0
+                    # a block's edges are line breaks; an inline-block's, a replaced
+                    # element's or a table part's only start and end the lines inside it
+                    if edge or display in _ATOMIC_INLINE or display.startswith("table") or tag in _REPLACED:
+                        add(edge or _OPEN)
+                        closing = [edge or _CLOSE]
+                        if display == "table-cell" and not is_last(node, "table-cell"):
+                            closing.append(("f", "\t"))
+                        elif display == "table-row" and not is_last(node, "table-row"):
+                            closing.append(("f", "\n"))
+                kids = rendered_children(node, display, tag, state.in_select)
+                if kids:
+                    stack.append((iter(kids), state, node, closing))
+                    break
+                if closing:
+                    extend(closing)
+            else:
+                stack.pop()
+                if after:
+                    extend(after)
 
     def text(self, text: str, state: _State, items: list, parent_node: Any) -> None:
         if not text:
