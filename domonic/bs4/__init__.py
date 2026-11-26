@@ -19,7 +19,17 @@ from typing import Any
 from domonic import _cssom
 from domonic import dom as _dom
 from domonic import domonic
-from domonic.dom import Comment, Document, DocumentFragment, Element, Node, Text, _is_html_root, _text_run_for
+from domonic.dom import (
+    Comment,
+    Document,
+    DocumentFragment,
+    Element,
+    Node,
+    Text,
+    _html_root_matches,
+    _is_html_root,
+    _text_run_for,
+)
 
 _PARSER_ALIASES = {
     None: "auto",
@@ -62,7 +72,10 @@ class BeautifulSlop:
         install()
         parser = _normalize_parser(features or kwargs.pop("parser", None))
         # text extraction is what a soup is for: keep the parser's text run
-        return domonic.parseString(markup, parser=parser, text_index=True)
+        tree = domonic.parseString(markup, parser=parser, text_index=True)
+        if isinstance(tree, Element):
+            tree.__dict__["_soup_root"] = True  # see _contains_itself
+        return tree
 
 
 def _normalize_parser(parser: str | None) -> str:
@@ -711,6 +724,16 @@ def _find(
     return found[0] if found else None
 
 
+def _contains_itself(node: Any) -> bool:
+    """Whether ``node`` stands in for a soup, so its own searches can return it:
+    in Beautiful Soup ``soup.find("html")`` is the ``<html>`` *inside* the soup.
+    domonic's ``<html>`` doubles as its document, and a soup of one top-level
+    element is that element."""
+    if _is_html_root(node):
+        return True
+    return bool(getattr(node, "__dict__", {}).get("_soup_root")) and getattr(node, "parentNode", None) is None
+
+
 def _find_all(
     self: Node,
     name: Any = None,
@@ -721,6 +744,24 @@ def _find_all(
     **kwargs: Any,
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
+    found = _find_all_below(self, name, attrs, recursive, string, limit, **kwargs)
+    # (not for recursive=False: there domonic's <html> stands for itself, so
+    # soup.html.find_all("body", recursive=False) keeps working)
+    if recursive and string is None and _contains_itself(self):
+        if _name_matches(name, self) and _attributes_match(self, _merge_attrs(attrs, kwargs)):
+            found = _limit([self, *found], limit)
+    return found
+
+
+def _find_all_below(
+    self: Node,
+    name: Any = None,
+    attrs: dict[str, Any] | None = None,
+    recursive: bool = True,
+    string: Any = None,
+    limit: int | None = None,
+    **kwargs: Any,
+) -> list[Any]:
     merged_attrs = _merge_attrs(attrs, kwargs)
     exact = _exact_index_pool(self, name, merged_attrs, recursive, string)
     if exact is not None:
@@ -1996,23 +2037,22 @@ def _select(
 ) -> list[Element]:
     token = _SOUP_SELECT.set(True)
     try:
-        fast = _select_fast(self, selector, limit=limit)
-        if fast is not None:
-            return _limit(fast, limit)
-        return _limit(self.querySelectorAll(selector), limit)
+        found = _select_fast(self, selector, limit=limit)
+        if found is None:
+            found = self.querySelectorAll(selector)
+            if _is_html_root(self):  # querySelectorAll already counts <html> itself
+                return _limit(found, limit)
+        if isinstance(self, Element) and _contains_itself(self):
+            if _html_root_matches(self, selector) if _is_html_root(self) else self.matches(selector):
+                found = [self, *found]
+        return _limit(found, limit)
     finally:
         _SOUP_SELECT.reset(token)
 
 
 def _select_one(self: Node, selector: str, **kwargs: Any) -> Element | None:
-    token = _SOUP_SELECT.set(True)
-    try:
-        fast = _select_fast(self, selector, limit=1)
-        if fast is not None:
-            return fast[0] if fast else None
-        return self.querySelector(selector)
-    finally:
-        _SOUP_SELECT.reset(token)
+    found = _select(self, selector, limit=1)
+    return found[0] if found else None
 
 
 def _parents(self: Node) -> Iterator[Node]:

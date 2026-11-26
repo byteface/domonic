@@ -605,8 +605,7 @@ def write_report(
     add(
         "- **`nav` / `serialize` / structural counts** differ because domonic "
         "merges `<html>` and the document node (no separate `[document]` "
-        "wrapper), so `.parents` is one shorter and `find_all(True)` excludes "
-        "the root."
+        "wrapper), so `.parents` is one shorter."
     )
     add("")
 

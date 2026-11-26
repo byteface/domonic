@@ -193,6 +193,30 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual(soup.querySelectorAll("p:-soup-contains(bonjour)"), [])
         self.assertFalse(soup.select_one("#b").matches(":contains(bonjour)"))
 
+    def test_the_top_element_is_found_like_beautiful_soup(self):
+        # in Beautiful Soup <html> (or a lone top-level element) is inside the
+        # soup, so the soup's own searches return it
+        page = BeautifulSlop('<html lang="en"><body><p>hi</p></body></html>', "html.parser")
+        self.assertEqual(page.find("html")["lang"], "en")
+        self.assertEqual([node.name for node in page.find_all(True)], ["html", "body", "p"])
+        self.assertEqual([node.name for node in page.find_all(lang="en")], ["html"])
+        self.assertEqual([node.name for node in page.select("html, p")], ["html", "p"])
+        self.assertEqual([node.name for node in page.select(":root")], ["html"])
+        self.assertEqual(page.select_one("html").name, "html")
+        self.assertEqual([node.name for node in page.find_all("body", recursive=False)], ["body"])
+        self.assertEqual(page.find("body").select("body"), [])
+
+        one = BeautifulSlop('<div id="d"><p>hi</p></div>', "html.parser")
+        self.assertEqual(one.find("div")["id"], "d")
+        self.assertEqual([node.name for node in one.find_all(True)], ["div", "p"])
+        self.assertEqual([node.name for node in one.select("div, p")], ["div", "p"])
+        self.assertEqual(one.select_one("#d").name, "div")
+        self.assertEqual([node.name for node in one.find_all(["div", "p"], limit=1)], ["div"])
+        # once moved into another tree it is an ordinary element again
+        holder = BeautifulSlop("<section></section>", "html.parser")
+        holder.appendChild(one)
+        self.assertEqual(one.find_all("div"), [])
+
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")
         second = self.soup.find("a", href="/two")
