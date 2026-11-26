@@ -212,6 +212,9 @@ class BeautifulSlopTest(unittest.TestCase):
         self.assertEqual([node.name for node in one.select("div, p")], ["div", "p"])
         self.assertEqual(one.select_one("#d").name, "div")
         self.assertEqual([node.name for node in one.find_all(["div", "p"], limit=1)], ["div"])
+        # limit=0 is no limit, as in Beautiful Soup
+        self.assertEqual(len(one.find_all(True, limit=0)), 2)
+        self.assertEqual(len(one.select("div, p", limit=0)), 2)
         # once moved into another tree it is an ordinary element again
         holder = BeautifulSlop("<section></section>", "html.parser")
         holder.appendChild(one)

@@ -695,7 +695,7 @@ def _candidate_nodes(
 
 
 def _limit(items: Iterable[Any], limit: int | None = None) -> list[Any]:
-    if limit is None:
+    if not limit:  # None or 0: Beautiful Soup's "no limit"
         return list(items)
     out = []
     for item in items:
@@ -744,6 +744,7 @@ def _find_all(
     **kwargs: Any,
 ) -> list[Any]:
     string = _string_alias(string, kwargs)
+    limit = limit or None  # Beautiful Soup's limit=0 is no limit
     found = _find_all_below(self, name, attrs, recursive, string, limit, **kwargs)
     # (not for recursive=False: there domonic's <html> stands for itself, so
     # soup.html.find_all("body", recursive=False) keeps working)
@@ -2035,6 +2036,7 @@ def _select(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Element]:
+    limit = limit or None  # soupsieve's limit=0 is no limit
     token = _SOUP_SELECT.set(True)
     try:
         found = _select_fast(self, selector, limit=limit)
