@@ -211,6 +211,12 @@ CSS Selectors
    soup.select('a[href^="/docs"]')
    soup.select("ul > li:nth-child(2)")
    soup.select("p:first-child, p:last-child")
+   soup.select('p:-soup-contains("Price")')
+
+Beautiful Soup's text-matching pseudo-classes work in ``select`` and
+``select_one``: ``:-soup-contains()``, ``:-soup-contains-own()`` and the older
+``:contains()``. They aren't CSS, so ``querySelectorAll`` and ``matches``
+reject them, as a browser does.
 
 Repeated selector workflows are a good fit for Slop: the objects remain domonic
 nodes, common selector paths avoid a second CSS engine, and queries over an

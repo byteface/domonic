@@ -959,6 +959,10 @@ _STATE_PSEUDOS = frozenset(
 )  # fmt: skip
 #: the element a query is run on -- what ``:scope`` matches (else the root)
 SCOPE_ELEMENT: "contextvars.ContextVar[Any]" = contextvars.ContextVar("domonic_scope_element", default=None)
+#: set while select() / select_one() run: Beautiful Soup's own pseudo-classes
+#: (``:-soup-contains()``) match only there, never in querySelectorAll /
+#: matches() / stylesheets, where a browser rejects them
+_SOUP_SELECT: "contextvars.ContextVar[bool]" = contextvars.ContextVar("domonic_soup_select", default=False)
 _TRAILING_STATE_RE = re.compile(r":([-\w]+)$")
 
 
@@ -1120,6 +1124,19 @@ def _strip_last_pseudo(selector: str) -> tuple[str, tuple[str, Any] | None] | No
         if not direction:
             return None
         return selector[: match.start()], ("dir", direction)
+    # :-soup-contains("a", b) -- Beautiful Soup's text match: the element's
+    # text (or, for -own, its own text nodes) contains any of the values.
+    # :contains() is its older name, and cssselect's.
+    trailing = _trailing_functional_pseudo(selector, ("-soup-contains-own", "-soup-contains", "contains"))
+    if trailing is not None:
+        start, name, argument = trailing
+        values = tuple(
+            Element._css_unescape(Element._strip_selector_quotes(value.strip()))
+            for value in _split_selector_groups(argument) or ()
+        )
+        if not values:
+            return None
+        return selector[:start], ("soup-contains", (values, name == "-soup-contains-own"))
     # :is() / :where() -- a selector list; match if any branch matches. A
     # branch is a compound (matched directly) or a complex selector (matched
     # right to left up the tree); an unparseable branch is forgiven (it just
@@ -1411,6 +1428,19 @@ def _match_simple_pseudo(
         return not _branch_matches(element, value)
     if name == "has-any":
         return _has_relative_match(element, value)
+    if name == "soup-contains":
+        if not _SOUP_SELECT.get():
+            return False
+        values, own = value
+        if own:
+            text = "".join(
+                child if isinstance(child, str) else child.data
+                for child in _iter_child_nodes(element)
+                if isinstance(child, (str, Text))
+            )
+        else:
+            text = element.textContent or ""
+        return any(value in text for value in values)
     if name == "has":
         combinator, parsed = value
         scope = _element_children(element) if combinator == ">" else _element_descendants(element)
@@ -1964,17 +1994,25 @@ def _select(
     limit: int | None = None,
     **kwargs: Any,
 ) -> list[Element]:
-    fast = _select_fast(self, selector, limit=limit)
-    if fast is not None:
-        return _limit(fast, limit)
-    return _limit(self.querySelectorAll(selector), limit)
+    token = _SOUP_SELECT.set(True)
+    try:
+        fast = _select_fast(self, selector, limit=limit)
+        if fast is not None:
+            return _limit(fast, limit)
+        return _limit(self.querySelectorAll(selector), limit)
+    finally:
+        _SOUP_SELECT.reset(token)
 
 
 def _select_one(self: Node, selector: str, **kwargs: Any) -> Element | None:
-    fast = _select_fast(self, selector, limit=1)
-    if fast is not None:
-        return fast[0] if fast else None
-    return self.querySelector(selector)
+    token = _SOUP_SELECT.set(True)
+    try:
+        fast = _select_fast(self, selector, limit=1)
+        if fast is not None:
+            return fast[0] if fast else None
+        return self.querySelector(selector)
+    finally:
+        _SOUP_SELECT.reset(token)
 
 
 def _parents(self: Node) -> Iterator[Node]:

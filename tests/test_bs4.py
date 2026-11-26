@@ -169,6 +169,30 @@ class BeautifulSlopTest(unittest.TestCase):
             ["first", "last"],
         )
 
+    def test_soup_contains(self):
+        soup = BeautifulSlop(
+            '<main><p id="a">hello <b>bold</b> world</p><p id="b">bonjour</p>'
+            '<ul><li id="c">one</li><li id="d" class="x">two, three</li></ul></main>',
+            "html.parser",
+        )
+
+        def ids(selector):
+            return [node["id"] for node in soup.select(selector)]
+
+        self.assertEqual(ids('p:-soup-contains("bold")'), ["a"])
+        self.assertEqual(ids("p:-soup-contains-own(bold)"), [])
+        self.assertEqual(ids('p:-soup-contains-own("hello ")'), ["a"])
+        self.assertEqual(ids("li:-soup-contains(one, two)"), ["c", "d"])
+        self.assertEqual(ids('li:-soup-contains("two, three")'), ["d"])
+        self.assertEqual(ids("li:-soup-contains(TWO)"), [])
+        self.assertEqual(ids("li:contains(two)"), ["d"])
+        self.assertEqual(ids("li:-soup-contains(two).x"), ["d"])
+        self.assertEqual(ids("p:not(:-soup-contains(bonjour))"), ["a"])
+        self.assertEqual(soup.select_one("p:-soup-contains(bonjour)")["id"], "b")
+        # Beautiful Soup's, not CSS: the DOM APIs reject it like a browser
+        self.assertEqual(soup.querySelectorAll("p:-soup-contains(bonjour)"), [])
+        self.assertFalse(soup.select_one("#b").matches(":contains(bonjour)"))
+
     def test_parents_children_siblings_and_document_order(self):
         first = self.soup.find("a", href="/one")
         second = self.soup.find("a", href="/two")
