@@ -73,12 +73,20 @@ class XPathException(Exception):
         self.code = code
 
 
+# ``@*[local-name() = 'x']`` / ``attribute::*[local-name() = 'x']``: "attribute
+# x in any namespace". cssselect >= 1.6 emits this for ``[*|x]``. domonic
+# attributes have no namespace, so it is the same as ``@x``.
+_ANY_NAMESPACE_ATTRIBUTE = re.compile(r"(?:attribute::|@)\*\[\s*local-name\(\)\s*=\s*(['\"])([^'\"]*)\1\s*\]")
+
+
 class XPathExpression:
     def __init__(self, expr: str, resolver: Any = None):
         # domonic stores rendered attributes with leading underscores internally.
         # Accept browser-style XPath attribute names and normalize them here.
         if not isinstance(expr, str):
             raise TypeError("expr must be a string")
+        if "local-name" in expr:
+            expr = _ANY_NAMESPACE_ATTRIBUTE.sub(r"@_\2", expr)
         expr = expr.replace("[@", "[@_")
         expr = expr.replace("[@__", "[@_")
         expr = expr.replace("(@", "(@_")

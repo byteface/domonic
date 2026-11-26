@@ -2711,6 +2711,25 @@ onmessage = handle
         //item[@price > 2*@discount]
         """
 
+    def test_xpath_attribute_in_any_namespace(self):
+        # cssselect >= 1.6 turns [*|title] into attribute::*[local-name() = 'title'].
+        from domonic.webapi.xpath import XPathEvaluator, XPathResult
+
+        page = div()
+        page.innerHTML = '<a title="t" id="a1"></a><span data-x="yes" id="s1"></span>'
+        evaluator = XPathEvaluator()
+
+        def ids(expression):
+            result = evaluator.evaluate(expression, page, None, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
+            return [node.id for node in result.nodes]
+
+        self.assertEqual(ids("//*[attribute::*[local-name() = 'title']]"), ["a1"])
+        self.assertEqual(ids('//*[@*[local-name()="title"]]'), ["a1"])
+        self.assertEqual(ids("//*[attribute::*[local-name() = 'title'] = 't']"), ["a1"])
+        self.assertEqual(ids("//*[attribute::*[local-name() = 'title'] = 'x']"), [])
+        self.assertEqual([e.id for e in page.querySelectorAll("[*|TiTlE]")], ["a1"])
+        self.assertEqual([e.id for e in page.querySelectorAll("[*|data-x^=y]")], ["s1"])
+
 
 
 class CanvasRecordingTest(unittest.TestCase):
