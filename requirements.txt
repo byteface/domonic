@@ -1,5 +1,5 @@
 elementpath>=5.1.4,<6
-python-dateutil>=2.9.0.post0,<3
+python-dateutil>=2.9.0.post0,<5
 requests>=2.34.2,<3
 urllib3>=2.8.0,<3
 html5lib>=1.1,<2
