@@ -259,9 +259,8 @@ domonic DOM and avoids a second wrapped tree. Walking a wide parent by
 
 ``querySelector`` / ``querySelectorAll`` resolve descendant, child, adjacent
 (``+``) and general-sibling (``~``) combinators, classes, attribute selectors
-and the common pseudo-classes (``:first-child``, ``:last-child``,
-``:nth-child``, ``:not(...)``) with a native engine shared with BeautifulSlop.
-Only the rarer pseudo-classes fall back to the slower cssselect -> XPath path.
+and pseudo-classes (``:nth-child``, ``:not(...)``, ``:is()``, ``:has()`` ...)
+with a native engine shared with BeautifulSlop.
 
 Index-backed queries
 --------------------

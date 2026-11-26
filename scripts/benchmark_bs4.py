@@ -592,12 +592,6 @@ def write_report(
         "exactly."
     )
     add(
-        "- **`:not()` and other complex pseudo-classes** still fall back to the "
-        "cssselect -> XPath -> elementpath path (slow on large trees); "
-        "descendant / child / `+` / `~` / `:first-child` / `:last-child` / "
-        "`:nth-child` are handled by the fast native engine."
-    )
-    add(
         "- **deep `select_one` chains** (e.g. `section table tbody tr td a`) "
         "expand every intermediate level before the final step, so they are "
         "slower than BS4's soupsieve on very large table trees."

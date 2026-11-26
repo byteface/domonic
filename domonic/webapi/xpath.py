@@ -74,8 +74,8 @@ class XPathException(Exception):
 
 
 # ``@*[local-name() = 'x']`` / ``attribute::*[local-name() = 'x']``: "attribute
-# x in any namespace". cssselect >= 1.6 emits this for ``[*|x]``. domonic
-# attributes have no namespace, so it is the same as ``@x``.
+# x in any namespace", a common XPath idiom. domonic attributes have no
+# namespace, so it is the same as ``@x``.
 _ANY_NAMESPACE_ATTRIBUTE = re.compile(r"(?:attribute::|@)\*\[\s*local-name\(\)\s*=\s*(['\"])([^'\"]*)\1\s*\]")
 
 

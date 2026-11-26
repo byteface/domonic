@@ -914,10 +914,6 @@ class DOMTest(unittest.TestCase):
         self.assertEqual(len(tree.querySelectorAll("#root > *")), 2)
 
     def test_query_selector_advanced_pseudo_classes(self):
-        # These pseudo-classes used to only work when the optional ``cssselect``
-        # package was installed (it translated them to XPath); the native
-        # engine now covers them directly. cssselect stays wired in as a
-        # fallback for anything not handled here.
         tree = ul(
             li("a", _class="odd"),
             li("b", _class="even"),

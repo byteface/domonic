@@ -2712,7 +2712,6 @@ onmessage = handle
         """
 
     def test_xpath_attribute_in_any_namespace(self):
-        # cssselect >= 1.6 turns [*|title] into attribute::*[local-name() = 'title'].
         from domonic.webapi.xpath import XPathEvaluator, XPathResult
 
         page = div()

@@ -7254,12 +7254,10 @@ class Element(Node):
             # qualified-name-only semantics -- see _elements_by_local_tag_name.
             return _elements_by_local_tag_name(self, query)
 
-        # The native CSS engine shared with BeautifulSlop resolves descendant /
-        # child / adjacent (``+``) / general-sibling (``~``) combinators,
-        # classes, attribute selectors and the common pseudo-classes several
-        # times faster than the cssselect -> XPath -> elementpath path. It
-        # returns ``None`` for the rarer selectors it does not support, which
-        # then fall through to the XPath engine.
+        # The native CSS engine shared with BeautifulSlop resolves combinators,
+        # classes, attribute selectors and pseudo-classes. It returns ``None``
+        # for a selector it does not support (pseudo-elements, ``:valid``, ...),
+        # which then falls through to the matching below.
         try:
             from domonic.bs4 import _select_fast
 
@@ -7279,10 +7277,10 @@ class Element(Node):
             return results if isinstance(results, list) else []
 
         naked_query = query[1:]
-        # ``_select_fast`` already handled the common selectors above; anything
+        # ``_select_fast`` already handled every selector domonic supports. One
         # with a class, attribute, combinator or pseudo-class that reached here
-        # needs the cssselect -> XPath engine, not the plain ``_matchElement``
-        # walk (which silently ignores pseudo-classes and returns nothing).
+        # isn't one of them, and the plain ``_matchElement`` walk below would
+        # silently ignore its pseudo-classes.
         if (
             "." in naked_query
             or "[" in query
@@ -7292,22 +7290,7 @@ class Element(Node):
             or "+" in query
             or "~" in query
         ):
-            try:
-                from cssselect import HTMLTranslator, SelectorError
-
-                expression = HTMLTranslator().css_to_xpath(query)
-                from domonic.webapi.xpath import XPathEvaluator, XPathResult
-
-                evaluator = XPathEvaluator()
-                expression = evaluator.createExpression(expression)
-                result = expression.evaluate(self, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE)
-                if result.nodes:
-                    return result.nodes
-                return _fallback_selector_results()
-            except ImportError:
-                return _fallback_selector_results()
-            except SelectorError:
-                return _fallback_selector_results()
+            return _fallback_selector_results()
 
         elements = []
 
