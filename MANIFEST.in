@@ -1,5 +1,4 @@
 include README.md
-include SECURITY.md
 include CITATION.cff
 include LICENSE.txt
 include requirements.txt

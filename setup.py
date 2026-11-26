@@ -55,7 +55,6 @@ setup(
         "Examples": "https://github.com/byteface/domonic/tree/master/examples",
         "Releases": "https://github.com/byteface/domonic/releases",
         "Contributing": "https://github.com/byteface/domonic/blob/master/CONTRIBUTING.md",
-        "Security": "https://github.com/byteface/domonic/blob/master/SECURITY.md",
     },
     description=(
         "Python DOM toolkit for HTML generation, SVG/XML, CSS selectors, XPath, "
