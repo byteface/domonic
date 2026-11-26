@@ -456,7 +456,7 @@ class TestHTML(unittest.TestCase):
         )
         self.assertEqual(
             str(a("Ad", _href="/buy", _attributionsrc="")),
-            '<a href="/buy" attributionsrc>Ad</a>',
+            '<a href="/buy" attributionsrc="">Ad</a>',
         )
         self.assertEqual(
             str(
@@ -2096,6 +2096,24 @@ body(
             '<script src="foo.js" async="true" hidden="false" checked="true"></script>'
             == str(s)
         )
+        assert str(script(_src="m.js", _nomodule="", _defer="defer")) == '<script src="m.js" nomodule defer></script>'
+        assert str(div(_inert="", _itemscope="itemscope")) == "<div inert itemscope></div>"
+        assert str(img(_src="map.png", _ismap="")) == '<img src="map.png" ismap/>'
+        assert (
+            str(template(_shadowrootmode="open", _shadowrootdelegatesfocus=""))
+            == '<template shadowrootmode="open" shadowrootdelegatesfocus></template>'
+        )
+
+    def test_non_boolean_attributes_keep_their_value(self):
+        # x="x" must not collapse to bare x for attributes that aren't boolean:
+        # a parser reads bare `value` as "", bare `spellcheck` as true.
+        assert str(input(_value="value")) == '<input value="value"/>'
+        assert str(option("Pick one", _value="")) == '<option value="">Pick one</option>'
+        assert str(a(_href="/f", _download="download")) == '<a href="/f" download="download"></a>'
+        assert str(div(_spellcheck="spellcheck")) == '<div spellcheck="spellcheck"></div>'
+        assert str(div(_translate="translate")) == '<div translate="translate"></div>'
+        assert str(div(_contenteditable="")) == '<div contenteditable=""></div>'
+        assert str(div(_draggable="")) == '<div draggable=""></div>'
 
     def test_dialog(self):
         # Regression coverage for two real bugs found and fixed together:

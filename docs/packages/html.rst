@@ -139,6 +139,20 @@ same ones you will inspect in browser developer tools.
 
 	<label class="classname" for="someinput"></label>
 
+Boolean attributes (``defer``, ``checked``, ``nomodule``, ``inert`` ...) render
+bare when given an empty string or their own name. Other attributes always keep
+their value, so ``value=""`` stays ``value=""``.
+
+.. code-block :: python
+
+	print(script(_src="app.js", _defer=""))
+	print(input(_type="checkbox", _checked="checked", _value=""))
+
+.. code-block :: html
+
+	<script src="app.js" defer></script>
+	<input type="checkbox" checked value=""/>
+
 
 lists
 ----------------

@@ -360,39 +360,57 @@ _ATTRIBUTE_NAME_REMAP = {
 
 # HTML boolean attributes: present with no value (or value == the attribute
 # name) renders as the bare attribute name, e.g. `checked` not `checked="checked"`.
+# Only true boolean attributes belong here: collapsing `x="x"` to bare `x` is
+# lossless for them, but changes the value of anything else (`value="value"`
+# would read back as "", `spellcheck="spellcheck"` as true).
 # Also Element.__attributes__'s -- a frozenset so the per-attribute membership
 # test is O(1) instead of a linear scan, and isn't rebuilt on every render.
 _BOOLEAN_ATTRIBUTES = frozenset(
     {
+        # HTML
+        "allowfullscreen",
+        "alpha",
         "async",
-        "checked",
         "autofocus",
+        "autoplay",
+        "checked",
+        "controls",
+        "default",
+        "defer",
         "disabled",
         "formnovalidate",
-        "hidden",
+        "hidden",  # enumerated now, but "" and "hidden" are the same state
+        "inert",
+        "ismap",
+        "itemscope",
+        "loop",
         "multiple",
+        "muted",
+        "nomodule",
         "novalidate",
+        "open",
+        "playsinline",
         "readonly",
         "required",
-        "selected",
-        "open",
-        "contenteditable",
         "reversed",
-        "download",
-        "draggable",
-        "spellcheck",
-        "translate",
-        "autoplay",
-        "controls",
-        "loop",
-        "muted",
-        "default",
-        "allowfullscreen",
-        "playsinline",
-        "attributionsrc",
-        "toolautosubmit",
-        "value",
-        "defer",
+        "selected",
+        "shadowrootclonable",
+        "shadowrootcustomelementregistry",
+        "shadowrootdelegatesfocus",
+        "shadowrootserializable",
+        # obsolete HTML, still boolean
+        "compact",
+        "declare",
+        "nohref",
+        "noresize",
+        "noshade",
+        "nowrap",
+        "truespeed",
+        # other specs
+        "disablepictureinpicture",  # Picture-in-Picture
+        "disableremoteplayback",  # Remote Playback API
+        "webkitdirectory",  # File and Directory Entries API
+        "toolautosubmit",  # WebMCP declarative forms
     }
 )
 
