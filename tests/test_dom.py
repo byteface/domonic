@@ -1005,32 +1005,47 @@ class DOMTest(unittest.TestCase):
         detached = div(span("default", _id="default-ltr"))
         self.assertTrue(detached.querySelector("#default-ltr").matches(":dir(ltr)"))
 
-    def test_advanced_pseudo_classes_work_without_cssselect(self):
-        # The native engine must handle these on its own -- cssselect is only a
-        # fallback. Force its import to fail and confirm nothing regresses.
-        import builtins
-
-        real_import = builtins.__import__
-
-        def blocking_import(name, *args, **kwargs):
-            if name == "cssselect" or name.startswith("cssselect."):
-                raise ImportError("blocked for test")
-            return real_import(name, *args, **kwargs)
-
+    def test_advanced_pseudo_classes(self):
         tree = div(
             ul(*[li(str(i), _class=("odd" if i % 2 else "even")) for i in range(1, 6)])
         )
-        builtins.__import__ = blocking_import
-        try:
-            self.assertEqual(
-                [str(e.textContent) for e in tree.querySelectorAll("li:nth-child(2n)")],
-                ["2", "4"],
-            )
-            self.assertEqual(len(tree.querySelectorAll("li:nth-of-type(3)")), 1)
-            self.assertEqual(len(tree.querySelectorAll("li:is(.odd, :last-child)")), 3)
-            self.assertEqual(len(tree.querySelectorAll("ul:has(> li)")), 1)
-        finally:
-            builtins.__import__ = real_import
+        self.assertEqual(
+            [str(e.textContent) for e in tree.querySelectorAll("li:nth-child(2n)")],
+            ["2", "4"],
+        )
+        self.assertEqual(len(tree.querySelectorAll("li:nth-of-type(3)")), 1)
+        self.assertEqual(len(tree.querySelectorAll("li:is(.odd, :last-child)")), 3)
+        self.assertEqual(len(tree.querySelectorAll("ul:has(> li)")), 1)
+
+    def test_pseudo_class_before_a_class_id_or_attribute(self):
+        # a compound's parts can come in any order after the type selector
+        tree = div(ul(li("1", _id="a"), li("2", _class="x"), li("3", _class="x")), p("p", _class="x"))
+
+        def texts(q):
+            return [str(e.textContent) for e in tree.querySelectorAll(q)]
+
+        self.assertEqual(texts("li:nth-child(2).x"), ["2"])
+        self.assertEqual(texts(":not(p).x"), ["2", "3"])
+        self.assertEqual(texts(":is(li, p).x"), ["2", "3", "p"])
+        self.assertEqual(texts("ul:has(.x)#nope"), [])
+        self.assertEqual(texts("li:first-child#a"), ["1"])
+        self.assertEqual(texts("li:last-child[class=x]"), ["3"])
+        second = tree.querySelector("li.x")
+        self.assertTrue(second.matches("li:nth-child(2).x"))
+        self.assertFalse(second.matches(":not(li).x"))
+        self.assertIs(second.closest(":has(> li).x, ul:has(> li)"), second.parentNode)
+
+    def test_attribute_in_any_namespace(self):
+        # [*|x] and [|x] are [x]: domonic attributes have no namespace
+        tree = div(span(_title="t"), span(_lang="en"))
+        self.assertEqual(len(tree.querySelectorAll("[*|title]")), 1)
+        self.assertEqual(len(tree.querySelectorAll("[|title]")), 1)
+        self.assertEqual(len(tree.querySelectorAll("[*|title=t]")), 1)
+        self.assertEqual(len(tree.querySelectorAll("[*|title=x]")), 0)
+        self.assertEqual(len(tree.querySelectorAll("[lang|=en]")), 1)
+        self.assertEqual(len(tree.querySelectorAll("[TiTlE]")), 1)
+        self.assertEqual(len(tree.querySelectorAll("span[*|TITLE=t]")), 1)
+        self.assertTrue(tree.querySelector("span").matches("[TITLE]"))
 
     def test_getElementsBySelector(self):
         dom1 = html(

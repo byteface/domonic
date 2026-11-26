@@ -5672,8 +5672,10 @@ class Element(Node):
                 if end == -1:
                     return None
                 content = selector[position + 1 : end]
+                # ``[*|x]`` (any namespace) and ``[|x]`` (no namespace) are both
+                # ``[x]``: domonic attributes have no namespace.
                 attribute = re.match(
-                    r"^\s*([^\s~|^$*=\]]+)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(.*?)(?:\s+([iIsS]))?\s*)?$",
+                    r"^\s*(?:\*?\|(?!=))?([^\s~|^$*=\]]+)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(.*?)(?:\s+([iIsS]))?\s*)?$",
                     content,
                 )
                 if not attribute:

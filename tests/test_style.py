@@ -2365,6 +2365,12 @@ class CascadeSelectorTest(unittest.TestCase):
         self.assertEqual(_computed(markup, "#on", "color"), "rgb(0, 128, 0)")
         self.assertEqual(_computed(markup, ".skip", "color"), "rgb(0, 0, 255)")
 
+    def test_pseudo_class_before_a_class(self):
+        markup = self.page("li:nth-child(2).x { color: green } :not(p).x { color: blue }",
+                           "<ul><li>a</li><li class=x id=two>b</li><li class=x id=three>c</li></ul>")
+        self.assertEqual(_computed(markup, "#two", "color"), "rgb(0, 128, 0)")
+        self.assertEqual(_computed(markup, "#three", "color"), "rgb(0, 0, 255)")
+
     def test_not_takes_a_selector_list(self):
         markup = self.page("p:not(.a, .b) { color: green }", "<p class=a>a</p><p id=c>c</p>")
         self.assertEqual(_computed(markup, "#c", "color"), "rgb(0, 128, 0)")

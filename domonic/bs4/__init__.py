@@ -905,7 +905,45 @@ def _split_simple_selector_chain(selector: str) -> list[tuple[str | None, str]] 
     if not current or bracket_depth or paren_depth or quote:
         return None
     parts.append((combinator, current))
-    return parts
+    return [(combinator, _pseudos_last(compound)) for combinator, compound in parts]
+
+
+def _pseudos_last(compound: str) -> str:
+    """``compound`` with its pseudo-classes after its other simple selectors:
+    ``li:nth-child(2).x`` -> ``li.x:nth-child(2)``. A compound matches when
+    all of its parts do, so the order doesn't change what it matches, and
+    ``_strip_simple_pseudo`` reads pseudo-classes off the end."""
+    if ":" not in compound:
+        return compound
+    parts: list[str] = []
+    start, depth = 0, 0
+    quote: str | None = None
+    escaped = False
+    for index, char in enumerate(compound):
+        if escaped:
+            escaped = False
+        elif char == "\\":
+            escaped = True
+        elif quote:
+            if char == quote:
+                quote = None
+        elif char in "\"'":
+            quote = char
+        elif char in "([":
+            if char == "[" and not depth and index > start:
+                parts.append(compound[start:index])
+                start = index
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif not depth and char in ".#:" and index > start and compound[index - 1] != ":":
+            parts.append(compound[start:index])
+            start = index
+    parts.append(compound[start:])
+    pseudos = [part for part in parts if part.startswith(":")]
+    if not pseudos or any(part.startswith("::") for part in pseudos):
+        return compound  # pseudo-elements stay last; nothing here handles them
+    return "".join([part for part in parts if not part.startswith(":")] + pseudos)
 
 
 # user-action / input / element-state pseudo-classes (Selectors 4 9-13, HTML
@@ -1239,7 +1277,13 @@ def _match_parsed_selector(element: Element, parsed: dict[str, Any]) -> bool:
         if not set(parsed["classes"]).issubset(class_tokens):
             return False
     for attr, operator, value in parsed["attributes"]:
-        if not Element._attribute_selector_matches(_get_attribute(element, attr), operator, value):
+        actual = _get_attribute(element, attr)
+        if actual is None and not attr.islower():
+            # [TITLE] matches title: HTML attribute names are case-insensitive,
+            # and the parser lower-cases them (an exact match still wins, for
+            # SVG's viewBox and friends)
+            actual = _get_attribute(element, attr.lower())
+        if not Element._attribute_selector_matches(actual, operator, value):
             return False
     for pseudo in parsed.get("pseudos", ()):
         if not Element._matches_structural_pseudo(element, pseudo):
@@ -1635,6 +1679,8 @@ def _index_candidate_pool(root: Any, parsed: dict[str, Any]) -> "list[Element]":
         attr_map = _attr_index(root)
         for name, _op, _val in parsed["attributes"]:
             bucket = attr_map.get(name)
+            if bucket is None and not name.islower():
+                bucket = attr_map.get(name.lower())  # see _match_parsed_selector
             if bucket is None:
                 return []
             pools.append(bucket)
